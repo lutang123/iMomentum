@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:iMomentum/screens/entries/entries_page.dart';
 import 'package:iMomentum/screens/home_screen/home_screen.dart';
 import 'package:iMomentum/screens/iNotes/notes_screen/notes_main_page.dart';
 import 'package:iMomentum/screens/iTodo/todo_screen/todo_calendar_screen.dart';

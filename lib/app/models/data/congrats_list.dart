@@ -1,7 +1,5 @@
 import 'dart:math';
 
-import 'package:intl/intl.dart';
-
 /// These are the default quotes displayed in [CompletionScreen]
 //List<Quote> kDefaultQuotes(BuildContext context) {
 

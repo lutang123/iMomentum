@@ -1,25 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/avatar.dart';
-import 'package:iMomentum/app/common_widgets/customized_bottom_sheet.dart';
-import 'package:iMomentum/app/common_widgets/format.dart';
 import 'package:iMomentum/app/common_widgets/linear_gradient_container.dart';
 import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 import 'package:iMomentum/app/constants/constants.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/screens/entries/calendar_bloc.dart';
-import 'package:iMomentum/screens/entries/daily_todos_details.dart';
-import 'package:iMomentum/screens/entries/entries_bloc.dart';
-import 'package:iMomentum/screens/entries/entries_list_tile.dart';
 import 'package:iMomentum/app/services/auth.dart';
-import 'package:iMomentum/screens/entries/entry_job.dart';
-import 'package:iMomentum/screens/jobs/empty_content.dart';
-import 'package:iMomentum/screens/jobs/list_items_builder.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:iMomentum/screens/iTodo/todo_screen/new_pie_chart.dart';
-import 'package:iMomentum/screens/iTodo/todo_screen/my_calendar.dart';
-import 'package:iMomentum/screens/iTodo/todo_screen/my_pie_chart.dart';
 
 class AccountPage extends StatefulWidget {
   static Widget create(BuildContext context) {

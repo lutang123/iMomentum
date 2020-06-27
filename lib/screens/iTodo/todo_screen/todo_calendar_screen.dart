@@ -12,7 +12,6 @@ import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/common_widgets/my_todo_list_tile.dart';
 import 'package:iMomentum/screens/entries/calendar_bloc.dart';
 import 'package:iMomentum/screens/entries/daily_todos_details.dart';
-import 'package:iMomentum/screens/entries/entry_job.dart';
 import 'package:iMomentum/screens/iTodo/todo_screen/new_pie_chart.dart';
 import 'package:iMomentum/screens/jobs/empty_content.dart';
 import 'package:provider/provider.dart';
@@ -44,14 +43,9 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
   CalendarController _calendarController;
   CalendarController _calendarControllerNew;
   AnimationController _animationController;
-//  Map<DateTime, List<dynamic>> _events = {}; //when I do this, _todayList not updating dynamically when adding new data from home screen, why?
-
-  //default as today, and if select other dates, _date will be selectedDay, and
+  //default as today, and if select other dates, _date will be _calendarController.selectedDay, and
   //then pass it to AddTodoScreen
   DateTime _date = DateTime.now();
-
-  final DateTime today = DateTime(
-      DateTime.now().year, DateTime.now().month, DateTime.now().day, 12);
 
   @override
   void initState() {
@@ -63,85 +57,27 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
     _animationController.forward();
     _calendarController = CalendarController();
     _calendarControllerNew = CalendarController();
-//    print(_calendarController
-//        .selectedDay); //only when first come to this page, this is printed as null
-    ///then we say if _calendarController.selectedDay == null, we use _todayList, but the problem is as far as we add/delete/update, this line is no longer executed
-//    print(_calendarController.isSelected(today)); //this line is wrong because The getter 'year' was called on null.
+//    print(_calendarController.selectedDay); //only when first come to this page, this is printed as null
+    ///then we say if _calendarController.selectedDay == null, we use _todayList, but the problem is as far as we add/delete/update, this if statement no longer valid
+//    print(_calendarController.isSelected(today)); //this line is wrong because The getter 'year' was called on null, we can only use this on onDaySelected
   }
 
-  ///notes for pie_charts
+  ///for listView
+  //when i wrote _todayList = [], and before select any date, when doing anything on today's list, e.g. adding new or updating, today's list become empty
+  List<TodoModel> _todayList;
+
+  /// if not give an initial value, _selectedList.isEmpty will throw error
+  List<TodoModel> _selectedList = [];
+
+  ///for pie chart
+  /// groupby only one day, change to: map[date] = entry.todosDetails, instead of map[date] = entry;
   Map<String, double> _dataMapToday;
-  Map<String, double> _dataMapSelected = {};
-  // {Flutter: 5.0, React: 3.0, Xamarin: 2.0, Ionic: 2.0}
-  Map<String, double> _getDataMapToday(List<TodoDuration> entries) {
-    final _todayEntries =
-        DailyTodosDetails.getTodayEntries(entries); //List<DailyTodosDetails>
-    Map<String, double> _mapDataToday = {};
-    _todayEntries.forEach((dailyTodosDetails) {
-      for (TodoDetails jobDuration in dailyTodosDetails.todosDetails) {
-        _mapDataToday[jobDuration.title] = jobDuration.durationInHours;
-      }
-    });
-    return _mapDataToday;
-  }
-
-  // {Flutter: 5.0, React: 3.0, Xamarin: 2.0, Ionic: 2.0}
-  Map<String, double> _getDataMapSelected(
-      DateTime date, List<TodoDuration> entries) {
-    final _selectedEntries = DailyTodosDetails.getSelectedDayEntries(
-        date, entries); //List<DailyTodosDetails>
-    Map<String, double> _mapDataSelected = {};
-    _selectedEntries.forEach((dailyTodosDetails) {
-      for (TodoDetails jobDuration in dailyTodosDetails.todosDetails) {
-        _mapDataSelected[jobDuration.title] = jobDuration.durationInHours;
-      }
-    });
-    return _mapDataSelected;
-  }
+  Map<String, double> _dataMapSelected =
+      {}; //we initialize this because we have _dataMapSelected.isEmpty ? xxx : yyy
 
   // must give an initial value because it directly used in Text
   double _todayDuration = 0;
   double _selectedDuration = 0;
-
-  /// for second calendar
-  /// groupby only one day, change to: map[date] = entry.todosDetails, instead of map[date] = entry;
-  Map<DateTime, List<dynamic>> _groupEventsNew(List<TodoDuration> entries) {
-    final allEntries = DailyTodosDetails.all(entries); //List<DailyTodosDetails>
-    Map<DateTime, List<dynamic>> map = {}; //for calendar
-    allEntries.forEach((entry) {
-      DateTime date =
-          DateTime(entry.date.year, entry.date.month, entry.date.day, 12);
-//      if (map[date] == null) map[date] = [];
-      map[date] = entry.todosDetails;
-    });
-    return map; //{2020-06-22 12:00:00.000: [List<TodosDetails>], 2020-06-23 12:00:00.000: [List<TodosDetails>]}
-  }
-
-  ///for today
-  ///  //this function is called before SteamBuilder return
-  //today total
-  double _getTodayDuration(List<TodoDuration> entries) {
-    final _todayEntries =
-        DailyTodosDetails.getTodayEntries(entries); //List<DailyTodosDetails>
-    double dailyDuration;
-    _todayEntries.forEach((dailyTodosDetails) {
-      dailyDuration = dailyTodosDetails.duration;
-    });
-    return dailyDuration;
-  }
-
-  ///for selectedDay
-  ///  ///  //this function is called in setState
-  //selectedDay total
-  double _getSelectedDayDuration(DateTime date, List<TodoDuration> entries) {
-    final _selectedDayEntries =
-        DailyTodosDetails.getSelectedDayEntries(date, entries);
-    double data;
-    _selectedDayEntries.forEach((dailyTodosDetails) {
-      data = dailyTodosDetails.duration;
-    });
-    return data;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -159,13 +95,13 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
             if (snapshot.hasData) {
               final List<TodoModel> todos = snapshot.data;
               if (todos.isNotEmpty) {
-                print('first SteamBuilder');
-
                 ///do not assign an empty events map first
 //                _events = _groupEvents(todos); //return a map
-                final _events = _groupEvents(todos); //return a map
+                final _events =
+                    DailyTodosDetails.getEvents(todos); //return a map
 //            print(_events); // {2020-06-23 12:00:00.000: [id: 2020-06-23T09:45:13.260781, title: test1, id: 2020-06-23T09:46:32.982775, title: test 2}
-                _todayList = _getTodayTodos(todos);
+                _todayList = DailyTodosDetails.getTodosGroupByData(
+                    DateTime.now(), todos);
 //                print(_todayList); //[id: 2020-06-23T09:45:13.260781, title: test1, id: 2020-06-23T09:46:32.982775, title: test 2]
                 return Stack(
                   fit: StackFit.expand,
@@ -177,11 +113,6 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                         appBar: AppBar(
                           elevation: 0,
                           backgroundColor: Colors.black12,
-//                          title: Text('Todo',
-//                              style: TextStyle(
-//                                fontWeight: FontWeight.w500,
-//                                fontSize: 30.0,
-//                              )),
                           bottom: TabBar(
                             indicatorColor: Colors.white70,
                             tabs: [
@@ -200,17 +131,21 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                                 final List<TodoDuration> entries = snapshot
                                     .data; //print('x: $entries'); //x: [Instance of 'TodoDuration', Instance of 'TodoDuration']
                                 if (entries.isNotEmpty) {
-                                  final _eventsNew = _groupEventsNew(entries);
+                                  final _eventsNew =
+                                      DailyTodosDetails.getEventsNew(entries);
 //                                  print(_eventsNew); //{2020-06-22 12:00:00.000: [Instance of 'TodoDetails', Instance of 'TodoDetails'], 2020-06-23 12:00:00.000: [Instance of 'TodosDetails']}
-                                  print('second SteamBuilder');
-
+//                                  print('second SteamBuilder');
                                   /// it seems every function in this level were execute three times everytime I tap on the screen
                                   ///try with pie_charts
 //                                  int('1: $_dataMapToday');
-                                  _dataMapToday = _getDataMapToday(entries);
+                                  _dataMapToday =
+                                      DailyTodosDetails.getDataMapGroupByDate(
+                                          DateTime.now(), entries);
 //                                  print('2: $_dataMapToday');
                                   ///same problem when using pie_charts, the above line was executed three times when selecting a day
-                                  _todayDuration = _getTodayDuration(entries);
+                                  _todayDuration =
+                                      DailyTodosDetails.getDailyTotalDuration(
+                                          DateTime.now(), entries);
 //                                  print(_todayDuration); // if no data, it will show null, not 0
                                   return TabBarView(
                                     children: <Widget>[
@@ -221,12 +156,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                                           Padding(
                                             padding: const EdgeInsets.all(8.0),
                                             child: Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.black26,
-                                                borderRadius: BorderRadius.all(
-                                                  Radius.circular(20.0),
-                                                ),
-                                              ),
+                                              decoration: KBoxDecoration,
                                               child: MyCalendar(
                                                 events: _events,
                                                 calendarController:
@@ -242,11 +172,11 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                                                         /// why I can not assign today's list to
                                                         /// -selectedList?
 //                                                          _todayList
-
                                                         : _selectedList =
-                                                            _getSelectedDayTodos(
-                                                                date,
-                                                                todos); //selectedDay is not null, then we use _selectedList
+                                                            DailyTodosDetails
+                                                                .getTodosGroupByData(
+                                                                    date,
+                                                                    todos); //selectedDay is not null, then we use _selectedList
                                                     ///this very important, otherwise can't update _selectedList
                                                     _date = date; //for update
                                                   });
@@ -291,14 +221,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
 
                                                           ///problem is if select a day that does not have data, it always shows today, or when we deleted all the data on selected day, the list will display today's list.
                                                           //at beginning, .selectedDay is null, and _selectedList is empty, so we get _todayList
-                                                          ///if using the following line, somehow
-                                                          _calendarController
-                                                                          .selectedDay ==
-                                                                      null ||
-
-                                                                  ///not really nessary for this ==null, because this only excecute once
-                                                                  _selectedList
-                                                                      .isEmpty
+                                                          _selectedList.isEmpty
 
                                                               ///but once we tap on empty list, it shows today list, it's a problem when use delete all items on a selectedDay, once the list is empty, it shows today's list, how to change??
                                                               ? buildListView(
@@ -329,7 +252,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                                               padding:
                                                   const EdgeInsets.all(8.0),
                                               child: Container(
-                                                decoration: Kdecoration,
+                                                decoration: KBoxDecoration,
                                                 child: MyCalendar(
                                                   events: _eventsNew,
                                                   calendarController:
@@ -343,14 +266,17 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                                                           ? _dataMapSelected =
                                                               {}
                                                           : _dataMapSelected =
-                                                              _getDataMapSelected(
-                                                                  date,
-                                                                  entries);
+                                                              DailyTodosDetails
+                                                                  .getDataMapGroupByDate(
+                                                                      date,
+                                                                      entries);
 //                                                  print('selected: $_dataMapSelected'); //{explore chart: 1.0}
 
                                                       _selectedDuration =
-                                                          _getSelectedDayDuration(
-                                                              date, entries);
+                                                          DailyTodosDetails
+                                                              .getDailyTotalDuration(
+                                                                  date,
+                                                                  entries);
                                                     });
                                                   },
                                                   onDayLongPressed: (date, _) {
@@ -520,53 +446,6 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
         });
   }
 
-  ///for first tab
-  //when i wrote _todayList = [], and before select any date, when doing anything on today's list, e.g. adding new or updating, today's list become empty
-  List<TodoModel> _todayList;
-
-  /// if not give an initial value, _selectedList.isEmpty will throw error
-  List<TodoModel> _selectedList = [];
-
-  /// for first calendar
-  Map<DateTime, List<dynamic>> _groupEvents(List<TodoModel> todos) {
-    Map<DateTime, List<dynamic>> map = {}; //for first calendar
-    todos.forEach((todo) {
-      DateTime date =
-          DateTime(todo.date.year, todo.date.month, todo.date.day, 12);
-      if (map[date] == null) map[date] = [];
-      map[date].add(todo);
-    });
-    return map;
-  }
-
-  List<TodoModel> _getTodayTodos(List<TodoModel> todos) {
-//    _todayList = [];
-    List<TodoModel> list = [];
-    todos.forEach((todo) {
-      DateTime todayNew = DateTime(
-          DateTime.now().year, DateTime.now().month, DateTime.now().day);
-      DateTime date = DateTime(todo.date.year, todo.date.month, todo.date.day);
-      if (date == todayNew) {
-        list.add(todo);
-      }
-    });
-    return list;
-  }
-
-  List<TodoModel> _getSelectedDayTodos(DateTime date, List<TodoModel> todos) {
-    List<TodoModel> list = [];
-    todos.forEach((todo) {
-      final formattedDate = DateTime(date.year, date.month, date.day);
-      DateTime todoDate =
-          DateTime(todo.date.year, todo.date.month, todo.date.day);
-      if (todoDate == formattedDate) {
-        list.add(todo);
-      }
-    });
-    _date = date;
-    return list;
-  }
-
   Future<void> _delete(BuildContext context, TodoModel todo) async {
     try {
       final database = Provider.of<Database>(context, listen: false);
@@ -630,8 +509,8 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
         /// but new problem: e.g. if we select June 1st, but add item in June 2nd,
         /// then we add newTodo to selectedList!!! how to solve this? add this if statement
         if (_calendarController.selectedDay == _date) {
-          final newList =
-              _getSelectedDayTodos(_calendarController.selectedDay, todos);
+          final newList = DailyTodosDetails.getTodosGroupByData(
+              _calendarController.selectedDay, todos);
 
 //        print(newList); // a list, not showing the newly added one
 //        print(_groupEvents(todos)); //a map, not showing the newly added one
@@ -678,8 +557,8 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
 
         ///when we tap, get a new list from _calendarController.selectedDay first
         ///but this should be the same as _selectedList
-        final newList =
-            _getSelectedDayTodos(_calendarController.selectedDay, todos);
+        final newList = DailyTodosDetails.getTodosGroupByData(
+            _calendarController.selectedDay, todos);
         //todo: use original selectedList works but get white color error: Unhandled Exception: RangeError (index): Invalid value: Valid value range is empty: -1
         ///this two are exactly the same, no need to create newList
 //        final newList = selectedList; ///not use this line
@@ -774,232 +653,3 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
 //      leading: Text("#${index + 1}"),
 //    );
 //  }
-
-///try with charts_flutter
-//                                                    _pieDataSelected.isEmpty
-//                                                        ? Stack(
-//                                                            alignment: Alignment
-//                                                                .center,
-//                                                            children: <Widget>[
-//                                                              Container(
-//                                                                height:
-//                                                                    size.height /
-//                                                                        3.5,
-//                                                                child: MyPieChart(
-//                                                                    seriesPieData:
-//                                                                        _seriesPieData),
-//                                                              ), //only initialize in the generateData function
-//                                                              Center(
-//                                                                child: Column(
-//                                                                  children: <
-//                                                                      Widget>[
-//                                                                    Text(
-//                                                                        'Total'),
-//                                                                    SizedBox(
-//                                                                        height:
-//                                                                            5),
-//                                                                    Text(Format
-//                                                                        .hours(
-//                                                                            _todayDuration)),
-//                                                                  ],
-//                                                                ),
-//                                                              )
-//                                                            ],
-//                                                          )
-//                                                        :
-//
-//                                                        ///this not execute, not know why? no error thrown
-//                                                        Stack(
-//                                                            alignment: Alignment
-//                                                                .center,
-//                                                            children: <Widget>[
-//                                                              Container(
-//                                                                  height:
-//                                                                      size.height /
-//                                                                          3.5,
-//                                                                  child:
-//
-//                                                                      ///removed 'No data yet', but screen only show today's chart
-//                                                                      MyPieChart(
-//                                                                          seriesPieData:
-//                                                                              _seriesPieDataSelected)),
-//                                                              Center(
-//                                                                child: Column(
-//                                                                  children: <
-//                                                                      Widget>[
-//                                                                    Text(
-//                                                                        'Total'),
-//                                                                    SizedBox(
-//                                                                        height:
-//                                                                            5),
-//                                                                    Text(Format
-//                                                                        .hours(
-//                                                                            _selectedDuration)),
-//                                                                  ],
-//                                                                ),
-//                                                              )
-//                                                            ],
-//                                                          ),
-///in setState
-////                                                  ///try with charts_flutter
-//////                                                  _calendarControllerNew.isToday(
-//////                                                          date) //if selected today, we only render _todayList, in this way, _todayList can be dynamically display when added new data in home screen.
-//////                                                      ? _pieDataSelected =
-//////                                                          [] //if it's empty, use today's list
-//////                                                      :
-////
-////                                                  /// when we tap on other days, why the screen still shows today's chart??
-//                                                  _pieDataSelected =
-//                                                      _getPieDataSelected(
-//                                                          date, entries);
-//                                                  print(_pieDataSelected);
-//
-//                                                  /// this line not excueted?
-//                                                  _seriesPieDataSelected =
-//                                                      _generateDataSelected(
-//                                                          _pieDataSelected);
-//                                                  print(
-//                                                      _seriesPieDataSelected); //[Instance of 'Series<TodoDetails, String>']
-////                                                  print('selected');
-///for today
-//                                  _pieDataToday = _getPieDataToday(entries); //returns a list
-//                                  ///whe no data, the chart crashes
-////                                  if (_pieDataToday.length > 0) {
-//                                  ///STEP 1:
-////                                  print(
-////                                      '_pieDataToday1: $_pieDataToday'); //_seriesPieDataToday: [Instance of 'Series<TodoDetails, String>']
-////                                  ///STEP 2:
-//                                  _seriesPieData = _generateData(_pieDataToday);
-//////                                  }
-////                                  ///STEP 3:
-//                                  print(
-//                                      '_pieDataToday2: $_pieDataToday'); //_seriesPieDataToday: [Instance of 'Series<TodoDetails, String>']
-/// when tap on any date from ListView, the above 3 lines are executed 3 times, why??
-/// Then on chart page, when tap any date, we get the above line executed first, and then it executes the lines in setState, then the above three lines were executed 3 times again, wow, why??
-///notes on calendar date
-//                                                  print(_calendarController
-//                                                      .isSelected(
-//                                                          today)); //before click to select, this is not printed.
-//                                                  print(_calendarController
-//                                                      .isToday(date));
-//                                                  print(_calendarController
-//                                                      .selectedDay); //flutter: 2020-06-26 12:00:00.000Z
-//                                                  print(
-//                                                      today); //flutter: 2020-06-25 12:00:00.000
-//                                                  print(DateTime
-//                                                      .now()); //flutter: 2020-06-25 23:45:36.966095
-//                                                  final formatedToday = DateFormat(
-//                                                          "yyyy-MM-dd HH:mm:ss.000'Z'")
-//                                                      .format(
-//                                                          today); //flutter: 2020-06-26 12:00:00.000Z
-//                                                  print(_calendarController
-//                                                          .selectedDay ==
-//                                                      formatedToday);
-///functions for charts_flutter
-//for second tab
-//List<charts.Series<TodoDetails, String>> _seriesPieData;
-//List<charts.Series<TodoDetails, String>> _seriesPieDataSelected;
-//
-/////  var piedata = [
-//////    new Task('Work', 35.8, color),
-//////    new Task('Eat', 8.3, color),
-//////  ];
-//List<TodoDetails> _pieDataToday;
-//List<TodoDetails> _pieDataSelected = [];
-//
-////  ///PieChart can only render a singleSeries, so we need to do this instead of getting _seriesPieData separately for Today and SelectedDay
-////  void _generateData(List<TodoDetails> myList) {
-////    //PieChart can only be rendered a singleSeries
-////    //_seriesPieData will be passed to the pieChart, when this function is called, it will be initialized and assign value.
-////    _seriesPieData = List<charts.Series<TodoDetails, String>>();
-//////    if (myData != null) {
-////    _seriesPieData.add(
-////      charts.Series(
-////        domainFn: (TodoDetails task, _) => task.title,
-////        measureFn: (TodoDetails task, _) => task.durationInHours,
-//////        colorFn: TodoDetails task, _) =>
-//////            charts.ColorUtil.fromDartColor(Color(int.parse(task.colorVal))),
-////        id: 'tasks',
-////        data: myList,
-////        labelAccessorFn: (TodoDetails row, _) => "${row.durationInHours}",
-////      ),
-////    );
-////    print(
-////        _seriesPieData); //flutter: [Instance of 'Series<TodoDetails, String>']
-////    print(
-////        'tapped'); //when tap on a selectedDay, this function runs 4 times?? and in setState, ot runs once
-//////    }
-////  }
-//
-/////PieChart can only render a singleSeries, so we need to do this instead of getting _seriesPieData separately for Today and SelectedDay
-//_generateData(List<TodoDetails> myList) {
-//  //PieChart can only be rendered a singleSeries
-//  //_seriesPieData will be passed to the pieChart, when this function is called, it will be initialized and assign value.
-//  final _x = List<charts.Series<TodoDetails, String>>();
-////    if (myData != null) {
-//  _x.add(
-//    charts.Series(
-//      domainFn: (TodoDetails task, _) => task.title,
-//      measureFn: (TodoDetails task, _) => task.durationInHours,
-////        colorFn: TodoDetails task, _) =>
-////            charts.ColorUtil.fromDartColor(Color(int.parse(task.colorVal))),
-//      id: 'tasks',
-//      data: myList,
-//      labelAccessorFn: (TodoDetails row, _) => "${row.durationInHours}",
-//    ),
-//  );
-//
-//  return _x;
-//  //when tap on a selectedDay, this function runs 4 times?? and in setState, ot runs once
-//}
-//
-//_generateDataSelected(List<TodoDetails> myData) {
-//  //PieChart can only be rendered a singleSeries
-//  //_seriesPieData will be passed to the pieChart, when this function is called, it will be initialized and assign value.
-//  final _y = List<charts.Series<TodoDetails, String>>();
-////    if (myData != null) {
-//  _y.add(
-//    charts.Series(
-//      domainFn: (TodoDetails task, _) => task.title,
-//      measureFn: (TodoDetails task, _) => task.durationInHours,
-////        colorFn: TodoDetails task, _) =>
-////            charts.ColorUtil.fromDartColor(Color(int.parse(task.colorVal))),
-//      id: 'tasks',
-//      data: myData,
-//      labelAccessorFn: (TodoDetails row, _) => "${row.durationInHours}",
-//    ),
-//  );
-//  return _y;
-////    }
-//}
-////today pie data
-//List<TodoDetails> _getPieDataToday(List<TodoDuration> entries) {
-//  final _todayEntries =
-//  DailyTodosDetails.getTodayEntries(entries); //List<DailyTodosDetails>
-//  final List<TodoDetails> pieDataToday = [];
-//  _todayEntries.forEach((dailyTodosDetails) {
-//    for (TodoDetails todoDuration in dailyTodosDetails.todosDetails) {
-//      pieDataToday.add(TodoDetails(
-//        title: todoDuration.title,
-//        durationInHours: todoDuration.durationInHours,
-//      ));
-//    }
-//  });
-//  return pieDataToday;
-//}
-////selectedDay pie data
-//List<TodoDetails> _getPieDataSelected(
-//    DateTime date, List<TodoDuration> entries) {
-//  final _selectedDayEntries = DailyTodosDetails.getSelectedDayEntries(
-//      date, entries); //List<DailyTodosDetails>
-//  final List<TodoDetails> pieDataSelected = [];
-//  _selectedDayEntries.forEach((dailyTodosDetails) {
-//    for (TodoDetails todoDuration in dailyTodosDetails.todosDetails) {
-//      pieDataSelected.add(TodoDetails(
-//        title: todoDuration.title,
-//        durationInHours: todoDuration.durationInHours,
-//      ));
-//    }
-//  });
-//  return pieDataSelected;
-//}

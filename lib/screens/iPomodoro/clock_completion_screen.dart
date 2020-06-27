@@ -1,4 +1,3 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,7 +6,6 @@ import 'package:iMomentum/app/common_widgets/round_icon_button.dart';
 import 'package:iMomentum/app/common_widgets/transparent_flat_button.dart';
 import 'package:iMomentum/app/constants/constants.dart';
 import 'package:iMomentum/app/models/data/congrats_list.dart';
-import 'package:iMomentum/app/models/data/meditation/meditation_quote.dart';
 import 'package:iMomentum/app/models/todo_model.dart';
 import 'package:iMomentum/screens/entries/calendar_bloc.dart';
 import 'package:iMomentum/screens/iMeditate/utils/extensions.dart';
@@ -36,19 +34,6 @@ class _CompletionScreenState extends State<CompletionScreen> {
   final String text = "25 minutes";
   final TextStyle textStyle = GoogleFonts.varelaRound(
       color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20.0);
-
-  Size _textSize(String text, TextStyle style) {
-    final TextPainter textPainter = TextPainter(
-        text: TextSpan(text: text, style: style),
-        maxLines: 1,
-        textDirection: TextDirection.ltr)
-      ..layout(minWidth: 0, maxWidth: double.infinity);
-    return textPainter.size;
-  }
-
-//  void _getSize() {
-//    print(_textSize(text, textStyle)); //24.0 + 2 + 10 = 36 height;
-//  }
 
   void _play() {
     Navigator.of(context, rootNavigator: true).pushReplacement(
@@ -185,34 +170,33 @@ class _CompletionScreenState extends State<CompletionScreen> {
                       ],
                     ),
                   ),
-                  //clock
-//                  Padding(
-//                    padding: const EdgeInsets.all(10.0),
-//                    child: Column(
-//                      children: <Widget>[
-//                        Text(
-//                          "See today's progress",
-//                          style: TextStyle(
-//                              color: Colors.white,
-//                              fontSize: 25.0,
-//                              fontWeight: FontWeight.bold),
-//                        ),
-//                        SizedBox(height: 10),
-//                        TransparentFlatButton(
-//                          text: 'Summary',
-//                          onPressed: () {
-//                            Navigator.of(context).push(PageRoutes.slide(
-//                                () => Provider<CalendarBloc>(
-//                                    create: (_) =>
-//                                        CalendarBloc(database: widget.database),
-//                                    child: Progress()),
-//                                startOffset: Offset(0, 1),
-//                                milliseconds: 580));
-//                          },
-//                        )
-//                      ],
-//                    ),
-//                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                      children: <Widget>[
+                        Text(
+                          "See today's progress",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 25.0,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 10),
+                        TransparentFlatButton(
+                          text: 'Summary',
+                          onPressed: () {
+                            Navigator.of(context).push(PageRoutes.slide(
+                                () => Provider<CalendarBloc>(
+                                    create: (_) =>
+                                        CalendarBloc(database: widget.database),
+                                    child: ChartsFlutter()),
+                                startOffset: Offset(0, 1),
+                                milliseconds: 580));
+                          },
+                        )
+                      ],
+                    ),
+                  ),
 
                   Padding(
                     padding: const EdgeInsets.all(10.0),
@@ -246,12 +230,3 @@ class _CompletionScreenState extends State<CompletionScreen> {
     );
   }
 }
-//FaIcon(FontAwesomeIcons.)
-
-// Text(
-//        text,
-//        style: textStyle,
-//        softWrap: false,
-//        overflow: TextOverflow.clip,
-//        maxLines: 1,
-//      ),

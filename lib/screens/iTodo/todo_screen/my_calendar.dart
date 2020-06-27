@@ -106,7 +106,7 @@ class MyCalendar extends StatelessWidget {
                   '${date.day}',
                   style: TextStyle(
 //                    fontWeight: FontWeight.w600,
-                    fontSize: 20.0,
+                    fontSize: 18.0,
                   ),
                 ),
               ),
@@ -128,9 +128,8 @@ class MyCalendar extends StatelessWidget {
             child: Center(
               child: Text(
                 '${date.day}',
-                style: GoogleFonts.varelaRound(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 20.0,
+                style: TextStyle(
+                  fontSize: 18.0,
                 ),
               ),
             ),

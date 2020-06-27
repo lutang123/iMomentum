@@ -2,7 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iMomentum/app/models/todo_model.dart';
-import 'package:iMomentum/screens/entries/entry_job.dart';
+import 'package:iMomentum/screens/entries/calendar_bloc.dart';
 
 class TodoListTile extends StatelessWidget {
   const TodoListTile({

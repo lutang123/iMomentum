@@ -66,6 +66,5 @@ class MyTodoListTile extends StatelessWidget {
 //      ),
       onTap: onTap,
     );
-    ;
   }
 }

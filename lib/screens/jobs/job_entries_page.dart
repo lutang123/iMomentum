@@ -9,10 +9,7 @@ import 'package:iMomentum/app/models/todo_model.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
-
-import 'edit_job_page.dart';
 import 'duration_list_item.dart';
-import 'entry_page.dart';
 import 'list_items_builder.dart';
 
 class JobEntriesPage extends StatelessWidget {
@@ -48,7 +45,6 @@ class JobEntriesPage extends StatelessWidget {
         stream: database.todoStream(todoId: job.id),
         builder: (context, snapshot) {
           final job = snapshot.data;
-          final jobName = job?.title ?? '';
           return Scaffold(
 //            appBar: AppBar(
 //              elevation: 2.0,

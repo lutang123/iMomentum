@@ -8,17 +8,45 @@ class NewPieChart extends StatelessWidget {
 
   final Map<String, double> dataMap;
 
+  final List<int> materialIndices = [
+    900,
+    800,
+    700,
+    600,
+    500,
+    400,
+    300,
+    200,
+    100,
+    50
+  ];
+
   final List<Color> colorList = [
+    Color(0xFF005082).withOpacity(0.8),
+    Color(0xFF01a9b4).withOpacity(0.8),
+    Color(0xFF87dfd6).withOpacity(0.8),
+    Color(0xFFfbfd8a).withOpacity(0.8),
+
+//    Colors.blue[900].withOpacity(0.8),
+//    Colors.blue[800],
+//    Colors.blue[700],
+//    Colors.blue[600],
+//    Colors.blue[500],
+    Colors.blue[400].withOpacity(0.8),
+    Colors.blue[300].withOpacity(0.8),
+    Colors.blue[200].withOpacity(0.8),
+    Colors.blue[100].withOpacity(0.8),
+    Colors.blue[50].withOpacity(0.8),
+  ];
+
+  final List<Color> colorList2 = [
     Color(0xFFffa41b).withOpacity(0.8),
     Colors.white.withOpacity(0.8),
-//    Color(0xFF005082),
-//    Color(0xFF00a8cc),
     Color(0xFF005082).withOpacity(0.8),
     Color(0xFF01a9b4).withOpacity(0.8),
     Color(0xFF87dfd6).withOpacity(0.8),
 //    Color(0xFFeaffd0),
 //    Color(0xFFc2f0fc),
-    Color(0xFFfbfd8a).withOpacity(0.8),
   ];
 
   @override
