@@ -1,0 +1,107 @@
+name: iMomentum
+description: A new Flutter application.
+
+# The following line prevents the package from being accidentally published to
+# pub.dev using `pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^0.1.3
+  geolocator: ^5.3.1
+  http: ^0.12.0+4
+  flutter_spinkit: ^4.1.2
+  intl: ^0.16.0
+  sqflite: ^1.1.7
+  path_provider: ^1.3.0
+  font_awesome_flutter: ^8.8.1
+  #  webview_flutter: ^0.3.21
+  table_calendar: ^2.2.3
+#  firebase_helpers: ^0.1.8
+  shared_preferences: '>=0.5.7+3 <2.0.0'
+  transparent_image: ^1.0.0
+  cached_network_image: ^2.2.0+1
+  flutter_blurhash: ^0.5.0
+  flutter_staggered_grid_view: ^0.3.0
+  provider: ^4.1.2
+#  flutter_svg: ^0.17.4  #??
+  google_fonts: ^1.0.0
+  styled_widget: ^0.2.1+2 #??
+  flutter_icons: ^1.1.0  #??
+  url_launcher: ^5.4.11
+#  responsive_framework: ^0.0.4  #??
+  assets_audio_player: 2.0.6+4
+  tinycolor: ^1.0.2  #??
+#  flutter_localizations:  #??
+#    sdk: flutter
+  date_utils: ^0.1.0+2  #??
+  auto_size_text: ^2.1.0
+  #  hive: ^1.4.1+1
+  #  hive_flutter: ^0.3.0+2
+#  modal_bottom_sheet: ^0.1.6+1
+#  curved_navigation_bar: ^0.3.2
+  animated_text_kit: ^2.0.0
+  rxdart: ^0.24.1
+  firebase_auth: ^0.16.1
+  google_sign_in: ^4.0.7
+  cloud_firestore: ^0.13.7
+  firebase_core: ^0.4.5
+  indexed_list_view: ^1.0.9
+  charts_flutter: ^0.9.0
+  pie_chart: ^3.1.1
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+#  hive_generator: ^0.7.0+2
+#  build_runner: ^1.8.0
+
+#dependency_overrides:
+##  quiver: 2.1.3
+#  dartx: ^0.3.0
+
+#  intl_translation: ^0.17.9
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/audio/
+    - assets/google_fonts/
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/assets-and-images/#resolution-aware.
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/assets-and-images/#from-packages
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/custom-fonts/#from-packages

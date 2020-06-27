@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "459840489878",
+    "firebase_url": "https://imomentum-5969c.firebaseio.com",
+    "project_id": "imomentum-5969c",
+    "storage_bucket": "imomentum-5969c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:459840489878:android:e1edd152d661efad4835b7",
+        "android_client_info": {
+          "package_name": "com.example.iMomentum"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "459840489878-tn2oct6pc4e2cnr01iq7bv24a59aiqdq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.iMomentum",
+            "certificate_hash": "6ded2f1c0980ecb98dc148444d7a61d0016dba7a"
+          }
+        },
+        {
+          "client_id": "459840489878-q9i1dljhcmr1u7qls4nalv511o6v4blp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAOzU2P0DYisTa0P3iasgwGnOpuew7cMc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "459840489878-q9i1dljhcmr1u7qls4nalv511o6v4blp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "459840489878-emisna5jr6u2bsfurrqjekp29hubhgrf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.iMomentum"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
