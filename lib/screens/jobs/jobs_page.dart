@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
-import 'package:iMomentum/app/models/todo_model.dart';
+import 'package:iMomentum/app/models/todo.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:provider/provider.dart';
 
@@ -20,7 +20,7 @@ class JobsPage extends StatelessWidget {
     );
   }
 
-  Future<void> _delete(BuildContext context, TodoModel job) async {
+  Future<void> _delete(BuildContext context, Todo job) async {
     try {
       final database = Provider.of<Database>(context, listen: false);
       await database.deleteTodo(job);
@@ -52,10 +52,10 @@ class JobsPage extends StatelessWidget {
 
   Widget _buildContents(BuildContext context) {
     final database = Provider.of<Database>(context, listen: false);
-    return StreamBuilder<List<TodoModel>>(
+    return StreamBuilder<List<Todo>>(
       stream: database.todosStream(),
       builder: (context, snapshot) {
-        return ListItemsBuilder<TodoModel>(
+        return ListItemsBuilder<Todo>(
           //ListView.separated
           snapshot: snapshot,
           itemBuilder: (context, job) => Dismissible(

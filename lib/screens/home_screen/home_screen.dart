@@ -2,12 +2,12 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:iMomentum/app/common_widgets/linear_gradient_container.dart';
+import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
-import 'package:iMomentum/app/common_widgets/transparent_flat_button.dart';
+import 'package:iMomentum/app/common_widgets/my_transparent_flat_button.dart';
 import 'package:iMomentum/app/constants/constants.dart';
 import 'package:iMomentum/app/models/data/greetings_list.dart';
-import 'package:iMomentum/app/models/todo_model.dart';
+import 'package:iMomentum/app/models/todo.dart';
 import 'package:iMomentum/app/services/auth.dart';
 import 'package:iMomentum/app/services/network_service/quote_service/fetch_quote.dart';
 import 'package:iMomentum/app/services/network_service/weather_service/weather.dart';
@@ -126,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _focusButton(Database database, TodoModel todo) {
+  void _focusButton(Database database, Todo todo) {
     Navigator.of(context, rootNavigator: true).push(CupertinoPageRoute(
       builder: (context) => ClockBeginScreen(database: database, todo: todo),
       fullscreenDialog: true,
@@ -146,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
       FocusScope.of(context).unfocus();
       try {
 //      final id = widget.todo?.id ?? documentIdFromCurrentDate();
-        final todo = TodoModel(
+        final todo = Todo(
           id: documentIdFromCurrentDate(),
           title: _focusAnswer,
           date: DateTime.now(),
@@ -164,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _onChangedCheckbox(
-      newValue, BuildContext context, TodoModel todo) async {
+      newValue, BuildContext context, Todo todo) async {
     try {
       final database = Provider.of<Database>(context, listen: false);
       todo.isDone = true;
@@ -177,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _delete(BuildContext context, TodoModel todo) async {
+  Future<void> _delete(BuildContext context, Todo todo) async {
     try {
       final database = Provider.of<Database>(context, listen: false);
       await database.deleteTodo(todo);
@@ -190,7 +190,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /// update & at the same time update _selectedList
-  void _onTap(Database database, TodoModel todo) async {
+  void _onTap(Database database, Todo todo) async {
     var _typedTitle = await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -210,7 +210,7 @@ class _HomeScreenState extends State<HomeScreen> {
         final isDone = todo?.isDone ?? false;
 
         ///first we find this specific Todo item that we want to update
-        final newTodo = TodoModel(
+        final newTodo = Todo(
             id: id, title: _typedTitle, date: DateTime.now(), isDone: isDone);
         //add newTodo to database
         await database.setTodo(newTodo);
@@ -223,8 +223,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  List<TodoModel> _getTodayNotDone(List<TodoModel> todos) {
-    List<TodoModel> todayTodos = [];
+  List<Todo> _getTodayNotDone(List<Todo> todos) {
+    List<Todo> todayTodos = [];
     todos.forEach((todo) {
       DateTime today = DateTime(
           DateTime.now().year, DateTime.now().month, DateTime.now().day);
@@ -238,11 +238,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildStream(BuildContext context) {
     final database = Provider.of<Database>(context, listen: false);
-    return StreamBuilder<List<TodoModel>>(
+    return StreamBuilder<List<Todo>>(
       stream: database.todosStream(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          final List<TodoModel> todos = snapshot.data;
+          final List<Todo> todos = snapshot.data;
           if (todos.isNotEmpty) {
             final todayTodosNotDone = _getTodayNotDone(todos);
             if (todayTodosNotDone.length > 0) {
@@ -297,10 +297,10 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             }
           } else {
-            return EmptyContent();
+            return ErrorMessage();
           }
         } else if (snapshot.hasError) {
-          return EmptyContent(
+          return ErrorMessage(
             title: 'Something went wrong',
             message: 'Can\'t load items right now',
           );

@@ -3,12 +3,11 @@
 //import 'package:iMomentum/screens/iMeditate/constants/theme.dart';
 //import 'package:iMomentum/screens/iMeditate/meditation_screens/meditation_begin_screen.dart';
 //import 'package:iMomentum/screens/iMeditate/utils/utils.dart';
-//import 'package:iMomentum/screens/iNotes/notes_screen/notes_main_page.dart';
+//import 'package:iMomentum/screens/iNotes/notes_screen/notes_screen.dart';
 //import 'package:iMomentum/screens/iPomodoro/pomodoro_begin_screen.dart';
-//import 'package:iMomentum/screens/iTodo/todo_screen/todo_calendar_screen.dart';
+//import 'package:iMomentum/screens/iTodo/todo_screen/todo_screen.dart';
 //import 'package:flutter/cupertino.dart';
 //import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-//
 //class CustomizedBottomBar extends StatelessWidget {
 //  const CustomizedBottomBar({
 //    Key key,

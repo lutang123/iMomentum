@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/customized_bottom_sheet.dart';
-import 'package:iMomentum/app/common_widgets/transparent_flat_button.dart';
-import 'package:iMomentum/app/models/todo_model.dart';
+import 'package:iMomentum/app/common_widgets/my_transparent_flat_button.dart';
+import 'package:iMomentum/app/models/todo.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:intl/intl.dart';
 
 class AddTodoScreen extends StatefulWidget {
   const AddTodoScreen({this.database, this.todo, this.pickedDate});
-  final TodoModel todo;
+  final Todo todo;
   final Database database;
 //  final VoidCallback onTap;
   final DateTime pickedDate;
@@ -26,7 +26,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
   String formattedToday;
   String formattedDate;
 
-  TodoModel get todo => widget.todo;
+  Todo get todo => widget.todo;
   Database get database => widget.database;
 
   @override
@@ -34,7 +34,6 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
     if (widget.todo != null) {
       title = todo.title;
       _date = todo.date;
-      print(_date);
     }
     _date = widget.pickedDate;
 //    _dateController.text = _dateFormatter.format(_date);
@@ -87,7 +86,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                   autofocus: true,
                   textAlign: TextAlign.center,
                   cursorColor: Colors.white,
-                  maxLength: 50,
+                  maxLength: 100,
                   decoration: InputDecoration(
                     focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.white)),

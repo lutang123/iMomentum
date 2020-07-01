@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:iMomentum/app/models/todo_model.dart';
+import 'package:iMomentum/app/models/todo.dart';
 
 class MyTodoListTile extends StatelessWidget {
   MyTodoListTile({
@@ -12,7 +12,7 @@ class MyTodoListTile extends StatelessWidget {
     this.onPressed,
   });
   final Key key;
-  final TodoModel todo;
+  final Todo todo;
   final Widget leading;
 
   final VoidCallback onTap;

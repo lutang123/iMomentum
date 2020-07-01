@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:iMomentum/app/common_widgets/linear_gradient_container.dart';
-import 'package:iMomentum/app/common_widgets/transparent_flat_button.dart';
+import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
+import 'package:iMomentum/app/common_widgets/my_transparent_flat_button.dart';
 import 'package:iMomentum/app/constants/constants.dart';
-import 'package:iMomentum/app/models/todo_model.dart';
+import 'package:iMomentum/app/models/todo.dart';
 import 'package:iMomentum/screens/iMeditate/utils/extensions.dart';
 import 'package:iMomentum/screens/iPomodoro/countdown_animation.dart';
 import 'package:iMomentum/app/services/database.dart';
@@ -18,7 +18,7 @@ class BreakScreen extends StatefulWidget {
   const BreakScreen(
       {@required this.database, @required this.job, this.duration});
   final Duration duration;
-  final TodoModel job;
+  final Todo job;
   final Database database;
 
   @override

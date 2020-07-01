@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:iMomentum/app/models/todo_model.dart';
+import 'package:iMomentum/app/models/todo.dart';
 
 import 'calendar_bloc.dart';
 
@@ -20,7 +20,7 @@ class DailyTodosDetails {
   final List<TodoDetails> todosDetails;
 
   /// for first calendar
-  static Map<DateTime, List<dynamic>> getEvents(List<TodoModel> todos) {
+  static Map<DateTime, List<dynamic>> getEvents(List<Todo> todos) {
     Map<DateTime, List<dynamic>> map = {}; //for first calendar
     todos.forEach((todo) {
       DateTime date =
@@ -32,9 +32,8 @@ class DailyTodosDetails {
   }
 
   ///for listView builder
-  static List<TodoModel> getTodosGroupByData(
-      DateTime date, List<TodoModel> todos) {
-    List<TodoModel> list = [];
+  static List<Todo> getTodosGroupByData(DateTime date, List<Todo> todos) {
+    List<Todo> list = [];
     todos.forEach((todo) {
       final formattedDate = DateTime(date.year, date.month, date.day);
       DateTime todoDate =

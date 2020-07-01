@@ -2,8 +2,8 @@ import 'dart:ui';
 
 import 'package:meta/meta.dart';
 
-class TodoModel {
-  TodoModel({@required this.id, @required this.title, this.date, this.isDone});
+class Todo {
+  Todo({@required this.id, @required this.title, this.date, this.isDone});
   final String id;
   final String title;
   final DateTime date;
@@ -13,9 +13,8 @@ class TodoModel {
 
 // add factory keyword when implementing a constructor that doesn't always
 // create a new instance of its class
-  //in our case, if the data us null, we return null rather than an object
-  factory TodoModel.fromMap(
-      Map<String, dynamic> firebaseMap, String documentId) {
+// in our case, if the data us null, we return null rather than an object
+  factory Todo.fromMap(Map<String, dynamic> firebaseMap, String documentId) {
     if (firebaseMap == null) {
       return null;
     }
@@ -23,7 +22,7 @@ class TodoModel {
     if (title == null) {
       return null;
     }
-    return TodoModel(
+    return Todo(
         id: documentId,
         title: title,
         date: DateTime.fromMillisecondsSinceEpoch(firebaseMap['date']),
@@ -46,7 +45,7 @@ class TodoModel {
   bool operator ==(other) {
     if (identical(this, other)) return true;
     if (runtimeType != other.runtimeType) return false;
-    final TodoModel otherJob = other;
+    final Todo otherJob = other;
     return id == otherJob.id && title == otherJob.title;
 //        ratePerHour == otherJob.ratePerHour;
   }

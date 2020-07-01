@@ -23,13 +23,13 @@ class ListItemsBuilder<T> extends StatelessWidget {
         //this is ListView we want to return
         return _buildList(items);
       } else {
-        return EmptyContent();
+        return ErrorMessage();
       }
     } else if (snapshot.hasError) {
       return Column(
         children: <Widget>[
           Text(snapshot.error.toString()),
-          EmptyContent(
+          ErrorMessage(
             title: 'Something went wrong',
             message: 'Can\'t load items right now',
           ),

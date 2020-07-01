@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iMomentum/app/models/duration_model.dart';
-import 'package:iMomentum/app/models/todo_model.dart';
+import 'package:iMomentum/app/models/todo.dart';
 
 import 'format.dart';
 
@@ -12,7 +12,7 @@ class DurationListItem extends StatelessWidget {
   });
 
   final DurationModel duration;
-  final TodoModel todo;
+  final Todo todo;
   final VoidCallback onTap;
 
   @override
@@ -69,7 +69,7 @@ class DismissibleEntryListItem extends StatelessWidget {
 
   final Key key;
   final DurationModel duration;
-  final TodoModel todo;
+  final Todo todo;
   final VoidCallback onDismissed;
   final VoidCallback onTap;
 

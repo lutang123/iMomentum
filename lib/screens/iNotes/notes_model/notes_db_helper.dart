@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'dart:async';
 import 'package:path_provider/path_provider.dart';
 
-import 'notes_model.dart';
+import '../../../app/models/note.dart';
 
 class NotesDBHelper {
   static NotesDBHelper _databaseHelper; // Singleton DatabaseHelper
@@ -100,13 +100,13 @@ class NotesDBHelper {
   }
 
   // Get the 'Map List' [ List<Map> ] and convert it to 'Note List' [ List<Note> ]
-  Future<List<Note>> getNoteList() async {
+  Future<List<Note>> getNoteList(String documentId) async {
     var noteMapList = await getNoteMapList(); // Get 'Map List' from database
 
     List<Note> noteList = List<Note>();
     // For loop to create a 'Note List' from a 'Map List'
     for (int i = 0; i < noteMapList.length; i++) {
-      noteList.add(Note.fromMap(noteMapList[i]));
+      noteList.add(Note.fromMap(noteMapList[i], documentId));
     }
 
     return noteList;

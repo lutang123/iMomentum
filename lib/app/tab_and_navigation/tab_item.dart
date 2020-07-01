@@ -17,8 +17,8 @@ class TabItemData {
         TabItemData(title: 'Notes', icon: FontAwesomeIcons.stickyNote),
 //    TabItem.entries: TabItemData(title: 'Entries', icon: FontAwesomeIcons.list),
     TabItem.account: TabItemData(
-      title: 'Me',
-      icon: FontAwesomeIcons.smile,
+      title: 'Account',
+      icon: FontAwesomeIcons.user,
     ),
   };
 }

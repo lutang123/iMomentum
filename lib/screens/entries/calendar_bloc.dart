@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:iMomentum/app/models/duration_model.dart';
-import 'package:iMomentum/app/models/todo_model.dart';
+import 'package:iMomentum/app/models/todo.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -8,7 +8,7 @@ class TodoDuration {
   TodoDuration(this.duration, this.todo);
 
   final DurationModel duration;
-  final TodoModel todo;
+  final Todo todo;
 }
 
 class CalendarBloc {
@@ -25,7 +25,7 @@ class CalendarBloc {
       );
 
   static List<TodoDuration> _entriesTodosCombiner(
-      List<DurationModel> durations, List<TodoModel> todos) {
+      List<DurationModel> durations, List<Todo> todos) {
     return durations.map((duration) {
       final todo = todos.firstWhere((todo) => todo.id == duration.todoId);
       return TodoDuration(duration, todo);

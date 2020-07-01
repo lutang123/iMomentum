@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/models/duration_model.dart';
-import 'package:iMomentum/app/models/todo_model.dart';
+import 'package:iMomentum/app/models/todo.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
@@ -15,9 +15,9 @@ import 'list_items_builder.dart';
 class JobEntriesPage extends StatelessWidget {
   const JobEntriesPage({@required this.database, @required this.job});
   final Database database;
-  final TodoModel job;
+  final Todo job;
 
-  static Future<void> show(BuildContext context, TodoModel job) async {
+  static Future<void> show(BuildContext context, Todo job) async {
     final Database database = Provider.of<Database>(context, listen: false);
     await Navigator.of(context).push(
       //use this instead of MaterialPageRoute
@@ -41,7 +41,7 @@ class JobEntriesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<TodoModel>(
+    return StreamBuilder<Todo>(
         stream: database.todoStream(todoId: job.id),
         builder: (context, snapshot) {
           final job = snapshot.data;
@@ -73,7 +73,7 @@ class JobEntriesPage extends StatelessWidget {
         });
   }
 
-  Widget _buildContent(BuildContext context, TodoModel todo) {
+  Widget _buildContent(BuildContext context, Todo todo) {
     return StreamBuilder<List<DurationModel>>(
       stream: database.durationsStream(todo: todo),
       builder: (context, snapshot) {

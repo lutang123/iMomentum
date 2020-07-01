@@ -10,7 +10,7 @@ class CustomizedContainer extends StatelessWidget {
       width: double.infinity,
       margin: EdgeInsets.only(left: 8.0, right: 8),
       decoration: BoxDecoration(
-        color: Colors.black26,
+        color: Colors.black38,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20.0),
           topRight: Radius.circular(20.0),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/format.dart';
-import 'package:iMomentum/app/common_widgets/linear_gradient_container.dart';
+import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/constants/constants.dart';
 import 'package:iMomentum/screens/entries/calendar_bloc.dart';
 import 'package:iMomentum/screens/entries/daily_todos_details.dart';
@@ -233,7 +233,7 @@ class _ChartsFlutterState extends State<ChartsFlutter>
               child: Column(
                 children: <Widget>[
                   Text(snapshot.error.toString()),
-                  EmptyContent(
+                  ErrorMessage(
                     title: 'Something went wrong',
                     message: 'Can\'t load items right now',
                   )

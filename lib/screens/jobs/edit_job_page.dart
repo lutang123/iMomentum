@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
-import 'package:iMomentum/app/models/todo_model.dart';
+import 'package:iMomentum/app/models/todo.dart';
 import 'package:iMomentum/app/services/database.dart';
 
 class EditJobPage extends StatefulWidget {
   const EditJobPage({Key key, @required this.database, @required this.job})
       : super(key: key);
   final Database database;
-  final TodoModel job;
+  final Todo job;
 
   static Future<void> show(
       //position argument
       BuildContext context,
       //named argument
       {Database database,
-      TodoModel job}) async {
+      Todo job}) async {
     //rootNavigator: true to ensure this page not have bottom nav bar
     await Navigator.of(context, rootNavigator: true).push(
       MaterialPageRoute(
@@ -80,7 +80,7 @@ class _EditJobPageState extends State<EditJobPage> {
           //we get the id from job in the firebase, if the job.id is null,
           //we create a new one, otherwise we use the existing job.id
           final id = widget.job?.id ?? documentIdFromCurrentDate();
-          final job = TodoModel(id: id, title: _name);
+          final job = Todo(id: id, title: _name);
           await widget.database.setTodo(job);
           //pop to previous page
           Navigator.of(context).pop();

@@ -8,50 +8,40 @@ class NewPieChart extends StatelessWidget {
 
   final Map<String, double> dataMap;
 
-  final List<int> materialIndices = [
-    900,
-    800,
-    700,
-    600,
-    500,
-    400,
-    300,
-    200,
-    100,
-    50
-  ];
-
   final List<Color> colorList = [
-    Color(0xFF005082).withOpacity(0.8),
+    Color(0xFFffcb74).withOpacity(0.8),
+    Color(0xFFea907a).withOpacity(0.8),
+    Color(0xFF4f8a8b).withOpacity(0.8),
     Color(0xFF01a9b4).withOpacity(0.8),
     Color(0xFF87dfd6).withOpacity(0.8),
-    Color(0xFFfbfd8a).withOpacity(0.8),
+    Colors.blue[400].withOpacity(0.8),
+    Colors.blue[300].withOpacity(0.8),
+    Colors.blue[200].withOpacity(0.8),
+    Colors.blue[100].withOpacity(0.8),
+    Colors.blue[50].withOpacity(0.8),
+//    Color(0xFFffcb74).withOpacity(0.8),
+//    Color(0xFFfbfd8a).withOpacity(0.8),
 
 //    Colors.blue[900].withOpacity(0.8),
 //    Colors.blue[800],
 //    Colors.blue[700],
 //    Colors.blue[600],
 //    Colors.blue[500],
-    Colors.blue[400].withOpacity(0.8),
-    Colors.blue[300].withOpacity(0.8),
-    Colors.blue[200].withOpacity(0.8),
-    Colors.blue[100].withOpacity(0.8),
-    Colors.blue[50].withOpacity(0.8),
   ];
 
-  final List<Color> colorList2 = [
-    Color(0xFFffa41b).withOpacity(0.8),
-    Colors.white.withOpacity(0.8),
-    Color(0xFF005082).withOpacity(0.8),
-    Color(0xFF01a9b4).withOpacity(0.8),
-    Color(0xFF87dfd6).withOpacity(0.8),
-//    Color(0xFFeaffd0),
-//    Color(0xFFc2f0fc),
-  ];
+//  final List<Color> colorList2 = [
+//    Color(0xFFffa41b).withOpacity(0.8),
+//    Colors.white.withOpacity(0.8),
+//    Color(0xFF005082).withOpacity(0.8),
+//    Color(0xFF01a9b4).withOpacity(0.8),
+//    Color(0xFF87dfd6).withOpacity(0.8),
+////    Color(0xFFeaffd0),
+////    Color(0xFFc2f0fc),
+//  ];
 
   @override
   Widget build(BuildContext context) {
-    return dataMap != null
+    return dataMap != null && dataMap.isNotEmpty
         ? Padding(
             padding: const EdgeInsets.all(15.0),
             child: PieChart(
@@ -75,6 +65,8 @@ class NewPieChart extends StatelessWidget {
               chartType: ChartType.ring,
             ),
           )
-        : Container();
+        : Container(
+            child: Text('You have not completed any Pomodoro task'),
+          );
   }
 }

@@ -8,7 +8,6 @@ class APIPath {
   static String durations(String uid) => 'users/$uid/durations';
 
   //entries
-  static String entry(String uid, String entryId) =>
-      'users/$uid/entries/$entryId';
-  static String entries(String uid) => 'users/$uid/entries';
+  static String note(String uid, String noteId) => 'users/$uid/notes/$noteId';
+  static String notes(String uid) => 'users/$uid/notes';
 }

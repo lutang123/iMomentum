@@ -1,46 +1,54 @@
 import 'package:flutter/material.dart';
-import 'package:iMomentum/screens/iNotes/notes_model/notes_model.dart';
+import 'package:iMomentum/app/models/note.dart';
+import 'package:iMomentum/app/services/database.dart';
 
 class NotesSearch extends SearchDelegate<Note> {
+  NotesSearch({this.notes, this.database});
   final List<Note> notes;
+  final Database database;
   List<Note> filteredNotes = [];
-  NotesSearch({this.notes});
+  String query;
+
+//  @override
+//  Widget build(BuildContext context) {
+//    return Scaffold();
+//  }
 
   @override
   ThemeData appBarTheme(BuildContext context) {
     assert(context != null);
     final ThemeData theme = Theme.of(context).copyWith(
-        hintColor: Colors.black,
-        primaryColor: Colors.white,
+        hintColor: Colors.white,
+        primaryColor: Colors.transparent,
         textTheme: TextTheme(
           headline6: TextStyle(
-              color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
+              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
         ));
     assert(theme != null);
     return theme;
   }
 
-  @override
-  List<Widget> buildActions(BuildContext context) {
-    return [
-      IconButton(
-        icon: Icon(
-          Icons.clear,
-          color: Colors.black,
-        ),
-        onPressed: () {
-          query = '';
-        },
-      )
-    ];
-  }
+//  @override
+//  ThemeData bodyTheme(BuildContext context) {
+//    assert(context != null);
+//    final ThemeData theme = Theme.of(context).copyWith(
+//        hintColor: Colors.white,
+//        primaryColor: Colors.transparent,
+//        textTheme: TextTheme(
+//          headline6: TextStyle(
+//              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+//        ));
+//    assert(theme != null);
+//    return theme;
+//  }
 
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
       icon: Icon(
-        Icons.arrow_back,
-        color: Colors.black,
+        Icons.arrow_back_ios,
+        color: Colors.white,
+        size: 30,
       ),
       onPressed: () {
         close(context, null);
@@ -49,10 +57,23 @@ class NotesSearch extends SearchDelegate<Note> {
   }
 
   @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: Icon(
+          Icons.clear,
+          color: Colors.white70,
+        ),
+        onPressed: () => query = '',
+      )
+    ];
+  }
+
+  @override
   Widget buildResults(BuildContext context) {
     if (query == '') {
       return Container(
-        color: Colors.white,
+        color: Colors.transparent,
         child: Center(
             child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -69,7 +90,7 @@ class NotesSearch extends SearchDelegate<Note> {
             ),
             Text(
               'Enter a note to search.',
-              style: TextStyle(color: Colors.black),
+              style: TextStyle(color: Colors.white),
             )
           ],
         )),
@@ -79,7 +100,7 @@ class NotesSearch extends SearchDelegate<Note> {
       getFilteredList(notes);
       if (filteredNotes.length == 0) {
         return Container(
-          color: Colors.white,
+          color: Colors.transparent,
           child: Center(
               child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -91,7 +112,7 @@ class NotesSearch extends SearchDelegate<Note> {
                 child: Icon(
                   Icons.sentiment_dissatisfied,
                   size: 50,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
               ),
               Text(
@@ -134,11 +155,11 @@ class NotesSearch extends SearchDelegate<Note> {
     }
   }
 
-  List<Note> getFilteredList(List<Note> note) {
-    for (int i = 0; i < note.length; i++) {
-      if (note[i].title.toLowerCase().contains(query) ||
-          note[i].description.toLowerCase().contains(query)) {
-        filteredNotes.add(note[i]);
+  List<Note> getFilteredList(List<Note> notes) {
+    for (int i = 0; i < notes.length; i++) {
+      if (notes[i].title.toLowerCase().contains(query) ||
+          notes[i].description.toLowerCase().contains(query)) {
+        filteredNotes.add(notes[i]);
       }
     }
     return filteredNotes;

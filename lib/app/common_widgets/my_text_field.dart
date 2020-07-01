@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:iMomentum/app/constants/constants.dart';
 
 class HomeTextField extends StatelessWidget {
   const HomeTextField({
@@ -34,6 +35,8 @@ class HomeTextField extends StatelessWidget {
   }
 }
 
+String todoTitle;
+
 class AddTodoTextField extends StatelessWidget {
   const AddTodoTextField({
     Key key,
@@ -67,7 +70,37 @@ class AddTodoTextField extends StatelessWidget {
   }
 }
 
-String todoTitle;
+class SearchTextField extends StatelessWidget {
+  const SearchTextField({
+    Key key,
+    this.onSubmitted,
+  }) : super(key: key);
+
+  final Function onSubmitted;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 15.0),
+      child: Container(
+        width: 280,
+        child: TextField(
+          style: KNoteDescription,
+          textAlign: TextAlign.left,
+          onSubmitted: onSubmitted,
+          cursorColor: Colors.white,
+          maxLength: 50,
+          decoration: InputDecoration(
+            focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white)),
+            enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white)),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 //Widget _buildComment() {
 //  return TextField(

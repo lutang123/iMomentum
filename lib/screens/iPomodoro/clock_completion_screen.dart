@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:iMomentum/app/common_widgets/linear_gradient_container.dart';
-import 'package:iMomentum/app/common_widgets/round_icon_button.dart';
-import 'package:iMomentum/app/common_widgets/transparent_flat_button.dart';
+import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
+import 'package:iMomentum/app/common_widgets/my_round_icon_button.dart';
+import 'package:iMomentum/app/common_widgets/my_transparent_flat_button.dart';
 import 'package:iMomentum/app/constants/constants.dart';
 import 'package:iMomentum/app/models/data/congrats_list.dart';
-import 'package:iMomentum/app/models/todo_model.dart';
+import 'package:iMomentum/app/models/todo.dart';
 import 'package:iMomentum/screens/entries/calendar_bloc.dart';
 import 'package:iMomentum/screens/iMeditate/utils/extensions.dart';
 import 'package:iMomentum/app/services/database.dart';
@@ -19,7 +19,7 @@ import 'only_thin_ring.dart';
 
 class CompletionScreen extends StatefulWidget {
   CompletionScreen({this.database, this.job});
-  final TodoModel job;
+  final Todo job;
   final Database database;
 
   @override

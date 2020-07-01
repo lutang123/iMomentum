@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:iMomentum/app/constants/ui.dart';
+import 'package:iMomentum/app/constants/constants.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
@@ -45,7 +45,7 @@ class AboutScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  appTitle,
+                  'JUST BREATH',
                   style: Theme.of(context).textTheme.headline5,
                 ),
                 SizedBox(height: 12.0),

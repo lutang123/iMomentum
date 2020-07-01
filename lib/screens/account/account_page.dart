@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/avatar.dart';
-import 'package:iMomentum/app/common_widgets/linear_gradient_container.dart';
+import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 import 'package:iMomentum/app/constants/constants.dart';
 import 'package:iMomentum/app/services/database.dart';
