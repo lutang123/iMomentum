@@ -9,14 +9,25 @@ class Format {
   }
 
   static String minutes(double minutes) {
-    final minutesNotNegative = minutes == 0 ? 0.0 : minutes;
+    final displayedDuration = minutes == null
+        ? 0.0
+        : minutes < 60
+            ? minutes //e.g. displayedDuration = 40
+            : double.parse((minutes / 60)
+                .toStringAsFixed(2)); // e.g. displayedDuration = 1.2
     final formatter = NumberFormat.decimalPattern();
-    final formatted = formatter.format(minutesNotNegative);
-    return '${formatted}minutes';
+    final formatted = formatter.format(displayedDuration);
+    return minutes == null
+        ? '0 minute'
+        : minutes < 60 ? '$formatted minutes' : '$formatted hours';
   }
 
   static String date(DateTime date) {
     return DateFormat.MMMd().format(date);
+  }
+
+  static String time(DateTime date) {
+    return DateFormat('kk:mm').format(date);
   }
 
   static String dayOfWeek(DateTime date) {

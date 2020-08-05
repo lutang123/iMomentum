@@ -3,9 +3,15 @@ import 'dart:ui';
 import 'package:meta/meta.dart';
 
 class Todo {
-  Todo({@required this.id, @required this.title, this.date, this.isDone});
+  Todo(
+      {@required this.id,
+      @required this.title,
+      this.comment,
+      this.date,
+      this.isDone});
   final String id;
   final String title;
+  final String comment;
   final DateTime date;
   bool isDone;
 
@@ -25,6 +31,7 @@ class Todo {
     return Todo(
         id: documentId,
         title: title,
+        comment: firebaseMap['comment'],
         date: DateTime.fromMillisecondsSinceEpoch(firebaseMap['date']),
         isDone: firebaseMap['is_done']); //bool
   }
@@ -32,7 +39,7 @@ class Todo {
   Map<String, dynamic> toMap() {
     return {
       'title': title,
-//      "date": date, //Timestamp
+      'comment': comment,
       'date': date.millisecondsSinceEpoch, //convert to int
       'is_done': isDone, //bool
     };

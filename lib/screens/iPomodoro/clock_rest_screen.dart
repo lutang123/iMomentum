@@ -2,52 +2,57 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
-import 'package:iMomentum/app/common_widgets/my_transparent_flat_button.dart';
+import 'package:iMomentum/app/common_widgets/my_round_button.dart';
 import 'package:iMomentum/app/constants/constants.dart';
+import 'package:iMomentum/app/models/data/rest_quote.dart';
 import 'package:iMomentum/app/models/todo.dart';
-import 'package:iMomentum/screens/iMeditate/utils/extensions.dart';
-import 'package:iMomentum/screens/iPomodoro/countdown_animation.dart';
+import 'package:iMomentum/app/common_widgets/extensions.dart';
 import 'package:iMomentum/app/services/database.dart';
-import 'package:iMomentum/pages_routes.dart';
-import 'package:iMomentum/app/models/data/meditation/meditation_quote.dart';
+import 'package:iMomentum/app/services/multi_notifier.dart';
+import 'package:iMomentum/app/services/pages_routes.dart';
+import 'package:provider/provider.dart';
 import 'clock_begin_screen.dart';
+import 'clock_timer.dart';
+import 'clock_title.dart';
 
-class BreakScreen extends StatefulWidget {
-  const BreakScreen(
-      {@required this.database, @required this.job, this.duration});
-  final Duration duration;
+class RestScreen extends StatefulWidget {
+  const RestScreen(
+      {@required this.database, @required this.job, this.restDuration});
+  final Duration restDuration;
   final Todo job;
   final Database database;
 
   @override
-  _BreakScreenState createState() => _BreakScreenState();
+  _RestScreenState createState() => _RestScreenState();
 }
 
-class _BreakScreenState extends State<BreakScreen> {
-  final String quoteBody = MeditationQuoteList().getMeditationQuote().body;
+class _RestScreenState extends State<RestScreen>
+    with SingleTickerProviderStateMixin {
+  AnimationController _animationController;
 
-  final String quoteAuthor = MeditationQuoteList().getMeditationQuote().author;
+  final String quoteBody = RestQuoteList().getRestQuote().body;
 
-  void _clearButton() {
-    Navigator.of(context).pushReplacement(PageRoutes.fade(
-        () => ClockBeginScreen(
-              database: widget.database,
-              todo: widget.job,
-            ),
-        milliseconds: 450));
-  }
+  final String quoteAuthor = RestQuoteList().getRestQuote().author;
 
   Stopwatch _stopwatch;
   Timer _timer;
 
   // This string that is displayed as the countdown timer
-  String _display = 'Stay Focused';
+  String _display = '';
+
+  Duration _restDuration;
 
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      duration: widget.restDuration,
+      vsync: this,
+    );
+    _animationController.forward().orCancel;
+    _restDuration = widget.restDuration;
     _playSound();
     _stopwatch = Stopwatch();
     _start();
@@ -58,13 +63,14 @@ class _BreakScreenState extends State<BreakScreen> {
     super.dispose();
     _timer.cancel();
     _stopwatch.stop();
+    _animationController.dispose();
   }
 
   // Play a sound
   void _playSound() {
     final assetsAudioPlayer = AssetsAudioPlayer();
     assetsAudioPlayer.open(
-      Audio("assets/audio/gong.mp3"),
+      Audio("assets/audio/juntos.mp3"),
       autoStart: true,
     );
   }
@@ -80,7 +86,7 @@ class _BreakScreenState extends State<BreakScreen> {
     _timer = Timer.periodic(Duration(milliseconds: 10), (Timer t) {
       // update display
       setState(() {
-        var diff = (widget.duration - _stopwatch.elapsed);
+        var diff = (widget.restDuration - _stopwatch.elapsed);
         _display = diff.clockFmt();
         if (diff.inMilliseconds <= 0) {
           _playSound();
@@ -90,11 +96,35 @@ class _BreakScreenState extends State<BreakScreen> {
     });
   }
 
-  // This will stop the timer
-  void _end({bool cancelled = true}) {
+  // This will pause the timer
+  void _pause() {
+    _playSound();
     if (!_stopwatch.isRunning) {
       return;
     }
+    setState(() {
+      _stopwatch.stop();
+      _animationController.stop();
+    });
+  }
+
+  // This will resume the timer
+  void _resume() {
+    _playSound();
+    if (!_stopwatch.isRunning) {
+      _stopwatch.start();
+    }
+    setState(() {
+      _stopwatch.start();
+      _animationController.forward();
+    });
+  }
+
+  // This will stop the timer
+  void _end({bool cancelled = true}) {
+//    if (!_stopwatch.isRunning) {
+//      return;
+//    }
     setState(() {
       _timer.cancel();
       _stopwatch.stop();
@@ -117,142 +147,123 @@ class _BreakScreenState extends State<BreakScreen> {
     }
   }
 
+  int counter = 0;
+
+  void _onDoubleTap() {
+    setState(() {
+      ImageUrl.randomImageUrl =
+          'https://source.unsplash.com/random?nature/$counter';
+      counter++;
+    });
+  }
+
+  void onPressedPause() {}
+
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-
+    final randomNotifier = Provider.of<RandomNotifier>(context);
+    bool _randomOn = (randomNotifier.getRandom() == true);
+    final imageNotifier = Provider.of<ImageNotifier>(context);
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
-        Image.network(Constants.homePageImage, fit: BoxFit.cover),
+        BuildPhotoView(
+          imageUrl:
+              _randomOn ? ImageUrl.randomImageUrl : imageNotifier.getImage(),
+        ),
         ContainerLinearGradient(),
-        Scaffold(
-          backgroundColor: Colors.transparent,
-          body: SingleChildScrollView(
-            child: SafeArea(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        IconButton(
-                          onPressed: _clearButton,
-                          icon: Icon(Icons.clear, size: 30),
-                          color: Colors.white,
-                        )
-                      ],
-                    ),
-                  ), //clear button
-                  Column(
-                    children: <Widget>[
-                      Text('Time to Rest',
-                          style: TextStyle(
-                              fontSize: 30,
+        GestureDetector(
+          onDoubleTap: _onDoubleTap,
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: SingleChildScrollView(
+              child: SafeArea(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Opacity(
+                            opacity: 0.0,
+                            child: IconButton(
+                              onPressed: _end,
+                              icon: Icon(Icons.clear, size: 30),
                               color: Colors.white,
-                              fontWeight: FontWeight.bold)),
-                      SizedBox(height: 20),
-                      Text(
-                        'Come back in 5 minutes',
-                        style: GoogleFonts.varelaRound(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 20.0,
-                            fontStyle: FontStyle.italic),
+                            ),
+                          )
+                        ],
                       ),
-                      SizedBox(height: 20),
-                    ],
-                  ), //begin title
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      TransparentFlatButton(
-                        color: Colors.transparent,
-                        onPressed: null,
-                        text: '',
-                      ),
-                      TransparentFlatButton(
-                        color: Colors.transparent,
-                        onPressed: null,
-                        text: '',
-                      ),
-                    ],
-                  ), //button or empty row
-                  Container(
-                    height: size.height / 2,
-                    width: size.height / 2,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: <Widget>[
-                        //icon clear
-                        SizedBox.expand(
-                          child: CountdownCircle(
-                            duration: widget.duration,
+                    ),
+                    ClockTitle(
+                      title: 'Time to Rest',
+                      subtitle:
+                          'Come back in ${widget.restDuration.inMinutes} minutes',
+                    ), //clear button//begin title
+                    ClockTimer(
+                      duration: _restDuration,
+                      animationController: _animationController,
+                      text1: _display,
+                      text2: 'Rest',
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          RoundTextButton(
+                            text: 'Cancel',
+                            textColor: Colors.white70,
+                            onPressed: _end,
+                            circleColor: Colors.white70,
+                            fillColor: Colors.black12,
                           ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              _display,
-                              style: GoogleFonts.varelaRound(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 50.0,
-                              ),
-                            ),
-                            SizedBox(height: 10),
-                            Text(
-                              'Rest',
-                              style: GoogleFonts.varelaRound(
-                                  fontWeight: FontWeight.w600, fontSize: 30.0),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      TransparentFlatButton(
-                        color: Colors.transparent,
-                        onPressed: null,
-                        text: '',
+                          _stopwatch.isRunning
+                              ? RoundTextButton(
+                                  text: 'Pause',
+                                  textColor: Colors.white,
+                                  onPressed: _pause,
+                                  circleColor: Colors.white,
+                                  fillColor:
+                                      Colors.orangeAccent.withOpacity(0.2),
+                                )
+                              : RoundTextButton(
+                                  text: 'Resume',
+                                  textColor: Colors.white,
+                                  onPressed: _resume,
+                                  circleColor: Colors.white,
+                                  fillColor:
+                                      Colors.lightGreenAccent.withOpacity(0.2),
+                                ),
+                        ],
                       ),
-                      TransparentFlatButton(
-                        color: Colors.transparent,
-                        onPressed: null,
-                        text: '',
-                      ),
-                    ],
-                  ), //button or empty row
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Column(
-                      children: <Widget>[
-                        AutoSizeText(
-                          '“$quoteBody”',
-                          style: TextStyle(
-                              fontSize: 17,
-                              color: Colors.white,
-                              fontStyle: FontStyle.italic),
-                          textAlign: TextAlign.center,
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          quoteAuthor,
-                          textAlign: TextAlign.right,
-                          style: TextStyle(fontSize: 15, color: Colors.white),
-                        ),
-                      ],
                     ),
-                  ),
-                  //button or empty row
-                  //clock
-                ],
+                    Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Column(
+                        children: <Widget>[
+                          Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: AutoSizeText(
+                              '“$quoteBody” --$quoteAuthor',
+                              maxLines: 3,
+                              minFontSize: 15,
+                              maxFontSize: 20,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 17,
+                                  color: Colors.white,
+                                  fontStyle: FontStyle.italic),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

@@ -2,48 +2,63 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
+import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
+import 'package:iMomentum/app/common_widgets/my_round_button.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
-import 'package:iMomentum/app/common_widgets/my_transparent_flat_button.dart';
 import 'package:iMomentum/app/constants/constants.dart';
 import 'package:iMomentum/app/models/duration_model.dart';
 import 'package:iMomentum/app/models/todo.dart';
-import 'package:iMomentum/screens/iMeditate/utils/extensions.dart';
-import 'package:iMomentum/screens/iPomodoro/countdown_animation.dart';
+import 'package:iMomentum/app/common_widgets/extensions.dart';
 import 'package:iMomentum/app/services/database.dart';
-import 'package:iMomentum/pages_routes.dart';
-
+import 'package:iMomentum/app/services/multi_notifier.dart';
+import 'package:iMomentum/app/services/pages_routes.dart';
+import 'package:iMomentum/screens/todo_screen/add_todo_screen.dart';
+import 'package:provider/provider.dart';
+import 'clock_bottom.dart';
 import 'clock_completion_screen.dart';
 import 'clock_begin_screen.dart';
-
-//[VERBOSE-2:ui_dart_state.cc(157)] Unhandled Exception: setState() called after dispose(): _HomeScreenState#893af(lifecycle state: defunct, not mounted)
-//This error happens if you call setState() on a State object for a widget that no longer appears in the widget tree (e.g., whose parent widget no longer includes the widget in its build). This error can occur when code calls setState() from a timer or an animation callback.
-//The preferred solution is to cancel the timer or stop listening to the animation in the dispose() callback. Another solution is to check the "mounted" property of this object before calling setState() to ensure the object is still in the tree.
-//This error might indicate a memory leak if setState() is being called because another object is retaining a reference to this State object after it has been removed from the tree. To avoid memory leaks, consider breaking the reference to this object during dispose().
-//#0      State.setState.<anonymous closure> (package:flutter/src/widgets/frame<…>
+import 'clock_timer.dart';
+import 'clock_title.dart';
 
 class ClockTimerScreen extends StatefulWidget {
-  const ClockTimerScreen(
-      {@required this.database, @required this.job, this.duration});
+  const ClockTimerScreen({
+    @required this.database,
+    @required this.todo,
+    this.duration,
+    this.restDuration,
+    this.playSound,
+  });
   final Duration duration;
-  final Todo job;
+  final Duration restDuration;
+  final Todo todo;
   final Database database;
+  final bool playSound;
 
   @override
   _ClockTimerScreenState createState() => _ClockTimerScreenState();
 }
 
-class _ClockTimerScreenState extends State<ClockTimerScreen> {
+class _ClockTimerScreenState extends State<ClockTimerScreen>
+    with SingleTickerProviderStateMixin {
+  AnimationController _animationController;
+
   Stopwatch _stopwatch;
   Timer _timer;
 
   // This string that is displayed as the countdown timer
-  String _display = 'Focus';
+  String _display = '';
 
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      duration: widget.duration,
+      vsync: this,
+    );
+    _animationController.forward().orCancel;
     _playSound();
     _stopwatch = Stopwatch();
     _start();
@@ -54,15 +69,18 @@ class _ClockTimerScreenState extends State<ClockTimerScreen> {
     super.dispose();
     _timer.cancel();
     _stopwatch.stop();
+    _animationController.dispose();
   }
 
   // Play a sound
   void _playSound() {
-    final assetsAudioPlayer = AssetsAudioPlayer();
-    assetsAudioPlayer.open(
-      Audio("assets/audio/gong.mp3"),
-      autoStart: true,
-    );
+    if (widget.playSound) {
+      final assetsAudioPlayer = AssetsAudioPlayer();
+      assetsAudioPlayer.open(
+        Audio("assets/audio/juntos.mp3"),
+        autoStart: true,
+      );
+    }
   }
 
   // This will start the Timer
@@ -86,21 +104,45 @@ class _ClockTimerScreenState extends State<ClockTimerScreen> {
     });
   }
 
-  // This will stop the timer
-  void _end({bool cancelled = true}) {
+  // This will pause the timer
+  void _pause() {
+    _playSound();
     if (!_stopwatch.isRunning) {
       return;
     }
-//    setState(() {
-    _timer.cancel();
-    _stopwatch.stop();
-//    });
+    setState(() {
+      _stopwatch.stop();
+      _animationController.stop();
+    });
+  }
+
+  // This will resume the timer
+  void _resume() {
+    _playSound();
+    if (!_stopwatch.isRunning) {
+      _stopwatch.start();
+    }
+    setState(() {
+      _stopwatch.start();
+      _animationController.forward();
+    });
+  }
+
+  // This will stop the timer
+  void _end({bool cancelled = true}) {
+//    if (!_stopwatch.isRunning) {
+//      return;
+//    }
+    setState(() {
+      _timer.cancel();
+      _stopwatch.stop();
+    });
 
     if (cancelled) {
       Navigator.of(context).pushReplacement(PageRoutes.fade(
           () => ClockBeginScreen(
                 database: widget.database,
-                todo: widget.job,
+                todo: widget.todo,
               ),
           milliseconds: 450));
     } else {
@@ -111,7 +153,9 @@ class _ClockTimerScreenState extends State<ClockTimerScreen> {
       Navigator.of(context).pushReplacement(PageRoutes.fade(
           () => CompletionScreen(
                 database: widget.database,
-                job: widget.job,
+                todo: widget.todo,
+                duration: widget.duration,
+                restDuration: widget.restDuration,
               ),
           milliseconds: 800));
     }
@@ -119,7 +163,7 @@ class _ClockTimerScreenState extends State<ClockTimerScreen> {
 
   DurationModel _getDurationModel() => DurationModel(
         id: documentIdFromCurrentDate(),
-        todoId: widget.job.id,
+        todoId: widget.todo.id,
 
         ///when we save, we convert to int inMinutes
         duration: widget.duration.inMinutes, //eg. 25, or 50
@@ -138,127 +182,100 @@ class _ClockTimerScreenState extends State<ClockTimerScreen> {
     }
   }
 
+  int counter = 0;
+
+  void _onDoubleTap() {
+    setState(() {
+      ImageUrl.randomImageUrl =
+          'https://source.unsplash.com/random?nature/$counter';
+      counter++;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-
+    final randomNotifier = Provider.of<RandomNotifier>(context);
+    bool _randomOn = (randomNotifier.getRandom() == true);
+    final imageNotifier = Provider.of<ImageNotifier>(context);
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
-        Image.network(Constants.homePageImage, fit: BoxFit.cover),
+        BuildPhotoView(
+          imageUrl:
+              _randomOn ? ImageUrl.randomImageUrl : imageNotifier.getImage(),
+        ),
         ContainerLinearGradient(),
-        Scaffold(
-          backgroundColor: Colors.transparent,
-          body: SingleChildScrollView(
-            child: SafeArea(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        IconButton(
-                          onPressed: _end,
-                          icon: Icon(Icons.clear, size: 30),
-                          color: Colors.white,
-                        )
-                      ],
-                    ),
-                  ), //clear button
-                  Column(
-                    children: <Widget>[
-                      Text('Time to focus',
-                          style: TextStyle(
-                              fontSize: 30,
+        GestureDetector(
+          onDoubleTap: _onDoubleTap,
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: SingleChildScrollView(
+              child: SafeArea(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Opacity(
+                            opacity: 0.0,
+                            child: IconButton(
+                              onPressed: _end,
+                              icon: Icon(Icons.clear, size: 30),
                               color: Colors.white,
-                              fontWeight: FontWeight.bold)),
-                      SizedBox(height: 20),
-                      Text(
-                        'Break your work into intervals',
-                        style: GoogleFonts.varelaRound(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 20.0,
-                            fontStyle: FontStyle.italic),
-                      ),
-                      SizedBox(height: 20),
-                    ],
-                  ), //begin title
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      TransparentFlatButton(
-                        color: Colors.transparent,
-                        onPressed: null,
-                        text: '',
-                      ),
-                      TransparentFlatButton(
-                        color: Colors.transparent,
-                        onPressed: null,
-                        text: '',
-                      ),
-                    ],
-                  ),
-                  Container(
-                    height: size.height / 2,
-                    width: size.height / 2,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: <Widget>[
-                        //icon clear
-                        SizedBox.expand(
-                          child: CountdownCircle(
-                            duration: widget.duration,
-                          ),
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              _display,
-                              style: GoogleFonts.varelaRound(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 50.0,
-                              ),
                             ),
-                            SizedBox(height: 10),
-                            Text('Focus',
-                                style: GoogleFonts.varelaRound(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 30.0,
-                                )),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ), //clock
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Column(
-                      children: <Widget>[
-                        Text(
-                          'TODAY',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 25.0,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          widget.job.title,
-                          style: GoogleFonts.varelaRound(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 30.0,
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+                        ],
+                      ),
+                    ), //clear button
+                    ClockTitle(
+                      title: 'Time to focus',
+                      subtitle: 'Break your work into intervals',
+                    ), //begin title
+                    ClockTimer(
+                      duration: widget.duration,
+                      animationController: _animationController,
+                      text1: _display,
+                      text2: 'Focus',
                     ),
-                  ),
-                ],
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          RoundTextButton(
+                            text: 'Cancel',
+                            textColor: Colors.white70,
+                            onPressed: _end,
+                            circleColor: Colors.white70,
+                            fillColor: Colors.black12,
+                          ),
+                          _stopwatch.isRunning
+                              ? RoundTextButton(
+                                  text: 'Pause',
+                                  textColor: Colors.white,
+                                  onPressed: _pause,
+                                  circleColor: Colors.white,
+                                  fillColor:
+                                      Colors.orangeAccent.withOpacity(0.2),
+                                )
+                              : RoundTextButton(
+                                  text: 'Resume',
+                                  textColor: Colors.white,
+                                  onPressed: _resume,
+                                  circleColor: Colors.white,
+                                  fillColor:
+                                      Colors.lightGreenAccent.withOpacity(0.2),
+                                ),
+                        ],
+                      ),
+                    ),
+                    ClockBottomToday(text: '${widget.todo.title}'), //clock
+                  ],
+                ),
               ),
             ),
           ),
@@ -266,4 +283,48 @@ class _ClockTimerScreenState extends State<ClockTimerScreen> {
       ],
     );
   }
+
+  ///we can not update it because it's not StreamBuilder
+  /// update & at the same time update _selectedList
+//  void _onTapTodo(Database database, Todo todo) async {
+//    var _typedTitleAndComment = await showModalBottomSheet(
+//      context: context,
+//      isScrollControlled: true,
+//      builder: (context) => AddTodoScreen(
+//        database: database,
+//        todo: todo,
+//        pickedDate: todo.date,
+//      ),
+//    );
+//
+//    if (_typedTitleAndComment != null) {
+//      try {
+//        //we get the id from job in the firebase, if the job.id is null,
+//        //we create a new one, otherwise we use the existing job.id
+//        final id = todo?.id ?? documentIdFromCurrentDate();
+//        final isDone = todo?.isDone ?? false;
+//
+//        ///first we find this specific Todo item that we want to update
+//        final newTodo = Todo(
+//            id: id,
+//            title: _typedTitleAndComment[0],
+//            comment: _typedTitleAndComment[1],
+//            date: _typedTitleAndComment[2],
+//            isDone: isDone);
+//        //add newTodo to database
+//        await database.setTodo(newTodo);
+//
+//        ///try this to update screen, why it's not working??
+//        setState(() {
+//          todo = newTodo;
+//        });
+//        print(newTodo.comment);
+//      } on PlatformException catch (e) {
+//        PlatformExceptionAlertDialog(
+//          title: 'Operation failed',
+//          exception: e,
+//        ).show(context);
+//      }
+//    }
+//  }
 }

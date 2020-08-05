@@ -1,109 +1,96 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:iMomentum/screens/iMeditate/utils/utils.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:iMomentum/app/constants/constants.dart';
 import 'package:iMomentum/app/services/auth.dart';
 import 'package:provider/provider.dart';
-import 'app/landing_and_signIn/landing_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'screens/landing_and_signIn/landing_page.dart';
+import 'app/constants/theme.dart';
+import 'app/services/multi_notifier.dart';
 
-void main() {
-  //TODO: What is this for ??
-  loadLicenses();
+void main() async {
   // Ensure services are loaded before the widgets get loaded
   WidgetsFlutterBinding.ensureInitialized();
   // Restrict device orientiation to portraitUp
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
-      .then((_) {
-    runApp(new MyApp());
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
+  ///what is this?
+  SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]).then((_) {
+    SharedPreferences.getInstance().then((prefs) {
+      bool darkModeOn = prefs.getBool('darkMode') ?? true;
+      bool useYourMantras = prefs.getBool('useMyMantras') ?? true;
+      int index = prefs.getInt('indexMantra') ?? 0;
+
+      bool useMyQuote = prefs.getBool('useMyQuote') ?? true;
+      bool focusModeOn = prefs.getBool('focusMode') ?? true;
+      bool randomOn = prefs.getBool('randomOn') ?? true;
+      String backgroundImage =
+          prefs.getString('imageUrl') ?? ImageUrl.fixedImageUrl;
+//      bool appliedOwnPhoto = prefs.getBool('appliedOwnPhoto') ?? false;
+//      String appliedPhotoUrl = prefs.getString('appliedImageUrl');
+      runApp(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider<ThemeNotifier>(
+                create: (_) =>
+                    ThemeNotifier(darkModeOn ? darkTheme : lightTheme)),
+            ChangeNotifierProvider<FocusNotifier>(
+                create: (_) => FocusNotifier(focusModeOn)),
+            ChangeNotifierProvider<MantraNotifier>(
+                create: (_) => MantraNotifier(useYourMantras, index)),
+            ChangeNotifierProvider<QuoteNotifier>(
+                create: (_) => QuoteNotifier(useMyQuote)),
+            ChangeNotifierProvider<RandomNotifier>(
+                create: (_) => RandomNotifier(randomOn)),
+            ChangeNotifierProvider<ImageNotifier>(
+                create: (_) => ImageNotifier(backgroundImage)),
+//            ChangeNotifierProvider<AppliedOwnPhotoNotifier>(
+//                create: (_) => AppliedOwnPhotoNotifier(appliedOwnPhoto)),
+//            ChangeNotifierProvider<AppliedPhotoUrlNotifier>(
+//                create: (_) => AppliedPhotoUrlNotifier(appliedPhotoUrl)),
+          ],
+          child: MyApp(),
+        ),
+      );
+    });
   });
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+//    final Brightness brightnessValue =
+//        MediaQuery.of(context).platformBrightness;
+//    bool isDark = brightnessValue == Brightness.dark;
+//    print(isDark);
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Provider<AuthBase>(
       create: (context) => Auth(),
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'iMomentum',
-        theme: ThemeData.dark().copyWith(
-          canvasColor: Colors.transparent,
-          primaryColor: Colors.white,
-          bottomSheetTheme:
-              BottomSheetThemeData(backgroundColor: Colors.transparent),
-        ),
-//        localizationsDelegates: [
-//          S.delegate,
-//          globalMaterialLocalizations.delegate,
-//          globalWidgetsLocalizations.delegate,
-//        ],
-//        supportedLocales: S.delegate.supportedLocales,
-//
-//      builder: (context, widget) {
-//        //TODO: What is this for ??
-//        return ResponsiveWrapper.builder(
-//          widget,
-////          maxWidth: 1200,
-////          minWidth: 450,
-//          defaultScale: true,
-////            breakpoints: [
-////              ResponsiveBreakpoint(breakpoint: 450, name: MOBILE),
-////              ResponsiveBreakpoint(
-////                  breakpoint: 800, name: TABLET, autoScale: true),
-////              ResponsiveBreakpoint(
-////                  breakpoint: 1000, name: TABLET, autoScale: true),
-////              ResponsiveBreakpoint(breakpoint: 1200, name: DESKTOP),
-////              ResponsiveBreakpoint(
-////                  breakpoint: 2460, name: "4K", autoScale: true),
-////            ],
-//          background: Container(
-//            color: isDark(context) ? bgDark : fgDark,
-//          ),
-//        );
-//      },
-//        theme: lightTheme,
-//        darkTheme: darkTheme,
-//        themeMode: ThemeMode.system,
-        home: LandingPage(),
-
-//        // ignore: missing_return
-//        onGenerateRoute: (settings) {
-//          if (settings.name == '/') {
-//            return PageRoutes.fade(() => LoadingScreen());
-////                MainScreen(startingAnimation: true));
-//          }
-//        },
+      child: Builder(
+        builder: (context) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'iMomentum',
+            theme: themeNotifier.getTheme(),
+            themeMode: ThemeMode.system,
+            localizationsDelegates: [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              DefaultCupertinoLocalizations.delegate,
+              GlobalCupertinoLocalizations
+                  .delegate, // Add global cupertino localiztions.
+            ],
+            locale: Locale('en', 'US'), // Current locale
+            supportedLocales: [
+              const Locale('en', 'US'), // English
+              const Locale('zh', 'ZH'), // Chinese??
+            ],
+            home: LandingPage(),
+          );
+        },
       ),
     );
   }
 }
-
-//import 'package:flutter/material.dart';
-//import 'screens/first_loading/loading_screen.dart';
-////https://flutter.dev/docs/cookbook/images/fading-in-images
-//
-//void main() {
-//  runApp(MyApp());
-//}
-//
-//class MyApp extends StatelessWidget {
-//  // This widget is the root of your application.
-//  @override
-//  Widget build(BuildContext context) {
-//    return MaterialApp(
-//      debugShowCheckedModeBanner: false,
-//      title: 'Note',
-//      theme: ThemeData.dark().copyWith(
-//        canvasColor: Colors.transparent,
-////        bottomSheetTheme: BottomSheetThemeData(backgroundColor: Colors.black54),
-//      ),
-//
-//      home: LoadingLocation(),
-////      routes: {
-////        '/': (context) => LoadingLocation(),
-////        '/calendar': (context) => Calender(),
-////        '/todos': (context) => ToDos(),
-////        '/notes': (context) => screens.Notes(),
-////      },
-//    );
-//  }
-//}

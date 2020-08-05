@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:iMomentum/app/models/duration_model.dart';
+import 'package:iMomentum/app/models/image_model.dart';
+import 'package:iMomentum/app/models/mantra_model.dart';
 import 'package:iMomentum/app/models/note.dart';
+import 'package:iMomentum/app/models/quote_model.dart';
 import 'package:iMomentum/app/models/todo.dart';
 import 'package:meta/meta.dart';
 
@@ -32,6 +35,23 @@ abstract class Database {
   Stream<List<Note>> notesStream(); //read all jobs
   Stream<Note> noteStream({@required String noteId}); //read one jobs
 
+  //images
+  Future<void> setImage(ImageModel image); //create/update a job
+  Future<void> deleteImage(ImageModel image); //delete a job
+  Stream<List<ImageModel>> imagesStream(); //read all jobs
+  Stream<ImageModel> imageStream({@required String imageId});
+
+  //mantras
+  Future<void> setMantra(MantraModel mantra); //create/update a job
+  Future<void> deleteMantra(MantraModel mantra); //delete a job
+  Stream<List<MantraModel>> mantrasStream(); //read all jobs
+  Stream<MantraModel> mantraStream({@required String mantraId});
+
+  //quotes
+  Future<void> setQuote(QuoteModel quote); //create/update a job
+  Future<void> deleteQuote(QuoteModel quote); //delete a job
+  Stream<List<QuoteModel>> quotesStream(); //read all jobs
+  Stream<QuoteModel> quoteStream({@required String quoteId});
 }
 
 //we use time as Id
@@ -78,6 +98,9 @@ class FirestoreDatabase implements Database {
   Stream<List<Todo>> todosStream() => _service.collectionStream(
         path: APIPath.todos(uid),
         builder: (data, documentId) => Todo.fromMap(data, documentId),
+        //to make the most recently edited one show first
+        sort: (lhs, rhs) => rhs.date.compareTo(lhs.date),
+//      sortCategory: (lhs, rhs) => (rhs.isDone == true).compareTo(lhs.isDone == false),
       );
 
   /// duration
@@ -133,6 +156,91 @@ class FirestoreDatabase implements Database {
   Stream<List<Note>> notesStream() => _service.collectionStream(
         path: APIPath.notes(uid),
         builder: (data, documentId) => Note.fromMap(data, documentId),
+        //to make the most recently edited one show first
+        sort: (lhs, rhs) => rhs.date.compareTo(lhs.date),
+      );
+
+  ///for image
+  //create or update job
+  Future<void> setImage(ImageModel image) async => await _service.setData(
+        path: APIPath.image(uid, image.id),
+        data: image.toMap(),
+      );
+
+  //TODO delete all entries for a particular job??
+  @override // delete job
+  Future<void> deleteImage(ImageModel image) async {
+    await _service.deleteData(
+      path: APIPath.image(uid, image.id),
+    );
+  }
+
+  @override //read a job
+  Stream<ImageModel> imageStream({@required String imageId}) =>
+      _service.documentStream(
+        path: APIPath.image(uid, imageId),
+        builder: (data, documentId) => ImageModel.fromMap(data, documentId),
+      );
+  @override //read jobs
+  Stream<List<ImageModel>> imagesStream() => _service.collectionStream(
+        path: APIPath.images(uid),
+        builder: (data, documentId) => ImageModel.fromMap(data, documentId),
+      );
+
+  ///for mantras
+  //create or update job
+  Future<void> setMantra(MantraModel mantra) async => await _service.setData(
+        path: APIPath.mantra(uid, mantra.id),
+        data: mantra.toMap(),
+      );
+
+  @override // delete job
+  Future<void> deleteMantra(MantraModel mantra) async {
+    await _service.deleteData(
+      path: APIPath.mantra(uid, mantra.id),
+    );
+  }
+
+  @override //read a job
+  Stream<MantraModel> mantraStream({@required String mantraId}) =>
+      _service.documentStream(
+        path: APIPath.mantra(uid, mantraId),
+        builder: (data, documentId) => MantraModel.fromMap(data, documentId),
+      );
+  @override //read jobs
+  Stream<List<MantraModel>> mantrasStream() => _service.collectionStream(
+        path: APIPath.mantras(uid),
+        builder: (data, documentId) => MantraModel.fromMap(data, documentId),
+        //to make the most recently edited one show first
+        sort: (lhs, rhs) => rhs.date.compareTo(lhs.date),
+      );
+
+  ///for quotes
+  //create or update job
+  Future<void> setQuote(QuoteModel quote) async => await _service.setData(
+        path: APIPath.quote(uid, quote.id),
+        data: quote.toMap(),
+      );
+
+  @override // delete job
+  Future<void> deleteQuote(QuoteModel quote) async {
+    await _service.deleteData(
+      path: APIPath.quote(uid, quote.id),
+    );
+  }
+
+  @override //read a job
+  Stream<QuoteModel> quoteStream({@required String quoteId}) =>
+      _service.documentStream(
+        path: APIPath.quote(uid, quoteId),
+        builder: (data, documentId) => QuoteModel.fromMap(data, documentId),
+      );
+  @override //read jobs
+  Stream<List<QuoteModel>> quotesStream() => _service.collectionStream(
+        path: APIPath.quotes(uid),
+        builder: (data, documentId) => QuoteModel.fromMap(data, documentId),
+        //to make the most recently edited one show last
+        sort: (lhs, rhs) => rhs.date.compareTo(lhs.date),
       );
 }
 

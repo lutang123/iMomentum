@@ -31,5 +31,20 @@ class CongratsList {
     CongratsQuotes(
       body: 'Way to go!',
     ),
+    CongratsQuotes(
+      body: 'Awesome',
+    ),
+    CongratsQuotes(
+      body: 'Keep going!',
+    ),
+    CongratsQuotes(
+      body: 'Super!',
+    ),
+    CongratsQuotes(
+      body: 'Congratulations!',
+    ),
+    CongratsQuotes(
+      body: 'Nice',
+    ),
   ];
 }

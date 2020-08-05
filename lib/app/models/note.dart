@@ -7,11 +7,12 @@ class Note {
       this.description,
       this.date,
       this.color});
-  final String id;
-  final String title;
-  final String description;
-  final DateTime date;
-  final int color;
+  //add final or not?
+  String id;
+  String title;
+  String description;
+  DateTime date;
+  int color;
 
   factory Note.fromMap(Map<String, dynamic> firebaseMap, String documentId) {
     if (firebaseMap == null) {

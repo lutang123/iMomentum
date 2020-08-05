@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iMomentum/app/tab_and_navigation/tab_item.dart';
+import 'package:iMomentum/app/constants/theme.dart';
+import 'package:iMomentum/app/services/multi_notifier.dart';
+import 'package:provider/provider.dart';
 
 class CupertinoHomeScaffold extends StatelessWidget {
   const CupertinoHomeScaffold({
@@ -18,15 +21,20 @@ class CupertinoHomeScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return CupertinoTabScaffold(
+      backgroundColor: Colors.transparent,
       tabBar: CupertinoTabBar(
-        backgroundColor: Colors.black12,
+        backgroundColor: _darkTheme ? Colors.black12 : Color(0xF0F9F9F9),
         items: [
-          _buildItem(TabItem.iMomentum),
-          _buildItem(TabItem.todo),
-          _buildItem(TabItem.notes),
+          _buildItem(context, TabItem.home),
+
+          _buildItem(context, TabItem.todo),
+          _buildItem(context, TabItem.notes),
+
 //          _buildItem(TabItem.entries),
-          _buildItem(TabItem.account),
+//          _buildItem(TabItem.account),
         ],
         onTap: (index) => onSelectTab(TabItem.values[index]),
       ),
@@ -40,9 +48,17 @@ class CupertinoHomeScaffold extends StatelessWidget {
     );
   }
 
-  BottomNavigationBarItem _buildItem(TabItem tabItem) {
+  BottomNavigationBarItem _buildItem(BuildContext context, TabItem tabItem) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     final itemData = TabItemData.allTabs[tabItem];
-    final color = currentTab == tabItem ? Colors.white : Colors.grey;
+    final color = _darkTheme
+        ? currentTab == tabItem
+            ? Colors.white
+            : Color(0xF0e6dedd).withOpacity(0.7)
+        : currentTab == tabItem
+            ? Colors.black87.withOpacity(0.9)
+            : Colors.black38.withOpacity(0.45);
     return BottomNavigationBarItem(
       icon: Padding(
         padding: const EdgeInsets.only(top: 5.0),
@@ -56,7 +72,7 @@ class CupertinoHomeScaffold extends StatelessWidget {
         child: Text(
           itemData.title,
           style: TextStyle(
-              color: color, fontSize: 10, fontWeight: FontWeight.w400),
+              color: color, fontSize: 10, fontWeight: FontWeight.w600),
         ),
       ),
     );

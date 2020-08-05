@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:iMomentum/app/constants/constants.dart';
 
 class HomeTextField extends StatelessWidget {
   const HomeTextField({
@@ -13,17 +12,18 @@ class HomeTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 280,
+      width: 320,
       child: TextField(
-        style: GoogleFonts.varelaRound(
-          fontWeight: FontWeight.w600,
-          fontSize: 30.0,
-        ),
-        autofocus: true,
+        style: GoogleFonts.varelaRound(fontSize: 25.0, color: Colors.white),
+//        autofocus: true,
         textAlign: TextAlign.center,
         onSubmitted: onSubmitted,
         cursorColor: Colors.white,
-        maxLength: 50,
+        maxLength: 100,
+
+        ///no save button, can not do multiline
+//        keyboardType: TextInputType.multiline,
+//        maxLines: null,
         decoration: InputDecoration(
           focusedBorder:
               UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
@@ -35,72 +35,72 @@ class HomeTextField extends StatelessWidget {
   }
 }
 
-String todoTitle;
+//String todoTitle;
 
-class AddTodoTextField extends StatelessWidget {
-  const AddTodoTextField({
-    Key key,
-    this.controller,
-  }) : super(key: key);
+//class AddTodoTextField extends StatelessWidget {
+//  const AddTodoTextField({
+//    Key key,
+//    this.controller,
+//  }) : super(key: key);
+//
+//  final TextEditingController controller;
+//  @override
+//  Widget build(BuildContext context) {
+//    return Container(
+//      width: 280,
+//      child: TextField(
+//        onChanged: (content) => todoTitle = content,
+//        controller: controller,
+//        style: TextStyle(
+//          color: Colors.white,
+//          fontSize: 30.0,
+//        ),
+//        autofocus: true,
+//        textAlign: TextAlign.center,
+//        cursorColor: Colors.white,
+//        maxLength: 50,
+//        decoration: InputDecoration(
+//          focusedBorder:
+//              UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+//          enabledBorder:
+//              UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+//        ),
+//      ),
+//    );
+//  }
+//}
 
-  final TextEditingController controller;
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 280,
-      child: TextField(
-        onChanged: (content) => todoTitle = content,
-        controller: controller,
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 30.0,
-        ),
-        autofocus: true,
-        textAlign: TextAlign.center,
-        cursorColor: Colors.white,
-        maxLength: 50,
-        decoration: InputDecoration(
-          focusedBorder:
-              UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-          enabledBorder:
-              UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-        ),
-      ),
-    );
-  }
-}
-
-class SearchTextField extends StatelessWidget {
-  const SearchTextField({
-    Key key,
-    this.onSubmitted,
-  }) : super(key: key);
-
-  final Function onSubmitted;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 15.0),
-      child: Container(
-        width: 280,
-        child: TextField(
-          style: KNoteDescription,
-          textAlign: TextAlign.left,
-          onSubmitted: onSubmitted,
-          cursorColor: Colors.white,
-          maxLength: 50,
-          decoration: InputDecoration(
-            focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.white)),
-            enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.white)),
-          ),
-        ),
-      ),
-    );
-  }
-}
+//class SearchTextField extends StatelessWidget {
+//  const SearchTextField({
+//    Key key,
+//    this.onSubmitted,
+//  }) : super(key: key);
+//
+//  final Function onSubmitted;
+//
+//  @override
+//  Widget build(BuildContext context) {
+//    return Padding(
+//      padding: const EdgeInsets.only(left: 15.0),
+//      child: Container(
+//        width: 280,
+//        child: TextField(
+//          style: KNoteDescription,
+//          textAlign: TextAlign.left,
+//          onSubmitted: onSubmitted,
+//          cursorColor: Colors.white,
+//          maxLength: 50,
+//          decoration: InputDecoration(
+//            focusedBorder: UnderlineInputBorder(
+//                borderSide: BorderSide(color: Colors.white)),
+//            enabledBorder: UnderlineInputBorder(
+//                borderSide: BorderSide(color: Colors.white)),
+//          ),
+//        ),
+//      ),
+//    );
+//  }
+//}
 
 //Widget _buildComment() {
 //  return TextField(

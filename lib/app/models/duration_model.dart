@@ -13,9 +13,8 @@ class DurationModel {
   int duration;
 
   ///duration is already converted inMinutes when saving the data
-  double get durationInHours => duration == 25 ? 0.5 : 1;
-
-  int get number => duration ~/ 25;
+  double get durationInMin => double.parse(duration.toString());
+//  int get number => duration ~/ 25;
 
   factory DurationModel.fromMap(Map<dynamic, dynamic> firebaseMap, String id) {
     return DurationModel(

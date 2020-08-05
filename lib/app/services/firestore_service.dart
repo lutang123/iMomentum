@@ -34,6 +34,7 @@ class FirestoreService {
     @required T builder(Map<String, dynamic> data, String documentID),
     Query queryBuilder(Query query),
     int sort(T lhs, T rhs),
+    int sortCategory(T lhs, T rhs),
   }) {
     Query query = Firestore.instance.collection(path);
     if (queryBuilder != null) {
@@ -47,6 +48,9 @@ class FirestoreService {
           .where((value) => value != null)
           .toList();
       if (sort != null) {
+        result.sort(sort);
+      }
+      if (sortCategory != null) {
         result.sort(sort);
       }
       return result;
