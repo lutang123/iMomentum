@@ -50,26 +50,26 @@ class _ImagePageState extends State<ImagePage> {
     });
   }
 
-  bool isLiked = false;
+//  bool isLiked = false;
 
-  Future<void> _save(Database database, UnsplashImage image) async {
-    setState(() {
-      isLiked = !isLiked;
-    });
-
-    try {
-      final id = image.getId() ?? documentIdFromCurrentDate();
-
-      final newImage = ImageModel(id: id, url: widget.imageUrl);
-      //add newTodo to database
-      await database.setImage(newImage);
-    } on PlatformException catch (e) {
-      PlatformExceptionAlertDialog(
-        title: 'Operation failed',
-        exception: e,
-      ).show(context);
-    }
-  }
+//  Future<void> _save(Database database, UnsplashImage image) async {
+//    setState(() {
+//      isLiked = !isLiked;
+//    });
+//
+//    try {
+//      final id = image.getId() ?? documentIdFromCurrentDate();
+//
+//      final newImage = ImageModel(id: id, url: widget.imageUrl);
+//      //add newTodo to database
+//      await database.setImage(newImage);
+//    } on PlatformException catch (e) {
+//      PlatformExceptionAlertDialog(
+//        title: 'Operation failed',
+//        exception: e,
+//      ).show(context);
+//    }
+//  }
 
   /// Returns AppBar.
   Widget _buildAppBar(Database database, BuildContext context) => AppBar(
@@ -123,7 +123,7 @@ class _ImagePageState extends State<ImagePage> {
       initialScale: PhotoViewComputedScale.covered,
       minScale: PhotoViewComputedScale.covered,
       maxScale: PhotoViewComputedScale.covered,
-      heroAttributes: PhotoViewHeroAttributes(tag: '$imageUrl'),
+//      heroAttributes: PhotoViewHeroAttributes(tag: '$imageUrl'),
       loadingBuilder: (BuildContext context, ImageChunkEvent event) {
         return Center(
             child: CircularProgressIndicator(

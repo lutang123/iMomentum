@@ -32,12 +32,12 @@ class CalendarBloc {
     }).toList();
   }
 
-  /// Output stream, we do not use these
-  Stream get entriesStream => allTodoDurationStream.map(_createModels);
-  static _createModels(List<TodoDuration> entries) {
-    //without this line, when there's no content, it will show an error message
-    if (entries.isEmpty) {
-      return [];
-    }
-  }
+//  /// Output stream, we do not use these
+//  Stream get entriesStream => allTodoDurationStream.map(_createModels);
+//  static _createModels(List<TodoDuration> entries) {
+//    //without this line, when there's no content, it will show an error message
+//    if (entries.isEmpty) {
+//      return [];
+//    }
+//  }
 }

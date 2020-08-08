@@ -17,22 +17,22 @@ class _CountdownCircleState extends State<CountdownCircle>
     with SingleTickerProviderStateMixin {
   AnimationController get _controller => widget.animationController;
 
-  @override
-  void initState() {
-    super.initState();
-//    _controller = AnimationController(
-//      duration: widget.duration,
-//      vsync: this,
-//    );
-//    _controller.forward().orCancel;
-
-//    _controller.addListener(() => setState(() {}));
-//    TickerFuture tickerFuture = _controller.repeat();
-//    tickerFuture.timeout(widget.duration, onTimeout: () {
-//      _controller.forward(from: 0);
-//      _controller.stop(canceled: true);
-//    });
-  }
+//  @override
+//  void initState() {
+//    super.initState();
+////    _controller = AnimationController(
+////      duration: widget.duration,
+////      vsync: this,
+////    );
+////    _controller.forward().orCancel;
+//
+////    _controller.addListener(() => setState(() {}));
+////    TickerFuture tickerFuture = _controller.repeat();
+////    tickerFuture.timeout(widget.duration, onTimeout: () {
+////      _controller.forward(from: 0);
+////      _controller.stop(canceled: true);
+////    });
+//  }
 
   @override
   void dispose() {

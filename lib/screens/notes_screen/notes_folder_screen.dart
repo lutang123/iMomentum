@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,72 +9,58 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
-import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
+import 'package:iMomentum/app/common_widgets/device.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/constants/constants.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/models/note.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/notes_screen/search_note.dart';
-import 'package:iMomentum/screens/notes_screen/build_note_container.dart';
 import 'package:iMomentum/app/common_widgets/empty_content.dart';
 import 'package:provider/provider.dart';
 import 'add_note_screen.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-import 'notes_folder_screen.dart';
-import 'notes_test.dart';
+import 'notes_folder_container.dart';
+import 'notes_folder_detail.dart';
 
-class NotesScreen extends StatefulWidget {
+class NotesFolder extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return NotesScreenState();
+    return NotesFolderState();
   }
 }
 
 const double _fabDimension = 56.0;
 
-class NotesScreenState extends State<NotesScreen>
+class NotesFolderState extends State<NotesFolder>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+//  AnimationController _controller;
 
   SlidableController slidableController;
-  Animation<double> _rotationAnimation;
+//  Animation<double> _rotationAnimation;
 
   bool _isVisible;
   ScrollController _hideButtonController;
 
+  // for folder
+  bool isMobile = true;
+  bool showNote = false;
+  Timer timer;
+  AnimationController _controller;
+  Animation<Color> animation, animation2;
+  Device device;
+
   @override
   void initState() {
     super.initState();
-
-    _controller = AnimationController(
-      value: 0.0,
-      duration: const Duration(milliseconds: 150),
-      reverseDuration: const Duration(milliseconds: 75),
-      vsync: this,
-    )..addStatusListener((AnimationStatus status) {
-        setState(() {
-          // setState needs to be called to trigger a rebuild because
-          // the 'HIDE FAB'/'SHOW FAB' button needs to be updated based
-          // the latest value of [_controller.status].
-        });
-      });
-//    slidableController = SlidableController(
-//      onSlideAnimationChanged: handleSlideAnimationChanged,
-//    );
-
     _isVisible = true;
     _hideButtonController = ScrollController();
     _hideButtonController.addListener(() {
       if (_hideButtonController.position.userScrollDirection ==
           ScrollDirection.reverse) {
         if (_isVisible == true) {
-          /* only set when the previous state is false
-             * Less widget rebuilds
-             */
-//          print("**** $_isVisible up"); //Move IO away from setState
           setState(() {
             _isVisible = false;
           });
@@ -81,10 +69,6 @@ class NotesScreenState extends State<NotesScreen>
         if (_hideButtonController.position.userScrollDirection ==
             ScrollDirection.forward) {
           if (_isVisible == false) {
-            /* only set when the previous state is false
-               * Less widget rebuilds
-               */
-//            print("**** $_isVisible down"); //Move IO away from setState
             setState(() {
               _isVisible = true;
             });
@@ -92,6 +76,27 @@ class NotesScreenState extends State<NotesScreen>
         }
       }
     });
+
+    // for folder
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+
+    /// Change Background Color animation
+    animation = ColorTween(
+      begin: Colors.white,
+      end: Colors.grey[800],
+    ).animate(_controller)
+      ..addListener(() {
+        setState(() {});
+      });
+
+    /// Change Text and Icon Color invert of [animation]
+    animation2 = ColorTween(
+      begin: Colors.grey[800],
+      end: Colors.white,
+    ).animate(_controller);
   }
 
   @override
@@ -103,13 +108,6 @@ class NotesScreenState extends State<NotesScreen>
   }
 
   int axisCount = 2;
-
-  void handleSlideAnimationChanged(Animation<double> slideAnimation) {
-    setState(() {
-      _rotationAnimation = slideAnimation;
-    });
-    print('_rotationAnimation: $_rotationAnimation');
-  }
 
   int counter = 0;
   void _onDoubleTap() {
@@ -126,6 +124,14 @@ class NotesScreenState extends State<NotesScreen>
     final randomNotifier = Provider.of<RandomNotifier>(context);
     bool _randomOn = (randomNotifier.getRandom() == true);
     final imageNotifier = Provider.of<ImageNotifier>(context);
+
+    double deviceHeight = MediaQuery.of(context).size.height;
+    double deviceWidth = MediaQuery.of(context).size.width;
+    isMobile = deviceWidth > deviceHeight ? false : true;
+
+    device = Device(
+        MediaQuery.of(context).size.height, MediaQuery.of(context).size.width);
+
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
@@ -137,6 +143,8 @@ class NotesScreenState extends State<NotesScreen>
         GestureDetector(
           onDoubleTap: _onDoubleTap,
           child: Scaffold(
+//            backgroundColor: animation.value,
+
             backgroundColor: Colors.transparent,
             body: SafeArea(
               child: StreamBuilder<List<Note>>(
@@ -220,40 +228,11 @@ class NotesScreenState extends State<NotesScreen>
                                         ],
                                       )),
                                 ),
-//                          MyFlatButton(
-//                              text: 'Notes Folder',
-//                              onPressed: () => Navigator.push(
-//                                  context,
-//                                  MaterialPageRoute(
-//                                      builder: (_) => NotesFolder()))),
-//                          MyFlatButton(
-//                              text: 'Notes Folder',
-//                              onPressed: () => Navigator.push(
-//                                  context,
-//                                  MaterialPageRoute(
-//                                      builder: (_) => NotesTest()))),
                           Expanded(
                             child: Padding(
                               padding:
                                   const EdgeInsets.only(left: 8.0, right: 8),
                               child: getNotesList(notes),
-//                            child: ReorderableWrap(
-//                                spacing: 8.0,
-//                                runSpacing: 4.0,
-//                                onReorder: _onReorder,
-//                                padding: const EdgeInsets.all(8),
-//                                children: List.generate(
-//                                  notes.length,
-//                                  (index) {
-//                                    return BuildNoteContainer(
-//                                      index: index,
-//                                      notes: notes,
-//                                      database: database,
-//                                      onTap: () =>
-//                                          _onTap(database, notes[index]),
-//                                    );
-//                                  },
-//                                )),
                             ),
                           ),
                         ],
@@ -386,30 +365,21 @@ class NotesScreenState extends State<NotesScreen>
               },
             ),
             actionExtentRatio: 0.25,
-            child:
-
-//            BuildNoteContainer(
-//              note: note,
-//              database: database,
-//              onTap: () => _onTap(database, note),
-//            ),
-
-                OpenContainer(
+            child: OpenContainer(
               useRootNavigator: true,
               transitionType: _transitionType,
               closedBuilder: (BuildContext _, VoidCallback openContainer) {
-                return BuildNoteContainer(
-                  note: note,
-                  database: database,
+                return NotesFolderContainer(note
+//                  database: database,
 //                  onTap: () => _onTap(database, note),
-                );
+                    );
               },
               closedColor: Colors.transparent,
-              closedShape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10.0))),
+//              closedShape: const RoundedRectangleBorder(
+//                  borderRadius: BorderRadius.all(Radius.circular(10.0))),
               openColor: Colors.transparent,
               openBuilder: (BuildContext context, VoidCallback _) {
-                return AddNoteScreen(database: database, note: note);
+                return NoteFolderDetail(note: note);
               },
             ),
             actions: <Widget>[
@@ -454,9 +424,9 @@ class NotesScreenState extends State<NotesScreen>
 //  ///for fab, add new, later changed to OpenContainer
 //  void _add(Database database) => navigateToDetail(database: database);
 
-  ///update
-  void _onTap(Database database, Note note) =>
-      navigateToDetail(database: database, note: note);
+//  ///update
+//  void _onTap(Database database, Note note) =>
+//      navigateToDetail(database: database, note: note);
 
   ///delete
   Future<void> _delete(BuildContext context, Note note) async {

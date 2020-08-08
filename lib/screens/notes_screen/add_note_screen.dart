@@ -8,6 +8,7 @@ import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/models/note.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
+import 'package:iMomentum/screens/notes_screen/notes_color.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
@@ -75,11 +76,15 @@ class AddNoteScreenState extends State<AddNoteScreen> {
       description = note.description;
       date = note.date;
       color = note.color;
+      print(color);
+    } else {
+      // if note == null
+      date = DateTime.now();
+      formattedToday = DateFormat("yyyy-MM-dd").format(DateTime.now());
+      formattedDate = DateFormat("yyyy-MM-dd").format(date);
+      color = 0;
     }
-    // if note == null
-    date = DateTime.now();
-    formattedToday = DateFormat("yyyy-MM-dd").format(DateTime.now());
-    formattedDate = DateFormat("yyyy-MM-dd").format(date);
+
     super.initState();
   }
 
@@ -112,7 +117,14 @@ class AddNoteScreenState extends State<AddNoteScreen> {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Scaffold(
-      backgroundColor: _darkTheme ? darkBkgdColor : lightSurface,
+//      backgroundColor: _darkTheme ? darkBkgdColor : lightSurface,
+      backgroundColor:
+//      note == null
+//          ? _darkTheme ? colorsDark[colorApplied] : colorsLight[colorApplied]
+//          :
+
+          _darkTheme ? colorsDark[color] : colorsLight[color],
+
       appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0.0,
@@ -120,11 +132,13 @@ class AddNoteScreenState extends State<AddNoteScreen> {
             padding: const EdgeInsets.only(top: 8.0),
             child: IconButton(
               icon: Icon(
-                Icons.clear,
+                Icons.arrow_back_ios,
                 color: _darkTheme ? darkButton : lightButton,
                 size: 30,
               ),
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => _save(database, note),
+
+//              onPressed: () => Navigator.of(context).pop(),
             ),
           ),
           actions: <Widget>[
@@ -197,10 +211,6 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                             description = value;
                           }
                         },
-//                              //what is this
-//                              onEditingComplete: () {
-////                                  _save(widget.database);
-//                              },
                         decoration: InputDecoration.collapsed(
                           hintText: 'Note',
                           hintStyle: TextStyle(
@@ -210,7 +220,9 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                         ),
                       ),
                     ),
-                    Expanded(
+
+                    ///TODO: but can't add to note yet
+                    Flexible(
                       child: ListView(
                         children: <Widget>[
                           if (_imageFile != null) ...[
@@ -239,17 +251,17 @@ class AddNoteScreenState extends State<AddNoteScreen> {
 //                color: _darkTheme ? darkAdd : lightAdd,
                 child: Padding(
                   padding: const EdgeInsets.only(
-                      left: 15.0, right: 15, top: 15, bottom: 30),
+                      left: 15.0, right: 15, top: 15, bottom: 10),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      IconButton(
-                        iconSize: 28,
-                        color: _darkTheme ? darkButton : lightButton,
-                        icon: FaIcon(FontAwesomeIcons.plusSquare),
-                        onPressed: _addMore,
-                        tooltip: 'Add more',
-                      ),
+//                      IconButton(
+//                        iconSize: 28,
+//                        color: _darkTheme ? darkButton : lightButton,
+//                        icon: FaIcon(FontAwesomeIcons.plusSquare),
+//                        onPressed: _addMore,
+//                        tooltip: 'Add more',
+//                      ),
                       widget.note == null
                           ? Text('Edited ${Format.time(DateTime.now())}')
                           : formattedToday == formattedDate
@@ -257,18 +269,57 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                               : Text('Edited ${Format.date(note.date)}'),
 //                      _simplePopup(),
 
-                      IconButton(
-                        iconSize: 28,
-                        color: _darkTheme ? darkButton : lightButton,
-                        icon: FaIcon(FontAwesomeIcons.ellipsisV),
-                        onPressed: () =>
-                            _addAction(widget.database, widget.note),
-                        tooltip: 'more',
-                      ),
+//                      IconButton(
+//                        iconSize: 28,
+//                        color: _darkTheme ? darkButton : lightButton,
+//                        icon: FaIcon(FontAwesomeIcons.ellipsisV),
+//                        onPressed: () =>
+//                            _addAction(widget.database, widget.note),
+//                        tooltip: 'more',
+//                      ),
                     ],
                   ),
                 ),
               ),
+              ColorPicker(
+                selectedIndex: note == null ? 0 : note.color,
+                onTap: (index) => _pickColor(index),
+              ),
+
+//              Container(
+////                color: _darkTheme ? darkAdd : lightAdd,
+//                child: Padding(
+//                  padding: const EdgeInsets.only(
+//                      left: 15.0, right: 15, top: 15, bottom: 30),
+//                  child: Row(
+//                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                    children: <Widget>[
+//                      IconButton(
+//                        iconSize: 28,
+//                        color: _darkTheme ? darkButton : lightButton,
+//                        icon: FaIcon(FontAwesomeIcons.plusSquare),
+//                        onPressed: _addMore,
+//                        tooltip: 'Add more',
+//                      ),
+//                      widget.note == null
+//                          ? Text('Edited ${Format.time(DateTime.now())}')
+//                          : formattedToday == formattedDate
+//                              ? Text('Edited ${Format.time(note.date)}')
+//                              : Text('Edited ${Format.date(note.date)}'),
+////                      _simplePopup(),
+//
+//                      IconButton(
+//                        iconSize: 28,
+//                        color: _darkTheme ? darkButton : lightButton,
+//                        icon: FaIcon(FontAwesomeIcons.ellipsisV),
+//                        onPressed: () =>
+//                            _addAction(widget.database, widget.note),
+//                        tooltip: 'more',
+//                      ),
+//                    ],
+//                  ),
+//                ),
+//              ),
             ],
           ),
         ),
@@ -286,9 +337,11 @@ class AddNoteScreenState extends State<AddNoteScreen> {
             id: id,
             title: title,
             description: description,
+            color: color,
             date: DateTime.now());
         //add newTodo to database
         await database.setNote(newNote);
+        print('newNote.color: ${newNote.color}');
       } on PlatformException catch (e) {
         PlatformExceptionAlertDialog(
           title: 'Operation failed',
@@ -308,11 +361,21 @@ class AddNoteScreenState extends State<AddNoteScreen> {
         builder: (context) => NoteAddMore(
               takePhoto: () => _pickImage(ImageSource.camera),
               choosePhoto: () => _pickImage(ImageSource.gallery),
+              onTap: (index) => _pickColor(index),
             ));
+  }
+
+  void _pickColor(index) {
+    setState(() {
+      color = index;
+    });
+//    isEdited = true;
+//    note.color = index;
   }
 
   void _addAction(Database database, Note note) {
     showModalBottomSheet(
+        useRootNavigator: true,
         backgroundColor: Colors.transparent,
         context: context,
         isScrollControlled: true,
@@ -322,43 +385,44 @@ class AddNoteScreenState extends State<AddNoteScreen> {
               send: null,
             ));
   }
-
-  Widget _buildPopUpMenu() {
-    return AppBar(
-      actions: <Widget>[
-        IconButton(
-          onPressed: () {
-            Share.share(
-                'check out my Nots app \n https://github.com/simformsolutions/flutter_note_app');
-          },
-          icon: Icon(Icons.share),
-        ),
-        PopupMenuButton<bool>(
-          onSelected: (res) {
-//            bloc.changeTheme(res);
-//            _setPref(res);
-//            setState(() {
-//              if (_themeType == 'Dark Theme') {
-//                _themeType = 'Light Theme';
-//              } else {
-//                _themeType = 'Dark Theme';
-//              }
-//            });
-          },
-          itemBuilder: (context) {
-            return <PopupMenuEntry<bool>>[
-              PopupMenuItem<bool>(child: Text('hello')
-//                value: !widget.darkThemeEnabled,
-//                child: Text(_themeType),
-                  )
-            ];
-          },
-        )
-      ],
-      title: Text('Notes'),
-    );
-  }
 }
+
+///FOR POPUP
+//  Widget _buildPopUpMenu() {
+//    return AppBar(
+//      actions: <Widget>[
+//        IconButton(
+//          onPressed: () {
+//            Share.share(
+//                'check out my Nots app \n https://github.com/simformsolutions/flutter_note_app');
+//          },
+//          icon: Icon(Icons.share),
+//        ),
+//        PopupMenuButton<bool>(
+//          onSelected: (res) {
+////            bloc.changeTheme(res);
+////            _setPref(res);
+////            setState(() {
+////              if (_themeType == 'Dark Theme') {
+////                _themeType = 'Light Theme';
+////              } else {
+////                _themeType = 'Dark Theme';
+////              }
+////            });
+//          },
+//          itemBuilder: (context) {
+//            return <PopupMenuEntry<bool>>[
+//              PopupMenuItem<bool>(child: Text('hello')
+////                value: !widget.darkThemeEnabled,
+////                child: Text(_themeType),
+//                  )
+//            ];
+//          },
+//        )
+//      ],
+//      title: Text('Notes'),
+//    );
+//  }
 
 ///notes on popup menu: can't make the position work
 //RelativeRect buttonMenuPosition(BuildContext c) {

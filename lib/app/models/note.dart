@@ -37,7 +37,7 @@ class Note {
       'title': title,
       'description': description,
       'date': date.millisecondsSinceEpoch, //convert to int
-      'color': color, //bool
+      'color': color, //int
     };
   }
 }

@@ -10,7 +10,7 @@ class FirestoreService {
     @required Map<String, dynamic> data,
   }) async {
     final reference = Firestore.instance.document(path);
-    print('$path: $data');
+//    print('$path: $data');
     await reference.setData(data);
   }
 
@@ -19,13 +19,13 @@ class FirestoreService {
     @required Map<String, dynamic> data,
   }) async {
     final reference = Firestore.instance.document(path);
-    print('$path: $data');
+//    print('$path: $data');
     await reference.updateData(data);
   }
 
   Future<void> deleteData({@required String path}) async {
     final reference = Firestore.instance.document(path);
-    print('delete: $path');
+//    print('delete: $path');
     await reference.delete();
   }
 
@@ -34,12 +34,14 @@ class FirestoreService {
     @required T builder(Map<String, dynamic> data, String documentID),
     Query queryBuilder(Query query),
     int sort(T lhs, T rhs),
+    int sortIsDone(T lhs, T rhs),
     int sortCategory(T lhs, T rhs),
   }) {
     Query query = Firestore.instance.collection(path);
     if (queryBuilder != null) {
       query = queryBuilder(query);
     }
+    //Query collectionReference = Firestore.instance.collection("Events").orderBy('field');
     //Firestore.instance.collection(path).snapshots()
     final Stream<QuerySnapshot> snapshots = query.snapshots();
     return snapshots.map((snapshot) {
@@ -50,8 +52,11 @@ class FirestoreService {
       if (sort != null) {
         result.sort(sort);
       }
+      if (sortIsDone != null) {
+        result.sort(sortIsDone);
+      }
       if (sortCategory != null) {
-        result.sort(sort);
+        result.sort(sortCategory);
       }
       return result;
     });

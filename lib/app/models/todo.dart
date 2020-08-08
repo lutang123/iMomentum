@@ -8,12 +8,14 @@ class Todo {
       @required this.title,
       this.comment,
       this.date,
-      this.isDone});
+      this.isDone,
+      this.category});
   final String id;
   final String title;
   final String comment;
   final DateTime date;
   bool isDone;
+  int category;
 
 //  final int ratePerHour;
 
@@ -28,12 +30,15 @@ class Todo {
     if (title == null) {
       return null;
     }
+
     return Todo(
-        id: documentId,
-        title: title,
-        comment: firebaseMap['comment'],
-        date: DateTime.fromMillisecondsSinceEpoch(firebaseMap['date']),
-        isDone: firebaseMap['is_done']); //bool
+      id: documentId,
+      title: title,
+      comment: firebaseMap['comment'],
+      date: DateTime.fromMillisecondsSinceEpoch(firebaseMap['date']),
+      isDone: firebaseMap['is_done'],
+      category: firebaseMap['category'],
+    ); //bool
   }
 
   Map<String, dynamic> toMap() {
@@ -41,7 +46,8 @@ class Todo {
       'title': title,
       'comment': comment,
       'date': date.millisecondsSinceEpoch, //convert to int
-      'is_done': isDone, //bool
+      'is_done': isDone,
+      'category': category //bool
     };
   }
 

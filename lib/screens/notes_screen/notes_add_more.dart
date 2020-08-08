@@ -9,12 +9,12 @@ import 'notes_color.dart';
 
 class NoteAddMore extends StatelessWidget {
   final Note note;
-  final Function chooseColor;
+  final Function(int) onTap;
   final Function choosePhoto;
   final Function takePhoto;
 
   const NoteAddMore(
-      {Key key, this.note, this.chooseColor, this.choosePhoto, this.takePhoto})
+      {Key key, this.note, this.onTap, this.choosePhoto, this.takePhoto})
       : super(key: key);
 
   @override
@@ -22,7 +22,7 @@ class NoteAddMore extends StatelessWidget {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return CustomizedBottomSheet(
-      color: _darkTheme ? darkAdd : lightAdd,
+      color: _darkTheme ? darkBkgdColor : lightAdd,
       child: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Column(
@@ -44,7 +44,7 @@ class NoteAddMore extends StatelessWidget {
             ),
             ColorPicker(
               selectedIndex: note == null ? 0 : note.color,
-              onTap: chooseColor,
+              onTap: onTap,
             ),
             SizedBox(height: 10)
           ],
@@ -56,19 +56,17 @@ class NoteAddMore extends StatelessWidget {
 
 class NoteAddAction extends StatelessWidget {
   final Note note;
-  final Function chooseColor;
   final Function delete;
   final Function send;
 
-  const NoteAddAction(
-      {Key key, this.note, this.chooseColor, this.delete, this.send})
+  const NoteAddAction({Key key, this.note, this.delete, this.send})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return CustomizedBottomSheet(
-      color: _darkTheme ? darkAdd : lightAdd,
+      color: _darkTheme ? darkBkgdColor : lightAdd,
       child: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Column(

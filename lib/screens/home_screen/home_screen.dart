@@ -208,6 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
           title: _focusAnswer,
           date: DateTime.now(),
           isDone: false,
+          category: 0,
         );
         await database.setTodo(todo);
       } on PlatformException catch (e) {
@@ -373,7 +374,8 @@ class _HomeScreenState extends State<HomeScreen> {
             title: _typedTitleAndComment[0],
             comment: _typedTitleAndComment[1],
             date: _typedTitleAndComment[2],
-            isDone: isDone);
+            isDone: isDone,
+            category: _typedTitleAndComment[3]);
         //add newTodo to database
         await database.setTodo(newTodo);
       } on PlatformException catch (e) {
@@ -396,7 +398,7 @@ class _HomeScreenState extends State<HomeScreen> {
       DateTime today = DateTime(
           DateTime.now().year, DateTime.now().month, DateTime.now().day);
       DateTime date = DateTime(todo.date.year, todo.date.month, todo.date.day);
-      if ((date == today) && (todo.isDone == false)) {
+      if ((date == today) && (todo.isDone == false) && (todo.category == 0)) {
         todayTodos.add(todo);
       }
     });
@@ -440,7 +442,7 @@ class _HomeScreenState extends State<HomeScreen> {
 //                                color: Colors.orangeAccent,
                                   child: CarouselSlider(
                                     options: CarouselOptions(
-//                                    height: 250.0,
+//                                    height: 250.0, //default height is good enough
                                       viewportFraction: 1.0,
                                       initialPage: 0, //default
                                       onPageChanged: (index, reason) {
@@ -501,8 +503,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           database,
 //                                                      todayTodosNotDone,
                                                           todo),
-//                                                  onTap: () =>
-//                                                      _delete(context, todo),
                                                       onPressed: () =>
                                                           _onTapTodo(
                                                               database,
@@ -518,6 +518,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         vertical: 10.0),
                                                 child: MyFlatButton(
                                                   color: Colors.white,
+                                                  backgroundColor:
+                                                      Colors.transparent,
                                                   onPressed: () => _focusButton(
                                                       database, todo),
                                                   text: 'Focus Mode',

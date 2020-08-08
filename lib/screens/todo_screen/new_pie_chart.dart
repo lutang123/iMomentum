@@ -66,15 +66,22 @@ class NewPieChart extends StatelessWidget {
               chartType: ChartType.ring,
             ),
           )
-        : Container(
-            height: MediaQuery.of(context).size.width / 0.5,
-            child: Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Text(
-                'You have not done any focused task on this day.',
-                style: Theme.of(context).textTheme.subtitle2,
-                textAlign: TextAlign.center,
-              ),
-            ));
+        : ListView(
+            shrinkWrap: true,
+            children: <Widget>[
+              Container(
+
+                  ///what is the better way? TODO
+                  height: MediaQuery.of(context).size.width / 1.24,
+                  child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Text(
+                      'You have not done any focused task on this day.',
+                      style: Theme.of(context).textTheme.subtitle2,
+                      textAlign: TextAlign.center,
+                    ),
+                  )),
+            ],
+          );
   }
 }

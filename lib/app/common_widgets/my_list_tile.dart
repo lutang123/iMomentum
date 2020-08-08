@@ -25,17 +25,55 @@ class TodoListTile extends StatelessWidget {
   final VoidCallback onPressed;
   final Function onChangedCheckbox;
 
+//  List _categories = [
+//    'Focus', //0
+//    'Work', //1
+//    'Home', //2
+//    'Shopping', //3
+//    'Others' //4
+//  ];
+
+  Color getColor() {
+    if (todo.category == 0 || todo.category == null) {
+      return Colors.orange; //;
+    } else if (todo.category == 1) {
+      return Colors.lightBlue;
+    } else if (todo.category == 2) {
+      return Colors.purple;
+    } else if (todo.category == 3) {
+      return Colors.lightGreen;
+    } else {
+      return Colors.grey[350];
+    }
+  }
+
+  //Icon(Icons.chevron_right)
+
+  Widget getIcon() {
+    if (todo.category == 0 || todo.category == null) {
+      return Icon(Icons.timer);
+    } else if (todo.category == 1) {
+      return Icon(Icons.work);
+    } else if (todo.category == 2) {
+      return Icon(Icons.home);
+    } else if (todo.category == 3) {
+      return Icon(Icons.shopping_cart);
+    } else {
+      return Container();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return ListTile(
       leading: Theme(
-        data: ThemeData(unselectedWidgetColor: Colors.grey[350]),
+        data: ThemeData(unselectedWidgetColor: getColor()), //Colors.grey[350]
         child: Checkbox(
             activeColor: Colors.transparent, //black54
-            checkColor: _darkTheme ? Colors.grey[350] : lightButton,
-            value: todo.isDone,
+            checkColor: getColor(),
+            value: todo.isDone ? true : false,
             onChanged: onChangedCheckbox),
       ),
       title: AutoSizeText(todo.title,
@@ -46,6 +84,7 @@ class TodoListTile extends StatelessWidget {
           style: TextStyle(
             color: _darkTheme ? Colors.white : Color(0xF01b262c),
 //            fontSize: 19.0,
+            //1 means is done
             decoration: todo.isDone ? TextDecoration.lineThrough : null,
           )),
       subtitle: todo.comment == null || todo.comment.length == 0
@@ -70,8 +109,9 @@ class TodoListTile extends StatelessWidget {
               ],
             ),
       trailing: IconButton(
-        color: _darkTheme ? Colors.grey[350] : lightButton,
-        icon: Icon(Icons.chevron_right),
+//        color: _darkTheme ? Colors.grey[350] : lightButton,
+        color: getColor(),
+        icon: getIcon(),
         onPressed: onPressed,
       ),
       onTap: onTap,
@@ -100,7 +140,7 @@ class HomeTodoListTile extends StatelessWidget {
           child: Checkbox(
             activeColor: Colors.transparent,
             checkColor: Colors.grey[350],
-            value: todo.isDone,
+            value: todo.isDone ? true : false,
             onChanged: onChangedCheckbox,
           )),
       title: AutoSizeText(

@@ -118,13 +118,15 @@ class DailyTodosDetails {
       .map((todoDuration) => todoDuration.durationNumber)
       .reduce((value, element) => value + element);
 
+  //https://stackoverflow.com/questions/55520270/sum-of-value-in-a-collection-using-flutter
   /// for total duration
   static double getTotalDuration(List<TodoDuration> entries) {
     // total duration across all jobs
+    //return List<DailyTodosDetails>
     final allDailyJobsDetails = DailyTodosDetails._all(entries);
 //    print(allDailyJobsDetails); //flutter: Instance of '_MapStream<List<TodoDuration>, dynamic>'
     final totalDuration = allDailyJobsDetails
-        .map((dateJobsDuration) => dateJobsDuration.duration)
+        .map((allJobsDuration) => allJobsDuration.duration)
         .reduce((value, element) => value + element);
     return totalDuration;
   }

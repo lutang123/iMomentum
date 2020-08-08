@@ -42,21 +42,44 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
   TextEditingController _dateController;
   final FocusNode _dateFocusNode = FocusNode();
   final FocusNode _textFocusNode = FocusNode();
+//  final FocusNode _dropDownFocusNode = FocusNode();
+
+  List _categories = [
+    'Focus', //0
+    'Work', //1
+    'Home', //2
+    'Shopping', //3
+    'Others' //4
+  ];
+
+  List<DropdownMenuItem<String>> _dropDownMenuItems;
+  String _currentCategory;
+
+  ///TODO
+  void changedDropDownItem(String selectedCity) {
+//    print("Selected city $selectedCity, we are going to refresh the UI");
+    setState(() {
+      _currentCategory = selectedCity;
+    });
+//    _dropDownFocusNode.unfocus();
+//    FocusScope.of(context).requestFocus(_dropDownFocusNode);
+  }
+
+  // here we are creating the list needed for the DropDownButton
+  List<DropdownMenuItem<String>> getDropDownMenuItems() {
+    List<DropdownMenuItem<String>> items = List();
+    for (String city in _categories) {
+      // here we are creating the drop down menu items, you can customize the item right here
+      // but I'll just use a simple text for this
+      items.add(DropdownMenuItem(value: city, child: Text(city)));
+    }
+    return items;
+  }
 
   @override
   void initState() {
-//    _controller = AnimationController(
-//      value: 0.0,
-//      duration: const Duration(milliseconds: 150),
-//      reverseDuration: const Duration(milliseconds: 75),
-//      vsync: this,
-//    )..addStatusListener((AnimationStatus status) {
-//        setState(() {
-//          // setState needs to be called to trigger a rebuild because
-//          // the 'HIDE FAB'/'SHOW FAB' button needs to be updated based
-//          // the latest value of [_controller.status].
-//        });
-//      });
+    _dropDownMenuItems = getDropDownMenuItems();
+
     formattedToday = DateFormat('M/d/y').format(DateTime.now());
     _dateController = TextEditingController();
 
@@ -71,6 +94,9 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
           ? _dateController.text = 'Today'
           : _dateController.text = _dateFormatter.format(dateNew);
 //      print('widget.dateController.text if NOT null: ${_dateController.text}');
+      if (todo.category != null) {
+        _currentCategory = _categories[todo.category];
+      }
     } else {
       dateNew = widget.pickedDate;
 //      print(
@@ -79,6 +105,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
       formattedDate == formattedToday
           ? _dateController.text = 'Today'
           : _dateController.text = _dateFormatter.format(dateNew);
+      _currentCategory = _dropDownMenuItems[0].value;
 
 //      print('widget.dateController.text if null: ${_dateController.text}');
     }
@@ -259,6 +286,70 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                   ),
                 ),
               ),
+              Container(
+                width: 350,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        'Category',
+                        style: TextStyle(
+                            fontSize: 13,
+                            color:
+                                _darkTheme ? Colors.white54 : Colors.black38),
+                      ),
+                      DropdownButton(
+                        value: _currentCategory,
+                        items: _dropDownMenuItems,
+                        onChanged: changedDropDownItem,
+                        dropdownColor: darkAdd,
+//                        focusNode: _dropDownFocusNode,
+                      ),
+                    ],
+                  ),
+
+//                  DropdownButtonFormField(
+//                    isDense: true,
+//                    icon: Icon(Icons.arrow_drop_down_circle),
+//                    iconSize: 22.0,
+//                    iconEnabledColor: Theme.of(context).primaryColor,
+//                    items: _priorities.map((String priority) {
+//                      return DropdownMenuItem(
+//                        value: priority,
+//                        child: Text(
+//                          priority,
+//                          style: TextStyle(
+//                            fontSize: 18.0,
+//                          ),
+//                        ),
+//                      );
+//                    }).toList(),
+//                    style: TextStyle(
+//                        color: _darkTheme ? Colors.white70 : Color(0xF01b262c),
+//                        fontSize: 14.0),
+//                    decoration: InputDecoration(
+//                      hintText: 'Category',
+//                      hintStyle: TextStyle(
+//                          fontSize: 13,
+//                          color: _darkTheme ? Colors.white54 : Colors.black38),
+//                      focusedBorder: UnderlineInputBorder(
+//                          borderSide: BorderSide(
+//                              color: _darkTheme ? Colors.white : lightButton)),
+//                      enabledBorder: UnderlineInputBorder(
+//                          borderSide: BorderSide(
+//                              color: _darkTheme ? Colors.white : lightButton)),
+//                    ),
+//                    onChanged: (value) {
+//                      setState(() {
+//                        _priority = value;
+//                      });
+//                    },
+//                    value: _priority,
+//                  ),
+                ),
+              ),
               SizedBox(height: 15),
               MyFlatButton(
                   onPressed: _save,
@@ -284,9 +375,11 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
   }
 
   Future<void> _save() async {
+    final index = _categories.indexOf(_currentCategory);
+    print('index: $index');
     if (_validateAndSaveForm()) {
       //pop to previous page
-      Navigator.of(context).pop([title, comment, dateNew]);
+      Navigator.of(context).pop([title, comment, dateNew, index]);
     }
   }
 }

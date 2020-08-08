@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:iMomentum/screens/landing_and_signIn/sign_in_page.dart';
-import 'package:iMomentum/screens/landing_and_signIn/sign_in_screen_new.dart';
-import 'package:iMomentum/screens/landing_and_signIn/start_screen.dart';
 import 'package:iMomentum/app/services/auth.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/tab_and_navigation/tab_page.dart';

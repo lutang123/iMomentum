@@ -3,7 +3,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iMomentum/app/common_widgets/avatar.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
-import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
 import 'package:iMomentum/app/constants/constants.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:provider/provider.dart';
@@ -41,23 +40,23 @@ class _UserScreenState extends State<UserScreen> {
     });
   }
 
-  Future _uploadFile() async {
-    setState(() {
-      isLoading = true;
-    });
-    StorageReference storageReference = FirebaseStorage.instance
-        .ref()
-        .child('images/${Path.basename(_image.path)}}');
-    StorageUploadTask uploadTask = storageReference.putFile(_image);
-    await uploadTask.onComplete;
-    print('File Uploaded');
-    storageReference.getDownloadURL().then((fileURL) {
-      setState(() {
-        _uploadedFileURL = fileURL;
-        isLoading = false;
-      });
-    });
-  }
+//  Future _uploadFile() async {
+//    setState(() {
+//      isLoading = true;
+//    });
+//    StorageReference storageReference = FirebaseStorage.instance
+//        .ref()
+//        .child('images/${Path.basename(_image.path)}}');
+//    StorageUploadTask uploadTask = storageReference.putFile(_image);
+//    await uploadTask.onComplete;
+//    print('File Uploaded');
+//    storageReference.getDownloadURL().then((fileURL) {
+//      setState(() {
+//        _uploadedFileURL = fileURL;
+//        isLoading = false;
+//      });
+//    });
+//  }
 
   @override
   Widget build(BuildContext context) {

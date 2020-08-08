@@ -82,7 +82,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
           /* only set when the previous state is false
              * Less widget rebuilds
              */
-          print("**** $_isVisible up"); //Move IO away from setState
+//          print("**** $_isVisible up"); //Move IO away from setState
           setState(() {
             _isVisible = false;
           });
@@ -94,7 +94,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
             /* only set when the previous state is false
                * Less widget rebuilds
                */
-            print("**** $_isVisible down"); //Move IO away from setState
+//            print("**** $_isVisible down"); //Move IO away from setState
             setState(() {
               _isVisible = true;
             });
@@ -161,40 +161,40 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
     });
   }
 
-  Widget _buildDoneMarker(
-      DateTime date, List events, CalendarController calendarController) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      decoration: BoxDecoration(
-        shape: BoxShape.rectangle,
-        color: calendarController.isSelected(date)
-            ? Colors.brown[500]
-            : calendarController.isToday(date)
-                ? Colors.brown[300]
-                : Colors.blue[400],
-      ),
-      width: 16.0,
-      height: 16.0,
-      child: Center(
-        child: Text(
-          '${events.length}',
-          style: TextStyle().copyWith(
-            color: Colors.white,
-            fontSize: 12.0,
-          ),
-        ),
-      ),
-    );
-  }
+//  Widget _buildDoneMarker(
+//      DateTime date, List events, CalendarController calendarController) {
+//    return AnimatedContainer(
+//      duration: const Duration(milliseconds: 300),
+//      decoration: BoxDecoration(
+//        shape: BoxShape.rectangle,
+//        color: calendarController.isSelected(date)
+//            ? Colors.brown[500]
+//            : calendarController.isToday(date)
+//                ? Colors.brown[300]
+//                : Colors.blue[400],
+//      ),
+//      width: 16.0,
+//      height: 16.0,
+//      child: Center(
+//        child: Text(
+//          '${events.length}',
+//          style: TextStyle().copyWith(
+//            color: Colors.white,
+//            fontSize: 12.0,
+//          ),
+//        ),
+//      ),
+//    );
+//  }
 
-  Widget _buildNotDoneMarker(
-      DateTime date, List events, CalendarController calendarController) {
-    return Icon(
-      Icons.add_box,
-      size: 20.0,
-      color: Colors.blueGrey[800],
-    );
-  }
+//  Widget _buildNotDoneMarker(
+//      DateTime date, List events, CalendarController calendarController) {
+//    return Icon(
+//      Icons.add_box,
+//      size: 20.0,
+//      color: Colors.blueGrey[800],
+//    );
+//  }
 
   @override
   Widget build(BuildContext context) {
@@ -266,6 +266,13 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             final List<Todo> todos = snapshot.data;
+//                            // ignore: missing_return
+//                            todos.sort((lhs, rhs) {
+//                              if ((lhs.category != null) &&
+//                                  (rhs.category != null)) {
+//                                return rhs.category.compareTo(lhs.category);
+//                              }
+//                            });
                             if (todos.isNotEmpty) {
                               //TODO
                               final _events = //do not assign an empty events map first, why?/
@@ -409,9 +416,23 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 10.0),
+//          Container(
+////            height: MediaQuery.of(context).size.width / 0.5,
+//              child: Padding(
+//                padding: const EdgeInsets.all(15.0),
+//                child: Text(
+//                  'You have not done any focused task on this day.',
+//                  style: Theme.of(context).textTheme.subtitle2,
+//                  textAlign: TextAlign.center,
+//                ),
+//              )),
+//              Expanded(  //why adding Expanded here is wrong
+//                child:
               _dataMapSelected.isEmpty
                   ? NewPieChart(dataMap: _dataMapToday)
                   : NewPieChart(dataMap: _dataMapSelected),
+//              ),
+//              Spacer()
             ],
           ),
         ),
@@ -680,8 +701,6 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
     );
   }
 
-
-
   Widget buildListView(
       Database database, List<Todo> todos, List<Todo> anyList) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
@@ -718,11 +737,12 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
             actionExtentRatio: 0.25,
             actions: <Widget>[
               IconSlideAction(
-                caption: 'Add reminder',
+//                caption: 'Add reminder',
                 color: Colors.black12,
                 iconWidget: FaIcon(
                   FontAwesomeIcons.bell,
-                  color: Colors.white,
+                  size: 20,
+                  color: Colors.orange,
                 ),
 //                onTap: () => Navigator.of(context, rootNavigator: true)
 //                    .push(CupertinoPageRoute(
@@ -734,11 +754,14 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
             ],
             secondaryActions: <Widget>[
               IconSlideAction(
-                caption: 'Delete',
+//                caption: 'Delete',
                 color: Colors.black12,
-                iconWidget: FaIcon(
+                iconWidget:
+//                Icon(Icons.delete_outline),
+                    FaIcon(
                   FontAwesomeIcons.trashAlt,
-                  color: Colors.white,
+                  size: 20,
+                  color: Colors.red,
                 ),
                 onTap: () => _delete(
                   context,
@@ -884,7 +907,10 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
 //            date: _taskDate,
           date: _typedTitleAndComment[2],
           isDone: false,
+          category: _typedTitleAndComment[3],
         );
+//        print('newTodo.id: ${newTodo.id}');
+//        print('newTodo.date: ${newTodo.date}'); //we can't use this to sort the order
         //add newTodo to database
         await database.setTodo(newTodo);
 
@@ -932,10 +958,10 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
         /// is to add this if statement:
         if (_dateFormatter.format(_calendarController.selectedDay) ==
             _dateFormatter.format(newTodo.date)) {
-          print(
-              '_calendarController.selectedDay 2 if the same date: ${_calendarController.selectedDay}'); //2020-07-27 13:21:08.940561
-          print(
-              'newTodo.date if the same date formatted: ${_dateFormatter.format(newTodo.date)}');
+//          print(
+//              '_calendarController.selectedDay 2 if the same date: ${_calendarController.selectedDay}'); //2020-07-27 13:21:08.940561
+//          print(
+//              'newTodo.date if the same date formatted: ${_dateFormatter.format(newTodo.date)}');
 
           _selectedList
                   .isEmpty //which means we have not tap on any dates, default is today
@@ -959,35 +985,11 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
     });
   }
 
-//  final DateFormat _dateFormatter = DateFormat('MMM dd');
-//  TextEditingController _dateController = TextEditingController();
-//  Future<void> _handleDatePicker() async {
-//    //Shows a dialog containing a Material Design date picker.
-//    //Type: Future<DateTime> Function
-//    final DateTime date = await showDatePicker(
-//      context: context,
-//      //we set as DateTime _date = DateTime.now(); or todo's date if we update
-//      initialDate: _taskDate,
-//      firstDate: DateTime(2019),
-//      lastDate: DateTime(2100),
-//    );
-//    if (date != null && date != _taskDate) {
-////    if (date != null) {
-//      setState(() {
-//        _taskDate =
-//            date; //give task date a new value and also update the screen
-//      }); //DateFormat('MMM dd, yyyy');
-//      //this is the date we picked
-//      _dateController.text = _dateFormatter.format(date);
-//      print('_dateController.text: ${_dateController.text}');
-//    }
-//  }
-
   /// update & at the same time update _selectedList
   void _update(Database database, List<Todo> todos, Todo todo) async {
     setState(() {
       _listVisible = false;
-//      _calendarOpacity = 0.0;
+      _calendarOpacity = 0.0;
     });
     var _typedTitleAndComment = await showModalBottomSheet(
         context: context,
@@ -1008,11 +1010,13 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
 
         ///first we find this specific Todo item that we want to update
         final newTodo = Todo(
-            id: id,
-            title: _typedTitleAndComment[0],
-            comment: _typedTitleAndComment[1],
-            date: _typedTitleAndComment[2],
-            isDone: isDone);
+          id: id,
+          title: _typedTitleAndComment[0],
+          comment: _typedTitleAndComment[1],
+          date: _typedTitleAndComment[2],
+          isDone: isDone,
+          category: _typedTitleAndComment[3],
+        );
 
         ///then update newTodo to database
         await database.setTodo(newTodo);
@@ -1087,18 +1091,18 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
           setState(() {
             _selectedList = newList;
           });
-          print(
-              'if (_calendarController.selectedDay == newTodo.date), newTodo.date: $newTodo.date');
+//          print(
+//              'if (_calendarController.selectedDay == newTodo.date), newTodo.date: $newTodo.date');
         } else if (
             //make it formatted because if not selecting any day, default selected day is today and it's in different format
             _dateFormatter.format(_calendarController.selectedDay) !=
                 _dateFormatter.format(newTodo.date)) {
           newList[index] = newTodo;
-          print('index: $index');
+//          print('index: $index');
           newList.remove(newTodo);
-          print(newList.remove(newTodo)); //false
-          print(
-              newList); //this list not updated?, we need to add first and then remove
+//          print(newList.remove(newTodo)); //false
+//          print(
+//              newList); //this list not updated?, we need to add first and then remove
           setState(() {
             _selectedList = newList;
           });
@@ -1113,7 +1117,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
 
     setState(() {
       _listVisible = true;
-//      _calendarOpacity = 1.0;
+      _calendarOpacity = 1.0;
     });
   }
 

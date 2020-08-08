@@ -98,9 +98,13 @@ class FirestoreDatabase implements Database {
   Stream<List<Todo>> todosStream() => _service.collectionStream(
         path: APIPath.todos(uid),
         builder: (data, documentId) => Todo.fromMap(data, documentId),
+//        queryBuilder: (query) => query.orderBy('category'),
         //to make the most recently edited one show first
-        sort: (lhs, rhs) => rhs.date.compareTo(lhs.date),
-//      sortCategory: (lhs, rhs) => (rhs.isDone == true).compareTo(lhs.isDone == false),
+        sort: (lhs, rhs) => lhs.id.compareTo(rhs.id),
+
+//messageList.sort((m, m2) => int.parse(m.id).compareTo(int.parse(m2.id)));
+        sortIsDone: (lhs, rhs) => (rhs.isDone.toString().length)
+            .compareTo(lhs.isDone.toString().length),
       );
 
   /// duration

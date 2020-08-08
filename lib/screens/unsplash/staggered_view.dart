@@ -197,9 +197,7 @@ class _StaggeredViewState extends State<StaggeredView> {
         itemCount: snapshot.data
             .length, //NoSuchMethodError: The getter 'length' was called on null.
         // set itemBuilder
-        itemBuilder: (BuildContext context, int index) =>
-//            _buildImageItemBuilder(index),
-            OpenContainer(
+        itemBuilder: (BuildContext context, int index) => OpenContainer(
           useRootNavigator: true,
           transitionType: ContainerTransitionType.fade,
           closedBuilder: (BuildContext _, VoidCallback openContainer) {
