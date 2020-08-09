@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:iMomentum/app/models/duration_model.dart';
+import 'package:iMomentum/app/models/folder.dart';
 import 'package:iMomentum/app/models/image_model.dart';
 import 'package:iMomentum/app/models/mantra_model.dart';
 import 'package:iMomentum/app/models/note.dart';
@@ -20,13 +21,19 @@ abstract class Database {
   Future<void> setTodo(Todo todo); //create/update a job
   Future<void> updateTodo(Todo todo); //to update isDone
   Future<void> deleteTodo(Todo todo); //delete a job
-  Stream<List<Todo>> todosStream(); //read all jobs
   Stream<Todo> todoStream({@required String todoId}); //read one jobs
+  Stream<List<Todo>> todosStream(); //read all jobs
 
   //duration
   Future<void> setDuration(DurationModel duration);
   Future<void> deleteDuration(DurationModel duration);
   Stream<List<DurationModel>> durationsStream({Todo todo});
+
+  //todo
+  Future<void> setFolder(Folder folder); //create/update a job
+  Future<void> deleteFolder(Folder folder); //delete a job
+  Stream<Folder> folderStream({@required String folderId});
+  Stream<List<Folder>> foldersStream(); //read all jobs
 
   //note
   Future<void> setNote(Note note); //create/update a job
@@ -130,6 +137,37 @@ class FirestoreDatabase implements Database {
 //        sort: (lhs, rhs) => rhs.start.compareTo(lhs.start),
       );
 
+  /// folder
+  @override //create or update job
+  Future<void> setFolder(Folder folder) async => await _service.setData(
+        path: APIPath.folder(uid, folder.id),
+        data: folder.toMap(),
+      );
+
+  @override // delete job
+  Future<void> deleteFolder(Folder folder) async {
+    // delete where entry.jobId == job.jobId
+    final allNotes = await notesStream(folder: folder).first;
+    for (Note note in allNotes) {
+      if (note.folderId == folder.id) {
+        await deleteNote(note);
+      }
+    }
+    await _service.deleteData(path: APIPath.folder(uid, folder.id));
+  }
+
+  @override //read a job
+  Stream<Folder> folderStream({@required String folderId}) =>
+      _service.documentStream(
+        path: APIPath.folder(uid, folderId),
+        builder: (data, documentId) => Folder.fromMap(data, documentId),
+      );
+  @override //read jobs
+  Stream<List<Folder>> foldersStream() => _service.collectionStream(
+        path: APIPath.todos(uid),
+        builder: (data, documentId) => Folder.fromMap(data, documentId),
+      );
+
   /// note
   @override //create or update job
   Future<void> setNote(Note note) async => await _service.setData(
@@ -157,8 +195,12 @@ class FirestoreDatabase implements Database {
         builder: (data, documentId) => Note.fromMap(data, documentId),
       );
   @override //read jobs
-  Stream<List<Note>> notesStream() => _service.collectionStream(
+  Stream<List<Note>> notesStream({Folder folder}) =>
+      _service.collectionStream<Note>(
         path: APIPath.notes(uid),
+        queryBuilder: folder != null
+            ? (query) => query.where('folderId', isEqualTo: folder.id)
+            : null,
         builder: (data, documentId) => Note.fromMap(data, documentId),
         //to make the most recently edited one show first
         sort: (lhs, rhs) => rhs.date.compareTo(lhs.date),

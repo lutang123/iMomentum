@@ -7,6 +7,11 @@ class APIPath {
       'users/$uid/durations/$durationId';
   static String durations(String uid) => 'users/$uid/durations';
 
+  //folders
+  static String folder(String uid, String folderId) =>
+      'users/$uid/folders/$folderId';
+  static String folders(String uid) => 'users/$uid/folders';
+
   //notes
   static String note(String uid, String noteId) => 'users/$uid/notes/$noteId';
   static String notes(String uid) => 'users/$uid/notes';

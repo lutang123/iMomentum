@@ -52,8 +52,17 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
     'Others' //4
   ];
 
+  List _projects = [
+    'Project 1', //0
+    'Project 2', //1
+    'Others' //4
+  ];
+
   List<DropdownMenuItem<String>> _dropDownMenuItems;
   String _currentCategory;
+
+  List<DropdownMenuItem<String>> _dropDownMenuItemsProjects;
+  String _currentProject;
 
   ///TODO
   void changedDropDownItem(String selectedCity) {
@@ -76,9 +85,30 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
     return items;
   }
 
+  void changedDropDownItemProjects(String selectedCity) {
+//    print("Selected city $selectedCity, we are going to refresh the UI");
+    setState(() {
+      _currentProject = selectedCity;
+    });
+//    _dropDownFocusNode.unfocus();
+//    FocusScope.of(context).requestFocus(_dropDownFocusNode);
+  }
+
+  // here we are creating the list needed for the DropDownButton
+  List<DropdownMenuItem<String>> getDropDownMenuItemsProjects() {
+    List<DropdownMenuItem<String>> items = List();
+    for (String city in _projects) {
+      // here we are creating the drop down menu items, you can customize the item right here
+      // but I'll just use a simple text for this
+      items.add(DropdownMenuItem(value: city, child: Text(city)));
+    }
+    return items;
+  }
+
   @override
   void initState() {
     _dropDownMenuItems = getDropDownMenuItems();
+    _dropDownMenuItemsProjects = getDropDownMenuItemsProjects();
 
     formattedToday = DateFormat('M/d/y').format(DateTime.now());
     _dateController = TextEditingController();
@@ -87,7 +117,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
       title = todo.title;
       comment = todo.comment;
       dateNew = todo.date;
-      print('dateNew if NOT null: $dateNew');
+//      print('dateNew if NOT null: $dateNew');
       formattedDate = DateFormat('M/d/y').format(dateNew);
       //this gives an initial value;
       formattedDate == formattedToday
@@ -95,9 +125,15 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
           : _dateController.text = _dateFormatter.format(dateNew);
 //      print('widget.dateController.text if NOT null: ${_dateController.text}');
       if (todo.category != null) {
-        _currentCategory = _categories[todo.category];
+        _currentCategory =
+            _categories[todo.category]; //todo.category is a number (index)
+      }
+
+      if (todo.project != null) {
+        _currentProject = todo.project; //this is a String
       }
     } else {
+      //if todo is null
       dateNew = widget.pickedDate;
 //      print(
 //          'dateNew in init if null: $dateNew'); //if todo is null, we used pickedDate which we passed by
@@ -105,8 +141,10 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
       formattedDate == formattedToday
           ? _dateController.text = 'Today'
           : _dateController.text = _dateFormatter.format(dateNew);
+      //need to give it a value;
       _currentCategory = _dropDownMenuItems[0].value;
 
+      _currentProject = _dropDownMenuItemsProjects[0].value;
 //      print('widget.dateController.text if null: ${_dateController.text}');
     }
     super.initState();
@@ -294,7 +332,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Text(
-                        'Category',
+                        'Task Category',
                         style: TextStyle(
                             fontSize: 13,
                             color:
@@ -350,6 +388,74 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
 //                  ),
                 ),
               ),
+              _currentCategory == 'Focus'
+                  ? Container(
+                      width: 350,
+                      child: Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              'Project name',
+                              style: TextStyle(
+                                  fontSize: 13,
+                                  color: _darkTheme
+                                      ? Colors.white54
+                                      : Colors.black38),
+                            ),
+                            DropdownButton(
+                              value: _currentProject,
+                              items: _dropDownMenuItemsProjects,
+                              onChanged: changedDropDownItemProjects,
+                              dropdownColor: darkAdd,
+//                        focusNode: _dropDownFocusNode,
+                            ),
+                          ],
+                        ),
+
+//                  DropdownButtonFormField(
+//                    isDense: true,
+//                    icon: Icon(Icons.arrow_drop_down_circle),
+//                    iconSize: 22.0,
+//                    iconEnabledColor: Theme.of(context).primaryColor,
+//                    items: _priorities.map((String priority) {
+//                      return DropdownMenuItem(
+//                        value: priority,
+//                        child: Text(
+//                          priority,
+//                          style: TextStyle(
+//                            fontSize: 18.0,
+//                          ),
+//                        ),
+//                      );
+//                    }).toList(),
+//                    style: TextStyle(
+//                        color: _darkTheme ? Colors.white70 : Color(0xF01b262c),
+//                        fontSize: 14.0),
+//                    decoration: InputDecoration(
+//                      hintText: 'Category',
+//                      hintStyle: TextStyle(
+//                          fontSize: 13,
+//                          color: _darkTheme ? Colors.white54 : Colors.black38),
+//                      focusedBorder: UnderlineInputBorder(
+//                          borderSide: BorderSide(
+//                              color: _darkTheme ? Colors.white : lightButton)),
+//                      enabledBorder: UnderlineInputBorder(
+//                          borderSide: BorderSide(
+//                              color: _darkTheme ? Colors.white : lightButton)),
+//                    ),
+//                    onChanged: (value) {
+//                      setState(() {
+//                        _priority = value;
+//                      });
+//                    },
+//                    value: _priority,
+//                  ),
+                      ),
+                    )
+                  : Container(),
               SizedBox(height: 15),
               MyFlatButton(
                   onPressed: _save,

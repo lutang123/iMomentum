@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -47,11 +48,10 @@ class TodoListTile extends StatelessWidget {
     }
   }
 
-  //Icon(Icons.chevron_right)
-
   Widget getIcon() {
     if (todo.category == 0 || todo.category == null) {
       return Icon(Icons.timer);
+//      return SmallContainer(text: 'project 1');
     } else if (todo.category == 1) {
       return Icon(Icons.work);
     } else if (todo.category == 2) {
@@ -76,37 +76,49 @@ class TodoListTile extends StatelessWidget {
             value: todo.isDone ? true : false,
             onChanged: onChangedCheckbox),
       ),
-      title: AutoSizeText(todo.title,
-          maxLines: 4,
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          AutoSizeText(todo.title,
+              maxLines: 4,
 //          maxFontSize: 19,
-          minFontSize: 15,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: _darkTheme ? Colors.white : Color(0xF01b262c),
+              minFontSize: 15,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: _darkTheme ? Colors.white : Color(0xF01b262c),
 //            fontSize: 19.0,
-            //1 means is done
-            decoration: todo.isDone ? TextDecoration.lineThrough : null,
-          )),
+                //1 means is done
+                decoration: todo.isDone ? TextDecoration.lineThrough : null,
+              )),
+        ],
+      ),
       subtitle: todo.comment == null || todo.comment.length == 0
           ? null
-          : Row(
-              children: <Widget>[
-                Icon(
-                  Icons.comment,
-                  size: 15,
-                  color: _darkTheme ? Colors.white70 : lightButton,
-                ),
-                SizedBox(width: 5),
-                Expanded(
-                  child: Text(todo.comment,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: _darkTheme ? Colors.white70 : Color(0xF01b262c),
-                        decoration:
-                            todo.isDone ? TextDecoration.lineThrough : null,
-                      )),
-                )
-              ],
+          : Padding(
+              padding: const EdgeInsets.only(left: 5.0, top: 5),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+//              textBaseline: TextBaseline.alphabetic,
+                children: <Widget>[
+                  Icon(
+                    Icons.comment,
+                    size: 15,
+                    color: _darkTheme ? Colors.white70 : lightButton,
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(todo.comment,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color:
+                              _darkTheme ? Colors.white70 : Color(0xF01b262c),
+                          decoration:
+                              todo.isDone ? TextDecoration.lineThrough : null,
+                        )),
+                  )
+                ],
+              ),
             ),
       trailing: IconButton(
 //        color: _darkTheme ? Colors.grey[350] : lightButton,
@@ -114,6 +126,16 @@ class TodoListTile extends StatelessWidget {
         icon: getIcon(),
         onPressed: onPressed,
       ),
+//          SizedBox(width: 3),
+//          Flexible(
+//            child: IconButton(
+//              color: _darkTheme ? Colors.grey[350] : lightButton,
+//              icon: Icon(FontAwesomeIcons.chevronRight),
+//              tooltip: 'Edit Task',
+//              onPressed: onPressed,
+//            ),
+//          ),
+
       onTap: onTap,
     );
   }

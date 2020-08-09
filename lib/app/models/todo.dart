@@ -3,19 +3,22 @@ import 'dart:ui';
 import 'package:meta/meta.dart';
 
 class Todo {
-  Todo(
-      {@required this.id,
-      @required this.title,
-      this.comment,
-      this.date,
-      this.isDone,
-      this.category});
+  Todo({
+    @required this.id,
+    @required this.title,
+    this.comment,
+    this.date,
+    this.isDone,
+    this.category,
+    this.project,
+  });
   final String id;
   final String title;
   final String comment;
   final DateTime date;
   bool isDone;
   int category;
+  String project;
 
 //  final int ratePerHour;
 
@@ -38,6 +41,7 @@ class Todo {
       date: DateTime.fromMillisecondsSinceEpoch(firebaseMap['date']),
       isDone: firebaseMap['is_done'],
       category: firebaseMap['category'],
+      project: firebaseMap['project'],
     ); //bool
   }
 
@@ -46,8 +50,9 @@ class Todo {
       'title': title,
       'comment': comment,
       'date': date.millisecondsSinceEpoch, //convert to int
-      'is_done': isDone,
-      'category': category //bool
+      'is_done': isDone, //bool
+      'category': category,
+      'project': project, // int
     };
   }
 

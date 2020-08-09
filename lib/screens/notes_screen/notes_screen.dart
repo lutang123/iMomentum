@@ -226,12 +226,12 @@ class NotesScreenState extends State<NotesScreen>
 //                                  context,
 //                                  MaterialPageRoute(
 //                                      builder: (_) => NotesFolder()))),
-//                          MyFlatButton(
-//                              text: 'Notes Folder',
-//                              onPressed: () => Navigator.push(
-//                                  context,
-//                                  MaterialPageRoute(
-//                                      builder: (_) => NotesTest()))),
+                          MyFlatButton(
+                              text: 'Notes Folder',
+                              onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => NotesTest()))),
                           Expanded(
                             child: Padding(
                               padding:
@@ -398,10 +398,27 @@ class NotesScreenState extends State<NotesScreen>
               useRootNavigator: true,
               transitionType: _transitionType,
               closedBuilder: (BuildContext _, VoidCallback openContainer) {
-                return BuildNoteContainer(
-                  note: note,
-                  database: database,
-//                  onTap: () => _onTap(database, note),
+                return Stack(
+                  alignment: Alignment.topRight,
+                  children: <Widget>[
+                    BuildNoteContainer(
+                      note: note,
+                      database: database,
+                      onLongPress: () => _onLongPress(),
+//                  onTap: () => _onTap(database, note), //changed to OpenContainer
+                    ),
+                    Visibility(
+                      visible: _deleteVisible,
+                      child: IconButton(
+                        icon: FaIcon(
+                          FontAwesomeIcons.trashAlt,
+                          size: 20,
+                          color: Colors.white,
+                        ),
+                        onPressed: () => _delete(context, note),
+                      ),
+                    )
+                  ],
                 );
               },
               closedColor: Colors.transparent,
@@ -437,6 +454,13 @@ class NotesScreenState extends State<NotesScreen>
             ],
           );
         });
+  }
+
+  bool _deleteVisible = false;
+  void _onLongPress() {
+    setState(() {
+      _deleteVisible = !_deleteVisible;
+    });
   }
 
   void _showSnackBar(BuildContext context, String text) {

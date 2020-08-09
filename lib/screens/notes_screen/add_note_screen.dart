@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iMomentum/app/common_widgets/format.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
+import 'package:iMomentum/app/models/folder.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/models/note.dart';
 import 'package:iMomentum/app/constants/theme.dart';
@@ -18,8 +19,9 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 class AddNoteScreen extends StatefulWidget {
-  const AddNoteScreen({this.database, this.note});
+  const AddNoteScreen({this.database, this.note, this.folder});
   final Note note;
+  final Folder folder;
   final Database database;
   @override
   State<StatefulWidget> createState() {
@@ -281,9 +283,12 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                   ),
                 ),
               ),
-              ColorPicker(
-                selectedIndex: note == null ? 0 : note.color,
-                onTap: (index) => _pickColor(index),
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0, right: 8, bottom: 30),
+                child: ColorPicker(
+                  selectedIndex: note == null ? 0 : note.color,
+                  onTap: (index) => _pickColor(index),
+                ),
               ),
 
 //              Container(
@@ -335,6 +340,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
         ///first we find this specific Todo item that we want to update
         final newNote = Note(
             id: id,
+            folderId: widget.folder.id,
             title: title,
             description: description,
             color: color,
@@ -369,7 +375,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
     setState(() {
       color = index;
     });
-//    isEdited = true;
+    isEdited = true;
 //    note.color = index;
   }
 

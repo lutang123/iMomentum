@@ -12,6 +12,7 @@ import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/device.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/constants/constants.dart';
+import 'package:iMomentum/app/models/folder.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/models/note.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
@@ -25,16 +26,16 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'notes_folder_container.dart';
 import 'notes_folder_detail.dart';
 
-class NotesFolder extends StatefulWidget {
+class NotesFolderScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return NotesFolderState();
+    return NotesFolderScreenState();
   }
 }
 
 const double _fabDimension = 56.0;
 
-class NotesFolderState extends State<NotesFolder>
+class NotesFolderScreenState extends State<NotesFolderScreen>
     with SingleTickerProviderStateMixin {
 //  AnimationController _controller;
 
@@ -143,96 +144,46 @@ class NotesFolderState extends State<NotesFolder>
         GestureDetector(
           onDoubleTap: _onDoubleTap,
           child: Scaffold(
-//            backgroundColor: animation.value,
-
             backgroundColor: Colors.transparent,
             body: SafeArea(
-              child: StreamBuilder<List<Note>>(
+              child: StreamBuilder<List<Folder>>(
                 stream: database
-                    .notesStream(), // print(database.todosStream());//Instance of '_MapStream<QuerySnapshot, List<TodoModel>>'
+                    .foldersStream(), // print(database.todosStream());//Instance of '_MapStream<QuerySnapshot, List<TodoModel>>'
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    final List<Note> notes = snapshot.data;
+                    final List<Folder> folders = snapshot.data;
                     final themeNotifier = Provider.of<ThemeNotifier>(context);
                     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-                    if (notes.isNotEmpty) {
-//                    void _onReorder(int oldIndex, int newIndex) {
-//                      setState(
-//                        () {
-//                          final Note note = notes.removeAt(oldIndex);
-//                          notes.insert(newIndex, note);
-//                        },
-//                      );
-//                    }
-
+                    if (folders.isNotEmpty) {
                       return Column(
                         children: <Widget>[
-                          notes.length == 0
-                              ? Container()
-                              : Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 25.0, right: 25, bottom: 10),
-                                  child: Container(
-                                      decoration: BoxDecoration(
-                                          color: _darkTheme
-                                              ? darkSurfaceTodo
-                                              : lightSurface,
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(10.0))),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: <Widget>[
-                                          Row(
-                                            children: <Widget>[
-                                              SizedBox(width: 60),
-                                              FlatButton(
-                                                child: Text(
-                                                  'Search your notes',
-                                                  style: TextStyle(
-                                                    fontSize: 20,
-                                                    color: _darkTheme
-                                                        ? darkHint
-                                                        : lightHint,
-                                                  ),
-                                                ),
-                                                onPressed: () =>
-                                                    _search(database, notes),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: <Widget>[
-                                              IconButton(
-                                                icon: Icon(
-                                                  axisCount == 2
-                                                      ? FontAwesomeIcons.list
-                                                      : FontAwesomeIcons
-                                                          .gripVertical,
-                                                  //dehaze
-//                                                    ? Icons.list
-//                                                    : Icons.grid_on,
-                                                  color: _darkTheme
-                                                      ? Colors.white
-                                                      : lightButton,
-                                                ),
-                                                onPressed: () {
-                                                  setState(() {
-                                                    axisCount =
-                                                        axisCount == 2 ? 4 : 2;
-                                                  });
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      )),
-                                ),
+//                          folders.length == 0
+//                              ? Container()
+//                              :
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 25.0, right: 25, bottom: 10),
+                            child: Container(
+                                decoration: BoxDecoration(
+                                    color: _darkTheme
+                                        ? darkSurfaceTodo
+                                        : lightSurface,
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(10.0))),
+                                child: Row(
+                                  children: <Widget>[
+                                    FlatButton.icon(
+                                        onPressed: null,
+                                        icon: Icon(Icons.search),
+                                        label: Text('Search your notes'))
+                                  ],
+                                )),
+                          ),
                           Expanded(
                             child: Padding(
                               padding:
                                   const EdgeInsets.only(left: 8.0, right: 8),
-                              child: getNotesList(notes),
+                              child: getNotesList(folders),
                             ),
                           ),
                         ],
@@ -309,26 +260,9 @@ class NotesFolderState extends State<NotesFolder>
                             size: 30,
                             color: Colors.white,
                           ),
-                        )
-//                          : RotationTransition(
-//                              turns: _rotationAnimation,
-//                              child: Icon(Icons.add,
-//                                  size: 30, color: Colors.white),
-//                            ),
-                        );
+                        ));
                   },
                 ),
-
-//                MyFAB(
-//                  onPressed: () => _add(database),
-//                  heroTag: "btn2",
-//                  child: _rotationAnimation == null
-//                      ? Icon(Icons.add, size: 30, color: Colors.white)
-//                      : RotationTransition(
-//                          turns: _rotationAnimation,
-//                          child: Icon(Icons.add, size: 30, color: Colors.white),
-//                        ),
-//                ),
               ),
             ],
           ),
@@ -339,20 +273,26 @@ class NotesFolderState extends State<NotesFolder>
 
   ContainerTransitionType _transitionType = ContainerTransitionType.fade;
 
-  Widget getNotesList(List<Note> notes) {
+  Widget getNotesList(List<Folder> folders) {
     final database = Provider.of<Database>(context, listen: false);
+
+    List defaultFolders = [
+      Folder(id: 0.toString(), title: 'All Notes'),
+      Folder(id: 1.toString(), title: 'Notes'),
+    ];
+
+    List finalFolderList = defaultFolders..addAll(folders);
     return StaggeredGridView.countBuilder(
-//        controller: _scrollController,
         controller: _hideButtonController,
         staggeredTileBuilder: (int index) => StaggeredTile.fit(axisCount),
         mainAxisSpacing: 8.0,
         crossAxisSpacing: 8.0,
         physics: BouncingScrollPhysics(),
         crossAxisCount: 4,
-        itemCount: notes.length,
+        itemCount: finalFolderList.length,
         shrinkWrap: true,
         itemBuilder: (BuildContext context, int index) {
-          final note = notes[index];
+          final folder = finalFolderList[index];
           return Slidable(
 //            controller: slidableController,
             key: UniqueKey(),
@@ -361,7 +301,7 @@ class NotesFolderState extends State<NotesFolder>
             dismissal: SlidableDismissal(
               child: SlidableDrawerDismissal(),
               onDismissed: (actionType) {
-                _delete(context, note);
+                _delete(context, folder);
               },
             ),
             actionExtentRatio: 0.25,
@@ -369,7 +309,7 @@ class NotesFolderState extends State<NotesFolder>
               useRootNavigator: true,
               transitionType: _transitionType,
               closedBuilder: (BuildContext _, VoidCallback openContainer) {
-                return NotesFolderContainer(note
+                return NotesFolderContainer(folder
 //                  database: database,
 //                  onTap: () => _onTap(database, note),
                     );
@@ -379,20 +319,10 @@ class NotesFolderState extends State<NotesFolder>
 //                  borderRadius: BorderRadius.all(Radius.circular(10.0))),
               openColor: Colors.transparent,
               openBuilder: (BuildContext context, VoidCallback _) {
-                return NoteFolderDetail(note: note);
+                return NoteFolderDetail(note: folder);
               },
             ),
-            actions: <Widget>[
-              IconSlideAction(
-                caption: 'Archive',
-                color: Colors.black12,
-                iconWidget: FaIcon(
-                  FontAwesomeIcons.archive,
-                  color: Colors.white,
-                ),
-                onTap: () => _showSnackBar(context, 'Archive'),
-              ),
-            ],
+            actions: <Widget>[],
             secondaryActions: <Widget>[
               IconSlideAction(
                 caption: 'Delete',
@@ -402,7 +332,7 @@ class NotesFolderState extends State<NotesFolder>
                   color: Colors.white,
                 ),
 //                icon: Icons.delete,
-                onTap: () => _delete(context, note),
+                onTap: () => _delete(context, folder),
               ),
             ],
           );
