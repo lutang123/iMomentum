@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 
 class Note {
@@ -7,8 +9,9 @@ class Note {
     @required this.title,
     this.description,
     this.date,
-    this.color,
+    this.colorIndex,
     this.isArchived,
+//    this.color,
   });
   //add final or not?
   String id;
@@ -16,8 +19,9 @@ class Note {
   String title;
   String description;
   DateTime date;
-  int color;
+  int colorIndex;
   bool isArchived;
+//  Color color;
 
   factory Note.fromMap(Map<String, dynamic> firebaseMap, String documentId) {
     if (firebaseMap == null) {
@@ -34,8 +38,9 @@ class Note {
       description: firebaseMap['description'],
       date: DateTime.fromMillisecondsSinceEpoch(
           firebaseMap['date']), //convert to DateTime
-      color: firebaseMap['color'],
+      colorIndex: firebaseMap['color_index'],
       isArchived: firebaseMap['is_archived'],
+//      color: firebaseMap['color'],
     );
   }
 
@@ -46,8 +51,9 @@ class Note {
       'title': title,
       'description': description,
       'date': date.millisecondsSinceEpoch, //convert to int
-      'color': color,
-      'is_archived': isArchived //int
+      'color_index': colorIndex,
+      'is_archived': isArchived,
+//      'color': color?.value, //int
     };
   }
 }

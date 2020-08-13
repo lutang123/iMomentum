@@ -21,7 +21,7 @@ import 'add_note_screen.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-import 'notes_folder_screen.dart';
+import 'folder_screen.dart';
 import 'notes_test.dart';
 
 class NotesScreen extends StatefulWidget {
@@ -104,12 +104,12 @@ class NotesScreenState extends State<NotesScreen>
 
   int axisCount = 2;
 
-  void handleSlideAnimationChanged(Animation<double> slideAnimation) {
-    setState(() {
-      _rotationAnimation = slideAnimation;
-    });
-    print('_rotationAnimation: $_rotationAnimation');
-  }
+//  void handleSlideAnimationChanged(Animation<double> slideAnimation) {
+//    setState(() {
+//      _rotationAnimation = slideAnimation;
+//    });
+//    print('_rotationAnimation: $_rotationAnimation');
+//  }
 
   int counter = 0;
   void _onDoubleTap() {
@@ -148,15 +148,6 @@ class NotesScreenState extends State<NotesScreen>
                     final themeNotifier = Provider.of<ThemeNotifier>(context);
                     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
                     if (notes.isNotEmpty) {
-//                    void _onReorder(int oldIndex, int newIndex) {
-//                      setState(
-//                        () {
-//                          final Note note = notes.removeAt(oldIndex);
-//                          notes.insert(newIndex, note);
-//                        },
-//                      );
-//                    }
-
                       return Column(
                         children: <Widget>[
                           notes.length == 0
@@ -231,7 +222,7 @@ class NotesScreenState extends State<NotesScreen>
                               onPressed: () => Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (_) => NotesTest()))),
+                                      builder: (_) => FolderScreen()))),
                           Expanded(
                             child: Padding(
                               padding:
@@ -302,6 +293,7 @@ class NotesScreenState extends State<NotesScreen>
               Padding(
                 padding: const EdgeInsets.only(right: 12.0),
                 child: OpenContainer(
+                  useRootNavigator: true,
                   transitionType: _transitionType,
                   openBuilder: (BuildContext context, VoidCallback _) {
                     return AddNoteScreen(database: database);

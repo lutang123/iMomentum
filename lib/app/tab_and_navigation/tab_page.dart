@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iMomentum/screens/home_screen/home_screen.dart';
 import 'package:iMomentum/screens/notes_screen/notes_drawer.dart';
+import 'package:iMomentum/screens/notes_screen/folder_screen.dart';
 import 'package:iMomentum/screens/notes_screen/notes_screen.dart';
 import 'package:iMomentum/screens/todo_screen/todo_screen.dart';
 import 'package:iMomentum/app/tab_and_navigation/tab_item.dart';
@@ -67,11 +68,10 @@ class _TabPageState extends State<TabPage> {
   Map<TabItem, WidgetBuilder> get widgetBuilders {
     return {
       TabItem.home: (_) => MyDrawer(child: HomeScreen()),
-      TabItem.todo: (context) => TodoScreen.create(context),
-      TabItem.notes: (_) => NotesDrawer(child: NotesScreen()),
       //because we want to make TodoScreen has access to Provider<CalendarBloc>
-
-//      TabItem.account: (_) => AccountPage(),
+      TabItem.todo: (context) => TodoScreen.create(context),
+//      TabItem.notes: (_) => NotesDrawer(child: NotesScreen()),
+      TabItem.notes: (_) => FolderScreen(),
     };
   }
 

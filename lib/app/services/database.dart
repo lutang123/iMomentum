@@ -29,7 +29,7 @@ abstract class Database {
   Future<void> deleteDuration(DurationModel duration);
   Stream<List<DurationModel>> durationsStream({Todo todo});
 
-  //todo
+  //folder
   Future<void> setFolder(Folder folder); //create/update a job
   Future<void> deleteFolder(Folder folder); //delete a job
   Stream<Folder> folderStream({@required String folderId});
@@ -164,8 +164,10 @@ class FirestoreDatabase implements Database {
       );
   @override //read jobs
   Stream<List<Folder>> foldersStream() => _service.collectionStream(
-        path: APIPath.todos(uid),
+        path: APIPath.folders(uid),
         builder: (data, documentId) => Folder.fromMap(data, documentId),
+        //to make the most recently edited one show first
+        sort: (lhs, rhs) => rhs.id.compareTo(lhs.id),
       );
 
   /// note

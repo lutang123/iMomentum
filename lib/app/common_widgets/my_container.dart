@@ -41,34 +41,36 @@ class CustomizedContainerNew extends StatelessWidget {
   }
 }
 
-//Try using the property borderRadius from BoxDecoration
-//
-
-//Container(
-//decoration: BoxDecoration(
-//border: Border.all(
-//color: Colors.red[500],
-//),
-//borderRadius: BorderRadius.all(Radius.circular(20))
-//),
-//child: ...
-//)
-
 class SmallContainer extends StatelessWidget {
   SmallContainer({this.text, this.bkgdColor = Colors.black38});
   final String text;
   final Color bkgdColor;
 
+  ////                              Container(
+  ////                                decoration: BoxDecoration(
+  ////                                  shape: BoxShape.circle,
+  ////                                  border: Border.all(
+  ////                                      color: Colors.white70, width: 1),
+  ////                                ),
+  ////                                child: IconButton(
+  ////                                    icon: Icon(EvaIcons.moreHorizotnalOutline),
+  ////                                    onPressed: null),
+  ////                              ),
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(3),
+      padding: EdgeInsets.symmetric(horizontal: 3),
       decoration: BoxDecoration(
         color: bkgdColor,
-        borderRadius: BorderRadius.all(Radius.circular(12.0)),
+        borderRadius: BorderRadius.all(Radius.circular(20.0)),
         border: Border.all(color: Colors.white54, width: 1),
       ),
-      child: Text(text, style: TextStyle(color: Colors.white54, fontSize: 10)),
+      child: Padding(
+        padding: const EdgeInsets.all(3.0),
+        child:
+            Text(text, style: TextStyle(color: Colors.white70, fontSize: 10)),
+      ),
     );
   }
 }

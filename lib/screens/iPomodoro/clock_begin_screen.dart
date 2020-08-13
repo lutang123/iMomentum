@@ -14,7 +14,6 @@ import 'package:provider/provider.dart';
 import 'clock_bottom.dart';
 import 'clock_start.dart';
 import 'clock_timer_screen.dart';
-import 'package:iMomentum/app/services/pages_routes.dart';
 import 'clock_title.dart';
 
 class ClockBeginScreen extends StatefulWidget {
@@ -300,7 +299,6 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
     }
     return false;
   }
-
   //when we don't have BuildContext context, we used a wrong context and it popped to home screen
 
   void _done(BuildContext context) {

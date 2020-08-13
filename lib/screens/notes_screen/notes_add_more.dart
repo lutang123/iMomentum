@@ -43,7 +43,7 @@ class NoteAddMore extends StatelessWidget {
               title: Text('Recording'),
             ),
             ColorPicker(
-              selectedIndex: note == null ? 0 : note.color,
+              selectedIndex: note == null ? 0 : note.colorIndex,
               onTap: onTap,
             ),
             SizedBox(height: 10)

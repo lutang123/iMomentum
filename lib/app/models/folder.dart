@@ -4,10 +4,12 @@ class Folder {
   Folder({
     @required this.id,
     @required this.title,
+    this.colorCode,
   });
   //add final or not?
   String id;
   String title;
+  String colorCode;
 
   factory Folder.fromMap(Map<String, dynamic> firebaseMap, String documentId) {
     if (firebaseMap == null) {
@@ -20,13 +22,12 @@ class Folder {
     return Folder(
       id: documentId,
       title: title,
+      colorCode: firebaseMap['color_code'],
     );
   }
 
   // Convert a Note object into a Map object used in firebase
   Map<String, dynamic> toMap() {
-    return {
-      'title': title,
-    };
+    return {'title': title, 'color_code': colorCode};
   }
 }
