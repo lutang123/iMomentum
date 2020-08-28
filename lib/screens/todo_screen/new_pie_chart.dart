@@ -38,50 +38,60 @@ class NewPieChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    return dataMap != null && dataMap.isNotEmpty
-        ? Container(
-            padding: const EdgeInsets.only(
-                top: 15.0, left: 15, right: 15, bottom: 80),
-            child: PieChart(
-              dataMap: dataMap,
-              animationDuration: Duration(milliseconds: 800),
-              chartLegendSpacing: 32,
-              chartRadius: MediaQuery.of(context).size.width / 2,
-              showChartValuesInPercentage: true,
-              showChartValues: true,
-              showChartValuesOutside: false,
-              chartValueBackgroundColor: Colors.transparent,
-              colorList: colorList,
-              showLegends: true,
-              legendPosition: LegendPosition.bottom,
-              decimalPlaces: 0,
-              showChartValueLabel: true,
-              initialAngle: 0,
-              chartValueStyle: defaultChartValueStyle.copyWith(
-                  color:
-                      _darkTheme ? Colors.white.withOpacity(0.9) : lightButton),
-              legendStyle: defaultLegendStyle.copyWith(
-                  color:
-                      _darkTheme ? Colors.white.withOpacity(0.9) : lightButton),
-              chartType: ChartType.ring,
-            ),
-          )
-        : ListView(
-            shrinkWrap: true,
-            children: <Widget>[
-              Container(
-
-                  ///what is the better way? TODO
-                  height: MediaQuery.of(context).size.width / 1.24,
-                  child: Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Text(
-                      'You have not done any focused task on this day.',
-                      style: Theme.of(context).textTheme.subtitle2,
-                      textAlign: TextAlign.center,
-                    ),
-                  )),
+    if (dataMap != null && dataMap.isNotEmpty) {
+      return Padding(
+        padding:
+            const EdgeInsets.only(bottom: 8.0, left: 15, right: 15, top: 15),
+        child: PieChart(
+          dataMap: dataMap,
+          animationDuration: Duration(milliseconds: 800),
+          chartLegendSpacing: 32,
+          chartRadius: MediaQuery.of(context).size.width / 1.5,
+          showChartValuesInPercentage: true,
+          showChartValues: true,
+          showChartValuesOutside: false,
+          chartValueBackgroundColor: Colors.transparent,
+          colorList: colorList,
+          showLegends: true,
+          legendPosition: LegendPosition.bottom,
+          decimalPlaces: 0,
+          showChartValueLabel: true,
+          initialAngle: 0,
+          chartValueStyle: defaultChartValueStyle.copyWith(
+              color: _darkTheme
+                  ? Colors.white.withOpacity(0.9)
+                  : lightThemeButton),
+          legendStyle: defaultLegendStyle.copyWith(
+              color: _darkTheme
+                  ? Colors.white.withOpacity(0.9)
+                  : lightThemeButton),
+          chartType: ChartType.ring,
+        ),
+      );
+    } else {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Column(
+            children: [
+              SizedBox(height: 10),
+              Text(
+                'You have not done any focused task on this day.',
+                style: TextStyle(
+                    color: _darkTheme ? Colors.white : lightThemeWords,
+                    fontSize: 15),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 30),
+              Text(
+                'Enter a task from home screen and go to Focus Mode. When you complete a focus session, you will see a pie chart showing your daily focus summary on this screen. ',
+                style: Theme.of(context).textTheme.subtitle2,
+                textAlign: TextAlign.center,
+              )
             ],
-          );
+          ),
+        ),
+      );
+    }
   }
 }

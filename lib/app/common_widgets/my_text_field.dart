@@ -2,34 +2,61 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HomeTextField extends StatelessWidget {
-  const HomeTextField({
-    Key key,
-    this.onSubmitted,
-  }) : super(key: key);
+  const HomeTextField(
+      {Key key,
+      this.onSubmitted,
+      this.icon,
+      this.onPressed,
+      this.textEditingController,
+      this.onChanged})
+      : super(key: key);
 
   final Function onSubmitted;
+  final IconData icon;
+  final Function onPressed;
+  final TextEditingController textEditingController;
+  final Function onChanged;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: 320,
-      child: TextField(
-        style: GoogleFonts.varelaRound(fontSize: 25.0, color: Colors.white),
-//        autofocus: true,
-        textAlign: TextAlign.center,
-        onSubmitted: onSubmitted,
-        cursorColor: Colors.white,
-        maxLength: 100,
+      child: Row(
+        children: [
+//          Opacity(
+//            opacity: 0.0,
+//            child: IconButton(
+//              icon: Icon(FontAwesomeIcons.microphoneAlt),
+//              onPressed: null,
+//            ),
+//          ),
+          Expanded(
+            child: TextField(
+              onChanged: onChanged,
+              controller: textEditingController,
+              style:
+                  GoogleFonts.varelaRound(fontSize: 25.0, color: Colors.white),
+              textAlign: TextAlign.center,
+              onSubmitted: onSubmitted,
+              cursorColor: Colors.white,
+              maxLength: 100,
 
-        ///no save button, can not do multiline
+              ///no save button, can not do multiline
 //        keyboardType: TextInputType.multiline,
 //        maxLines: null,
-        decoration: InputDecoration(
-          focusedBorder:
-              UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-          enabledBorder:
-              UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-        ),
+              decoration: InputDecoration(
+                focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white)),
+                enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.white)),
+              ),
+            ),
+          ),
+//          RoundSmallIconButton(
+//            icon: icon,
+//            onPressed: onPressed,
+//          )
+        ],
       ),
     );
   }

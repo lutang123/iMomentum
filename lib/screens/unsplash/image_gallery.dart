@@ -4,20 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
-import 'package:iMomentum/app/common_widgets/shared_axis.dart';
+import 'package:iMomentum/app/utils/shared_axis.dart';
 import 'package:iMomentum/app/constants/constants.dart';
+import 'package:iMomentum/app/utils/image_cropper/cropper.dart';
+import 'package:iMomentum/app/utils/image_cropper/options.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/unsplash/preview_file.dart';
+import 'package:iMomentum/screens/unsplash/search_photo.dart';
 import 'package:iMomentum/screens/unsplash/staggered_view.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
-import 'models.dart';
+import '../../app/models/unsplash_image.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/widgets.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -91,10 +93,26 @@ class _ImageGalleryState extends State<ImageGallery> {
               },
             ),
             title: Text('Photos'),
+            actions: <Widget>[
+              IconButton(
+                onPressed: () => showSearch(
+                  context: context,
+                  delegate: SearchPhotos(),
+                ),
+                icon: Icon(Icons.search),
+              )
+//              FlatButton.icon(
+//                  onPressed: () => showSearch(
+//                        context: context,
+//                        delegate: SearchPhotos(),
+//                      ),
+//                  icon: Icon(Icons.search),
+//                  label: Text('Search'))
+            ],
             bottom: PreferredSize(
               preferredSize: Size.fromHeight(50),
               child: TabBar(
-                indicatorColor: _darkTheme ? darkButton : lightButton,
+                indicatorColor: _darkTheme ? darkThemeButton : lightThemeButton,
                 tabs: [
                   Tab(
                     text: 'Choose from our gallery',
@@ -356,7 +374,7 @@ class _ImageGalleryState extends State<ImageGallery> {
     pr.style(
       message: 'Please wait',
       borderRadius: 20.0,
-      backgroundColor: darkBkgdColor,
+      backgroundColor: darkThemeNoPhotoBkgdColor,
       elevation: 10.0,
       insetAnimCurve: Curves.easeInOut,
       progress: 0.0,

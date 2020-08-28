@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:iMomentum/app/constants/constants.dart';
 import 'package:iMomentum/app/services/auth.dart';
@@ -17,40 +16,46 @@ void main() async {
   // Restrict device orientiation to portraitUp
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  ///what is this?
   SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]).then((_) {
     SharedPreferences.getInstance().then((prefs) {
       bool darkModeOn = prefs.getBool('darkMode') ?? true;
-      bool useYourMantras = prefs.getBool('useMyMantras') ?? true;
-      int index = prefs.getInt('indexMantra') ?? 0;
-
-      bool useMyQuote = prefs.getBool('useMyQuote') ?? true;
       bool focusModeOn = prefs.getBool('focusMode') ?? true;
       bool randomOn = prefs.getBool('randomOn') ?? true;
       String backgroundImage =
           prefs.getString('imageUrl') ?? ImageUrl.fixedImageUrl;
-//      bool appliedOwnPhoto = prefs.getBool('appliedOwnPhoto') ?? false;
-//      String appliedPhotoUrl = prefs.getString('appliedImageUrl');
+      bool metricUnitOn = prefs.getBool('metricUnitOn') ?? true;
+      bool useYourMantras = prefs.getBool('useMyMantras') ?? true;
+      int index = prefs.getInt('indexMantra') ?? 0;
+      bool useMyQuote = prefs.getBool('useMyQuote') ?? true;
       runApp(
         MultiProvider(
           providers: [
+            ///for theme
             ChangeNotifierProvider<ThemeNotifier>(
                 create: (_) =>
                     ThemeNotifier(darkModeOn ? darkTheme : lightTheme)),
+
+            ///for focus
             ChangeNotifierProvider<FocusNotifier>(
                 create: (_) => FocusNotifier(focusModeOn)),
-            ChangeNotifierProvider<MantraNotifier>(
-                create: (_) => MantraNotifier(useYourMantras, index)),
-            ChangeNotifierProvider<QuoteNotifier>(
-                create: (_) => QuoteNotifier(useMyQuote)),
+
+            ///for image
             ChangeNotifierProvider<RandomNotifier>(
                 create: (_) => RandomNotifier(randomOn)),
             ChangeNotifierProvider<ImageNotifier>(
                 create: (_) => ImageNotifier(backgroundImage)),
-//            ChangeNotifierProvider<AppliedOwnPhotoNotifier>(
-//                create: (_) => AppliedOwnPhotoNotifier(appliedOwnPhoto)),
-//            ChangeNotifierProvider<AppliedPhotoUrlNotifier>(
-//                create: (_) => AppliedPhotoUrlNotifier(appliedPhotoUrl)),
+
+            ///for metric
+            ChangeNotifierProvider<MetricNotifier>(
+                create: (_) => MetricNotifier(metricUnitOn)),
+
+            ///for mantra
+            ChangeNotifierProvider<MantraNotifier>(
+                create: (_) => MantraNotifier(useYourMantras, index)),
+
+            ///for quote
+            ChangeNotifierProvider<QuoteNotifier>(
+                create: (_) => QuoteNotifier(useMyQuote)),
           ],
           child: MyApp(),
         ),
@@ -59,38 +64,59 @@ void main() async {
   });
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+///https://github.com/flutter/flutter/issues/21810
+
+class _MyAppState extends State<MyApp> {
+//  //converted MyApp to stateful widget and add these for speech-to-text
+//  final SpeechToText speech = SpeechToText();
+//  SpeechToTextProvider speechProvider;
+
+  //The initialize method only needs to be called once per application session.
+//  @override
+//  void initState() {
+//    super.initState();
+//    speechProvider = SpeechToTextProvider(speech);
+//    initSpeechState();
+//  }
+
+//  Future<void> initSpeechState() async {
+//    await speechProvider.initialize();
+//  }
+
   @override
   Widget build(BuildContext context) {
-//    final Brightness brightnessValue =
-//        MediaQuery.of(context).platformBrightness;
-//    bool isDark = brightnessValue == Brightness.dark;
-//    print(isDark);
     final themeNotifier = Provider.of<ThemeNotifier>(context);
+    //then Auth as the very top, then KeyboardVisibilityProvider
     return Provider<AuthBase>(
       create: (context) => Auth(),
       child: Builder(
         builder: (context) {
-          return KeyboardVisibilityProvider(
-            child: MaterialApp(
-              debugShowCheckedModeBanner: false,
-              title: 'iMomentum',
-              theme: themeNotifier.getTheme(),
-              themeMode: ThemeMode.system,
-              localizationsDelegates: [
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                DefaultCupertinoLocalizations.delegate,
-                GlobalCupertinoLocalizations
-                    .delegate, // Add global cupertino localiztions.
-              ],
-              locale: Locale('en', 'US'), // Current locale
-              supportedLocales: [
-                const Locale('en', 'US'), // English
-                const Locale('zh', 'ZH'), // Chinese??
-              ],
-              home: LandingPage(),
-            ),
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'iMomentum',
+            theme: themeNotifier.getTheme(),
+            themeMode: ThemeMode.system,
+
+            ///todo: local
+            localizationsDelegates: [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              DefaultCupertinoLocalizations.delegate,
+              GlobalCupertinoLocalizations
+                  .delegate, // Add global cupertino localiztions.
+            ],
+            locale: Locale('en', 'US'), // Current locale
+            supportedLocales: [
+              const Locale('en', 'US'), // English
+              const Locale('zh', 'ZH'), // Chinese??
+            ],
+
+            home: LandingPage(),
           );
         },
       ),
@@ -98,12 +124,18 @@ class MyApp extends StatelessWidget {
   }
 }
 
+///
+//if (MediaQuery.of(context).viewInsets.bottom > 0.0) {
+//   // keyboard on the screen
+//}
+//Simple explanation: MediaQuery to learn the size of the current media. This class use as MediaQueryData media = MediaQuery.of(context);. If any view appears on the screen MediaQuery.of(context).viewInsetsgive some value of the height of that view. As keyboard appears from the bottom on the screen so I use MediaQuery.of(context).viewInsets.bottom and this gives me the height of the keyboard taken on my screen. When the keyboard doesn't appear this value is 0.And this solution definitely works.
+
 //import 'package:flutter/material.dart';
 //import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuth;
 //import 'package:iMomentum/screens/home_screen/home_screen.dart';
 //import 'package:provider/provider.dart';
 //
-//import 'package:iMomentum/screens/notes_screen/keep/models.dart'
+//import 'package:iMomentum/screens/notes_screen/keep/unsplash_image.dart'
 //    show CurrentUser;
 //import 'package:iMomentum/screens/notes_screen/keep/screens.dart'
 //    show HomeScreen, HomeScreenKeep, LoginScreen, NoteEditor, SettingsScreen;

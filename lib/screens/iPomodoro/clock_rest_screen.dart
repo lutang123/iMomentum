@@ -1,4 +1,3 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:assets_audio_player/assets_audio_player.dart';
@@ -8,21 +7,28 @@ import 'package:iMomentum/app/common_widgets/my_round_button.dart';
 import 'package:iMomentum/app/constants/constants.dart';
 import 'package:iMomentum/app/models/data/rest_quote.dart';
 import 'package:iMomentum/app/models/todo.dart';
-import 'package:iMomentum/app/common_widgets/extensions.dart';
+import 'package:iMomentum/app/utils/extensions.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
-import 'package:iMomentum/app/services/pages_routes.dart';
+import 'package:iMomentum/app/utils/pages_routes.dart';
+import 'package:iMomentum/screens/home_screen/api_quote.dart';
 import 'package:provider/provider.dart';
 import 'clock_begin_screen.dart';
 import 'clock_timer.dart';
 import 'clock_title.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class RestScreen extends StatefulWidget {
   const RestScreen(
-      {@required this.database, @required this.job, this.restDuration});
+      {@required this.database,
+      @required this.job,
+      this.restDuration,
+      this.playSound});
   final Duration restDuration;
   final Todo job;
   final Database database;
+  final bool playSound;
 
   @override
   _RestScreenState createState() => _RestScreenState();
@@ -31,10 +37,6 @@ class RestScreen extends StatefulWidget {
 class _RestScreenState extends State<RestScreen>
     with SingleTickerProviderStateMixin {
   AnimationController _animationController;
-
-  final String quoteBody = RestQuoteList().getRestQuote().body;
-
-  final String quoteAuthor = RestQuoteList().getRestQuote().author;
 
   Stopwatch _stopwatch;
   Timer _timer;
@@ -46,33 +48,36 @@ class _RestScreenState extends State<RestScreen>
 
   @override
   void initState() {
-    super.initState();
     _animationController = AnimationController(
       duration: widget.restDuration,
       vsync: this,
     );
-    _animationController.forward().orCancel;
+    _animationController.forward();
     _restDuration = widget.restDuration;
     _playSound();
     _stopwatch = Stopwatch();
     _start();
+    _fetchQuote();
+    super.initState();
   }
 
   @override
   void dispose() {
-    super.dispose();
     _timer.cancel();
     _stopwatch.stop();
     _animationController.dispose();
+    super.dispose();
   }
 
   // Play a sound
   void _playSound() {
-    final assetsAudioPlayer = AssetsAudioPlayer();
-    assetsAudioPlayer.open(
-      Audio("assets/audio/juntos.mp3"),
-      autoStart: true,
-    );
+    if (widget.playSound) {
+      final assetsAudioPlayer = AssetsAudioPlayer();
+      assetsAudioPlayer.open(
+        Audio("assets/audio/juntos.mp3"),
+        autoStart: true,
+      );
+    }
   }
 
   // This will start the Timer
@@ -85,14 +90,16 @@ class _RestScreenState extends State<RestScreen>
     }
     _timer = Timer.periodic(Duration(milliseconds: 10), (Timer t) {
       // update display
-      setState(() {
-        var diff = (widget.restDuration - _stopwatch.elapsed);
-        _display = diff.clockFmt();
-        if (diff.inMilliseconds <= 0) {
-          _playSound();
-          _end(cancelled: false);
-        }
-      });
+      if (mounted) {
+        setState(() {
+          var diff = (widget.restDuration - _stopwatch.elapsed);
+          _display = diff.clockFmt();
+          if (diff.inMilliseconds <= 0) {
+            _playSound();
+            _end(cancelled: false);
+          }
+        });
+      }
     });
   }
 
@@ -131,6 +138,8 @@ class _RestScreenState extends State<RestScreen>
     });
 
     if (cancelled) {
+      /// not go back to HomeScreen
+//      Navigator.pop(context);
       Navigator.of(context).pushReplacement(PageRoutes.fade(
           () => ClockBeginScreen(
                 database: widget.database,
@@ -148,7 +157,6 @@ class _RestScreenState extends State<RestScreen>
   }
 
   int counter = 0;
-
   void _onDoubleTap() {
     setState(() {
       ImageUrl.randomImageUrl =
@@ -156,8 +164,6 @@ class _RestScreenState extends State<RestScreen>
       counter++;
     });
   }
-
-  void onPressedPause() {}
 
   @override
   Widget build(BuildContext context) {
@@ -209,56 +215,52 @@ class _RestScreenState extends State<RestScreen>
                       text1: _display,
                       text2: 'Rest',
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          RoundTextButton(
-                            text: 'Cancel',
-                            textColor: Colors.white70,
-                            onPressed: _end,
-                            circleColor: Colors.white70,
-                            fillColor: Colors.black12,
-                          ),
-                          _stopwatch.isRunning
-                              ? RoundTextButton(
-                                  text: 'Pause',
-                                  textColor: Colors.white,
-                                  onPressed: _pause,
-                                  circleColor: Colors.white,
-                                  fillColor:
-                                      Colors.orangeAccent.withOpacity(0.2),
-                                )
-                              : RoundTextButton(
-                                  text: 'Resume',
-                                  textColor: Colors.white,
-                                  onPressed: _resume,
-                                  circleColor: Colors.white,
-                                  fillColor:
-                                      Colors.lightGreenAccent.withOpacity(0.2),
-                                ),
-                        ],
+                    SizedBox(
+                      height: 60,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            RoundTextButton(
+                              text: 'Cancel',
+                              textColor: Colors.white70,
+                              onPressed: _end,
+                              circleColor: Colors.white70,
+                              fillColor: Colors.black12,
+                            ),
+                            _stopwatch.isRunning
+                                ? RoundTextButton(
+                                    text: 'Pause',
+                                    textColor: Colors.white,
+                                    onPressed: _pause,
+                                    circleColor: Colors.white,
+                                    fillColor:
+                                        Colors.deepOrange.withOpacity(0.3),
+                                  )
+                                : RoundTextButton(
+                                    text: 'Resume',
+                                    textColor: Colors.white,
+                                    onPressed: _resume,
+                                    circleColor: Colors.white,
+                                    fillColor: Colors.lightGreenAccent
+                                        .withOpacity(0.3),
+                                  ),
+                          ],
+                        ),
                       ),
                     ),
+                    SizedBox(height: 60),
                     Padding(
                       padding: const EdgeInsets.all(15.0),
                       child: Column(
                         children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.all(15.0),
-                            child: AutoSizeText(
-                              '“$quoteBody” --$quoteAuthor',
-                              maxLines: 3,
-                              minFontSize: 15,
-                              maxFontSize: 20,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: 17,
-                                  color: Colors.white,
-                                  fontStyle: FontStyle.italic),
-                            ),
-                          ),
+                          _state == QuoteLoadingState.FINISHED_DOWNLOADING
+                              ? RestQuoteClass(
+                                  title: dailyQuote, author: author)
+                              : _state == QuoteLoadingState.DOWNLOADING
+                                  ? Center(child: CircularProgressIndicator())
+                                  : Container(),
                         ],
                       ),
                     ),
@@ -270,5 +272,48 @@ class _RestScreenState extends State<RestScreen>
         ),
       ],
     );
+  }
+
+  QuoteLoadingState _state = QuoteLoadingState.NOT_DOWNLOADED;
+  String dailyQuote;
+  String author;
+
+//http://quotes.rest/qod/categories.json
+  Future<void> _fetchQuote() async {
+    setState(() {
+      _state = QuoteLoadingState.DOWNLOADING;
+    });
+    try {
+      final response = await http
+
+          ///this link can only use 10 times/hours
+//          .get('http://quotes.rest/qod.json?maxlength=100&category=life&love');
+          .get('https://favqs.com/api/qotd');
+      print(
+          'response.statusCode in rest quote: ${response.statusCode}'); //429, meaning too many request
+      if (response.statusCode == 200) {
+        var quoteData = json.decode(response.body)['quote'];
+        setState(() {
+          dailyQuote = quoteData['body'];
+
+          author = quoteData['author'];
+        });
+      } else {
+        setState(() {
+          dailyQuote = RestQuoteList().getRestQuote().body;
+          author = RestQuoteList().getRestQuote().author;
+        });
+        //        throw Exception('Failed to load quote');
+      }
+    } catch (e) {
+      setState(() {
+        dailyQuote = RestQuoteList().getRestQuote().body;
+        author = RestQuoteList().getRestQuote().author;
+      });
+      print('error in fetching quote: $e');
+    }
+    setState(() {
+      _state = QuoteLoadingState.FINISHED_DOWNLOADING;
+    });
   }
 }

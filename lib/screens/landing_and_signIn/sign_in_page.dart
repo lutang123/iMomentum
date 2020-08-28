@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/services/auth.dart';
-import 'package:iMomentum/app/services/sign_in/email_sign_in_page.dart';
-import 'package:iMomentum/app/services/sign_in/sign_in_button.dart';
-import 'package:iMomentum/app/services/sign_in/sign_in_manager.dart';
-import 'package:iMomentum/screens/notes_screen/build_note_container.dart';
+import 'package:iMomentum/app/sign_in/email_sign_in_page.dart';
+import 'package:iMomentum/app/sign_in/sign_in_manager.dart';
+import 'package:iMomentum/screens/notes_screen/note_container.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 
@@ -54,14 +53,14 @@ class _SignInPageState extends State<SignInPage> {
     ).show(context);
   }
 
-  Future<void> _signInAnonymously(BuildContext context) async {
-    try {
-      final auth = Provider.of<AuthBase>(context, listen: false);
-      await auth.signInAnonymously();
-    } on PlatformException catch (e) {
-      _showSignInError(context, e);
-    }
-  }
+  // Future<void> _signInAnonymously(BuildContext context) async {
+  //   try {
+  //     final auth = Provider.of<AuthBase>(context, listen: false);
+  //     await auth.signInAnonymously();
+  //   } on PlatformException catch (e) {
+  //     _showSignInError(context, e);
+  //   }
+  // }
 
   Future<void> _signInWithGoogle(BuildContext context) async {
     try {
@@ -264,66 +263,66 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-  Widget _buildBody(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          SizedBox(
-            height: 50.0,
-            child: _buildHeader(),
-          ),
-          SizedBox(height: 48.0),
-          SignInButton(
-            text: 'Sign in with Google',
-            textColor: Colors.black87,
-            color: Colors.white,
-            onPressed:
-                widget.isLoading ? null : () => _signInWithGoogle(context),
-          ),
-          SizedBox(height: 8.0),
-          SignInButton(
-//              key: emailPasswordKey,
-            text: 'Sign in with email',
-            textColor: Colors.white,
-            color: Colors.teal[700],
-            onPressed:
-                widget.isLoading ? null : () => _signInWithEmail(context),
-          ),
-          SizedBox(height: 8.0),
-          Text(
-            'or',
-            style: TextStyle(fontSize: 14.0, color: Colors.black87),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 8.0),
-          SignInButton(
-            text: 'Go anonymous',
-            textColor: Colors.black,
-            color: Colors.lime[300],
-            onPressed:
-                widget.isLoading ? null : () => _signInAnonymously(context),
-          ),
-        ],
-      ),
-    );
-  }
+//   Widget _buildBody(BuildContext context) {
+//     return Padding(
+//       padding: const EdgeInsets.all(16.0),
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         crossAxisAlignment: CrossAxisAlignment.stretch,
+//         children: <Widget>[
+//           SizedBox(
+//             height: 50.0,
+//             child: _buildHeader(),
+//           ),
+//           SizedBox(height: 48.0),
+//           SignInButton(
+//             text: 'Sign in with Google',
+//             textColor: Colors.black87,
+//             color: Colors.white,
+//             onPressed:
+//                 widget.isLoading ? null : () => _signInWithGoogle(context),
+//           ),
+//           SizedBox(height: 8.0),
+//           SignInButton(
+// //              key: emailPasswordKey,
+//             text: 'Sign in with email',
+//             textColor: Colors.white,
+//             color: Colors.teal[700],
+//             onPressed:
+//                 widget.isLoading ? null : () => _signInWithEmail(context),
+//           ),
+//           SizedBox(height: 8.0),
+//           Text(
+//             'or',
+//             style: TextStyle(fontSize: 14.0, color: Colors.black87),
+//             textAlign: TextAlign.center,
+//           ),
+//           SizedBox(height: 8.0),
+//           SignInButton(
+//             text: 'Go anonymous',
+//             textColor: Colors.black,
+//             color: Colors.lime[300],
+//             onPressed:
+//                 widget.isLoading ? null : () => _signInAnonymously(context),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
 
-  Widget _buildHeader() {
-    if (widget.isLoading) {
-      return Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-    return Text(
-      'Sign in',
-      textAlign: TextAlign.center,
-      style: TextStyle(
-        fontSize: 32.0,
-        fontWeight: FontWeight.w600,
-      ),
-    );
-  }
+  // Widget _buildHeader() {
+  //   if (widget.isLoading) {
+  //     return Center(
+  //       child: CircularProgressIndicator(),
+  //     );
+  //   }
+  //   return Text(
+  //     'Sign in',
+  //     textAlign: TextAlign.center,
+  //     style: TextStyle(
+  //       fontSize: 32.0,
+  //       fontWeight: FontWeight.w600,
+  //     ),
+  //   );
+  // }
 }

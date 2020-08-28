@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iMomentum/app/models/note.dart';
 import 'package:iMomentum/app/services/database.dart';
-import 'package:iMomentum/app/constants/theme.dart';
 
 class NotesSearch extends SearchDelegate<Note> {
   NotesSearch({this.notes, this.database});

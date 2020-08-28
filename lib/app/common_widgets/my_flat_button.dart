@@ -32,3 +32,38 @@ class MyFlatButton extends StatelessWidget {
     );
   }
 }
+
+class MyFlatButtonUnderline extends StatelessWidget {
+  const MyFlatButtonUnderline({
+    @required this.onPressed,
+    @required this.text,
+    this.color = Colors.lightBlueAccent,
+  });
+
+  final VoidCallback onPressed;
+  final String text;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return FlatButton(
+      // shape: RoundedRectangleBorder(
+      //     borderRadius: BorderRadius.circular(68.0),
+      //     side: BorderSide(color: color, width: 2.0)),
+      // color: backgroundColor,
+      onPressed: onPressed,
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Text(
+          text,
+          style: GoogleFonts.varelaRound(
+              color: color,
+              fontWeight: FontWeight.w600,
+              fontSize: 18.0,
+              decoration: TextDecoration.underline,
+              fontStyle: FontStyle.italic),
+        ),
+      ),
+    );
+  }
+}

@@ -72,7 +72,7 @@ class CupertinoHomeScaffold extends StatelessWidget {
         child: Text(
           itemData.title,
           style: TextStyle(
-              color: color, fontSize: 10, fontWeight: FontWeight.w600),
+              color: color, fontSize: 12, fontWeight: FontWeight.w600),
         ),
       ),
     );

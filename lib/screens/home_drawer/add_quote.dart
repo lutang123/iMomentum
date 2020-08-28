@@ -8,6 +8,7 @@ import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:provider/provider.dart';
+import 'package:iMomentum/app/utils/cap_string.dart';
 
 class AddQuoteScreen extends StatefulWidget {
   const AddQuoteScreen({this.database, this.quote});
@@ -45,7 +46,7 @@ class _AddQuoteScreenState extends State<AddQuoteScreen> {
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return SingleChildScrollView(
       child: CustomizedBottomSheet(
-        color: _darkTheme ? darkAdd : lightAdd,
+        color: _darkTheme ? darkThemeAdd : lightThemeAdd,
         child: Form(
           key: _formKey,
           child: Column(
@@ -64,23 +65,27 @@ class _AddQuoteScreenState extends State<AddQuoteScreen> {
                     initialValue: title,
                     validator: (value) =>
                         value.isNotEmpty ? null : 'Mantra can\'t be empty',
-                    onSaved: (value) => title = value,
+                    onSaved: (value) => title = value.firstCaps,
                     style: TextStyle(
                         color: _darkTheme ? Colors.white : Color(0xF01b262c),
                         fontSize: 20.0),
                     autofocus: true,
 //                    textAlign: TextAlign.center,
-                    cursorColor: _darkTheme ? Colors.white : lightButton,
+                    cursorColor: _darkTheme ? Colors.white : lightThemeButton,
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
                     maxLength: 120,
                     decoration: InputDecoration(
                       focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                              color: _darkTheme ? Colors.white : lightButton)),
+                              color: _darkTheme
+                                  ? Colors.white
+                                  : lightThemeButton)),
                       enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                              color: _darkTheme ? Colors.white : lightButton)),
+                              color: _darkTheme
+                                  ? Colors.white
+                                  : lightThemeButton)),
                     ),
                   ),
                 ),
@@ -97,7 +102,7 @@ class _AddQuoteScreenState extends State<AddQuoteScreen> {
                         fontSize: 20.0),
                     autofocus: true,
 //                    textAlign: TextAlign.center,
-                    cursorColor: _darkTheme ? Colors.white : lightButton,
+                    cursorColor: _darkTheme ? Colors.white : lightThemeButton,
 //                    keyboardType: TextInputType.multiline,
                     maxLines: 1,
                     maxLength: 20,
@@ -108,10 +113,14 @@ class _AddQuoteScreenState extends State<AddQuoteScreen> {
                           color: _darkTheme ? Colors.white54 : Colors.black38),
                       focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                              color: _darkTheme ? Colors.white : lightButton)),
+                              color: _darkTheme
+                                  ? Colors.white
+                                  : lightThemeButton)),
                       enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                              color: _darkTheme ? Colors.white : lightButton)),
+                              color: _darkTheme
+                                  ? Colors.white
+                                  : lightThemeButton)),
                     ),
                   ),
                 ),
@@ -120,7 +129,7 @@ class _AddQuoteScreenState extends State<AddQuoteScreen> {
               MyFlatButton(
                   onPressed: _save,
                   text: 'SAVE',
-                  color: _darkTheme ? Colors.white : lightButton),
+                  color: _darkTheme ? Colors.white : lightThemeButton),
               SizedBox(height: 20)
             ],
           ),

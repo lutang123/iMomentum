@@ -1,8 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:iMomentum/app/models/folder.dart';
 import 'package:iMomentum/app/models/mantra_model.dart';
 import 'package:iMomentum/app/models/quote_model.dart';
 import 'package:iMomentum/app/models/todo.dart';
@@ -15,13 +16,13 @@ class TodoListTile extends StatelessWidget {
   const TodoListTile({
     Key key,
     @required this.todo,
-    this.todoDuration,
+    // this.todoDuration,
     this.onTap,
     this.onPressed,
     this.onChangedCheckbox,
   }) : super(key: key);
   final Todo todo;
-  final TodoDuration todoDuration;
+  // final TodoDuration todoDuration;
   final VoidCallback onTap;
   final VoidCallback onPressed;
   final Function onChangedCheckbox;
@@ -34,32 +35,52 @@ class TodoListTile extends StatelessWidget {
 //    'Others' //4
 //  ];
 
+  //this is for dark them only
   Color getColor() {
     if (todo.category == 0 || todo.category == null) {
-      return Colors.orange; //;
+      return todo.isDone ? Colors.white : Colors.orange; //;
     } else if (todo.category == 1) {
-      return Colors.lightBlue;
+      return todo.isDone ? Colors.white : Colors.lightBlue;
     } else if (todo.category == 2) {
-      return Colors.purple;
+      return todo.isDone ? Colors.white : Colors.purple;
     } else if (todo.category == 3) {
-      return Colors.lightGreen;
+      return todo.isDone ? Colors.white : Colors.lightGreen;
+    } else if (todo.category == 4) {
+      return todo.isDone ? Colors.white : Colors.brown[300];
     } else {
-      return Colors.grey[350];
+      return todo.isDone ? Colors.white : Colors.brown[300];
+    }
+  }
+
+  Color getColorLight() {
+    if (todo.category == 0 || todo.category == null) {
+      return todo.isDone ? lightThemeButton : Colors.orange; //;
+    } else if (todo.category == 1) {
+      return todo.isDone ? lightThemeButton : Colors.lightBlue;
+    } else if (todo.category == 2) {
+      return todo.isDone ? lightThemeButton : Colors.purple;
+    } else if (todo.category == 3) {
+      return todo.isDone ? lightThemeButton : Colors.lightGreen;
+    } else if (todo.category == 4) {
+      return todo.isDone ? lightThemeButton : Colors.brown[300];
+    } else {
+      return todo.isDone ? lightThemeButton : Colors.brown[300];
     }
   }
 
   Widget getIcon() {
     if (todo.category == 0 || todo.category == null) {
-      return Icon(Icons.timer);
-//      return SmallContainer(text: 'project 1');
+//      return Icon(Icons.timer); //clock-outline
+//      return Icon(EvaIcons.clockOutline); //clock-outline, bulb-outline
+      return Icon(EvaIcons.bulbOutline);
     } else if (todo.category == 1) {
-      return Icon(Icons.work);
+      return Icon(EvaIcons.briefcaseOutline);
     } else if (todo.category == 2) {
-      return Icon(Icons.home);
+      return Icon(EvaIcons.homeOutline);
     } else if (todo.category == 3) {
-      return Icon(Icons.shopping_cart);
+      return Icon(EvaIcons.shoppingCartOutline); //list-outline
     } else {
-      return Container();
+      return Icon(EvaIcons.listOutline);
     }
   }
 
@@ -72,7 +93,7 @@ class TodoListTile extends StatelessWidget {
         data: ThemeData(unselectedWidgetColor: getColor()), //Colors.grey[350]
         child: Checkbox(
             activeColor: Colors.transparent, //black54
-            checkColor: getColor(),
+            checkColor: _darkTheme ? Colors.white : Color(0xF01b262c),
             value: todo.isDone ? true : false,
             onChanged: onChangedCheckbox),
       ),
@@ -81,12 +102,12 @@ class TodoListTile extends StatelessWidget {
         children: <Widget>[
           AutoSizeText(todo.title,
               maxLines: 4,
-//          maxFontSize: 19,
+              maxFontSize: 18,
               minFontSize: 15,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                color: _darkTheme ? Colors.white : Color(0xF01b262c),
-//            fontSize: 19.0,
+                color: _darkTheme ? Colors.white : Colors.black87,
+                fontSize: 18.0,
                 //1 means is done
                 decoration: todo.isDone ? TextDecoration.lineThrough : null,
               )),
@@ -103,7 +124,7 @@ class TodoListTile extends StatelessWidget {
                   Icon(
                     Icons.comment,
                     size: 15,
-                    color: _darkTheme ? Colors.white70 : lightButton,
+                    color: _darkTheme ? Color(0xfff3f9fb) : Color(0xF01b262c),
                   ),
                   SizedBox(width: 8),
                   Expanded(
@@ -111,8 +132,9 @@ class TodoListTile extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color:
-                              _darkTheme ? Colors.white70 : Color(0xF01b262c),
+                          color: _darkTheme
+                              ? Color(0xfff3f9fb)
+                              : Color(0xF01b262c),
                           decoration:
                               todo.isDone ? TextDecoration.lineThrough : null,
                         )),
@@ -121,21 +143,10 @@ class TodoListTile extends StatelessWidget {
               ),
             ),
       trailing: IconButton(
-//        color: _darkTheme ? Colors.grey[350] : lightButton,
-        color: getColor(),
+        color: _darkTheme ? getColor() : getColorLight(),
         icon: getIcon(),
         onPressed: onPressed,
       ),
-//          SizedBox(width: 3),
-//          Flexible(
-//            child: IconButton(
-//              color: _darkTheme ? Colors.grey[350] : lightButton,
-//              icon: Icon(FontAwesomeIcons.chevronRight),
-//              tooltip: 'Edit Task',
-//              onPressed: onPressed,
-//            ),
-//          ),
-
       onTap: onTap,
     );
   }
@@ -183,10 +194,50 @@ class HomeTodoListTile extends StatelessWidget {
         color: Colors.grey[350],
         iconSize: 18,
 //        icon: Icon(FontAwesomeIcons.edit),
-        icon: Icon(FontAwesomeIcons.chevronRight),
+        icon: Icon(Icons.clear),
         onPressed: onPressed,
-        tooltip: 'Edit Task',
+        tooltip: 'Delete Task',
       ),
+      onTap: onTap,
+    );
+  }
+}
+
+class FolderListTile extends StatelessWidget {
+  const FolderListTile({
+    Key key,
+    @required this.folder,
+    this.onTap,
+    // this.onPressed,
+    // this.onChangedCheckbox,
+  }) : super(key: key);
+  final Folder folder;
+  final VoidCallback onTap;
+  // final VoidCallback onPressed;
+  // final Function onChangedCheckbox;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Icon(EvaIcons.folderOutline),
+      title: AutoSizeText(
+        folder.title,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        minFontSize: 14,
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 16.0,
+        ),
+      ),
+//       trailing: IconButton(
+//         color: Colors.grey[350],
+//         iconSize: 18,
+// //        icon: Icon(FontAwesomeIcons.edit),
+//         icon: Icon(Icons.clear),
+//         onPressed: onPressed,
+//         tooltip: 'Delete Task',
+//       ),
       onTap: onTap,
     );
   }

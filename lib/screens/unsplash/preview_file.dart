@@ -1,7 +1,6 @@
 import 'dart:ui';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
@@ -9,7 +8,7 @@ import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as PathFile;
-import 'models.dart';
+import '../../app/models/unsplash_image.dart';
 import 'dart:io';
 
 /// Screen for showing an individual [UnsplashImage].
@@ -220,9 +219,9 @@ class _PreviewFileState extends State<PreviewFile>
     prefs.setString('appliedFilePath', filePath);
     prefs.setBool('appliedOwnPhoto', true);
 
-    await Future.delayed(Duration(minutes: 1));
+//    await Future.delayed(Duration(minutes: 1));
 
-    ///navigate back two level
+    ///navigate back two level to HomeScreen
     int count = 0;
     Navigator.popUntil(context, (route) {
       return count++ == 2;

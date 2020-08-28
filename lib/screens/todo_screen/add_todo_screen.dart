@@ -26,15 +26,16 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
   final DateFormat _dateFormatter = DateFormat('MMM dd');
   final _formKey = GlobalKey<FormState>();
 
-  ///need to add
+  ///Todo: need to add
 //  bool processing;
 
   String title;
   String comment;
   DateTime dateNew;
 
-  String formattedToday;
+  String formattedToday = DateFormat('M/d/y').format(DateTime.now());
   String formattedDate;
+  String formattedDateIfNull;
 
   Todo get todo => widget.todo;
   Database get database => widget.database;
@@ -45,26 +46,16 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
 //  final FocusNode _dropDownFocusNode = FocusNode();
 
   List _categories = [
-    'Focus', //0
+    'Focus', //0, default
     'Work', //1
     'Home', //2
     'Shopping', //3
     'Others' //4
   ];
 
-  List _projects = [
-    'Project 1', //0
-    'Project 2', //1
-    'Others' //4
-  ];
-
   List<DropdownMenuItem<String>> _dropDownMenuItems;
   String _currentCategory;
 
-  List<DropdownMenuItem<String>> _dropDownMenuItemsProjects;
-  String _currentProject;
-
-  ///TODO
   void changedDropDownItem(String selectedCity) {
 //    print("Selected city $selectedCity, we are going to refresh the UI");
     setState(() {
@@ -85,32 +76,10 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
     return items;
   }
 
-  void changedDropDownItemProjects(String selectedCity) {
-//    print("Selected city $selectedCity, we are going to refresh the UI");
-    setState(() {
-      _currentProject = selectedCity;
-    });
-//    _dropDownFocusNode.unfocus();
-//    FocusScope.of(context).requestFocus(_dropDownFocusNode);
-  }
-
-  // here we are creating the list needed for the DropDownButton
-  List<DropdownMenuItem<String>> getDropDownMenuItemsProjects() {
-    List<DropdownMenuItem<String>> items = List();
-    for (String city in _projects) {
-      // here we are creating the drop down menu items, you can customize the item right here
-      // but I'll just use a simple text for this
-      items.add(DropdownMenuItem(value: city, child: Text(city)));
-    }
-    return items;
-  }
-
   @override
   void initState() {
     _dropDownMenuItems = getDropDownMenuItems();
-    _dropDownMenuItemsProjects = getDropDownMenuItemsProjects();
 
-    formattedToday = DateFormat('M/d/y').format(DateTime.now());
     _dateController = TextEditingController();
 
     if (todo != null) {
@@ -125,27 +94,30 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
           : _dateController.text = _dateFormatter.format(dateNew);
 //      print('widget.dateController.text if NOT null: ${_dateController.text}');
       if (todo.category != null) {
-        _currentCategory =
-            _categories[todo.category]; //todo.category is a number (index)
-      }
-
-      if (todo.project != null) {
-        _currentProject = todo.project; //this is a String
+//        print('todo.category: ${todo.category}'); //todo.category: -1 if we moved a task that don't have category
+        //RangeError (index): Invalid value: Not in inclusive range 0..4: -1
+        //add this the range error will be gone
+        todo.category < 0
+            ? _currentCategory = _categories[todo.category + 1]
+            : _currentCategory =
+                _categories[todo.category]; //todo.category is a number (index)
+      } else {
+        //if category is null, we assign a default value
+        _currentCategory = _categories[0];
       }
     } else {
-      //if todo is null
+      //if task is null
       dateNew = widget.pickedDate;
 //      print(
-//          'dateNew in init if null: $dateNew'); //if todo is null, we used pickedDate which we passed by
+//          'dateNew in init if task is null: $dateNew'); //if task is null, we used pickedDate which we passed by
       //this gives an initial value;
-      formattedDate == formattedToday
+      formattedDateIfNull = DateFormat('M/d/y').format(dateNew);
+      formattedDateIfNull == formattedToday
           ? _dateController.text = 'Today'
           : _dateController.text = _dateFormatter.format(dateNew);
+
       //need to give it a value;
       _currentCategory = _dropDownMenuItems[0].value;
-
-      _currentProject = _dropDownMenuItemsProjects[0].value;
-//      print('widget.dateController.text if null: ${_dateController.text}');
     }
     super.initState();
   }
@@ -159,8 +131,8 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
         builder: (BuildContext context, Widget child) {
           return Theme(
             data: ThemeData.dark().copyWith(
-              backgroundColor: darkBkgdColor,
-              dialogBackgroundColor: darkBkgdColor,
+              backgroundColor: darkThemeNoPhotoBkgdColor,
+              dialogBackgroundColor: darkThemeNoPhotoBkgdColor,
               primaryColor: const Color(0xFF0f4c75), //header
               accentColor: const Color(0xFFbbe1fa), //selection color
 //              colorScheme: ColorScheme.light(primary: const Color(0xFF0f4c75)),
@@ -178,7 +150,12 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
         dateNew = date; //give task date a new value and also update the screen
       }); //DateFormat('MMM dd, yyyy');
       //this is the date we picked
-      _dateController.text = _dateFormatter.format(date);
+      _dateController.text =
+
+          ///add this so that if we picked today, it shows today.
+          DateFormat('M/d/y').format(date) == formattedToday
+              ? 'Today'
+              : _dateFormatter.format(date);
 //      print('_dateController.text: ${_dateController.text}');
     }
 
@@ -200,7 +177,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return SingleChildScrollView(
       child: CustomizedBottomSheet(
-        color: _darkTheme ? darkAdd : lightAdd,
+        color: _darkTheme ? darkThemeAdd : lightThemeAdd,
         child: Form(
           key: _formKey,
           child: Column(
@@ -208,18 +185,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
               SizedBox(height: 20),
               Text(todo != null ? 'Edit Task' : 'Add Task',
                   style: Theme.of(context).textTheme.headline5),
-              SizedBox(
-                height: 10,
-              ),
-//              todo != null
-//                  ? Container() //MEANS WE ARE EDITING, ONLY EDIT TITLE
-//                  :
-//
-//              Text(
-//                      formattedDate == formattedToday
-//                          ? 'Today'
-//                          : _dateFormatter.format(dateNew),
-//                      style: Theme.of(context).textTheme.headline6),
+              SizedBox(height: 10),
               Container(
                 width: 350,
                 child: Padding(
@@ -228,18 +194,23 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
 //                    initialValue: formattedDate == formattedToday
 //                        ? 'Today'
 //                        : _dateFormatter.format(dateNew),
+                    controller: _dateController, //this is TextEditingController
                     focusNode: _dateFocusNode,
 //                    textInputAction: TextInputAction.next,
 //                    onEditingComplete: () => _dateEditingComplete(),
-                    validator: (value) =>
-                        value.isNotEmpty ? null : 'Date can\'t be empty',
+//                    validator: (value) =>
+//                        value.isNotEmpty ? null : 'Date can\'t be empty',
                     textAlign: TextAlign.center,
                     //no need validation because there always a data
                     //When a [controller] is specified, [initialValue] must be null (the default). If [controller] is null, then a [TextEditingController] will be constructed automatically and its text will be initialized to [initialValue] or the empty string.
                     readOnly: true,
-                    controller: _dateController, //this is TextEditingController
-                    style: Theme.of(context).textTheme.headline6,
-                    cursorColor: _darkTheme ? Colors.white : lightButton,
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontStyle: FontStyle.italic,
+                        decoration: TextDecoration.underline,
+                        color: _darkTheme ? Colors.white : lightThemeWords,
+                        fontWeight: FontWeight.bold),
+//                    cursorColor: _darkTheme ? Colors.white : lightButton,
                     decoration: InputDecoration(
                       focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.transparent)),
@@ -271,7 +242,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                         fontSize: 16.0),
                     autofocus: true,
 //                    textAlign: TextAlign.center,
-                    cursorColor: _darkTheme ? Colors.white : lightButton,
+                    cursorColor: _darkTheme ? Colors.white : lightThemeButton,
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
                     maxLength: 100,
@@ -282,10 +253,14 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                           color: _darkTheme ? Colors.white54 : Colors.black38),
                       focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                              color: _darkTheme ? Colors.white : lightButton)),
+                              color: _darkTheme
+                                  ? Colors.white
+                                  : lightThemeButton)),
                       enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                              color: _darkTheme ? Colors.white : lightButton)),
+                              color: _darkTheme
+                                  ? Colors.white
+                                  : lightThemeButton)),
                     ),
                   ),
                 ),
@@ -306,7 +281,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                         fontSize: 14.0),
 //                    autofocus: true,
 //                    textAlign: TextAlign.center,
-                    cursorColor: _darkTheme ? Colors.white : lightButton,
+                    cursorColor: _darkTheme ? Colors.white : lightThemeButton,
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
                     decoration: InputDecoration(
@@ -316,10 +291,14 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                           color: _darkTheme ? Colors.white54 : Colors.black38),
                       focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                              color: _darkTheme ? Colors.white : lightButton)),
+                              color: _darkTheme
+                                  ? Colors.white
+                                  : lightThemeButton)),
                       enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                              color: _darkTheme ? Colors.white : lightButton)),
+                              color: _darkTheme
+                                  ? Colors.white
+                                  : lightThemeButton)),
                     ),
                   ),
                 ),
@@ -342,125 +321,18 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                         value: _currentCategory,
                         items: _dropDownMenuItems,
                         onChanged: changedDropDownItem,
-                        dropdownColor: darkAdd,
-//                        focusNode: _dropDownFocusNode,
+                        dropdownColor: darkThemeAdd,
+//                          focusColor: Colors.orangeAccent,
                       ),
                     ],
                   ),
-
-//                  DropdownButtonFormField(
-//                    isDense: true,
-//                    icon: Icon(Icons.arrow_drop_down_circle),
-//                    iconSize: 22.0,
-//                    iconEnabledColor: Theme.of(context).primaryColor,
-//                    items: _priorities.map((String priority) {
-//                      return DropdownMenuItem(
-//                        value: priority,
-//                        child: Text(
-//                          priority,
-//                          style: TextStyle(
-//                            fontSize: 18.0,
-//                          ),
-//                        ),
-//                      );
-//                    }).toList(),
-//                    style: TextStyle(
-//                        color: _darkTheme ? Colors.white70 : Color(0xF01b262c),
-//                        fontSize: 14.0),
-//                    decoration: InputDecoration(
-//                      hintText: 'Category',
-//                      hintStyle: TextStyle(
-//                          fontSize: 13,
-//                          color: _darkTheme ? Colors.white54 : Colors.black38),
-//                      focusedBorder: UnderlineInputBorder(
-//                          borderSide: BorderSide(
-//                              color: _darkTheme ? Colors.white : lightButton)),
-//                      enabledBorder: UnderlineInputBorder(
-//                          borderSide: BorderSide(
-//                              color: _darkTheme ? Colors.white : lightButton)),
-//                    ),
-//                    onChanged: (value) {
-//                      setState(() {
-//                        _priority = value;
-//                      });
-//                    },
-//                    value: _priority,
-//                  ),
                 ),
               ),
-              _currentCategory == 'Focus'
-                  ? Container(
-                      width: 350,
-                      child: Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text(
-                              'Project name',
-                              style: TextStyle(
-                                  fontSize: 13,
-                                  color: _darkTheme
-                                      ? Colors.white54
-                                      : Colors.black38),
-                            ),
-                            DropdownButton(
-                              value: _currentProject,
-                              items: _dropDownMenuItemsProjects,
-                              onChanged: changedDropDownItemProjects,
-                              dropdownColor: darkAdd,
-//                        focusNode: _dropDownFocusNode,
-                            ),
-                          ],
-                        ),
-
-//                  DropdownButtonFormField(
-//                    isDense: true,
-//                    icon: Icon(Icons.arrow_drop_down_circle),
-//                    iconSize: 22.0,
-//                    iconEnabledColor: Theme.of(context).primaryColor,
-//                    items: _priorities.map((String priority) {
-//                      return DropdownMenuItem(
-//                        value: priority,
-//                        child: Text(
-//                          priority,
-//                          style: TextStyle(
-//                            fontSize: 18.0,
-//                          ),
-//                        ),
-//                      );
-//                    }).toList(),
-//                    style: TextStyle(
-//                        color: _darkTheme ? Colors.white70 : Color(0xF01b262c),
-//                        fontSize: 14.0),
-//                    decoration: InputDecoration(
-//                      hintText: 'Category',
-//                      hintStyle: TextStyle(
-//                          fontSize: 13,
-//                          color: _darkTheme ? Colors.white54 : Colors.black38),
-//                      focusedBorder: UnderlineInputBorder(
-//                          borderSide: BorderSide(
-//                              color: _darkTheme ? Colors.white : lightButton)),
-//                      enabledBorder: UnderlineInputBorder(
-//                          borderSide: BorderSide(
-//                              color: _darkTheme ? Colors.white : lightButton)),
-//                    ),
-//                    onChanged: (value) {
-//                      setState(() {
-//                        _priority = value;
-//                      });
-//                    },
-//                    value: _priority,
-//                  ),
-                      ),
-                    )
-                  : Container(),
               SizedBox(height: 15),
               MyFlatButton(
                   onPressed: _save,
                   text: 'SAVE',
-                  color: _darkTheme ? Colors.white : lightButton),
+                  color: _darkTheme ? Colors.white : lightThemeButton),
               SizedBox(height: 30)
             ],
           ),
@@ -482,7 +354,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
 
   Future<void> _save() async {
     final index = _categories.indexOf(_currentCategory);
-    print('index: $index');
+//    print('index: $index');
     if (_validateAndSaveForm()) {
       //pop to previous page
       Navigator.of(context).pop([title, comment, dateNew, index]);
@@ -490,137 +362,104 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
   }
 }
 
-//class UpdateTodoScreen extends StatefulWidget {
-//  const UpdateTodoScreen({
-//    this.database,
-//    this.todo,
-//    this.pickedDate,
-//    this.save,
-//    this.mantraVisible
-////      this.dateController,
-//  });
-//  final Todo todo;
-//  final Database database;
-//  final Function save;
-//  final DateTime pickedDate;
-//  final bool mantraVisible;
-////  final TextEditingController dateController;
-//  @override
-//  _UpdateTodoScreenState createState() => _UpdateTodoScreenState();
-//}
+///https://medium.com/@gshubham030/custom-dropdown-menu-in-flutter-7d8d1e026c6b
+
+/// notes on adding project
+//  List _projects = [
+//    'Project 1', //0, default
+//    'Project 2', //1
+//    'Others' //2
+//  ];
+
+//  List<DropdownMenuItem<String>> _dropDownMenuItemsProjects;
+//  String _currentProject;
+
+//  void changedDropDownItemProjects(String selectedCity) {
+////    print("Selected city $selectedCity, we are going to refresh the UI");
+//    setState(() {
+//      _currentProject = selectedCity;
+//    });
+////    _dropDownFocusNode.unfocus();
+////    FocusScope.of(context).requestFocus(_dropDownFocusNode);
+//  }
 //
-//class _UpdateTodoScreenState extends State<UpdateTodoScreen> {
-//  final DateFormat _dateFormatter = DateFormat('MMM dd');
-//  final _formKey = GlobalKey<FormState>();
-//
-//
-//  String title;
-//  DateTime dateNew;
-//  String formattedToday;
-//  String formattedDate;
-//
-//  Todo get todo => widget.todo;
-//  Database get database => widget.database;
-//
-//  @override
-//  void initState() {
-//    if (todo != null) {
-//      title = todo.title;
-//      dateNew = todo.date;
+//  // here we are creating the list needed for the DropDownButton
+//  List<DropdownMenuItem<String>> getDropDownMenuItemsProjects() {
+//    List<DropdownMenuItem<String>> items = List();
+//    for (String city in _projects) {
+//      // here we are creating the drop down menu items, you can customize the item right here
+//      // but I'll just use a simple text for this
+//      items.add(DropdownMenuItem(value: city, child: Text(city)));
 //    }
-//
-//    dateNew = widget
-//        .pickedDate; //if todo is null, we used pickedDate which we passed by
-//    formattedToday = DateFormat('M/d/y').format(DateTime.now());
-//    formattedDate = DateFormat('M/d/y').format(dateNew);
-//    super.initState();
+//    return items;
 //  }
+
+///note for project
+//              _currentCategory == 'Focus'
+//                  ? Container(
+//                      width: 350,
+//                      child: Padding(
+//                        padding:
+//                            EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+//                        child: Row(
+//                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                          children: <Widget>[
+//                            Text(
+//                              'Project name',
+//                              style: TextStyle(
+//                                  fontSize: 13,
+//                                  color: _darkTheme
+//                                      ? Colors.white54
+//                                      : Colors.black38),
+//                            ),
+//                            DropdownButton(
+//                              value: _currentProject,
+//                              items: _dropDownMenuItemsProjects,
+//                              onChanged: changedDropDownItemProjects,
+//                              dropdownColor: darkAdd,
+////                        focusNode: _dropDownFocusNode,
+//                            ),
+//                          ],
+//                        ),
 //
-//  @override
-//  Widget build(BuildContext context) {
-//    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-//    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-//    return SingleChildScrollView(
-//      child: CustomizedBottomSheet(
-//        color: _darkTheme ? darkAdd : lightAdd,
-//        child: Form(
-//          key: _formKey,
-//          child: Column(
-//            children: <Widget>[
-//              SizedBox(height: 20),
-//              Text(todo != null ? 'Edit Task Title' : 'Add Task Title',
-//                  style: Theme.of(context).textTheme.headline5),
-//              SizedBox(
-//                height: 10,
-//              ),
-//              todo != null
-//                  ? Container() //MEANS WE ARE EDITING, ONLY EDIT TITLE
-//                  : Text(
-//                  formattedDate == formattedToday
-//                      ? 'Today'
-//                      : _dateFormatter.format(dateNew),
-//                  style: Theme.of(context).textTheme.headline6),
-//              Container(
-//                width: 350,
-//                child: Padding(
-//                  padding: const EdgeInsets.symmetric(horizontal: 15),
-//                  child: TextFormField(
-//                    initialValue: title,
-//                    validator: (value) =>
-//                    value.isNotEmpty ? null : 'Task title can\'t be empty',
-//                    onSaved: (value) => title = value,
-//                    style: TextStyle(
-//                        color: _darkTheme ? Colors.white : Color(0xF01b262c),
-//                        fontSize: 20.0),
-//                    autofocus: true,
-//                    textAlign: TextAlign.center,
-//                    cursorColor: _darkTheme ? Colors.white : lightButton,
-//                    keyboardType: TextInputType.multiline,
-//                    maxLines: null,
-//                    maxLength: 100,
-//                    decoration: InputDecoration(
-//                      focusedBorder: UnderlineInputBorder(
-//                          borderSide: BorderSide(
-//                              color: _darkTheme ? Colors.white : lightButton)),
-//                      enabledBorder: UnderlineInputBorder(
-//                          borderSide: BorderSide(
-//                              color: _darkTheme ? Colors.white : lightButton)),
-//                    ),
-//                  ),
-//                ),
-//              ),
-////              SizedBox(height: 20),
-//              MyFlatButton(
-//                  onPressed: _save,
-//                  text: 'SAVE',
-//                  color: _darkTheme ? Colors.white : lightButton),
-//              SizedBox(height: 20)
-//            ],
-//          ),
-//        ),
-//      ),
-//    );
-//  }
-//
-//  bool _validateAndSaveForm() {
-//    final form = _formKey.currentState;
-//    //validate
-//    if (form.validate()) {
-//      //save
-//      form.save();
-//      return true;
-//    }
-//    return false;
-//  }
-//
-//  Future<void> _save() async {
-//    if (_validateAndSaveForm()) {
-//      //pop to previous page
-//      Navigator.of(context).pop(title);
-//    }
-//
-////    setState(() {
-//      widget.mantraVisible = true;
-////    });
-//  }
-//}
+////                  DropdownButtonFormField(
+////                    isDense: true,
+////                    icon: Icon(Icons.arrow_drop_down_circle),
+////                    iconSize: 22.0,
+////                    iconEnabledColor: Theme.of(context).primaryColor,
+////                    items: _priorities.map((String priority) {
+////                      return DropdownMenuItem(
+////                        value: priority,
+////                        child: Text(
+////                          priority,
+////                          style: TextStyle(
+////                            fontSize: 18.0,
+////                          ),
+////                        ),
+////                      );
+////                    }).toList(),
+////                    style: TextStyle(
+////                        color: _darkTheme ? Colors.white70 : Color(0xF01b262c),
+////                        fontSize: 14.0),
+////                    decoration: InputDecoration(
+////                      hintText: 'Category',
+////                      hintStyle: TextStyle(
+////                          fontSize: 13,
+////                          color: _darkTheme ? Colors.white54 : Colors.black38),
+////                      focusedBorder: UnderlineInputBorder(
+////                          borderSide: BorderSide(
+////                              color: _darkTheme ? Colors.white : lightButton)),
+////                      enabledBorder: UnderlineInputBorder(
+////                          borderSide: BorderSide(
+////                              color: _darkTheme ? Colors.white : lightButton)),
+////                    ),
+////                    onChanged: (value) {
+////                      setState(() {
+////                        _priority = value;
+////                      });
+////                    },
+////                    value: _priority,
+////                  ),
+//                      ),
+//                    )
+//                  : Container(),

@@ -2,9 +2,11 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 class ClockBottomToday extends StatelessWidget {
-  const ClockBottomToday({Key key, @required this.text}) : super(key: key);
+  const ClockBottomToday({Key key, @required this.text, this.maxLines = 3})
+      : super(key: key);
 
   final String text;
+  final int maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -20,15 +22,15 @@ class ClockBottomToday extends StatelessWidget {
                 fontWeight: FontWeight.bold),
           ),
           Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(15.0),
             child: AutoSizeText(
               text,
-              maxLines: 4,
+              maxLines: maxLines,
               minFontSize: 15,
               maxFontSize: 18,
               textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
-//                fontWeight: FontWeight.w600,
                 fontSize: 18.0,
                 color: Colors.white,
               ),

@@ -19,9 +19,8 @@ class RestQuoteList {
 
   List<RestQuote> _quoteList = [
     RestQuote(
-      author: 'Aristotle',
-      body:
-          'Whosoever is delighted in solitude is either a wild beast or a god.',
+      author: '',
+      body: 'There is nothing permanent except change.',
     ),
     RestQuote(
       author: 'Paramahansa Yogananda',
@@ -46,9 +45,8 @@ class RestQuoteList {
       body: 'Breathe in deeply to bring your mind home to your body.',
     ),
     RestQuote(
-      author: 'Dr. Arthur C. Guyton',
-      body:
-          'All chronic pain, suffering, and diseases are caused by a lack of oxygen at the cell level.',
+      author: '',
+      body: 'Learning never exhausts the mind.',
     ),
     RestQuote(
       author: 'Gregory Maguire',
@@ -59,26 +57,67 @@ class RestQuoteList {
       body: 'You are where you need to be. Just take a deep breath.',
     ),
     RestQuote(
-      author: 'Unknown',
-      body: 'A healthy mind has an easy breath.',
+      author: '',
+      body: 'All that we see or seem is but a dream within a dream.',
     ),
     RestQuote(
-      author: 'Proverb',
-      body: 'The nose is for breathing, the mouth is for eating.',
+      author: '',
+      body: 'There is no charm equal to tenderness of heart.',
     ),
     RestQuote(
-      author: 'Elizabeth Barrett Browning',
-      body: 'He lives most life whoever breathes most air.',
+      author: '',
+      body: 'The only journey is the one within.',
     ),
     RestQuote(
-      author: 'Peter Matthiessen',
-      body:
-          'In this very breath that we now take lies the secret that all great teachers try to tell us.',
+      author: '',
+      body: 'Life without love is like a tree without blossoms or fruit.',
     ),
     RestQuote(
-      author: 'Sylvia Plath',
-      body:
-          'I took a deep breath and listened to the old bray of my heart: I am, I am, I am.',
+      author: '',
+      body: 'No act of kindness, no matter how small, is ever wasted.',
     ),
   ];
 }
+
+List quoteList = [
+  "It is far better to be alone, than to be in bad company.",
+  "Independence is happiness.",
+  "The supreme art of war is to subdue the enemy without fighting.",
+  "Keep your face always toward the sunshine - and shadows will fall behind you.",
+  "Being entirely honest with oneself is a good exercise.",
+  "Happiness can exist only in acceptance.",
+  "Love has no age, no limit, and no death.",
+  "You can't blame gravity for falling in love.",
+  "Honesty is the first chapter in the book of wisdom.",
+  "The journey of a thousand miles begins with one step.",
+  "The best preparation for tomorrow is doing your best today.",
+  "Ever tried. Ever failed. No matter. Try Again. Fail again. Fail better",
+  "Not all those who wander are lost.",
+  "Whoever is happy will make others happy too.",
+  "I have not failed. I've just found 10,000 ways that won't work.",
+  "Tell me and I forget. Teach me and I remember. Involve me and I learn.",
+  "There is nothing on this earth more to be prized than true friendship.",
+  "There is only one happiness in this life, to love and be loved.",
+  "If opportunity doesn't knock, build a door.",
+  "The secret of getting ahead is getting started.",
+  "Wise men speak because they have something to say, Fools because they have to say something.",
+  "The World is my country, all mankind are my brethren, and to do good is my religion.",
+  "Problems are not stop signs, they are guidelines.",
+  "All our dreams can come true, if we have the courage to pursue them.",
+  "We know what we are, but know not what we may be.",
+  "It's not what you look at that matters, it's what you see.",
+  "A single rose can be my garden... a single friend, my world.",
+  "Friends show their love in times of trouble, not in happiness.",
+  "Life is not a problem to be solved, but a reality to be experienced.",
+  "The only true wisdom is in knowing you know nothing.",
+  "Everything has beauty, but not everyone sees it.",
+  "Believe you can and you're halfway there.",
+  "The future belongs to those who believe in the beauty of their dreams.",
+  "Change your thoughts and you change your world.",
+  "Love isn't something you find. Love is something that finds you.",
+  "Do all things with love.",
+  "Where there is love there is life.",
+  "Nothing is impossible, the word itself says 'I'm possible'!",
+  "Try to be a rainbow in someone's cloud.",
+  "It is during our darkest moments that we must focus to see the light."
+];

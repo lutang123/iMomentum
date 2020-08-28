@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:iMomentum/app/common_widgets/platform_widget.dart';
-import 'package:iMomentum/app/constants/theme.dart';
 
 class PlatformAlertDialog extends PlatformWidget {
   PlatformAlertDialog({

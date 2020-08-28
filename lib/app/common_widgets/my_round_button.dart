@@ -29,7 +29,9 @@ class RoundIconButton extends StatelessWidget {
 
 class RoundSmallIconButton extends StatelessWidget {
   RoundSmallIconButton(
-      {@required this.icon, @required this.onPressed, this.color});
+      {@required this.icon,
+      @required this.onPressed,
+      this.color = Colors.white});
 
   final IconData icon;
   final Function onPressed;
@@ -43,13 +45,14 @@ class RoundSmallIconButton extends StatelessWidget {
       child: Icon(
         icon,
         color: color,
+        size: 22,
       ),
       onPressed: onPressed,
       constraints: BoxConstraints.tightFor(
-        width: 30.0,
-        height: 30.0,
+        width: 32.0,
+        height: 32.0,
       ),
-      shape: CircleBorder(side: BorderSide(color: color, width: 2.0)),
+      shape: CircleBorder(side: BorderSide(color: color, width: 1.0)),
 //      fillColor: Color(0xFF4C4F5E),
     );
   }

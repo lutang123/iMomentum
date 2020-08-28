@@ -15,6 +15,7 @@ class LandingPage extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.active) {
             User user = snapshot.data;
+            //here we check user and go to either SignInPage or TabPage
             if (user == null) {
               return SignInPage.create(context);
             }
@@ -22,10 +23,12 @@ class LandingPage extends StatelessWidget {
               value: user,
               child: Provider<Database>(
                 create: (_) => FirestoreDatabase(uid: user.uid),
+                //and this TabPage has provided FirestoreDatabase with user.uid
                 child: TabPage(),
               ),
             );
           } else {
+            //this is the case when snapshot.connectionState != ConnectionState.active
             return Scaffold(
               body: Container(
                 decoration: BoxDecoration(

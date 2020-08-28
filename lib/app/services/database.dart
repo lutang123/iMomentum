@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:iMomentum/app/models/duration_model.dart';
 import 'package:iMomentum/app/models/folder.dart';
-import 'package:iMomentum/app/models/image_model.dart';
+import 'package:iMomentum/app/models/image_model_NOTUSED.dart';
 import 'package:iMomentum/app/models/mantra_model.dart';
 import 'package:iMomentum/app/models/note.dart';
 import 'package:iMomentum/app/models/quote_model.dart';
@@ -107,7 +107,7 @@ class FirestoreDatabase implements Database {
         builder: (data, documentId) => Todo.fromMap(data, documentId),
 //        queryBuilder: (query) => query.orderBy('category'),
         //to make the most recently edited one show first
-        sort: (lhs, rhs) => lhs.id.compareTo(rhs.id),
+        sort: (lhs, rhs) => rhs.id.compareTo(lhs.id),
 
 //messageList.sort((m, m2) => int.parse(m.id).compareTo(int.parse(m2.id)));
         sortIsDone: (lhs, rhs) => (rhs.isDone.toString().length)

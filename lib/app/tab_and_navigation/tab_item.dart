@@ -1,5 +1,5 @@
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 enum TabItem {
   home,
@@ -14,11 +14,9 @@ class TabItemData {
   final IconData icon;
 
   static const Map<TabItem, TabItemData> allTabs = {
-    TabItem.home: TabItemData(title: 'Home', icon: FontAwesomeIcons.home),
-    TabItem.todo:
-        TabItemData(title: 'Todo', icon: FontAwesomeIcons.calendarAlt),
-    TabItem.notes:
-        TabItemData(title: 'Notes', icon: FontAwesomeIcons.stickyNote),
+    TabItem.home: TabItemData(title: 'Home', icon: EvaIcons.homeOutline),
+    TabItem.todo: TabItemData(title: 'Todo', icon: EvaIcons.calendarOutline),
+    TabItem.notes: TabItemData(title: 'Notes', icon: EvaIcons.bookOutline),
 
 //    TabItem.entries: TabItemData(title: 'Entries', icon: FontAwesomeIcons.list),
 //    TabItem.account: TabItemData(

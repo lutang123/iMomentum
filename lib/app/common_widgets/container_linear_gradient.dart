@@ -11,7 +11,7 @@ class ContainerLinearGradient extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.transparent,
+            Colors.black12,
             Colors.black54,
           ],
           stops: [0.5, 1.0],

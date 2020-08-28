@@ -7,12 +7,22 @@
       <key>NSAllowsArbitraryLoads</key>
       <true/>
     </dict>
+
+    <!-- for access photo library -->
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>This app needs permission for the photo library.</string>
+    <string>This application needs permission for the photo library.</string>
+
+    <!-- for access camera -->
     <key>NSCameraUsageDescription</key>
-    <string>This app needs access to the camera.</string>
+    <string>This application needs access to the camera.</string>
+
+    <!-- for speech-to-text -->
     <key>NSMicrophoneUsageDescription</key>
-    <string>This access to the microphone, if you intend to record videos.</string>
+    <string>This application needs to access your microphone.</string>
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>This application needs the speech recognition permission.</string>
+
+    <!-- for google service -->
     <key>CFBundleURLTypes</key>
     <array>
     	<dict>
@@ -20,18 +30,21 @@
     		<string>Editor</string>
     		<key>CFBundleURLSchemes</key>
     		<array>
-    			<!-- TODO Replace this value: -->
     			<!-- Copied from GoogleService-Info.plist key REVERSED_CLIENT_ID -->
     			<string>com.googleusercontent.apps.459840489878-emisna5jr6u2bsfurrqjekp29hubhgrf</string>
     		</array>
     	</dict>
     </array>
+
+    <!-- for access location -->
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>This app needs access to location when open.</string>
     <key>NSLocationAlwaysUsageDescription</key>
     <string>This app needs access to location when in the background.</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
     <string>This app needs access to location when open and in the background.</string>
+
+    <!-- auto-generated: -->
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>

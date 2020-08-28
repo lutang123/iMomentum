@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
-import 'package:iMomentum/screens/landing_and_signIn/sign_in_page.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/services/auth.dart';
-import 'package:iMomentum/app/services/sign_in/email_sign_in_page.dart';
-import 'package:iMomentum/app/services/sign_in/sign_in_manager.dart';
+import 'package:iMomentum/app/sign_in/email_sign_in_page.dart';
+import 'package:iMomentum/app/sign_in/sign_in_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 
@@ -49,14 +48,14 @@ class _SignInScreenState extends State<SignInScreen> {
     ).show(context);
   }
 
-  Future<void> _signInAnonymously(BuildContext context) async {
-    try {
-      final auth = Provider.of<AuthBase>(context, listen: false);
-      await auth.signInAnonymously();
-    } on PlatformException catch (e) {
-      _showSignInError(context, e);
-    }
-  }
+  // Future<void> _signInAnonymously(BuildContext context) async {
+  //   try {
+  //     final auth = Provider.of<AuthBase>(context, listen: false);
+  //     await auth.signInAnonymously();
+  //   } on PlatformException catch (e) {
+  //     _showSignInError(context, e);
+  //   }
+  // }
 
   Future<void> _signInWithGoogle(BuildContext context) async {
     try {

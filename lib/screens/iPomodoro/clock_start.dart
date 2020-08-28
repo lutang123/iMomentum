@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iMomentum/app/common_widgets/my_round_button.dart';
-
 import 'only_thin_ring.dart';
 
 class ClockStart extends StatelessWidget {
@@ -58,9 +57,15 @@ class ClockStart extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: 3),
+//                  // not looking good
+//                  RoundSmallIconButton(
+//                    icon: EvaIcons.moreHorizotnalOutline,
+//                    onPressed: onPressedEdit,
+//                    color: Colors.white70,
+//                  )
                   IconButton(
-                    icon:
-                        Icon(FontAwesomeIcons.ellipsisH, color: Colors.white70),
+                    icon: Icon(FontAwesomeIcons.ellipsisH,
+                        color: Colors.white.withOpacity(0.85)),
                     onPressed: onPressedEdit,
                   )
                 ],
@@ -72,7 +77,7 @@ class ClockStart extends StatelessWidget {
                   text2,
                   style: GoogleFonts.varelaRound(
                     fontWeight: FontWeight.w600,
-                    fontSize: 20.0,
+                    fontSize: 22.0,
                     color: Colors.white,
                   ),
                 ),

@@ -12,10 +12,8 @@ import '../../app/common_widgets/platform_alert_dialog.dart';
 import '../../app/constants/constants.dart';
 import '../../app/services/auth.dart';
 import '../../app/constants/theme.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-import 'package:path/path.dart' as Path;
 
 class UserScreen extends StatefulWidget {
   final User user;
@@ -227,7 +225,7 @@ class _UserScreenState extends State<UserScreen> {
                   Text(
                     user.displayName,
                     style: TextStyle(
-                      color: _darkTheme ? darkButton : lightButton,
+                      color: _darkTheme ? darkThemeButton : lightThemeButton,
                       fontSize: 18.0,
                     ),
                   ),

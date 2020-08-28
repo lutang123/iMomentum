@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
 import 'package:iMomentum/app/constants/constants.dart';
 import 'package:iMomentum/screens/landing_and_signIn/sign_in_screen_new.dart';
-import 'package:iMomentum/app/services/pages_routes.dart';
+import 'package:iMomentum/app/utils/pages_routes.dart';
 
 class StartScreen extends StatelessWidget {
   void _onPressed(BuildContext context) {

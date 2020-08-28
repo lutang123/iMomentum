@@ -9,15 +9,14 @@ import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dar
 import 'package:iMomentum/app/constants/constants.dart';
 import 'package:iMomentum/app/models/duration_model.dart';
 import 'package:iMomentum/app/models/todo.dart';
-import 'package:iMomentum/app/common_widgets/extensions.dart';
+import 'package:iMomentum/app/utils/extensions.dart';
+import 'package:iMomentum/app/services/calendar_bloc.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
-import 'package:iMomentum/app/services/pages_routes.dart';
-import 'package:iMomentum/screens/todo_screen/add_todo_screen.dart';
+import 'package:iMomentum/app/utils/pages_routes.dart';
 import 'package:provider/provider.dart';
 import 'clock_bottom.dart';
 import 'clock_completion_screen.dart';
-import 'clock_begin_screen.dart';
 import 'clock_timer.dart';
 import 'clock_title.dart';
 
@@ -51,23 +50,26 @@ class _ClockTimerScreenState extends State<ClockTimerScreen>
 
   @override
   void initState() {
-    super.initState();
     _animationController = AnimationController(
       duration: widget.duration,
       vsync: this,
     );
-    _animationController.forward().orCancel;
+    _animationController.forward();
     _playSound();
     _stopwatch = Stopwatch();
     _start();
+    super.initState();
   }
 
   @override
   void dispose() {
-    super.dispose();
     _timer.cancel();
     _stopwatch.stop();
+    //https://github.com/flutter/flutter/issues/22777
+    //This ticker was canceled: Ticker(created by _MyHomePageState#a2d8d(lifecycle state: created))
+    //removing .orCancel from progressBarAnimationController.forward().orCancel; fixes the issue.
     _animationController.dispose();
+    super.dispose();
   }
 
   // Play a sound
@@ -91,14 +93,20 @@ class _ClockTimerScreenState extends State<ClockTimerScreen>
     }
     _timer = Timer.periodic(Duration(milliseconds: 10), (Timer t) {
       // update display
-      setState(() {
-        var diff = (widget.duration - _stopwatch.elapsed);
-        _display = diff.clockFmt();
-        if (diff.inMilliseconds <= 0) {
-          _playSound();
-          _end(cancelled: false);
-        }
-      });
+      ///error here
+      ///_ClockTimerScreenState._start.<anonymous closure>
+      // https://stackoverflow.com/questions/52288613/how-to-dispose-of-my-stateful-widget-completely
+      // https://stackoverflow.com/questions/49340116/setstate-called-after-dispose
+      if (mounted) {
+        setState(() {
+          var diff = (widget.duration - _stopwatch.elapsed);
+          _display = diff.clockFmt();
+          if (diff.inMilliseconds <= 0) {
+            _playSound();
+            _end(cancelled: false);
+          }
+        });
+      }
     });
   }
 
@@ -128,6 +136,7 @@ class _ClockTimerScreenState extends State<ClockTimerScreen>
 
   // This will stop the timer
   void _end({bool cancelled = true}) {
+    ///wrong
 //    if (!_stopwatch.isRunning) {
 //      return;
 //    }
@@ -137,23 +146,37 @@ class _ClockTimerScreenState extends State<ClockTimerScreen>
     });
 
     if (cancelled) {
-      Navigator.of(context).pushReplacement(PageRoutes.fade(
-          () => ClockBeginScreen(
-                database: widget.database,
-                todo: widget.todo,
-              ),
-          milliseconds: 450));
+//      //https://stackoverflow.com/questions/49672706/flutter-navigation-pop-to-index-1
+//      int count = 0;
+//      Navigator.popUntil(context, (route) {
+//        return count++ == 2;
+//      });
+      /// go back to HomeScreen
+      Navigator.pop(context);
+
+      //      Navigator.of(context).pop();
+
+//      Navigator.of(context).pushReplacement(PageRoutes.fade(
+//          () => ClockBeginScreen(
+//                database: widget.database,
+//                todo: widget.todo,
+//              ),
+//          milliseconds: 450));
     } else {
       ///save duration in database when it's done
       _setDuration(context);
 
       ///then go to completion page
       Navigator.of(context).pushReplacement(PageRoutes.fade(
-          () => CompletionScreen(
-                database: widget.database,
-                todo: widget.todo,
-                duration: widget.duration,
-                restDuration: widget.restDuration,
+          () => Provider<CalendarBloc>(
+                create: (_) => CalendarBloc(database: widget.database),
+                child: CompletionScreen(
+                  database: widget.database,
+                  todo: widget.todo,
+                  duration: widget.duration,
+                  restDuration: widget.restDuration,
+                  playSound: widget.playSound,
+                ),
               ),
           milliseconds: 800));
     }
@@ -181,7 +204,6 @@ class _ClockTimerScreenState extends State<ClockTimerScreen>
   }
 
   int counter = 0;
-
   void _onDoubleTap() {
     setState(() {
       ImageUrl.randomImageUrl =
@@ -221,7 +243,7 @@ class _ClockTimerScreenState extends State<ClockTimerScreen>
                           Opacity(
                             opacity: 0.0,
                             child: IconButton(
-                              onPressed: _end,
+                              onPressed: null,
                               icon: Icon(Icons.clear, size: 30),
                               color: Colors.white,
                             ),
@@ -239,39 +261,47 @@ class _ClockTimerScreenState extends State<ClockTimerScreen>
                       text1: _display,
                       text2: 'Focus',
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          RoundTextButton(
-                            text: 'Cancel',
-                            textColor: Colors.white70,
-                            onPressed: _end,
-                            circleColor: Colors.white70,
-                            fillColor: Colors.black12,
-                          ),
-                          _stopwatch.isRunning
-                              ? RoundTextButton(
-                                  text: 'Pause',
-                                  textColor: Colors.white,
-                                  onPressed: _pause,
-                                  circleColor: Colors.white,
-                                  fillColor:
-                                      Colors.orangeAccent.withOpacity(0.2),
-                                )
-                              : RoundTextButton(
-                                  text: 'Resume',
-                                  textColor: Colors.white,
-                                  onPressed: _resume,
-                                  circleColor: Colors.white,
-                                  fillColor:
-                                      Colors.lightGreenAccent.withOpacity(0.2),
-                                ),
-                        ],
+                    SizedBox(
+                      height: 60,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            RoundTextButton(
+                              text: 'Cancel',
+                              textColor: Colors.white70,
+
+                              /// go back to HomeScreen
+                              onPressed: () => _end(cancelled: true),
+                              circleColor: Colors.white70,
+                              fillColor: Colors.black12,
+                            ),
+                            _stopwatch.isRunning
+                                ? RoundTextButton(
+                                    text: 'Pause',
+                                    textColor: Colors.white,
+                                    onPressed: _pause,
+                                    circleColor: Colors.white,
+                                    fillColor:
+                                        Colors.deepOrange.withOpacity(0.3),
+                                  )
+                                : RoundTextButton(
+                                    text: 'Resume',
+                                    textColor: Colors.white,
+                                    onPressed: _resume,
+                                    circleColor: Colors.white,
+                                    fillColor: Colors.green.withOpacity(0.2),
+                                  ),
+                          ],
+                        ),
                       ),
                     ),
-                    ClockBottomToday(text: '${widget.todo.title}'), //clock
+                    SizedBox(height: 15),
+                    ClockBottomToday(
+                      text: '${widget.todo.title}',
+//                      maxLines: 1,
+                    ), //clock
                   ],
                 ),
               ),

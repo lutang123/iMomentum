@@ -1,19 +1,13 @@
-import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iMomentum/screens/unsplash/staggered_view.dart';
 import 'package:iMomentum/screens/unsplash/tags_list.dart';
-import 'package:iMomentum/screens/unsplash/unsplash_image_provider.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:iMomentum/app/common_widgets/empty_content.dart';
+import 'package:iMomentum/app/services/network_service/unsplash_image_provider.dart';
 import 'package:iMomentum/screens/unsplash/widget/image_tile.dart';
 import 'package:iMomentum/app/constants/theme.dart';
-import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:provider/provider.dart';
-
-import 'models.dart';
+import '../../app/models/unsplash_image.dart';
 
 //adding search to the app
 class SearchPhotos extends SearchDelegate<Container> {

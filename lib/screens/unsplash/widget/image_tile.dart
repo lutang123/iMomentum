@@ -1,10 +1,7 @@
-import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:iMomentum/app/common_widgets/shared_axis.dart';
 import 'package:iMomentum/app/services/database.dart';
-import 'package:iMomentum/screens/unsplash/image_page.dart';
-import 'package:iMomentum/screens/unsplash/models.dart';
+import 'package:iMomentum/app/models/unsplash_image.dart';
 
 /// ImageTile displayed in StaggeredGridView.
 class ImageTile extends StatelessWidget {
@@ -49,10 +46,10 @@ class ImageTile extends StatelessWidget {
 //  @override
 //  Widget build(BuildContext context) => InkWell(
 //        onTap: () {
-//            final route = SharedAxisPageRoute(
-//      page: ImagePage(image.getId(), image.getRegularUrl(), database),
-//      transitionType: SharedAxisTransitionType.scaled);
-//  Navigator.of(context).push(route);
+//          final route = SharedAxisPageRoute(
+//              page: ImagePage(image.getId(), image.getRegularUrl(), database),
+//              transitionType: SharedAxisTransitionType.scaled);
+//          Navigator.of(context).push(route);
 //
 //          ///this one will pop back to drawer
 ////          Navigator.of(context).pushReplacement(PageRoutes.zoneIn(
@@ -67,7 +64,6 @@ class ImageTile extends StatelessWidget {
 ////            ),
 ////          );
 //        },
-//        // Hero Widget for Hero animation with [ImagePage]
 //        child: image != null
 //            ? Hero(
 //                tag: '${image.getRegularUrl()}',

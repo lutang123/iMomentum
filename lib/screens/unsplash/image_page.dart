@@ -1,19 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
-import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/screens/unsplash/widget/info_sheet.dart';
-import 'package:iMomentum/app/models/image_model.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
-import 'package:iMomentum/screens/unsplash/unsplash_image_provider.dart';
+import 'package:iMomentum/app/services/network_service/unsplash_image_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:url_launcher/url_launcher.dart';
-
-import 'models.dart';
+import '../../app/models/unsplash_image.dart';
 
 /// Screen for showing an individual [UnsplashImage].
 class ImagePage extends StatefulWidget {
@@ -177,11 +172,11 @@ class _ImagePageState extends State<ImagePage> {
 
     ///some how this goes to black?
     //pop back
-//    int count = 0;
-//    Navigator.popUntil(context, (route) {
-//      return count++ == 2;
-//    });
-    Navigator.of(context).pop();
+    int count = 0;
+    Navigator.popUntil(context, (route) {
+      return count++ == 2;
+    });
+//    Navigator.of(context).pop();
   }
 
   /// Shows a BottomSheet containing image info.

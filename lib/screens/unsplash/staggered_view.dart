@@ -4,16 +4,12 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:iMomentum/app/common_widgets/empty_content.dart';
 import 'package:iMomentum/screens/unsplash/widget/image_tile.dart';
-import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/services/database.dart';
-import 'package:iMomentum/app/services/multi_notifier.dart';
-import 'package:iMomentum/screens/unsplash/search_photo.dart';
-import 'package:iMomentum/screens/unsplash/unsplash_image_provider.dart';
+import 'package:iMomentum/app/services/network_service/unsplash_image_provider.dart';
 import 'package:iMomentum/screens/unsplash/widget/loading_indicator.dart';
-import 'package:provider/provider.dart';
-
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'image_page.dart';
-import 'models.dart';
+import '../../app/models/unsplash_image.dart';
 
 class StaggeredView extends StatefulWidget {
   final Database database;
@@ -82,8 +78,8 @@ class _StaggeredViewState extends State<StaggeredView> {
           ++page, //we canot not remove this, otherwise it keeps getting the same 10 images
     );
     // set totalPages
-    int totalPages = res[0];
-    print('totalPage: $totalPages'); //32680
+//    int totalPages = res[0];
+//    print('totalPage: $totalPages'); //32680
     images = res[1];
     setState(() {
       loadingImages = false;
@@ -105,14 +101,14 @@ class _StaggeredViewState extends State<StaggeredView> {
 
       ///not totally understand why
 //      print('y: $y');
-      print(
-          'y.length: ${y.length}'); //10, and every time we scroll up, we got 10 more
+//      print(
+//          'y.length: ${y.length}'); //10, and every time we scroll up, we got 10 more
       return y;
     } else {
       x = x + await _loadImages(keyword: 'nature');
 //      if (x.length < 41 && x.length > 0) {
       ///got error when scrolling to 40, but not in search
-      print('x.length: ${x.length}'); //10
+//      print('x.length: ${x.length}'); //10
       return x;
 //      }
     }
@@ -123,57 +119,6 @@ class _StaggeredViewState extends State<StaggeredView> {
   void dispose() {
     super.dispose();
     _scrollController.dispose();
-  }
-
-  Widget _buildSearchAppBar() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    return SliverPadding(
-      padding: const EdgeInsets.only(top: 8.0),
-      sliver: SliverAppBar(
-        backgroundColor: _darkTheme ? Color(0xf01b262c) : Colors.grey[50],
-        automaticallyImplyLeading: false,
-//      stretch: false,
-        floating: true,
-        title: Container(
-            width: 300,
-            decoration: BoxDecoration(
-//              color: _darkTheme ? darkSurfaceTodo : lightSurface,
-              borderRadius: BorderRadius.all(Radius.circular(10.0)),
-              border: Border.all(
-                  width: 1,
-                  color: _darkTheme ? Colors.white54 : Colors.black38),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                FlatButton(
-                  child: Text(
-                    'Search photos',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: _darkTheme ? darkHint : lightHint,
-                    ),
-                  ),
-                  onPressed: () => showSearch(
-                    context: context,
-                    delegate: SearchPhotos(),
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(
-                    Icons.search,
-                  ),
-                  color: _darkTheme ? darkHint : lightHint,
-                  onPressed: () => showSearch(
-                    context: context,
-                    delegate: SearchPhotos(),
-                  ),
-                ),
-              ],
-            )),
-      ),
-    );
   }
 
   /// Returns a StaggeredTile for a given [image].
@@ -193,11 +138,21 @@ class _StaggeredViewState extends State<StaggeredView> {
       padding: const EdgeInsets.all(8.0),
       sliver: SliverStaggeredGrid.countBuilder(
         // set column count
+        staggeredTileBuilder: (int index) =>
+            _buildStaggeredTile(snapshot.data[index], 2),
+        mainAxisSpacing: 16.0,
+        crossAxisSpacing: 16.0,
         crossAxisCount: 2,
         itemCount: snapshot.data
             .length, //NoSuchMethodError: The getter 'length' was called on null.
         // set itemBuilder
-        itemBuilder: (BuildContext context, int index) => OpenContainer(
+        itemBuilder: (BuildContext context, int index) =>
+//            ImageTile(
+//          image: snapshot.data[index],
+//          database: widget.database,
+//        ),
+            ///Notes on openContainer, no difference on navigation, slightly better animation
+            OpenContainer(
           useRootNavigator: true,
           transitionType: ContainerTransitionType.fade,
           closedBuilder: (BuildContext _, VoidCallback openContainer) {
@@ -215,12 +170,14 @@ class _StaggeredViewState extends State<StaggeredView> {
                 snapshot.data[index].getRegularUrl(), widget.database);
           },
         ),
-        staggeredTileBuilder: (int index) =>
-            _buildStaggeredTile(snapshot.data[index], 2),
-        mainAxisSpacing: 16.0,
-        crossAxisSpacing: 16.0,
       ),
     );
+  }
+
+  Future<void> _handleRefresh() async {
+    setState(() {
+      imageList = _loadImages(keyword: query);
+    });
   }
 
   @override
@@ -237,22 +194,32 @@ class _StaggeredViewState extends State<StaggeredView> {
 //          if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.data != null) {
             return // image loaded return [_ImageTile]
-                CustomScrollView(
-              controller: _scrollController,
-              // put AppBar in NestedScrollView to have it sliver off on scrolling
-              slivers: <Widget>[
-                searching2
-                    ? _buildSearchAppBar()
-                    : null, //we can not write Container()
-                _buildImageGrid(snapshot),
-                //filter null views
-                ///why not showing? TODO
-                loadingImages
-                    ? SliverToBoxAdapter(
-                        child: LoadingIndicator(Colors.grey[400]),
-                      )
-                    : null,
-              ].where((w) => w != null).toList(),
+                LiquidPullToRefresh(
+              height: 100, //default
+              springAnimationDurationInMilliseconds: 700,
+              animSpeedFactor: 1, //default
+              color: Color(0XF0bbe1fa),
+//              color: Colors.white,
+              backgroundColor: Color(0XF00f4c75),
+              onRefresh: _handleRefresh,
+              showChildOpacityTransition: false,
+              child: CustomScrollView(
+                controller: _scrollController,
+                // put AppBar in NestedScrollView to have it sliver off on scrolling
+                slivers: <Widget>[
+//                  searching2
+//                      ? _buildSearchAppBar()
+//                      : null, //we can not write Container()
+                  _buildImageGrid(snapshot),
+
+                  ///why not showing? TODO
+                  loadingImages
+                      ? SliverToBoxAdapter(
+                          child: LoadingIndicator(Colors.grey[400]),
+                        )
+                      : null,
+                ].where((w) => w != null).toList(), //filter null views??
+              ),
             );
           } else if (snapshot.hasError) {
             return Center(
@@ -289,3 +256,55 @@ class _StaggeredViewState extends State<StaggeredView> {
         });
   }
 }
+
+///notes on sliver app bar
+//  Widget _buildSearchAppBar() {
+//    final themeNotifier = Provider.of<ThemeNotifier>(context);
+//    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+//    return SliverPadding(
+//      padding: const EdgeInsets.only(top: 8.0),
+//      sliver: SliverAppBar(
+//        backgroundColor: _darkTheme ? Color(0xf01b262c) : Colors.grey[50],
+//        automaticallyImplyLeading: false,
+////      stretch: false,
+//        floating: true,
+//        title: Container(
+//            width: 300,
+//            decoration: BoxDecoration(
+////              color: _darkTheme ? darkSurfaceTodo : lightSurface,
+//              borderRadius: BorderRadius.all(Radius.circular(10.0)),
+//              border: Border.all(
+//                  width: 1,
+//                  color: _darkTheme ? Colors.white54 : Colors.black38),
+//            ),
+//            child: Row(
+//              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//              children: <Widget>[
+//                FlatButton(
+//                  child: Text(
+//                    'Search photos',
+//                    style: TextStyle(
+//                      fontSize: 14,
+//                      color: _darkTheme ? darkHint : lightHint,
+//                    ),
+//                  ),
+//                  onPressed: () => showSearch(
+//                    context: context,
+//                    delegate: SearchPhotos(),
+//                  ),
+//                ),
+//                IconButton(
+//                  icon: Icon(
+//                    Icons.search,
+//                  ),
+//                  color: _darkTheme ? darkHint : lightHint,
+//                  onPressed: () => showSearch(
+//                    context: context,
+//                    delegate: SearchPhotos(),
+//                  ),
+//                ),
+//              ],
+//            )),
+//      ),
+//    );
+//  }

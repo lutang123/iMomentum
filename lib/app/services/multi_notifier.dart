@@ -13,39 +13,6 @@ class ThemeNotifier with ChangeNotifier {
   }
 }
 
-class MantraNotifier with ChangeNotifier {
-  bool _useMyMantra;
-  int _index;
-
-  MantraNotifier(this._useMyMantra, this._index);
-
-  getMantra() => _useMyMantra;
-  getMantraIndex() => _index;
-
-  setMantra(bool useMyMantra) async {
-    _useMyMantra = useMyMantra;
-    notifyListeners();
-  }
-
-  setMantraIndex(int index) async {
-    _index = index;
-    notifyListeners();
-  }
-}
-
-class QuoteNotifier with ChangeNotifier {
-  bool _quoteOn;
-
-  QuoteNotifier(this._quoteOn);
-
-  getQuote() => _quoteOn;
-
-  setQuote(bool focusModeOn) async {
-    _quoteOn = focusModeOn;
-    notifyListeners();
-  }
-}
-
 class FocusNotifier with ChangeNotifier {
   bool _focusModeOn;
 
@@ -79,6 +46,19 @@ class RandomNotifier with ChangeNotifier {
   }
 }
 
+class MetricNotifier with ChangeNotifier {
+  bool _metricUnitOn;
+
+  MetricNotifier(this._metricUnitOn);
+
+  getMetric() => _metricUnitOn;
+
+  setMetric(bool focusModeOn) async {
+    _metricUnitOn = focusModeOn;
+    notifyListeners();
+  }
+}
+
 class ImageNotifier with ChangeNotifier {
   String _imageUrl;
 //  bool _randomOn;
@@ -99,15 +79,35 @@ class ImageNotifier with ChangeNotifier {
 //  }
 }
 
-class AppliedOwnPhotoNotifier with ChangeNotifier {
-  bool _appliedOwnPhoto;
+class MantraNotifier with ChangeNotifier {
+  bool _useMyMantra;
+  int _index;
 
-  AppliedOwnPhotoNotifier(this._appliedOwnPhoto);
+  MantraNotifier(this._useMyMantra, this._index);
 
-  getBoolOwnPhoto() => _appliedOwnPhoto;
+  getMantra() => _useMyMantra;
+  getMantraIndex() => _index;
 
-  setBoolOwnPhoto(bool randomOn) async {
-    _appliedOwnPhoto = randomOn;
+  setMantra(bool useMyMantra) async {
+    _useMyMantra = useMyMantra;
+    notifyListeners();
+  }
+
+  setMantraIndex(int index) async {
+    _index = index;
+    notifyListeners();
+  }
+}
+
+class QuoteNotifier with ChangeNotifier {
+  bool _quoteOn;
+
+  QuoteNotifier(this._quoteOn);
+
+  getQuote() => _quoteOn;
+
+  setQuote(bool focusModeOn) async {
+    _quoteOn = focusModeOn;
     notifyListeners();
   }
 }
