@@ -1,3 +1,4 @@
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
@@ -41,40 +42,12 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
   Database get database => widget.database;
 
   TextEditingController _dateController;
+
   final FocusNode _dateFocusNode = FocusNode();
   final FocusNode _textFocusNode = FocusNode();
-//  final FocusNode _dropDownFocusNode = FocusNode();
-
-  List _categories = [
-    'Focus', //0, default
-    'Work', //1
-    'Home', //2
-    'Shopping', //3
-    'Others' //4
-  ];
 
   List<DropdownMenuItem<String>> _dropDownMenuItems;
   String _currentCategory;
-
-  void changedDropDownItem(String selectedCity) {
-//    print("Selected city $selectedCity, we are going to refresh the UI");
-    setState(() {
-      _currentCategory = selectedCity;
-    });
-//    _dropDownFocusNode.unfocus();
-//    FocusScope.of(context).requestFocus(_dropDownFocusNode);
-  }
-
-  // here we are creating the list needed for the DropDownButton
-  List<DropdownMenuItem<String>> getDropDownMenuItems() {
-    List<DropdownMenuItem<String>> items = List();
-    for (String city in _categories) {
-      // here we are creating the drop down menu items, you can customize the item right here
-      // but I'll just use a simple text for this
-      items.add(DropdownMenuItem(value: city, child: Text(city)));
-    }
-    return items;
-  }
 
   @override
   void initState() {
@@ -94,7 +67,8 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
           : _dateController.text = _dateFormatter.format(dateNew);
 //      print('widget.dateController.text if NOT null: ${_dateController.text}');
       if (todo.category != null) {
-//        print('todo.category: ${todo.category}'); //todo.category: -1 if we moved a task that don't have category
+        print(
+            'todo.category if todo is not null: ${todo.category}'); //todo.category: -1 if we moved a task that don't have category
         //RangeError (index): Invalid value: Not in inclusive range 0..4: -1
         //add this the range error will be gone
         todo.category < 0
@@ -120,6 +94,36 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
       _currentCategory = _dropDownMenuItems[0].value;
     }
     super.initState();
+  }
+
+  List _categories = [
+    'Focus', //0, default
+    'Work', //1
+    'Home', //2
+    'Shopping', //3
+    'Others' //4
+  ];
+
+  void changedDropDownItem(String selectedCity) {
+//    print("Selected city $selectedCity, we are going to refresh the UI");
+    setState(() {
+      _currentCategory = selectedCity;
+    });
+
+    ///tried to make sure keyboard stay pop up, but this does not work
+//    _dropDownFocusNode.unfocus();
+//    FocusScope.of(context).requestFocus(_dropDownFocusNode);
+  }
+
+  // here we are creating the list needed for the DropDownButton
+  List<DropdownMenuItem<String>> getDropDownMenuItems() {
+    List<DropdownMenuItem<String>> items = List();
+    for (String city in _categories) {
+      // here we are creating the drop down menu items, you can customize the item right here
+      // but I'll just use a simple text for this
+      items.add(DropdownMenuItem(value: city, child: Text(city)));
+    }
+    return items;
   }
 
   Future<void> _handleDatePicker() async {
@@ -171,6 +175,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
     super.dispose();
   }
 
+  // bool _tipVisible = true;
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
@@ -186,43 +191,47 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
               Text(todo != null ? 'Edit Task' : 'Add Task',
                   style: Theme.of(context).textTheme.headline5),
               SizedBox(height: 10),
-              Container(
-                width: 350,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: TextFormField(
-//                    initialValue: formattedDate == formattedToday
-//                        ? 'Today'
-//                        : _dateFormatter.format(dateNew),
-                    controller: _dateController, //this is TextEditingController
-                    focusNode: _dateFocusNode,
-//                    textInputAction: TextInputAction.next,
-//                    onEditingComplete: () => _dateEditingComplete(),
-//                    validator: (value) =>
-//                        value.isNotEmpty ? null : 'Date can\'t be empty',
-                    textAlign: TextAlign.center,
-                    //no need validation because there always a data
-                    //When a [controller] is specified, [initialValue] must be null (the default). If [controller] is null, then a [TextEditingController] will be constructed automatically and its text will be initialized to [initialValue] or the empty string.
-                    readOnly: true,
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontStyle: FontStyle.italic,
-                        decoration: TextDecoration.underline,
-                        color: _darkTheme ? Colors.white : lightThemeWords,
-                        fontWeight: FontWeight.bold),
-//                    cursorColor: _darkTheme ? Colors.white : lightButton,
-                    decoration: InputDecoration(
-                      focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.transparent)),
-                      enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.transparent)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 100,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 15.0),
+                      child: TextFormField(
+                        controller:
+                            _dateController, //this is TextEditingController
+                        focusNode: _dateFocusNode,
+                        textAlign: TextAlign.center,
+                        readOnly: true,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontStyle: FontStyle.italic,
+                          decoration: TextDecoration.underline,
+                          color: _darkTheme ? Colors.white : lightThemeWords,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        decoration: InputDecoration(
+                          focusedBorder: UnderlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.transparent)),
+                          enabledBorder: UnderlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.transparent)),
+                        ),
+
+                        onTap: _handleDatePicker,
+                      ),
                     ),
-//                    //not sure how this works if without controller
-//                    onSaved: (value) => _dateFormatter.format(dateNew) = value,
-//                    onTap: widget.onTap,
-                    onTap: () => _handleDatePicker(),
                   ),
-                ),
+                  IconButton(
+                      icon: Icon(EvaIcons.calendarOutline,
+                          color:
+                              Theme.of(context).brightness == Brightness.light
+                                  ? Colors.grey.shade700
+                                  : Colors.white70),
+                      onPressed: _handleDatePicker),
+                ],
               ),
               Container(
                 width: 350,
@@ -333,6 +342,27 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                   onPressed: _save,
                   text: 'SAVE',
                   color: _darkTheme ? Colors.white : lightThemeButton),
+              // Visibility(
+              //   visible: _tipVisible,
+              //   child: Row(
+              //     children: [
+              //       Padding(
+              //         padding: const EdgeInsets.all(8.0),
+              //         child: Text(
+              //           'Show tips',
+              //           style: Theme.of(context).textTheme.subtitle2,
+              //         ),
+              //       ),
+              //       IconButton(
+              //         icon: Icon(Icons.clear,
+              //             size: 18,
+              //             color:
+              //                 _darkTheme ? Colors.white60 : lightThemeButton),
+              //         onPressed: () => setState(() => _tipVisible = false),
+              //       )
+              //     ],
+              //   ),
+              // ),
               SizedBox(height: 30)
             ],
           ),
@@ -353,7 +383,9 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
   }
 
   Future<void> _save() async {
+    // print('_currentCategory: $_currentCategory');
     final index = _categories.indexOf(_currentCategory);
+    // print('index: $index');
 //    print('index: $index');
     if (_validateAndSaveForm()) {
       //pop to previous page

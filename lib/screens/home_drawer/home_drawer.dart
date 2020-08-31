@@ -24,7 +24,6 @@ import '../../app/common_widgets/platform_alert_dialog.dart';
 import '../../app/constants/constants.dart';
 import '../../app/services/auth.dart';
 import '../../app/constants/theme.dart';
-import 'more_settings.dart';
 
 class MyDrawer extends StatefulWidget {
   final Widget child;
@@ -186,7 +185,7 @@ class MyHomeDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final database = Provider.of<Database>(context, listen: false);
-//    final user = Provider.of<User>(context, listen: false);
+    final user = Provider.of<User>(context, listen: false);
 
     ///error if no user name
 //    final String firstName =

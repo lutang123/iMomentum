@@ -161,6 +161,37 @@ class SmallContainer extends StatelessWidget {
   }
 }
 
+class SmallContainerForReminder extends StatelessWidget {
+  SmallContainerForReminder({this.text, this.bkgdColor = Colors.black38});
+  final String text;
+  final Color bkgdColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 3),
+      decoration: BoxDecoration(
+        color: bkgdColor,
+        borderRadius: BorderRadius.all(Radius.circular(20.0)),
+        border: Border.all(color: Colors.white54, width: 1),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(3.0),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.alarm, color: Colors.yellow, size: 18),
+            SizedBox(width: 3),
+            Flexible(
+                child: Text(text,
+                    style: TextStyle(color: Colors.white70, fontSize: 10))),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class CustomizedBottomSheet extends StatelessWidget {
   CustomizedBottomSheet({this.child, this.color});
   final Widget child;

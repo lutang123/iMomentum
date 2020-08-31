@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:iMomentum/app/utils/tooltip_shape_border.dart';
 
 class ImageUrl {
-  static String randomImageUrl = 'https://source.unsplash.com/random?nature';
+  ///todo: how to filter good photo, order_by=popular seems no use
+  static String randomImageUrl =
+      'https://source.unsplash.com/random?nature/order_by=popular';
+  static String randomImageUrlFirstPart =
+      'https://source.unsplash.com/random?nature/order_by=popular/';
+
   static String fixedImageUrl =
       'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2706&q=80';
 }

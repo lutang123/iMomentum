@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:iMomentum/app/constants/theme_color.dart';
 
 // switch active color Color(0xFFade498)a2de96
 const Color switchActiveColor = Color(0xFF006a71); //Color(0xFF206a5d);
@@ -42,6 +43,7 @@ const Color darkThemeNoteFolder = Colors.black38;
 
 ///Light theme
 final ThemeData lightTheme = ThemeData.light().copyWith(
+  // textSelectionColor:
   // This makes the visual density adapt to the platform that you run
   // the app on. For desktop platforms, the controls will be smaller and
   // closer together (more dense) than on mobile platforms.
@@ -93,7 +95,7 @@ final ThemeData lightTheme = ThemeData.light().copyWith(
     ),
     //Empty message
     subtitle2: TextStyle(
-        color: Colors.black38, fontStyle: FontStyle.italic, fontSize: 15),
+        color: Colors.black38, fontStyle: FontStyle.italic, fontSize: 17),
     //calendar date
     bodyText1: TextStyle(
       //16
@@ -104,6 +106,8 @@ final ThemeData lightTheme = ThemeData.light().copyWith(
 );
 
 final ThemeData darkTheme = ThemeData.dark().copyWith(
+  ///https://stackoverflow.com/questions/54656386/change-the-highlight-color-of-selected-text
+  textSelectionColor: darkThemeNoPhotoBkgdColor,
   // This makes the visual density adapt to the platform that you run
   // the app on. For desktop platforms, the controls will be smaller and
   // closer together (more dense) than on mobile platforms.
@@ -134,7 +138,7 @@ final ThemeData darkTheme = ThemeData.dark().copyWith(
     ),
     //Empty message
     subtitle2: TextStyle(
-        color: Colors.white70, fontStyle: FontStyle.italic, fontSize: 15),
+        color: Colors.white70, fontStyle: FontStyle.italic, fontSize: 17),
     //calendar date
 //    bodyText1: TextStyle(
 //      //16

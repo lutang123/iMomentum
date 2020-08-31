@@ -10,7 +10,8 @@ class Todo {
     this.date,
     this.isDone,
     this.category,
-    this.project,
+    this.hasReminder,
+    this.reminderDate,
   });
   final String id;
   final String title;
@@ -18,9 +19,8 @@ class Todo {
   final DateTime date;
   bool isDone;
   int category;
-  String project;
-
-//  final int ratePerHour;
+  bool hasReminder; // we can not make this final
+  DateTime reminderDate;
 
 // add factory keyword when implementing a constructor that doesn't always
 // create a new instance of its class
@@ -41,7 +41,13 @@ class Todo {
       date: DateTime.fromMillisecondsSinceEpoch(firebaseMap['date']),
       isDone: firebaseMap['is_done'],
       category: firebaseMap['category'],
-      project: firebaseMap['project'],
+      hasReminder: firebaseMap['has_reminder'],
+      reminderDate: firebaseMap['has_reminder'] == null ||
+              firebaseMap['has_reminder'] == false
+          ? null
+
+          /// TodoList Streambuildergot error saying trying to call * 1000 after adding reminder, but adding *1000 is wrong
+          : DateTime.fromMillisecondsSinceEpoch(firebaseMap['reminder_date']),
     ); //bool
   }
 
@@ -52,7 +58,10 @@ class Todo {
       'date': date.millisecondsSinceEpoch, //convert to int
       'is_done': isDone, //bool
       'category': category,
-      'project': project, // int
+      'has_reminder': hasReminder,
+      'reminder_date': hasReminder == null || hasReminder == false
+          ? null
+          : reminderDate.millisecondsSinceEpoch, // int
     };
   }
 

@@ -8,7 +8,6 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
-import 'package:iMomentum/app/common_widgets/my_list_tile.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/constants/constants.dart';
 import 'package:iMomentum/app/models/folder.dart';
@@ -434,58 +433,59 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
             itemCount: notes.length,
             itemBuilder: (BuildContext context, int index) {
               final note = notes[index];
-              return Slidable(
-                key: UniqueKey(),
-                closeOnScroll: true,
-                actionPane: SlidableDrawerActionPane(),
-                actionExtentRatio: 0.25,
-                child: OpenContainer(
-                  useRootNavigator: true,
-                  transitionType: _transitionType,
-                  //added this elevation, the error placeholder called null is gone
-                  closedElevation: 0,
-                  closedColor: Colors.transparent,
-                  closedShape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10.0))),
-                  closedBuilder: (BuildContext _, VoidCallback openContainer) {
-                    return NoteContainer(
-                      note: note,
-                      database: database,
-                      folder: folder,
-                      folders: folders,
-//                  onTap: () => _onTap(database, note), //changed to OpenContainer
-                    );
-                  },
-                  openElevation: 0,
-                  openColor: Colors.transparent,
-                  openBuilder: (BuildContext context, VoidCallback _) {
-                    return AddNoteScreen(
-                        database: database,
-                        note: note,
-                        folder: folder,
-                        folders: folders);
-                  },
-                ),
-                actions: <Widget>[
-                  IconSlideAction(
-                    foregroundColor: Colors.blue,
-                    caption: 'Move',
-                    color: Colors.black45,
-                    icon: EvaIcons.folderOutline,
-                    onTap: () => _showMoveDialog(note),
-                  ),
-                ],
-                secondaryActions: <Widget>[
-                  IconSlideAction(
-                    foregroundColor: Colors.red,
-                    caption: 'Delete',
-                    color: Colors.black45,
-                    icon: EvaIcons.trash2Outline,
-                    onTap: () => _delete(database, note),
-                  ),
-                ],
-              );
+              return _slidableItem(note);
             }));
+  }
+
+  Widget _slidableItem(Note note) {
+    return Slidable(
+      key: UniqueKey(),
+      closeOnScroll: true,
+      actionPane: SlidableDrawerActionPane(),
+      actionExtentRatio: 0.25,
+      child: OpenContainer(
+        useRootNavigator: true,
+        transitionType: _transitionType,
+        //added this elevation, the error placeholder called null is gone
+        closedElevation: 0,
+        closedColor: Colors.transparent,
+        closedShape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10.0))),
+        closedBuilder: (BuildContext _, VoidCallback openContainer) {
+          return NoteContainer(
+            note: note,
+            database: database,
+            folder: folder,
+            folders: folders,
+//                  onTap: () => _onTap(database, note), //changed to OpenContainer
+          );
+        },
+        openElevation: 0,
+        openColor: Colors.transparent,
+        openBuilder: (BuildContext context, VoidCallback _) {
+          return AddNoteScreen(
+              database: database, note: note, folder: folder, folders: folders);
+        },
+      ),
+      actions: <Widget>[
+        IconSlideAction(
+          foregroundColor: Colors.blue,
+          caption: 'Move',
+          color: Colors.black45,
+          icon: EvaIcons.folderOutline,
+          onTap: () => _showMoveDialog(note),
+        ),
+      ],
+      secondaryActions: <Widget>[
+        IconSlideAction(
+          foregroundColor: Colors.red,
+          caption: 'Delete',
+          color: Colors.black45,
+          icon: EvaIcons.trash2Outline,
+          onTap: () => _delete(database, note),
+        ),
+      ],
+    );
   }
 
   double _notesOpacity = 1.0;

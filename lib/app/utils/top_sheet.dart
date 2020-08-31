@@ -34,7 +34,7 @@ class TopSheet extends StatefulWidget {
                 Animation<double> secondaryAnimation) {
               return TopSheet(
                 child: Container(
-                  margin: EdgeInsets.only(left: 20.0, right: 20, top: 40),
+                  margin: EdgeInsets.only(left: 15.0, right: 15, top: 40),
                   child: Bubble(
                     alignment: Alignment.topRight,
                     nipWidth: 15,

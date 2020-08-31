@@ -417,6 +417,7 @@ class _HomeScreenState extends State<HomeScreen> {
           date: DateTime.now(),
           isDone: false,
           category: 0,
+          hasReminder: false,
         );
         await database.setTodo(todo);
       } on PlatformException catch (e) {
@@ -585,6 +586,8 @@ class _HomeScreenState extends State<HomeScreen> {
         //we create a new one, otherwise we use the existing job.id
         final id = todo?.id ?? documentIdFromCurrentDate();
         final isDone = todo?.isDone ?? false;
+        final hasReminder = todo?.hasReminder ?? false;
+        final reminderData = todo?.reminderDate ?? null;
 
         ///first we find this specific Todo item that we want to update
         final newTodo = Todo(
@@ -593,7 +596,10 @@ class _HomeScreenState extends State<HomeScreen> {
             comment: _typedTitleAndComment[1],
             date: _typedTitleAndComment[2],
             isDone: isDone,
-            category: _typedTitleAndComment[3]);
+            category: _typedTitleAndComment[3],
+            hasReminder: hasReminder,
+            reminderDate: reminderData);
+
         //add newTodo to database
         await database.setTodo(newTodo);
       } on PlatformException catch (e) {

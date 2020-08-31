@@ -365,6 +365,7 @@ class _ImageGalleryState extends State<ImageGallery> {
 
   /// Select an image via gallery or camera
   Future<void> _pickImage(ImageSource source) async {
+    //from ProgressDialog plugin
     final ProgressDialog pr = ProgressDialog(
       context,
       type: ProgressDialogType.Normal,

@@ -1,5 +1,6 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iMomentum/app/common_widgets/my_round_button.dart';
 import 'package:iMomentum/app/common_widgets/setting_switch.dart';
 import 'package:iMomentum/app/utils/format.dart';
@@ -47,11 +48,15 @@ class _WeatherScreenState extends State<WeatherScreen> {
   void _fetchWeather() async {
     final metricNotifier = Provider.of<MetricNotifier>(context, listen: false);
     bool _metricUnitOn = metricNotifier.getMetric();
-
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
     if (mounted) {
       setState(() {
         _state = AppState.DOWNLOADING;
       });
+
       var weatherData = await WeatherService.getCurrentWeather(
           _metricUnitOn ? 'metric' : 'imperial');
       var weatherOneCall = await WeatherService.getForecastWeather(
@@ -87,19 +92,18 @@ class _WeatherScreenState extends State<WeatherScreen> {
         description = current['weather'][0]['description'];
 
         ///https://stackoverflow.com/questions/50632217/dart-flutter-converting-timestamp
-        sunrise =
-            //1598361536
-            Format.timeAMPM(
-                DateTime.fromMillisecondsSinceEpoch(current['sunrise'] * 1000));
+        //1598361536
+        sunrise = Format.timeAMPM(
+            DateTime.fromMillisecondsSinceEpoch(current['sunrise'] * 1000));
         sunset = Format.timeAMPM(DateTime.fromMillisecondsSinceEpoch(
             current['sunset'] * 1000)); //current.sunrise
-        uvi = current['uvi']; //current.uvi
-
-        speed = current['wind_speed']; //current.wind_speed
+        uvi = current['uvi'].toDouble(); //current.uvi
+//Unhandled Exception: type 'int' is not a subtype of type 'double'
+        speed = current['wind_speed'].toDouble(); //current.wind_speed
         //extract the last three zero
         var x = current['visibility'].toString();
         visibility = x.substring(0, x.length - 3); //current.visibility
-        humidity = current['humidity']; //current.humidity
+        humidity = current['humidity'].toInt(); //current.humidity
       });
 
       setState(() {
@@ -109,9 +113,11 @@ class _WeatherScreenState extends State<WeatherScreen> {
   }
 
   Widget getWeatherIconImage(String weatherIcon, {double size = 20}) {
-    if (weatherIcon == '01d') {
-      return Icon(EvaIcons.sunOutline, color: Colors.white, size: size);
-    } else if (weatherIcon == '01n') {
+    // if (weatherIcon == '01d') {
+    //   return Icon(FontAwesomeIcons.sun, color: Colors.redAccent, size: size);
+    // } else
+
+    if (weatherIcon == '01n') {
       return Icon(EvaIcons.moonOutline, color: Colors.white, size: size);
     }
 

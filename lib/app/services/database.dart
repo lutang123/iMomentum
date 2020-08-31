@@ -19,7 +19,6 @@ abstract class Database {
 
   //todo
   Future<void> setTodo(Todo todo); //create/update a job
-  Future<void> updateTodo(Todo todo); //to update isDone
   Future<void> deleteTodo(Todo todo); //delete a job
   Stream<Todo> todoStream({@required String todoId}); //read one jobs
   Stream<List<Todo>> todosStream(); //read all jobs
@@ -42,11 +41,11 @@ abstract class Database {
   Stream<List<Note>> notesStream(); //read all jobs
   Stream<Note> noteStream({@required String noteId}); //read one jobs
 
-  //images
-  Future<void> setImage(ImageModel image); //create/update a job
-  Future<void> deleteImage(ImageModel image); //delete a job
-  Stream<List<ImageModel>> imagesStream(); //read all jobs
-  Stream<ImageModel> imageStream({@required String imageId});
+  // //images
+  // Future<void> setImage(ImageModel image); //create/update a job
+  // Future<void> deleteImage(ImageModel image); //delete a job
+  // Stream<List<ImageModel>> imagesStream(); //read all jobs
+  // Stream<ImageModel> imageStream({@required String imageId});
 
   //mantras
   Future<void> setMantra(MantraModel mantra); //create/update a job
@@ -78,12 +77,6 @@ class FirestoreDatabase implements Database {
         data: todo.toMap(),
       );
 
-  @override //create or update job
-  Future<void> updateTodo(Todo todo) async => await _service.updateData(
-        path: APIPath.todo(uid, todo.id),
-        data: todo.toMap(),
-      );
-
   @override // delete job
   Future<void> deleteTodo(Todo todo) async {
     // delete where entry.jobId == job.jobId
@@ -103,16 +96,22 @@ class FirestoreDatabase implements Database {
       );
   @override //read jobs
   Stream<List<Todo>> todosStream() => _service.collectionStream(
-        path: APIPath.todos(uid),
-        builder: (data, documentId) => Todo.fromMap(data, documentId),
+      path: APIPath.todos(uid),
+      builder: (data, documentId) => Todo.fromMap(data, documentId),
 //        queryBuilder: (query) => query.orderBy('category'),
-        //to make the most recently edited one show first
-        sort: (lhs, rhs) => rhs.id.compareTo(lhs.id),
-
-//messageList.sort((m, m2) => int.parse(m.id).compareTo(int.parse(m2.id)));
-        sortIsDone: (lhs, rhs) => (rhs.isDone.toString().length)
-            .compareTo(lhs.isDone.toString().length),
-      );
+      //to make the most recently edited one show first
+      //e.g. messageList.sort((m, m2) => int.parse(m.id).compareTo(int.parse(m2.id)));
+      //this will not work well because when we update, we use the same id, or use date
+      sort: (lhs, rhs) => rhs.id.compareTo(lhs.id),
+      sortIsDone: (lhs, rhs) => (rhs.isDone.toString().length)
+          .compareTo(lhs.isDone.toString().length),
+      sortCategory: (lhs, rhs) {
+        //add this because previous todo item does not have category
+        if ((lhs.category != null) && (rhs.category != null)) {
+          return lhs.category.compareTo(rhs.category); //this way is from 0 to 4
+        } else
+          return null;
+      });
 
   /// duration
   @override
@@ -209,31 +208,31 @@ class FirestoreDatabase implements Database {
       );
 
   ///for image
-  //create or update job
-  Future<void> setImage(ImageModel image) async => await _service.setData(
-        path: APIPath.image(uid, image.id),
-        data: image.toMap(),
-      );
-
-  //TODO delete all entries for a particular job??
-  @override // delete job
-  Future<void> deleteImage(ImageModel image) async {
-    await _service.deleteData(
-      path: APIPath.image(uid, image.id),
-    );
-  }
-
-  @override //read a job
-  Stream<ImageModel> imageStream({@required String imageId}) =>
-      _service.documentStream(
-        path: APIPath.image(uid, imageId),
-        builder: (data, documentId) => ImageModel.fromMap(data, documentId),
-      );
-  @override //read jobs
-  Stream<List<ImageModel>> imagesStream() => _service.collectionStream(
-        path: APIPath.images(uid),
-        builder: (data, documentId) => ImageModel.fromMap(data, documentId),
-      );
+  // //create or update job
+  // Future<void> setImage(ImageModel image) async => await _service.setData(
+  //       path: APIPath.image(uid, image.id),
+  //       data: image.toMap(),
+  //     );
+  //
+  // //TODO delete all entries for a particular job??
+  // @override // delete job
+  // Future<void> deleteImage(ImageModel image) async {
+  //   await _service.deleteData(
+  //     path: APIPath.image(uid, image.id),
+  //   );
+  // }
+  //
+  // @override //read a job
+  // Stream<ImageModel> imageStream({@required String imageId}) =>
+  //     _service.documentStream(
+  //       path: APIPath.image(uid, imageId),
+  //       builder: (data, documentId) => ImageModel.fromMap(data, documentId),
+  //     );
+  // @override //read jobs
+  // Stream<List<ImageModel>> imagesStream() => _service.collectionStream(
+  //       path: APIPath.images(uid),
+  //       builder: (data, documentId) => ImageModel.fromMap(data, documentId),
+  //     );
 
   ///for mantras
   //create or update job

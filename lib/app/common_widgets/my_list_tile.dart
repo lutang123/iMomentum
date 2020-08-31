@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iMomentum/app/models/folder.dart';
 import 'package:iMomentum/app/models/mantra_model.dart';
@@ -12,20 +13,22 @@ import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:provider/provider.dart';
 
+import 'my_container.dart';
+
 class TodoListTile extends StatelessWidget {
   const TodoListTile({
     Key key,
     @required this.todo,
-    // this.todoDuration,
     this.onTap,
     this.onPressed,
     this.onChangedCheckbox,
+    this.alarmText,
   }) : super(key: key);
   final Todo todo;
-  // final TodoDuration todoDuration;
   final VoidCallback onTap;
   final VoidCallback onPressed;
   final Function onChangedCheckbox;
+  final String alarmText;
 
 //  List _categories = [
 //    'Focus', //0
@@ -38,33 +41,33 @@ class TodoListTile extends StatelessWidget {
   //this is for dark them only
   Color getColor() {
     if (todo.category == 0 || todo.category == null) {
-      return todo.isDone ? Colors.white : Colors.orange; //;
+      return todo.isDone ? Colors.white : Colors.orangeAccent; //;
     } else if (todo.category == 1) {
-      return todo.isDone ? Colors.white : Colors.lightBlue;
+      return todo.isDone ? Colors.white : Colors.lightBlueAccent;
     } else if (todo.category == 2) {
-      return todo.isDone ? Colors.white : Colors.purple;
+      return todo.isDone ? Colors.white : Colors.purpleAccent;
     } else if (todo.category == 3) {
-      return todo.isDone ? Colors.white : Colors.lightGreen;
+      return todo.isDone ? Colors.white : Colors.lightGreenAccent;
     } else if (todo.category == 4) {
-      return todo.isDone ? Colors.white : Colors.brown[300];
+      return todo.isDone ? Colors.white : Colors.deepPurpleAccent;
     } else {
-      return todo.isDone ? Colors.white : Colors.brown[300];
+      return todo.isDone ? Colors.white : Colors.deepPurpleAccent;
     }
   }
 
   Color getColorLight() {
     if (todo.category == 0 || todo.category == null) {
-      return todo.isDone ? lightThemeButton : Colors.orange; //;
+      return todo.isDone ? lightThemeButton : Colors.orangeAccent; //;
     } else if (todo.category == 1) {
-      return todo.isDone ? lightThemeButton : Colors.lightBlue;
+      return todo.isDone ? lightThemeButton : Colors.lightBlueAccent;
     } else if (todo.category == 2) {
-      return todo.isDone ? lightThemeButton : Colors.purple;
+      return todo.isDone ? lightThemeButton : Colors.purpleAccent;
     } else if (todo.category == 3) {
-      return todo.isDone ? lightThemeButton : Colors.lightGreen;
+      return todo.isDone ? lightThemeButton : Colors.lightGreenAccent;
     } else if (todo.category == 4) {
-      return todo.isDone ? lightThemeButton : Colors.brown[300];
+      return todo.isDone ? lightThemeButton : Colors.deepPurpleAccent;
     } else {
-      return todo.isDone ? lightThemeButton : Colors.brown[300];
+      return todo.isDone ? lightThemeButton : Colors.deepPurpleAccent;
     }
   }
 
@@ -88,6 +91,7 @@ class TodoListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+
     return ListTile(
       leading: Theme(
         data: ThemeData(unselectedWidgetColor: getColor()), //Colors.grey[350]
@@ -97,20 +101,30 @@ class TodoListTile extends StatelessWidget {
             value: todo.isDone ? true : false,
             onChanged: onChangedCheckbox),
       ),
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      title: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          AutoSizeText(todo.title,
-              maxLines: 4,
-              maxFontSize: 18,
-              minFontSize: 15,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: _darkTheme ? Colors.white : Colors.black87,
-                fontSize: 18.0,
-                //1 means is done
-                decoration: todo.isDone ? TextDecoration.lineThrough : null,
-              )),
+          Expanded(
+            child: AutoSizeText(todo.title,
+                maxLines: 3,
+                maxFontSize: 18,
+                minFontSize: 15,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: _darkTheme ? Colors.white : Colors.black87,
+                  fontSize: 18.0,
+                  //1 means is done
+                  decoration: todo.isDone ? TextDecoration.lineThrough : null,
+                )),
+          ),
+
+          /// if we want to change here, we have to add a property of reminder date in Todo
+          todo.hasReminder == null || todo.hasReminder == false
+              ? Container()
+              : todo.reminderDate.difference(DateTime.now()).inSeconds > 0
+                  ? Icon(Icons.alarm, color: Colors.yellowAccent, size: 20)
+                  : Icon(Icons.alarm_off, color: Colors.yellow[200], size: 20)
         ],
       ),
       subtitle: todo.comment == null || todo.comment.length == 0

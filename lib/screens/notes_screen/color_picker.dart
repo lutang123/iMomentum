@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iMomentum/app/constants/theme_color.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:provider/provider.dart';
@@ -42,7 +43,8 @@ List<Color> colorsDark3 = [
   Colors.blueGrey,
 ];
 List<Color> colorsDark = [
-  darkThemeNoPhotoBkgdColor,
+  // darkThemeNoPhotoBkgdColor,
+  CustomColors.pageBackgroundColor,
   Color(0xFFb83b5e),
   Color(0xffe79c2a),
   Color(0xff158467),
