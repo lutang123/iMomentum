@@ -7,7 +7,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
-import 'package:iMomentum/app/common_widgets/empty_content.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_fab.dart';
 import 'package:iMomentum/app/common_widgets/my_list_tile.dart';
@@ -23,6 +22,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'add_mantra.dart';
+import 'empty_or_error_mantra.dart';
 
 class MyMantras extends StatefulWidget {
   final Database database;
@@ -36,18 +36,20 @@ class _MyMantrasState extends State<MyMantras> {
   int counter = 0;
   void _onDoubleTap() {
     setState(() {
-      ImageUrl.randomImageUrl =
-          'https://source.unsplash.com/random?nature/$counter';
+      ImageUrl.randomImageUrl = '${ImageUrl.randomImageUrlFirstPart}$counter';
       counter++;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    /// Todo: listen is false or not
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+
     final randomNotifier = Provider.of<RandomNotifier>(context);
-    bool _randomOn = (randomNotifier.getRandom() == true);
+    bool _randomOn = randomNotifier.getRandom();
+
     final imageNotifier = Provider.of<ImageNotifier>(context);
 
     ///for mantra
@@ -68,7 +70,7 @@ class _MyMantrasState extends State<MyMantras> {
             body: SafeArea(
               bottom: false,
               child: CustomizedContainerNew(
-                color: _darkTheme ? darkThemeSurfaceTodo : lightThemeSurface,
+                color: _darkTheme ? darkThemeSurface : lightThemeSurface,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
@@ -85,14 +87,6 @@ class _MyMantrasState extends State<MyMantras> {
                                 return Expanded(
                                   child: Column(
                                     children: <Widget>[
-//                                            SizedBox(height: 30),
-//                                            Text(
-//                                              'Get inspired by adding your personal mantras.',
-//                                              style: Theme.of(context)
-//                                                  .textTheme
-//                                                  .headline5,
-//                                              textAlign: TextAlign.center,
-//                                            ),
                                       SizedBox(
                                         width: 320,
                                         child: SettingSwitchNoIcon(
@@ -123,10 +117,20 @@ class _MyMantrasState extends State<MyMantras> {
                                   ),
                                 );
                               } else {
-                                return _noMantraOrErrorContent();
+                                return EmptyOrErrorMantra(
+                                  hideEmptyMessage: _hideEmptyMessage,
+                                  // context: context,
+                                  text1: textMantra1,
+                                  text2: textMantra2,
+                                );
                               }
                             } else if (snapshot.hasError) {
-                              return _noMantraOrErrorContent();
+                              return EmptyOrErrorMantra(
+                                hideEmptyMessage: _hideEmptyMessage,
+                                // context: context,
+                                text1: textMantra1,
+                                text2: textError,
+                              );
                             }
                             return Center(child: CircularProgressIndicator());
                           }),
@@ -137,9 +141,7 @@ class _MyMantrasState extends State<MyMantras> {
             ),
             floatingActionButton: Visibility(
               visible: _fabVisible,
-              child: MyFAB(
-                  onPressed: () => _add(widget.database),
-                  child: Icon(Icons.add, size: 30, color: Colors.white)),
+              child: MyFAB(onPressed: () => _add(widget.database)),
             ),
           ),
         )
@@ -154,51 +156,6 @@ class _MyMantrasState extends State<MyMantras> {
     );
   }
 
-  Widget _noMantraOrErrorContent() {
-    return Expanded(
-      child: Column(
-        children: <Widget>[
-          Spacer(),
-          //Text(
-          //'Power up your day with your favorite quotes.',)
-          Visibility(
-            visible: _hideEmptyMessage,
-            child: Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Column(
-                children: [
-                  // Text(
-//                                            'Center yourself with friendly reminders, reinforce new thought patterns, and bring attention to the values or principles that are most important to you.',
-//                                            style: KEmptyContent,
-//                                            textAlign: TextAlign.center,
-//                                          ),
-//                                        Text(
-//                                                      'Get inspired by adding your personal mantras. ',
-//                                                      style: KEmptyContent,
-//                                                      textAlign:
-//                                                          TextAlign.center,
-//                                                    ),
-//                                                    SizedBox(height: 5),
-                  Text(
-                    'By default, Mantras from our curated feed will appear on Home screen.',
-                    style: KEmptyContent,
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 20),
-                  Text(
-                      'You can add your own mantras to personalize your experience.',
-                      style: KEmptyContent,
-                      textAlign: TextAlign.center)
-                ],
-              ),
-            ),
-          ),
-          Spacer(flex: 2),
-        ],
-      ),
-    );
-  }
-
   Future<void> onMantraChanged(
       bool value, MantraNotifier mantraNotifier) async {
     //save settings
@@ -207,6 +164,7 @@ class _MyMantrasState extends State<MyMantras> {
     prefs.setBool('useMyMantras', value);
   }
 
+  /// all the context outside of build method is from previous page (HomeDrawer)
   ListView buildListView(Database database, List<MantraModel> mantras) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
@@ -218,14 +176,10 @@ class _MyMantrasState extends State<MyMantras> {
               height: 0.5,
               color: _darkTheme ? Colors.white70 : Colors.black38,
             ),
-//        shrinkWrap: true,
-//        itemCount: anyList.length, //The getter 'length' was called on null.
         itemBuilder: (context, index) {
-          //or index == 0 or index == the last, we return an empty container
           if (index == 0 || index == mantras.length + 1) {
             return Container();
           }
-          //itemBuilder(context, items[index - 1]);
           return Slidable(
             key: UniqueKey(),
             closeOnScroll: true,
@@ -270,7 +224,11 @@ class _MyMantrasState extends State<MyMantras> {
   }
 
   bool _fabVisible = true;
+
   Future<void> _delete(MantraModel mantra) async {
+    setState(() {
+      _fabVisible = false;
+    });
     try {
       await widget.database.deleteMantra(mantra);
       //PlatformException is from import 'package:flutter/services.dart';
@@ -281,6 +239,9 @@ class _MyMantrasState extends State<MyMantras> {
       ).show(context);
     }
 
+    ///must not add BuildContext context in the function, context should be red color
+
+    /// all the context outside of build method is from previous page (HomeDrawer)
     Flushbar(
       isDismissible: true,
       mainButton: FlatButton(
@@ -289,6 +250,7 @@ class _MyMantrasState extends State<MyMantras> {
               _fabVisible = false;
             });
             widget.database.setMantra(mantra);
+            Navigator.pop(context);
           },
           child: FlushBarButtonChild(
             title: 'UNDO',
@@ -302,7 +264,7 @@ class _MyMantrasState extends State<MyMantras> {
         Color(0xF0888888).withOpacity(0.85),
         Colors.black54,
       ]),
-      duration: Duration(seconds: 3),
+      duration: Duration(seconds: 5),
       titleText: Text(
         'Deleted',
         style: KFlushBarTitle,
@@ -343,32 +305,13 @@ class _MyMantrasState extends State<MyMantras> {
       _fabVisible = false;
     });
 
-    var _typedTitle = await showModalBottomSheet(
-//        useRootNavigator: true,
+    await showModalBottomSheet(
         context: context,
         isScrollControlled: true,
         builder: (context) => AddMantraScreen(
               database: database,
               mantra: mantra,
             ));
-    if (_typedTitle != null) {
-      try {
-        //we get the id from job in the firebase, if the job.id is null,
-        //we create a new one, otherwise we use the existing job.id
-        final id = mantra?.id ?? documentIdFromCurrentDate();
-
-        ///first we find this specific Todo item that we want to update
-        final newMantra =
-            MantraModel(id: id, title: _typedTitle, date: DateTime.now());
-        //add newTodo to database
-        await database.setMantra(newMantra);
-      } on PlatformException catch (e) {
-        PlatformExceptionAlertDialog(
-          title: 'Operation failed',
-          exception: e,
-        ).show(context);
-      }
-    }
 
     setState(() {
       _hideMantras = true;

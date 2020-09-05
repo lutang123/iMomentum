@@ -23,7 +23,8 @@ class _TabPageState extends State<TabPage> {
   Map<TabItem, WidgetBuilder> get widgetBuilders {
     return {
       TabItem.home: (_) => MyDrawer(child: HomeScreen()),
-      //because we want to make TodoScreen has access to Provider<CalendarBloc>
+      //because we want to make TodoScreen has access to Provider<CalendarBloc>,
+      //and this context is from TodoScreen
       TabItem.todo: (context) => TodoScreen.create(context),
       TabItem.notes: (_) => FolderScreen(),
     };

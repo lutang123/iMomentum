@@ -16,7 +16,7 @@ import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/home_drawer/my_mantras_screen.dart';
 import 'package:iMomentum/screens/home_drawer/my_quote_screen.dart';
-import 'package:iMomentum/screens/unsplash/image_gallery.dart';
+import 'package:iMomentum/screens/home_drawer/unsplash/image_gallery.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../app/common_widgets/container_linear_gradient.dart';
@@ -66,8 +66,11 @@ class MyDrawerState extends State<MyDrawer>
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    ///this one, it seems doesn't matter listen is false or not.
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+
+    ///we can not set the following two as listen to false otherwise UI will not change.
     final randomNotifier = Provider.of<RandomNotifier>(context);
     bool _randomOn = (randomNotifier.getRandom() == true);
     final imageNotifier = Provider.of<ImageNotifier>(context);
@@ -119,11 +122,10 @@ class MyDrawerState extends State<MyDrawer>
                       top: MediaQuery.of(context).padding.top - 9,
                       left: 5 + animationController.value * maxSlide,
                       child: IconButton(
-                        iconSize: 25,
-                        icon: FaIcon(FontAwesomeIcons.bars),
-                        onPressed: toggle,
-                        color: _darkTheme ? Colors.white : lightThemeButton,
-                      ),
+                          iconSize: 25,
+                          icon: FaIcon(FontAwesomeIcons.bars),
+                          onPressed: toggle,
+                          color: _darkTheme ? Colors.white : lightThemeButton),
                     ),
 //                    Positioned(
 //                      top: 16.0 + MediaQuery.of(context).padding.top,
@@ -184,32 +186,34 @@ class MyHomeDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ///, listen: false
     final database = Provider.of<Database>(context, listen: false);
-    final user = Provider.of<User>(context, listen: false);
 
     ///error if no user name
-//    final String firstName =
+    //    final user = Provider.of<User>(context, listen: false);
+//        final String firstName =
 //        user.displayName.substring(0, user.displayName.indexOf(' '));
 
     ///for theme
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
 
     ///for focus mode
+    ///when set listen: false, the switch button does not change
     final focusNotifier = Provider.of<FocusNotifier>(context);
     bool _focusModeOn = focusNotifier.getFocus();
 
     ///for random on
-    final randomNotifier = Provider.of<RandomNotifier>(context);
+    ///this one listen to false or not does not seem to matter
+    final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
     //if getImage is random, means random is on
-    bool _randomOn = (randomNotifier.getRandom() == true);
+    bool _randomOn = randomNotifier.getRandom();
 
-    ///then return
     return SizedBox(
       width: 300,
       height: double.infinity,
       child: Material(
-        color: _darkTheme ? darkThemeDrawer : lightThemeSurface,
+        color: _darkTheme ? darkThemeDrawer : lightThemeDrawer,
 
         ///two ways: either make it flexible, but then if keyboard pops up, everything kind of squeech together;
         ///or make it scrollable, but can't have spacer or flexible or expanded,
@@ -333,6 +337,8 @@ class MyHomeDrawer extends StatelessWidget {
                   title: 'Choose Your Favourite Photo',
                   onTap: () {
                     final route = SharedAxisPageRoute(
+
+                        ///this page get context from HomeDrawer, same as all other page
                         page: ImageGallery(
                           database: database,
                         ),
@@ -425,8 +431,14 @@ class MyHomeDrawer extends StatelessWidget {
     );
   }
 
+  ///The Consumer widget rebuilds any widgets below it whenever notifyListeners()
+  ///gets called. The button doesn’t need to get updated, though, so rather than
+  ///using a Consumer, you can use Provider.of and set the listener to false.
+  ///That way the button won’t be rebuilt when there are changes.
   Widget settingTitle(BuildContext context, {String title}) {
+    ///, listen: false
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    // final themeNotifier = Provider.of<ThemeNotifier>(context);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return ListTile(
       leading: Text(
@@ -434,7 +446,7 @@ class MyHomeDrawer extends StatelessWidget {
         style: TextStyle(
             fontSize: 17,
             fontWeight: FontWeight.w600,
-            color: _darkTheme ? darkThemeButton : lightThemeButton),
+            color: _darkTheme ? darkThemeWords : lightThemeWords),
       ),
     );
   }
@@ -445,26 +457,32 @@ class MyHomeDrawer extends StatelessWidget {
 
   Widget settingListTile(BuildContext context,
       {IconData icon, String title, Function onTap}) {
+    ///, listen: false
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    // final themeNotifier = Provider.of<ThemeNotifier>(context);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return ListTile(
         leading: Icon(
           icon,
           color: _darkTheme ? darkThemeButton : lightThemeButton,
         ),
-        title: Text(title, style: TextStyle(fontSize: 15)),
+        title: Text(title,
+            style: TextStyle(
+                fontSize: 15,
+                color: _darkTheme ? darkThemeWords : lightThemeWords)),
         trailing: Icon(Icons.chevron_right,
             color: _darkTheme ? darkThemeButton : lightThemeButton),
         onTap: onTap);
   }
 
   Widget settingDivider(BuildContext context) {
+    ///, listen: false
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Divider(
         indent: 50,
         endIndent: 50,
-        color: _darkTheme ? Colors.white38 : Colors.black12,
+        color: _darkTheme ? darkThemeDivider : lightThemeDivider,
         thickness: 1);
   }
 
@@ -476,10 +494,13 @@ class MyHomeDrawer extends StatelessWidget {
     prefs.setBool('darkMode', value);
   }
 
+  /// but this one does not have context, so we need to add BuildContext context
+  /// and it will still show flush bar
   Future<void> _onFocusChanged(
       bool value, FocusNotifier focusNotifier, BuildContext context) async {
-    //save settings
+    //change the value
     focusNotifier.setFocus(value);
+    //save settings
     var prefs = await SharedPreferences.getInstance();
     prefs.setBool('focusMode', value);
 
@@ -608,6 +629,7 @@ class MyHomeDrawer extends StatelessWidget {
 
   Future<void> _signOut(BuildContext context) async {
     try {
+      ///, listen: false
       final auth = Provider.of<AuthBase>(context, listen: false);
       await auth.signOut();
     } on PlatformException catch (e) {

@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:iMomentum/app/constants/api_key.dart';
 import '../../models/unsplash_image.dart';
 import 'package:http/http.dart' as http;
 
 /// Helper class to interact with the Unsplash Api and provide [UnsplashImage].
 class UnsplashImageProvider {
+  ///load random
 //  static loadImagesRandom() async {
 ////    int counter = 0;
 //    //'https://api.unsplash.com/search/photos?query=$keywords&page=$page&per_page=$perPage&order_by=popular&client_id=${Keys.unsplashAPI}'
@@ -44,13 +46,6 @@ class UnsplashImageProvider {
 //    return images;
 //  }
 
-  /// Asynchronously load a list of [UnsplashImage] associated to a given [keyword].
-  /// Returns a list where the first element is the [totalPages] available and the second element is a list of [UnsplashImage].
-  /// [page] is the page index for the api request.
-  /// [perPage] sets the length of the returned list.
-  ///
-  ///
-
   static Future<List> loadImagesWithKeywords(String keywords,
 
       ///when changed perPage to >10, we get nothing but error, why?
@@ -80,59 +75,62 @@ class UnsplashImageProvider {
     return [totalPages, images];
   }
 
+  ///alternative way on http.get, but no header
+//   static dynamic _getImageData(String url) async {
+//     final response = await http.get(url);
+//
+//     if (response.statusCode == 200) {
+//       // If the server did return a 200 OK response,
+//       // then parse the JSON.
+//
+//       var jsonData = json.decode(response.body);
+// //      print('jsonData: $jsonData');
+//       return jsonData;
+//     } else {
+//       // If the server did not return a 200 OK response,
+//       // then throw an exception.
+//       print("Http error: ${response.statusCode}"); //flutter: Http error: 401
+//       //The HTTP 401 Unauthorized client error status response code indicates that the request has not been applied because it lacks valid authentication credentials for the target resource. ... This status is similar to 403 , but in this case, authentication is possible.
+//       throw Exception('Failed to load photos');
+//     }
+//   }
+
+  /// Receive image data from a given [url] and return the JSON decoded the data.
   static dynamic _getImageData(String url) async {
-    final response = await http.get(url);
+    // setup http client
+    HttpClient httpClient = HttpClient();
+    // setup http request
+    HttpClientRequest request = await httpClient.getUrl(Uri.parse(url));
+    // pass the client_id in the header
+    request.headers.add('Authorization', 'Client-ID ${APIKeys.unsplashAPI}');
 
+    // wait for response
+    HttpClientResponse response = await request.close();
+    // print('response.statusCode: ${response.statusCode}');
+    // Process the response
     if (response.statusCode == 200) {
-      // If the server did return a 200 OK response,
-      // then parse the JSON.
-
-      var jsonData = json.decode(response.body);
-//      print('jsonData: $jsonData');
-      return jsonData;
+      // response: OK
+      // decode JSON
+      // print('hello 1 ');
+      String json = await response.transform(utf8.decoder).join();
+      // print('hello 2');
+      // print('jsonDecode(json): ${jsonDecode(json)}');
+      //flutter: {total: 4012, total_pages: 402, results: [{id: yB6WFHbkX40, created_at: 2017-06-26T15:02:15-04:00, updated_at: 2020-07-21T01:28:45-04:00, promoted_at: null, width: 5184, height: 3456, color: #18191C, description: Woman near a pool, alt_description: Santorini, Greece, urls: {raw: https://images.unsplash.com/photo-1498503403619-e39e4ff390fe?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEzNjA0M30, full: https://images.unsplash.com/photo-1498503403619-e39e4ff390fe?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEzNjA0M30, regular: https://images.unsplash.com/photo-1498503403619-e39e4ff390fe?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjEzNjA0M30, small: https://images.unsplash.com/photo-1498503403619-e39e4ff390fe?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjEzNjA0M30, thumb: https://images.unsplash.com/photo-1498503403619-e39e4ff390fe?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&ixid<…>
+      ///found problem: when x.length: 40, response.statusCode is still 200,
+      ///but print(jsonDecode(json)) return{}
+      ///
+      /// mistakenly commented  return jsonDecode(json); and can't get any images
+      return jsonDecode(json);
     } else {
-      // If the server did not return a 200 OK response,
-      // then throw an exception.
+      // something went wrong :(
       print("Http error: ${response.statusCode}");
-      throw Exception('Failed to load photos');
+      // return empty list
+      return [];
     }
   }
 }
 
-/// Receive image data from a given [url] and return the JSON decoded the data.
-//  static dynamic _getImageData(String url) async {
-//    // setup http client
-//    HttpClient httpClient = HttpClient();
-//    // setup http request
-//    HttpClientRequest request = await httpClient.getUrl(Uri.parse(url));
-//    // pass the client_id in the header
-//    request.headers.add('Authorization', 'Client-ID ${Keys.unsplashAPI}');
-//
-//    // wait for response
-//    HttpClientResponse response = await request.close();
-//    print('response.statusCode: ${response.statusCode}');
-//    // Process the response
-//    if (response.statusCode == 200) {
-//      // response: OK
-//      // decode JSON
-//      print('hello 1 ');
-//      String json = await response.transform(utf8.decoder).join();
-//      print('hello 2');
-//      print('jsonDecode(json): ${jsonDecode(json)}');
-//      //flutter: {total: 4012, total_pages: 402, results: [{id: yB6WFHbkX40, created_at: 2017-06-26T15:02:15-04:00, updated_at: 2020-07-21T01:28:45-04:00, promoted_at: null, width: 5184, height: 3456, color: #18191C, description: Woman near a pool, alt_description: Santorini, Greece, urls: {raw: https://images.unsplash.com/photo-1498503403619-e39e4ff390fe?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEzNjA0M30, full: https://images.unsplash.com/photo-1498503403619-e39e4ff390fe?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjEzNjA0M30, regular: https://images.unsplash.com/photo-1498503403619-e39e4ff390fe?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjEzNjA0M30, small: https://images.unsplash.com/photo-1498503403619-e39e4ff390fe?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHBfaWQiOjEzNjA0M30, thumb: https://images.unsplash.com/photo-1498503403619-e39e4ff390fe?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&ixid<…>
-//      ///found problem: when x.length: 40, response.statusCode is still 200,
-//      ///but print(jsonDecode(json)) return{}
-//      ///
-//      /// mistakenly commented  return jsonDecode(json); and can't get any images
-//      return jsonDecode(json);
-//    } else {
-//      // something went wrong :(
-//      print("Http error: ${response.statusCode}");
-//      // return empty list
-//      return [];
-//    }
-//  }
-
+///another way of parsing json data to objects, we used this way in weather info.
 //  static Future<List<UImage>> unsplashImages(imageQuery) async {
 //    int page = 0;
 //

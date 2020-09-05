@@ -65,34 +65,33 @@ class _AddMantraScreenState extends State<AddMantraScreen> {
                         value.isNotEmpty ? null : 'Mantra can\'t be empty',
                     onSaved: (value) => title = value.firstCaps,
                     style: TextStyle(
-                        color: _darkTheme ? Colors.white : Color(0xF01b262c),
+                        color: _darkTheme ? darkThemeWords : lightThemeWords,
                         fontSize: 20.0),
                     autofocus: true,
                     textAlign: TextAlign.center,
-                    cursorColor: _darkTheme ? Colors.white : lightThemeButton,
+                    cursorColor:
+                        _darkTheme ? darkThemeButton : lightThemeButton,
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
                     maxLength: 60,
                     decoration: InputDecoration(
                       focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                              color: _darkTheme
-                                  ? Colors.white
-                                  : lightThemeButton)),
+                              color:
+                                  _darkTheme ? darkThemeHint : lightThemeHint)),
                       enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                              color: _darkTheme
-                                  ? Colors.white
-                                  : lightThemeButton)),
+                              color:
+                                  _darkTheme ? darkThemeHint : lightThemeHint)),
                     ),
                   ),
                 ),
               ),
-//              SizedBox(height: 20),
               MyFlatButton(
                   onPressed: _save,
                   text: 'SAVE',
-                  color: _darkTheme ? Colors.white : lightThemeButton),
+                  bkgdColor: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
+                  color: _darkTheme ? darkThemeButton : lightThemeButton),
               SizedBox(height: 20)
             ],
           ),
@@ -131,12 +130,8 @@ class _AddMantraScreenState extends State<AddMantraScreen> {
           exception: e,
         ).show(context);
       }
-//      //pop to previous page
+//      //close bottom modal
       Navigator.of(context).pop();
-//      int count = 0;
-//      Navigator.popUntil(context, (route) {
-//        return count++ == 2;
-//      });
     }
   }
 }

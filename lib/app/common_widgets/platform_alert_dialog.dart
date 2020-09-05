@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:iMomentum/app/common_widgets/platform_widget.dart';
+import 'package:iMomentum/app/constants/constants.dart';
 
 class PlatformAlertDialog extends PlatformWidget {
   PlatformAlertDialog({
@@ -25,14 +27,17 @@ class PlatformAlertDialog extends PlatformWidget {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                backgroundColor: Color(0xf01b262c), // //
+                backgroundColor: Color(0xf01b262c),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(20.0))),
                 title: Text(
                   title,
-//            style: Theme.of(context).textTheme.headline6,
+                  style: KDialogTitle,
                 ),
-                content: Text(content),
+                content: Text(
+                  content,
+                  style: KDialogContent,
+                ),
                 actions: _buildActions(context),
               );
             },
@@ -98,14 +103,14 @@ class PlatformAlertDialog extends PlatformWidget {
     if (cancelActionText != null) {
       actions.add(
         FlatButton(
-          child: Text(cancelActionText),
+          child: Text(cancelActionText, style: KDialogButton),
           onPressed: () => Navigator.of(context).pop(false),
         ),
       );
     }
     actions.add(
       FlatButton(
-        child: Text(defaultActionText),
+        child: Text(defaultActionText, style: KDialogButton),
         onPressed: () => Navigator.of(context).pop(true),
       ),
     );

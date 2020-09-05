@@ -35,7 +35,10 @@ class SettingSwitch extends StatelessWidget {
         size: size,
         color: _darkTheme ? darkThemeButton : lightThemeButton,
       ),
-      title: Text(title, style: TextStyle(fontSize: 15)),
+      title: Text(title,
+          style: TextStyle(
+              fontSize: 15,
+              color: _darkTheme ? darkThemeWords : lightThemeWords)),
       // subtitle: Text(subtitle), //not looking good
       // isThreeLine: isThreeLine, //must remove this at the same time
       trailing: Transform.scale(
@@ -56,17 +59,19 @@ class SettingSwitchNoIcon extends StatelessWidget {
   final bool value;
   final Function onChanged;
 
-  const SettingSwitchNoIcon({
-    Key key,
-    this.title,
-    this.value,
-    this.onChanged,
-  }) : super(key: key);
+  const SettingSwitchNoIcon({Key key, this.title, this.value, this.onChanged})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+
     return ListTile(
-      title: Text(title, style: TextStyle(fontSize: 15)),
+      title: Text(title,
+          style: TextStyle(
+              fontSize: 15,
+              color: _darkTheme ? darkThemeWords : lightThemeWords)),
       trailing: Transform.scale(
         scale: 0.9,
         child: CupertinoSwitch(

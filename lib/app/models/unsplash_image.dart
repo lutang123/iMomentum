@@ -15,7 +15,7 @@ class UnsplashImage {
   }
 
   String createdAtFormatted() {
-    return Format.date(DateTime.parse(createdAt()));
+    return Format.dateAndYear(DateTime.parse(createdAt()));
   }
 
   String updatedAt() {

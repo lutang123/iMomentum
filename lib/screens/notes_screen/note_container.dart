@@ -12,18 +12,12 @@ import 'font_picker.dart';
 
 class NoteContainer extends StatelessWidget {
   NoteContainer(
-      {this.note,
-      this.database,
-      this.folder,
-      this.folders,
-      this.onTap,
-      this.onLongPress});
+      {this.note, this.database, this.folder, this.folders, this.onTap});
   final Note note;
   final Database database;
   final Folder folder;
   final List<Folder> folders;
   final Function onTap;
-  final Function onLongPress;
 
   String _getFolderTitle(List<Folder> folders) {
     String title = '';
@@ -40,10 +34,9 @@ class NoteContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 //    print('note.colorIndex: ${note.colorIndex}'); //null?
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return GestureDetector(
-      onLongPress: onLongPress,
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.all(8.0),
@@ -148,7 +141,7 @@ class MySignInContainer extends StatelessWidget {
       child: child,
       padding: EdgeInsets.all(8.0),
       decoration: BoxDecoration(
-          color: _darkTheme ? darkThemeSurfaceTodo : lightThemeSurface,
+          color: _darkTheme ? darkThemeSurface : lightThemeSurface,
           border: Border.all(
               width: 2, color: _darkTheme ? Colors.white54 : Colors.black38),
           borderRadius: BorderRadius.circular(20.0)),

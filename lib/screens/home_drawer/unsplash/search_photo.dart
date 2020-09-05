@@ -1,13 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:iMomentum/screens/unsplash/staggered_view.dart';
-import 'package:iMomentum/screens/unsplash/tags_list.dart';
+import 'package:iMomentum/screens/home_drawer/unsplash/staggered_view.dart';
+import 'package:iMomentum/screens/home_drawer/unsplash/tags_list.dart';
 import 'package:iMomentum/app/services/network_service/unsplash_image_provider.dart';
-import 'package:iMomentum/screens/unsplash/widget/image_tile.dart';
+import 'package:iMomentum/screens/home_drawer/unsplash/widget/image_tile.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:provider/provider.dart';
-import '../../app/models/unsplash_image.dart';
+import '../../../app/models/unsplash_image.dart';
 
 //adding search to the app
 class SearchPhotos extends SearchDelegate<Container> {
@@ -15,7 +15,7 @@ class SearchPhotos extends SearchDelegate<Container> {
 
   @override
   ThemeData appBarTheme(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     assert(context != null);
 //    final ThemeData theme = Theme.of(context);
@@ -25,13 +25,13 @@ class SearchPhotos extends SearchDelegate<Container> {
 
   @override
   List<Widget> buildActions(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return [
       IconButton(
         icon: Icon(
           Icons.clear,
-          color: _darkTheme ? Colors.white : Colors.black87,
+          color: _darkTheme ? Colors.white : lightThemeButton,
         ),
         onPressed: () {
           query = '';
@@ -42,12 +42,12 @@ class SearchPhotos extends SearchDelegate<Container> {
 
   @override
   Widget buildLeading(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return IconButton(
       icon: Icon(
         Icons.arrow_back_ios,
-        color: _darkTheme ? Colors.white : Colors.black87,
+        color: _darkTheme ? Colors.white : lightThemeButton,
       ),
       onPressed: () {
         Navigator.of(context).pop();
@@ -78,14 +78,13 @@ class SearchPhotos extends SearchDelegate<Container> {
 //      // set loading
 //      loadingImages = true;
 //    });
-      //load images
       // load images
       List<UnsplashImage> images;
       List res = await UnsplashImageProvider.loadImagesWithKeywords(keyword,
           page: ++page);
       // set totalPages
-      int totalPages = res[0];
-      print('totalPage: $totalPages'); //32680
+      // int totalPages = res[0];
+      // print('totalPage: $totalPages'); //32680
       images = res[1];
 //    setState(() {
 //      loadingImages = false;
@@ -108,7 +107,7 @@ class SearchPhotos extends SearchDelegate<Container> {
               children: <Widget>[
                 Expanded(flex: 1, child: Text(suggestionsList[index])),
                 Expanded(
-                  flex: 3,
+                  flex: 5,
                   child: FutureBuilder(
                     future: _loadImages(keyword: suggestionsList[index]),
                     builder: (context, snapshot) {

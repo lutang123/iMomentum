@@ -2,18 +2,14 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iMomentum/app/models/folder.dart';
 import 'package:iMomentum/app/models/mantra_model.dart';
 import 'package:iMomentum/app/models/quote_model.dart';
 import 'package:iMomentum/app/models/todo.dart';
-import 'package:iMomentum/app/services/calendar_bloc.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:provider/provider.dart';
-
-import 'my_container.dart';
 
 class TodoListTile extends StatelessWidget {
   const TodoListTile({
@@ -41,33 +37,49 @@ class TodoListTile extends StatelessWidget {
   //this is for dark them only
   Color getColor() {
     if (todo.category == 0 || todo.category == null) {
-      return todo.isDone ? Colors.white : Colors.orangeAccent; //;
+      return todo.isDone
+          ? Colors.white.withOpacity(0.5)
+          : Colors.orangeAccent; //;
     } else if (todo.category == 1) {
-      return todo.isDone ? Colors.white : Colors.lightBlueAccent;
+      return todo.isDone
+          ? Colors.white.withOpacity(0.5)
+          : Colors.lightBlueAccent;
     } else if (todo.category == 2) {
-      return todo.isDone ? Colors.white : Colors.purpleAccent;
+      return todo.isDone ? Colors.white.withOpacity(0.5) : Colors.purpleAccent;
     } else if (todo.category == 3) {
-      return todo.isDone ? Colors.white : Colors.lightGreenAccent;
+      return todo.isDone
+          ? Colors.white.withOpacity(0.5)
+          : Colors.lightGreenAccent;
     } else if (todo.category == 4) {
-      return todo.isDone ? Colors.white : Colors.deepPurpleAccent;
+      return todo.isDone
+          ? Colors.white.withOpacity(0.5)
+          : Colors.deepPurpleAccent;
     } else {
-      return todo.isDone ? Colors.white : Colors.deepPurpleAccent;
+      return todo.isDone
+          ? Colors.white.withOpacity(0.5)
+          : Colors.deepPurpleAccent;
     }
   }
 
   Color getColorLight() {
     if (todo.category == 0 || todo.category == null) {
-      return todo.isDone ? lightThemeButton : Colors.orangeAccent; //;
+      return todo.isDone ? lightThemeWords.withOpacity(0.5) : Colors.orange; //;
     } else if (todo.category == 1) {
-      return todo.isDone ? lightThemeButton : Colors.lightBlueAccent;
+      return todo.isDone ? lightThemeWords.withOpacity(0.5) : Colors.blueAccent;
     } else if (todo.category == 2) {
-      return todo.isDone ? lightThemeButton : Colors.purpleAccent;
+      return todo.isDone
+          ? lightThemeWords.withOpacity(0.5)
+          : Colors.purpleAccent;
     } else if (todo.category == 3) {
-      return todo.isDone ? lightThemeButton : Colors.lightGreenAccent;
+      return todo.isDone ? lightThemeWords.withOpacity(0.5) : Colors.green;
     } else if (todo.category == 4) {
-      return todo.isDone ? lightThemeButton : Colors.deepPurpleAccent;
+      return todo.isDone
+          ? lightThemeWords.withOpacity(0.5)
+          : Colors.deepPurpleAccent;
     } else {
-      return todo.isDone ? lightThemeButton : Colors.deepPurpleAccent;
+      return todo.isDone
+          ? lightThemeWords.withOpacity(0.5)
+          : Colors.deepPurpleAccent;
     }
   }
 
@@ -89,15 +101,19 @@ class TodoListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
 
     return ListTile(
       leading: Theme(
-        data: ThemeData(unselectedWidgetColor: getColor()), //Colors.grey[350]
+        data: ThemeData(
+            unselectedWidgetColor:
+                _darkTheme ? getColor() : getColorLight()), //Colors.grey[350]
         child: Checkbox(
             activeColor: Colors.transparent, //black54
-            checkColor: _darkTheme ? Colors.white : Color(0xF01b262c),
+            checkColor: _darkTheme
+                ? Colors.white.withOpacity(0.5)
+                : lightThemeWords.withOpacity(0.5),
             value: todo.isDone ? true : false,
             onChanged: onChangedCheckbox),
       ),
@@ -123,8 +139,15 @@ class TodoListTile extends StatelessWidget {
           todo.hasReminder == null || todo.hasReminder == false
               ? Container()
               : todo.reminderDate.difference(DateTime.now()).inSeconds > 0
-                  ? Icon(Icons.alarm, color: Colors.yellowAccent, size: 20)
-                  : Icon(Icons.alarm_off, color: Colors.yellow[200], size: 20)
+                  ? Icon(Icons.alarm,
+                      color:
+                          _darkTheme ? Colors.yellowAccent : Colors.yellow[500],
+                      size: 22)
+                  : Icon(Icons.alarm_off,
+                      color: _darkTheme
+                          ? Colors.grey
+                          : Colors.grey.withOpacity(0.8),
+                      size: 22)
         ],
       ),
       subtitle: todo.comment == null || todo.comment.length == 0
@@ -138,7 +161,7 @@ class TodoListTile extends StatelessWidget {
                   Icon(
                     Icons.comment,
                     size: 15,
-                    color: _darkTheme ? Color(0xfff3f9fb) : Color(0xF01b262c),
+                    color: _darkTheme ? darkThemeHint : lightThemeHint,
                   ),
                   SizedBox(width: 8),
                   Expanded(
@@ -222,36 +245,28 @@ class FolderListTile extends StatelessWidget {
     Key key,
     @required this.folder,
     this.onTap,
-    // this.onPressed,
-    // this.onChangedCheckbox,
   }) : super(key: key);
   final Folder folder;
   final VoidCallback onTap;
-  // final VoidCallback onPressed;
-  // final Function onChangedCheckbox;
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+
     return ListTile(
-      leading: Icon(EvaIcons.folderOutline),
+      leading: Icon(EvaIcons.folderOutline,
+          color: _darkTheme ? darkThemeButton : lightThemeButton),
       title: AutoSizeText(
         folder.title,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         minFontSize: 14,
         style: TextStyle(
-          color: Colors.white,
+          color: _darkTheme ? darkThemeWords : lightThemeWords,
           fontSize: 16.0,
         ),
       ),
-//       trailing: IconButton(
-//         color: Colors.grey[350],
-//         iconSize: 18,
-// //        icon: Icon(FontAwesomeIcons.edit),
-//         icon: Icon(Icons.clear),
-//         onPressed: onPressed,
-//         tooltip: 'Delete Task',
-//       ),
       onTap: onTap,
     );
   }
@@ -263,12 +278,10 @@ class HomeMantraListTile extends StatelessWidget {
     @required this.mantra,
     this.onTap,
     this.onPressed,
-//    this.onChangedCheckbox,
   }) : super(key: key);
   final MantraModel mantra;
   final VoidCallback onTap;
   final VoidCallback onPressed;
-//  final Function onChangedCheckbox;
 
   @override
   Widget build(BuildContext context) {
@@ -298,20 +311,18 @@ class MantraListTile extends StatelessWidget {
     @required this.mantra,
     this.onTap,
     this.onPressed,
-//    this.onChangedCheckbox,
   }) : super(key: key);
   final MantraModel mantra;
   final VoidCallback onTap;
   final VoidCallback onPressed;
-//  final Function onChangedCheckbox;
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return ListTile(
       title: AutoSizeText(mantra.title,
-          maxLines: 4,
+          maxLines: 3,
           maxFontSize: 20,
           minFontSize: 15,
           overflow: TextOverflow.ellipsis,
@@ -330,23 +341,21 @@ class QuoteListTile extends StatelessWidget {
     @required this.quote,
     this.onTap,
     this.onPressed,
-//    this.onChangedCheckbox,
   }) : super(key: key);
   final QuoteModel quote;
   final VoidCallback onTap;
   final VoidCallback onPressed;
-//  final Function onChangedCheckbox;
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return ListTile(
       title: AutoSizeText(
           quote.author == null || quote.author == ''
               ? '"${quote.title}"'
               : '"${quote.title} -- ${quote.author}"',
-          maxLines: 4,
+          maxLines: 3,
           maxFontSize: 20,
           minFontSize: 15,
           overflow: TextOverflow.ellipsis,

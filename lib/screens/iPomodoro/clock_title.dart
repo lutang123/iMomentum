@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:iMomentum/app/services/multi_notifier.dart';
+import 'package:provider/provider.dart';
+import 'package:iMomentum/app/constants/theme.dart';
 
 class ClockTitle extends StatelessWidget {
   const ClockTitle({
     this.title,
     this.subtitle,
-//    this.widget = Text(''),
     Key key,
   }) : super(key: key);
   final String title;
   final String subtitle;
-//  final Widget widget;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +49,8 @@ class MantraTopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -59,14 +62,14 @@ class MantraTopBar extends StatelessWidget {
             IconButton(
               onPressed: () => Navigator.pop(context),
               icon: Icon(Icons.arrow_back_ios, size: 30),
-              color: Colors.white,
+              color: _darkTheme ? Colors.white : lightThemeButton,
             )
           ],
         ),
         Text(title,
             style: TextStyle(
                 fontSize: 30,
-                color: Colors.white,
+                color: _darkTheme ? Colors.white : lightThemeWords,
                 fontWeight: FontWeight.bold)),
         SizedBox(height: 20),
         Padding(
@@ -80,12 +83,9 @@ class MantraTopBar extends StatelessWidget {
                 style: GoogleFonts.varelaRound(
                     fontWeight: FontWeight.w600,
                     fontSize: 17.0,
-                    color: Colors.white,
+                    color: _darkTheme ? Colors.white : lightThemeWords,
                     fontStyle: FontStyle.italic),
               ),
-//              IconButton(
-//                icon: EvaIcons.i,
-//              )
             ],
           ),
         ),

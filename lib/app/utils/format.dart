@@ -26,6 +26,10 @@ class Format {
     return DateFormat.MMMd().format(date);
   }
 
+  static String dateAndYear(DateTime date) {
+    return DateFormat.yMMMMd('en_US').format(date); //July 10, 1996
+  }
+
   static String time(DateTime date) {
     return DateFormat('kk:mm').format(date);
   }

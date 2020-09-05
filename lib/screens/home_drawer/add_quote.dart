@@ -78,14 +78,12 @@ class _AddQuoteScreenState extends State<AddQuoteScreen> {
                     decoration: InputDecoration(
                       focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                              color: _darkTheme
-                                  ? Colors.white
-                                  : lightThemeButton)),
+                              color:
+                                  _darkTheme ? darkThemeHint : lightThemeHint)),
                       enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                              color: _darkTheme
-                                  ? Colors.white
-                                  : lightThemeButton)),
+                              color:
+                                  _darkTheme ? darkThemeHint : lightThemeHint)),
                     ),
                   ),
                 ),
@@ -113,14 +111,12 @@ class _AddQuoteScreenState extends State<AddQuoteScreen> {
                           color: _darkTheme ? Colors.white54 : Colors.black38),
                       focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                              color: _darkTheme
-                                  ? Colors.white
-                                  : lightThemeButton)),
+                              color:
+                                  _darkTheme ? darkThemeHint : lightThemeHint)),
                       enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
-                              color: _darkTheme
-                                  ? Colors.white
-                                  : lightThemeButton)),
+                              color:
+                                  _darkTheme ? darkThemeHint : lightThemeHint)),
                     ),
                   ),
                 ),
@@ -129,6 +125,7 @@ class _AddQuoteScreenState extends State<AddQuoteScreen> {
               MyFlatButton(
                   onPressed: _save,
                   text: 'SAVE',
+                  bkgdColor: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
                   color: _darkTheme ? Colors.white : lightThemeButton),
               SizedBox(height: 20)
             ],
@@ -154,7 +151,6 @@ class _AddQuoteScreenState extends State<AddQuoteScreen> {
       try {
         final id = quote?.id ?? documentIdFromCurrentDate();
 
-        ///first we find this specific Todo item that we want to update
         final newQuote = QuoteModel(
             id: id, title: title, author: author, date: DateTime.now());
         //add newTodo to database
@@ -165,12 +161,7 @@ class _AddQuoteScreenState extends State<AddQuoteScreen> {
           exception: e,
         ).show(context);
       }
-//      //pop to previous page
       Navigator.of(context).pop();
-//      int count = 0;
-//      Navigator.popUntil(context, (route) {
-//        return count++ == 2;
-//      });
     }
   }
 }

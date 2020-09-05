@@ -2,14 +2,14 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:iMomentum/app/common_widgets/empty_content.dart';
-import 'package:iMomentum/screens/unsplash/widget/image_tile.dart';
+import 'package:iMomentum/app/common_widgets/error_message.dart';
+import 'package:iMomentum/screens/home_drawer/unsplash/widget/image_tile.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/services/network_service/unsplash_image_provider.dart';
-import 'package:iMomentum/screens/unsplash/widget/loading_indicator.dart';
+import 'package:iMomentum/screens/home_drawer/unsplash/widget/loading_indicator.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'image_page.dart';
-import '../../app/models/unsplash_image.dart';
+import '../../../app/models/unsplash_image.dart';
 
 class StaggeredView extends StatefulWidget {
   final Database database;
@@ -24,30 +24,19 @@ class StaggeredView extends StatefulWidget {
 }
 
 class _StaggeredViewState extends State<StaggeredView> {
-//  var query;
-//  bool searching;
-//  _StaggeredViewState(this.query, {this.searching = true});
-
-  //the first step is to declare a ScrollController variable.
   ScrollController _scrollController;
 
   Future<List<UnsplashImage>> imageList;
   get query => widget.query;
   get searching => widget.searching;
 
-  bool searching2;
   @override
   void initState() {
     super.initState();
-    setState(() {
-      searching2 = searching;
-    });
+
     //We instantiate it within our initState method
     _scrollController = ScrollController();
     imageList = _loadImages(keyword: query);
-    //update UnsplashImages function and app new page to list
-//    UnsplashImageProvider.unsplashImages(query);
-//    _loadImages(keyword: 'nature');
     _scrollController.addListener(() {
       if (_scrollController.position.maxScrollExtent ==
           _scrollController.offset) {
@@ -69,7 +58,6 @@ class _StaggeredViewState extends State<StaggeredView> {
       // set loading
       loadingImages = true;
     });
-    //load images
     // load images
     List<UnsplashImage> images;
     List res = await UnsplashImageProvider.loadImagesWithKeywords(
@@ -88,9 +76,9 @@ class _StaggeredViewState extends State<StaggeredView> {
   }
 
   List<UnsplashImage> x =
-      []; //variable to update the image info as scrolling reaches max extent for 'happy' page
+      []; //variable to update the image info as scrolling reaches max extent for 'natural' page
   List<UnsplashImage> y =
-      []; //variable to update the image info as the scrolling reaches max extent for all not 'happy' page
+      []; //variable to update the image info as the scrolling reaches max extent for all not 'natural' page
   var imageQuery; //Variable to take in query input
   int page = 0;
   //function to update the variables when scrolling reaches max extent
@@ -98,8 +86,6 @@ class _StaggeredViewState extends State<StaggeredView> {
     page = page + 1;
     if (query != 'nature') {
       y = y + await _loadImages(keyword: query);
-
-      ///not totally understand why
 //      print('y: $y');
 //      print(
 //          'y.length: ${y.length}'); //10, and every time we scroll up, we got 10 more
@@ -199,17 +185,12 @@ class _StaggeredViewState extends State<StaggeredView> {
               springAnimationDurationInMilliseconds: 700,
               animSpeedFactor: 1, //default
               color: Color(0XF0bbe1fa),
-//              color: Colors.white,
               backgroundColor: Color(0XF00f4c75),
               onRefresh: _handleRefresh,
               showChildOpacityTransition: false,
               child: CustomScrollView(
                 controller: _scrollController,
-                // put AppBar in NestedScrollView to have it sliver off on scrolling
                 slivers: <Widget>[
-//                  searching2
-//                      ? _buildSearchAppBar()
-//                      : null, //we can not write Container()
                   _buildImageGrid(snapshot),
 
                   ///why not showing? TODO
@@ -226,7 +207,7 @@ class _StaggeredViewState extends State<StaggeredView> {
               child: Column(
                 children: <Widget>[
                   /// type String is not a subtype of type 'int' of 'index' ??
-                  /// Http error: 403
+                  /// Http error: 403 //The HTTP 403 is a HTTP status code meaning access to the requested resource is forbidden for some reason
                   ///
                   /// NoSuchMethodError: The getter 'length' was called on null
                   /// it appears when x.length: 40
@@ -237,7 +218,7 @@ class _StaggeredViewState extends State<StaggeredView> {
                       style: TextStyle(fontSize: 16),
                     ),
                   ),
-                  EmptyMessage(
+                  ErrorMessage(
                     title: 'Something went wrong',
                     message:
                         'Can\'t load items right now, please try again later',
@@ -256,55 +237,3 @@ class _StaggeredViewState extends State<StaggeredView> {
         });
   }
 }
-
-///notes on sliver app bar
-//  Widget _buildSearchAppBar() {
-//    final themeNotifier = Provider.of<ThemeNotifier>(context);
-//    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-//    return SliverPadding(
-//      padding: const EdgeInsets.only(top: 8.0),
-//      sliver: SliverAppBar(
-//        backgroundColor: _darkTheme ? Color(0xf01b262c) : Colors.grey[50],
-//        automaticallyImplyLeading: false,
-////      stretch: false,
-//        floating: true,
-//        title: Container(
-//            width: 300,
-//            decoration: BoxDecoration(
-////              color: _darkTheme ? darkSurfaceTodo : lightSurface,
-//              borderRadius: BorderRadius.all(Radius.circular(10.0)),
-//              border: Border.all(
-//                  width: 1,
-//                  color: _darkTheme ? Colors.white54 : Colors.black38),
-//            ),
-//            child: Row(
-//              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//              children: <Widget>[
-//                FlatButton(
-//                  child: Text(
-//                    'Search photos',
-//                    style: TextStyle(
-//                      fontSize: 14,
-//                      color: _darkTheme ? darkHint : lightHint,
-//                    ),
-//                  ),
-//                  onPressed: () => showSearch(
-//                    context: context,
-//                    delegate: SearchPhotos(),
-//                  ),
-//                ),
-//                IconButton(
-//                  icon: Icon(
-//                    Icons.search,
-//                  ),
-//                  color: _darkTheme ? darkHint : lightHint,
-//                  onPressed: () => showSearch(
-//                    context: context,
-//                    delegate: SearchPhotos(),
-//                  ),
-//                ),
-//              ],
-//            )),
-//      ),
-//    );
-//  }

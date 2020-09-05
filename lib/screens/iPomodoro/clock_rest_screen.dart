@@ -11,7 +11,7 @@ import 'package:iMomentum/app/utils/extensions.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/utils/pages_routes.dart';
-import 'package:iMomentum/screens/home_screen/api_quote.dart';
+import 'package:iMomentum/screens/home_screen/quote.dart';
 import 'package:provider/provider.dart';
 import 'clock_begin_screen.dart';
 import 'clock_timer.dart';

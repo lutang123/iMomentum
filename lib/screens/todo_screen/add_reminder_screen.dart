@@ -98,7 +98,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
               'Remind me for this task at: ',
               style: TextStyle(
                   fontSize: 16,
-                  color: Colors.white60,
+                  color: _darkTheme ? Colors.white60 : Colors.black54,
                   fontStyle: FontStyle.italic),
 //                  style: Theme.of(context).textTheme.subtitle2,
             ),
@@ -110,7 +110,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Text(
-                  'Reminder time must be a time later than now',
+                  'Reminder time must be a time later than current time.',
                   style:
                       TextStyle(color: Colors.red, fontStyle: FontStyle.italic),
                 ),
@@ -121,6 +121,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                 ? MyFlatButton(
                     onPressed: _scheduleNotification,
                     text: 'SAVE',
+                    bkgdColor: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
                     color: _darkTheme ? Colors.white : lightThemeButton)
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -129,7 +130,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                       SizedBox(
                         width: 150,
                         child: FlatButton(
-                          child: Text('Cancel',
+                          child: Text('Cancel Reminder',
                               style: TextStyle(
                                   fontSize: 20, color: Colors.redAccent)),
                           onPressed: () => _cancelReminder(todo),
@@ -140,6 +141,8 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                         child: MyFlatButton(
                             onPressed: _scheduleNotification,
                             text: 'SAVE',
+                            bkgdColor:
+                                _darkTheme ? darkThemeAppBar : lightThemeAppBar,
                             color:
                                 _darkTheme ? Colors.white : lightThemeButton),
                       )
@@ -153,17 +156,20 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
   }
 
   Widget _buildReminderDate(Todo todo) {
-    return DateFormat('M/d/y').format(todo.date) == formattedToday
-        ? TimePicker(
-            selectedTime: _reminderTime,
-            onSelectedTime: (time) => setState(() => _reminderTime = time),
-          )
-        : DateTimePicker(
-            selectedDate: _reminderDate,
-            selectedTime: _reminderTime,
-            onSelectedDate: (date) => setState(() => _reminderDate = date),
-            onSelectedTime: (time) => setState(() => _reminderTime = time),
-          );
+    return
+        // DateFormat('M/d/y').format(todo.date) == formattedToday
+        //   ? TimePicker(
+        //       selectedTime: _reminderTime,
+        //       onSelectedTime: (time) => setState(() => _reminderTime = time),
+        //     )
+        //   :
+
+        DateTimePicker(
+      selectedDate: _reminderDate,
+      selectedTime: _reminderTime,
+      onSelectedDate: (date) => setState(() => _reminderDate = date),
+      onSelectedTime: (time) => setState(() => _reminderTime = time),
+    );
   }
 
   ///can be used in count down

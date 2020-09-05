@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
-import 'package:iMomentum/screens/unsplash/widget/info_sheet.dart';
+import 'package:iMomentum/app/constants/theme.dart';
+import 'package:iMomentum/screens/home_drawer/unsplash/widget/info_sheet.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/services/network_service/unsplash_image_provider.dart';
@@ -8,7 +9,7 @@ import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../app/models/unsplash_image.dart';
+import '../../../app/models/unsplash_image.dart';
 
 /// Screen for showing an individual [UnsplashImage].
 class ImagePage extends StatefulWidget {
@@ -67,21 +68,27 @@ class _ImagePageState extends State<ImagePage> {
 //  }
 
   /// Returns AppBar.
-  Widget _buildAppBar(Database database, BuildContext context) => AppBar(
-        elevation: 0.0,
-        backgroundColor: Colors.black12,
-        leading:
-            // back button
-            IconButton(
-                icon: Icon(
-                  Icons.arrow_back_ios,
-                  color: Colors.white,
-                  size: 30,
-                ),
-                onPressed: () => Navigator.of(context).pop()),
-        title: Text('Preview'),
-        centerTitle: true,
-        actions: <Widget>[
+  Widget _buildAppBar(Database database) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    return AppBar(
+      elevation: 0.0,
+      backgroundColor: _darkTheme ? darkThemeDrawer : lightThemeAppBar,
+      leading:
+          // back button
+          IconButton(
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: _darkTheme ? Colors.white : lightThemeButton,
+                size: 30,
+              ),
+              onPressed: () => Navigator.of(context).pop()),
+      title: Text(
+        'Preview',
+        style: TextStyle(color: _darkTheme ? darkThemeWords : lightThemeWords),
+      ),
+      centerTitle: true,
+      actions: <Widget>[
 //          IconButton(
 //            icon: Icon(
 //              isLiked ? Icons.favorite : Icons.favorite_border,
@@ -91,26 +98,27 @@ class _ImagePageState extends State<ImagePage> {
 //            tooltip: 'Add to favourite',
 //            onPressed: () => _save(database, image),
 //          ),
-          // show image info
-          IconButton(
-              icon: Icon(
-                Icons.info_outline,
-                color: Colors.white,
-                size: 30,
-              ),
-              tooltip: 'Image Info',
-              onPressed: () => _showInfoBottomSheet()),
-          // open in browser icon button
-          IconButton(
-              icon: Icon(
-                Icons.open_in_browser,
-                color: Colors.white,
-                size: 30,
-              ),
-              tooltip: 'Open in Browser',
-              onPressed: () => launch(image?.getHtmlLink())),
-        ],
-      );
+        // show image info
+        IconButton(
+            icon: Icon(
+              Icons.info_outline,
+              color: _darkTheme ? Colors.white : lightThemeButton,
+              size: 30,
+            ),
+            tooltip: 'Image Info',
+            onPressed: () => _showInfoBottomSheet()),
+        // open in browser icon button
+        IconButton(
+            icon: Icon(
+              Icons.open_in_browser,
+              color: _darkTheme ? Colors.white : lightThemeButton,
+              size: 30,
+            ),
+            tooltip: 'Open in Browser',
+            onPressed: () => launch(image?.getHtmlLink())),
+      ],
+    );
+  }
 
   /// Returns PhotoView around given [imageId] & [imageUrl].
   Widget _buildPhotoView(String imageUrl) => PhotoView(
@@ -143,7 +151,7 @@ class _ImagePageState extends State<ImagePage> {
               top: 0.0,
               left: 0.0,
               right: 0.0,
-              child: _buildAppBar(widget.database, context)),
+              child: _buildAppBar(widget.database)),
           Positioned(
             bottom: 60,
             left: 60,
@@ -151,7 +159,6 @@ class _ImagePageState extends State<ImagePage> {
             child: MyFlatButton(
               text: 'Set as background photo',
               onPressed: () => _onImageChanged(widget.imageUrl, imageNotifier),
-//                      ImageUrl.imageUrl = widget.imageUrl;
             ),
           )
         ],
@@ -170,13 +177,11 @@ class _ImagePageState extends State<ImagePage> {
     //save settings
     prefs.setBool('randomOn', false);
 
-    ///some how this goes to black?
     //pop back
     int count = 0;
     Navigator.popUntil(context, (route) {
       return count++ == 2;
     });
-//    Navigator.of(context).pop();
   }
 
   /// Shows a BottomSheet containing image info.

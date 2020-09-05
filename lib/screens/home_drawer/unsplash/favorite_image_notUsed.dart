@@ -1,5 +1,5 @@
 //import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-//import 'package:iMomentum/app/common_widgets/empty_content.dart';
+//import 'package:iMomentum/app/common_widgets/error_message.dart';
 //import 'package:iMomentum/app/common_widgets/widget/image_tile.dart';
 //import 'package:iMomentum/app/models/image_model_NOTUSED.dart';
 //import 'package:iMomentum/app/services/database.dart';

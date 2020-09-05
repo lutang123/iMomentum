@@ -28,7 +28,7 @@ class MyCalendar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     final DateTime today = DateTime(
         DateTime.now().year, DateTime.now().month, DateTime.now().day, 12);
@@ -36,7 +36,7 @@ class MyCalendar extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: Container(
         decoration: BoxDecoration(
-          color: _darkTheme ? darkThemeSurfaceTodo : lightThemeSurface,
+          color: _darkTheme ? darkThemeSurface : lightThemeSurface,
           borderRadius: BorderRadius.all(Radius.circular(20.0)),
         ),
         child: TableCalendar(
@@ -85,11 +85,13 @@ class MyCalendar extends StatelessWidget {
               color: Colors.transparent,
               borderRadius: BorderRadius.circular(20.0),
               border: Border.all(
-                color: _darkTheme ? Color(0xFFE7E7E8) : Colors.black38,
+                color: _darkTheme
+                    ? Color(0xFFE7E7E8)
+                    : lightThemeButton.withOpacity(0.7),
                 width: 1.0,
               ),
             ),
-            formatButtonTextStyle: Theme.of(context).textTheme.button,
+            formatButtonTextStyle: Theme.of(context).textTheme.bodyText1,
             formatButtonShowsNext: true,
           ),
           builders: CalendarBuilders(
@@ -99,31 +101,30 @@ class MyCalendar extends StatelessWidget {
                     Tween(begin: 0.0, end: 1.0).animate(animationController),
                 child: Container(
                   decoration: BoxDecoration(
-//                color: Colors.transparent,
-                    color: calendarController.isSelected(today)
-                        ? Color(0xFF3282b8)
-                        : Color(0xFF3282b8),
+                    color: _darkTheme
+                        ? calendarController.isSelected(today)
+                            ? darkThemeCalendarSelected
+                            : darkThemeCalendarSelected
+                        : calendarController.isSelected(today)
+                            ? lightThemeCalendarSelected
+                            : lightThemeCalendarSelected,
                     borderRadius: BorderRadius.circular(50.0),
                     border: Border.all(
                       color: _darkTheme
                           ? calendarController.isSelected(today)
-//                          ? Color(0xFFfcbf1e)
-//                          : Color(0xFF40bad5)
-                              ? Color(0xFF3282b8)
-                              : Color(0xFF3282b8)
+                              ? darkThemeCalendarSelected
+                              : darkThemeCalendarSelected
                           : calendarController.isSelected(today)
-//                          ? Color(0xFFfcbf1e)
-////                          ? Colors.white
-//                          : Color(0xFF40bad5),
-                              ? Color(0xFF3282b8)
-                              : Color(0xFF3282b8),
+                              ? lightThemeCalendarSelected
+                              : lightThemeCalendarSelected,
                       width: 2.0,
                     ),
                   ),
                   margin: const EdgeInsets.all(4.0),
                   child: Center(
                     child: Text('${date.day}',
-                        style: Theme.of(context).textTheme.bodyText1), //16.0
+                        style: TextStyle(
+                            color: Colors.white, fontSize: 16)), //16.0
                   ),
                 ),
               );
@@ -134,9 +135,9 @@ class MyCalendar extends StatelessWidget {
                     color: Colors.transparent,
                     borderRadius: BorderRadius.circular(50.0),
                     border: Border.all(
-//                color: _darkTheme ? Color(0xFFfcbf1e) : Color(0xFFfcbf1e),
-
-                      color: _darkTheme ? Color(0xFF3282b8) : Color(0xFF3282b8),
+                      color: _darkTheme
+                          ? darkThemeCalendarSelected
+                          : lightThemeCalendarSelected,
                       width: 2.0,
                     ),
                   ),
@@ -145,7 +146,10 @@ class MyCalendar extends StatelessWidget {
                     child: Text(
                       '${date.day}',
                       style: TextStyle(
-                          fontSize: 16, color: Colors.lightBlueAccent),
+                          fontSize: 16,
+                          color: _darkTheme
+                              ? darkThemeCalendarSelected.withOpacity(0.6)
+                              : lightThemeCalendarSelected.withOpacity(0.6)),
                     ),
                   ));
             },

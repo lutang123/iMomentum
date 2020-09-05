@@ -7,7 +7,6 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
-import 'package:iMomentum/app/common_widgets/empty_content.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_fab.dart';
 import 'package:iMomentum/app/common_widgets/my_list_tile.dart';
@@ -22,6 +21,7 @@ import 'package:iMomentum/screens/iPomodoro/clock_title.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'add_quote.dart';
+import 'empty_or_error_mantra.dart';
 
 class MyQuotes extends StatefulWidget {
   final Database database;
@@ -35,19 +35,18 @@ class _MyQuotesState extends State<MyQuotes> {
   int counter = 0;
   void _onDoubleTap() {
     setState(() {
-      ImageUrl.randomImageUrl =
-          'https://source.unsplash.com/random?nature/$counter';
+      ImageUrl.randomImageUrl = '${ImageUrl.randomImageUrlFirstPart}$counter';
       counter++;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    final randomNotifier = Provider.of<RandomNotifier>(context);
-    bool _randomOn = (randomNotifier.getRandom() == true);
-    final imageNotifier = Provider.of<ImageNotifier>(context);
+    final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
+    bool _randomOn = randomNotifier.getRandom();
+    final imageNotifier = Provider.of<ImageNotifier>(context, listen: false);
 
     ///for quote
     final quoteNotifier = Provider.of<QuoteNotifier>(context);
@@ -68,7 +67,7 @@ class _MyQuotesState extends State<MyQuotes> {
             body: SafeArea(
               bottom: false,
               child: CustomizedContainerNew(
-                color: _darkTheme ? darkThemeSurfaceTodo : lightThemeSurface,
+                color: _darkTheme ? darkThemeSurface : lightThemeSurface,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
@@ -122,10 +121,18 @@ class _MyQuotesState extends State<MyQuotes> {
                                   ),
                                 );
                               } else {
-                                return _noQuoteOrErrorContent();
+                                return EmptyOrErrorMantra(
+                                  hideEmptyMessage: _hideEmptyMessage,
+                                  text1: textQuote1,
+                                  text2: textQuote2,
+                                );
                               }
                             } else if (snapshot.hasError) {
-                              return _noQuoteOrErrorContent();
+                              return EmptyOrErrorMantra(
+                                hideEmptyMessage: _hideEmptyMessage,
+                                text1: textQuote1,
+                                text2: textError,
+                              );
                             }
                             return Center(child: CircularProgressIndicator());
                           }),
@@ -136,9 +143,7 @@ class _MyQuotesState extends State<MyQuotes> {
             ),
             floatingActionButton: Visibility(
               visible: _fabVisible,
-              child: MyFAB(
-                  onPressed: () => _add(widget.database),
-                  child: Icon(Icons.add, size: 30, color: Colors.white)),
+              child: MyFAB(onPressed: () => _add(widget.database)),
             ),
           ),
         )
@@ -150,46 +155,6 @@ class _MyQuotesState extends State<MyQuotes> {
     return MantraTopBar(
       title: 'Quotes',
       subtitle: 'A daily reminder for inspiration and growth.',
-    );
-  }
-
-  Widget _noQuoteOrErrorContent() {
-    return Expanded(
-      child: Column(
-        children: <Widget>[
-          Spacer(),
-          //Text(
-          //'Power up your day with your favorite quotes.',)
-          Visibility(
-            visible: _emptyMessageVisible,
-            child: Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Column(
-                children: [
-                  // EmptyMessage(
-                  //   title: 'Something went wrong',
-                  //   message:
-                  //   'Can\'t load items right now, please try again later',
-                  // ),
-                  // SizedBox(height: 30),
-                  Text(
-                    'By default, a daily quote will show on the bottom of home screen.',
-                    style: KEmptyContent,
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 20),
-                  Text(
-                    'You can add your own quotes to personalize your experience.',
-                    style: KEmptyContent,
-                    textAlign: TextAlign.center,
-                  )
-                ],
-              ),
-            ),
-          ),
-          Spacer(flex: 2),
-        ],
-      ),
     );
   }
 
@@ -211,24 +176,14 @@ class _MyQuotesState extends State<MyQuotes> {
               height: 0.5,
               color: _darkTheme ? Colors.white70 : Colors.black38,
             ),
-//        shrinkWrap: true,
-//        itemCount: anyList.length, //The getter 'length' was called on null.
         itemBuilder: (context, index) {
-          //or index == 0 or index == the last, we return an empty container
           if (index == 0 || index == quotes.length + 1) {
             return Container();
           }
-          //itemBuilder(context, items[index - 1]);
           return Slidable(
             key: UniqueKey(),
             closeOnScroll: true,
             actionPane: SlidableDrawerActionPane(),
-            // dismissal: SlidableDismissal(
-            //   child: SlidableDrawerDismissal(),
-            //   onDismissed: (actionType) {
-            //     _delete(index, quotes[index - 1]);
-            //   },
-            // ),
             actionExtentRatio: 0.25,
             child: QuoteListTile(
               quote: quotes[index - 1],
@@ -264,6 +219,9 @@ class _MyQuotesState extends State<MyQuotes> {
 
   bool _fabVisible = true;
   Future<void> _delete(int index, QuoteModel quote) async {
+    setState(() {
+      _fabVisible = false;
+    });
     try {
       await widget.database.deleteQuote(quote);
       //PlatformException is from import 'package:flutter/services.dart';
@@ -276,7 +234,6 @@ class _MyQuotesState extends State<MyQuotes> {
 
     ///if we add BuildContext in the function, i.e. the context is white color,
     /// flush bar will not show.
-    /// ///why the add button not hidden?
     Flushbar(
       isDismissible: true,
       mainButton: FlatButton(
@@ -285,6 +242,7 @@ class _MyQuotesState extends State<MyQuotes> {
             _fabVisible = false;
           });
           widget.database.setQuote(quote);
+          Navigator.pop(context);
         },
         child: FlushBarButtonChild(
           title: 'UNDO',
@@ -311,12 +269,12 @@ class _MyQuotesState extends State<MyQuotes> {
     )..show(context).then((value) => setState(() => _fabVisible = true));
   }
 
-  bool _emptyMessageVisible = true;
+  bool _hideEmptyMessage = true;
   bool _quoteVisible = true;
 
   Future<void> _add(Database database) async {
     setState(() {
-      _emptyMessageVisible = false;
+      _hideEmptyMessage = false;
       _quoteVisible = false;
       _fabVisible = false;
     });
@@ -329,7 +287,7 @@ class _MyQuotesState extends State<MyQuotes> {
             ));
 
     setState(() {
-      _emptyMessageVisible = true;
+      _hideEmptyMessage = true;
       _quoteVisible = true;
       _fabVisible = true;
     });

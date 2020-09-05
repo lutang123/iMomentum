@@ -112,12 +112,13 @@ class DailyQuote extends StatelessWidget {
       alignment: Alignment.bottomCenter,
       child: Padding(
         padding: const EdgeInsets.only(left: 10, right: 10, bottom: 15.0),
-        child: (title.length) < 100
+        child: (title.length) < 60
             ? Text(
                 author == null || author == ''
                     ? '"$title"'
                     : '"$title -- $author"',
                 textAlign: TextAlign.center,
+                maxLines: 2,
                 style: KQuote,
               )
             : _richText(context),
@@ -127,11 +128,12 @@ class DailyQuote extends StatelessWidget {
 
   Widget _richText(BuildContext context) {
     return RichText(
+      maxLines: 2,
       textAlign: TextAlign.center,
       text: TextSpan(
         style: KQuote,
         children: <TextSpan>[
-          TextSpan(text: '"${title.substring(0, 99)}'),
+          TextSpan(text: '"${title.substring(0, 60)}'),
           TextSpan(
               text: '...',
               style: KQuoteDot,

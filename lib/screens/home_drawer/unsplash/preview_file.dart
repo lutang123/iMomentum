@@ -2,13 +2,14 @@ import 'dart:ui';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
+import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as PathFile;
-import '../../app/models/unsplash_image.dart';
+import '../../../app/models/unsplash_image.dart';
 import 'dart:io';
 
 /// Screen for showing an individual [UnsplashImage].
@@ -64,6 +65,8 @@ class _PreviewFileState extends State<PreviewFile>
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Scaffold(
       // set the global key
       backgroundColor: Colors.transparent,
@@ -77,14 +80,19 @@ class _PreviewFileState extends State<PreviewFile>
               right: 0.0,
               child: AppBar(
                 elevation: 0.0,
-                backgroundColor: Colors.black12,
-                title: Text('Preview'),
+                backgroundColor:
+                    _darkTheme ? darkThemeDrawer : lightThemeAppBar,
+                title: Text(
+                  'Preview',
+                  style: Theme.of(context).textTheme.headline5,
+                ),
                 leading:
                     // back button
                     IconButton(
                         icon: Icon(
                           Icons.arrow_back_ios,
-                          color: Colors.white,
+                          color:
+                              _darkTheme ? darkThemeButton : lightThemeButton,
                           size: 30,
                         ),
                         onPressed: () => Navigator.pop(context)),
@@ -128,7 +136,8 @@ class _PreviewFileState extends State<PreviewFile>
                                   child: Column(
                                     children: <Widget>[
                                       if (_uploadTask.isComplete)
-                                        Icon(Icons.cloud_done),
+                                        Icon(Icons.cloud_done,
+                                            color: Colors.white, size: 30),
                                       SizedBox(height: 3),
 //                                    if (_uploadTask.isPaused)
 //                                      FlatButton(
@@ -154,10 +163,12 @@ class _PreviewFileState extends State<PreviewFile>
                           })
 
                       // Allows user to decide when to start the upload
-                      : MyFlatButton(
-                          text: 'Set as background photo', onPressed: _apply
+                      : Container(
+                          child: MyFlatButton(
+                              text: 'Set as background photo', onPressed: _apply
 //                  _onImageChanged(context, imageFile, imageNotifier),
-                          ),
+                              ),
+                        ),
                 ),
               ),
             ),

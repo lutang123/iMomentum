@@ -134,7 +134,7 @@ class _ClockTimerScreenState extends State<ClockTimerScreen>
     });
   }
 
-  // This will stop the timer
+  // This will stop the timer, in cancel button, cancel == true
   void _end({bool cancelled = true}) {
     ///wrong
 //    if (!_stopwatch.isRunning) {
@@ -146,6 +146,7 @@ class _ClockTimerScreenState extends State<ClockTimerScreen>
     });
 
     if (cancelled) {
+      ///this is wrong
 //      //https://stackoverflow.com/questions/49672706/flutter-navigation-pop-to-index-1
 //      int count = 0;
 //      Navigator.popUntil(context, (route) {
@@ -153,15 +154,6 @@ class _ClockTimerScreenState extends State<ClockTimerScreen>
 //      });
       /// go back to HomeScreen
       Navigator.pop(context);
-
-      //      Navigator.of(context).pop();
-
-//      Navigator.of(context).pushReplacement(PageRoutes.fade(
-//          () => ClockBeginScreen(
-//                database: widget.database,
-//                todo: widget.todo,
-//              ),
-//          milliseconds: 450));
     } else {
       ///save duration in database when it's done
       _setDuration(context);

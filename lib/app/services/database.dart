@@ -36,7 +36,7 @@ abstract class Database {
 
   //note
   Future<void> setNote(Note note); //create/update a job
-  Future<void> updateNote(Note note); //to update isDone
+  // Future<void> updateNote(Note note); //to update isDone
   Future<void> deleteNote(Note note); //delete a job
   Stream<List<Note>> notesStream(); //read all jobs
   Stream<Note> noteStream({@required String noteId}); //read one jobs
@@ -176,11 +176,11 @@ class FirestoreDatabase implements Database {
         data: note.toMap(),
       );
 
-  @override //create or update job
-  Future<void> updateNote(Note note) async => await _service.updateData(
-        path: APIPath.note(uid, note.id),
-        data: note.toMap(),
-      );
+  // @override //create or update job
+  // Future<void> updateNote(Note note) async => await _service.updateData(
+  //       path: APIPath.note(uid, note.id),
+  //       data: note.toMap(),
+  //     );
 
   //TODO delete all entries for a particular job??
   @override // delete job

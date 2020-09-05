@@ -9,7 +9,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
-import 'package:iMomentum/app/common_widgets/empty_content.dart';
+import 'package:iMomentum/app/common_widgets/error_message.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
@@ -19,11 +19,13 @@ import 'package:iMomentum/app/models/note.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/notes_screen/notes_in_folder_screen.dart';
+import 'package:iMomentum/screens/notes_screen/search_note.dart';
 import 'package:provider/provider.dart';
 import 'add_note_screen.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'notes_folder_container.dart';
+import 'empty_content.dart';
+import 'folder_container.dart';
 import 'package:iMomentum/app/utils/cap_string.dart';
 
 class FolderScreen extends StatefulWidget {
@@ -35,11 +37,19 @@ class FolderScreen extends StatefulWidget {
 
 const double _fabDimension = 56.0;
 
+final List<Folder> defaultFolders = [
+  Folder(id: 0.toString(), title: 'All Notes'),
+  Folder(id: 1.toString(), title: 'Notes'),
+];
+
 class FolderScreenState extends State<FolderScreen> {
   bool _addButtonVisible = true;
   ScrollController _hideButtonController;
 
-//  // for folder
+  TextEditingController searchController = TextEditingController();
+
+  bool isSearchEmpty = true;
+
 //  bool isMobile = true;
 //  Device device;
 
@@ -78,18 +88,18 @@ class FolderScreenState extends State<FolderScreen> {
   int counter = 0;
   void _onDoubleTap() {
     setState(() {
-      ImageUrl.randomImageUrl =
-          'https://source.unsplash.com/random?nature/$counter';
+      ImageUrl.randomImageUrl = '${ImageUrl.randomImageUrlFirstPart}$counter';
       counter++;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-//    print(AppBar().preferredSize.height); //56
     final database = Provider.of<Database>(context, listen: false);
+
     final randomNotifier = Provider.of<RandomNotifier>(context);
     bool _randomOn = (randomNotifier.getRandom() == true);
+
     final imageNotifier = Provider.of<ImageNotifier>(context);
 
 //    double deviceHeight = MediaQuery.of(context).size.height;
@@ -111,11 +121,14 @@ class FolderScreenState extends State<FolderScreen> {
           onDoubleTap: _onDoubleTap,
           child: Scaffold(
             backgroundColor: Colors.transparent,
-            appBar: _buildAppBar(),
+            // appBar: _buildAppBar(), //created another appBar because default one is too high
             body: SafeArea(
               top: false,
               child: Column(
                 children: <Widget>[
+                  _topRow(), //this is just for the words 'Folders'.
+                  // nested StreamBuilder for Note and Folder
+                  //this StreamBuilder is only to find out how many notes in a folder
                   StreamBuilder<List<Note>>(
                       stream: database.notesStream(),
                       builder: (context, snapshot) {
@@ -127,23 +140,19 @@ class FolderScreenState extends State<FolderScreen> {
                                   .foldersStream(), // print(database.todosStream());//Instance of '_MapStream<QuerySnapshot, List<TodoModel>>'
                               builder: (context, snapshot) {
                                 if (snapshot.hasData) {
+                                  //this is a list of folder use has added.
                                   final List<Folder> folders = snapshot.data;
                                   if (folders.isNotEmpty) {
-                                    final List<Folder> defaultFolders = [
-                                      Folder(
-                                          id: 0.toString(), title: 'All Notes'),
-                                      Folder(id: 1.toString(), title: 'Notes'),
-                                    ];
+                                    // we always have two default folders on the screen.
                                     final List<Folder> finalFolders =
                                         defaultFolders..addAll(folders);
-                                    //this StreamBuilder is only to find out how many notes in a folder
                                     return Expanded(
                                       child: CustomScrollView(
                                         shrinkWrap: true,
                                         controller: _hideButtonController,
-                                        // put AppBar in NestedScrollView to have it sliver off on scrolling
                                         slivers: <Widget>[
-                                          _buildBoxAdaptorForSearch(allNotes),
+                                          _buildBoxAdaptorForSearch(
+                                              database, allNotes, finalFolders),
                                           _buildFolderGrid(
                                               database, allNotes, finalFolders),
                                           //filter null views
@@ -152,7 +161,9 @@ class FolderScreenState extends State<FolderScreen> {
                                     );
                                   } else {
                                     return _noAddedFolderContent(
-                                        database, allNotes);
+                                      database,
+                                      allNotes,
+                                    );
                                   }
                                 } else if (snapshot.hasError) {
                                   return Expanded(
@@ -162,7 +173,7 @@ class FolderScreenState extends State<FolderScreen> {
                                             MainAxisAlignment.center,
                                         children: <Widget>[
                                           Text(snapshot.error.toString()),
-                                          EmptyMessage(
+                                          ErrorMessage(
                                             title: 'Something went wrong',
                                             message:
                                                 'Can\'t load items right now, please try again later',
@@ -187,7 +198,7 @@ class FolderScreenState extends State<FolderScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
                                   Text(snapshot.error.toString()),
-                                  EmptyMessage(
+                                  ErrorMessage(
                                     title: 'Something went wrong',
                                     message:
                                         'Can\'t load items right now, please try again later',
@@ -209,31 +220,45 @@ class FolderScreenState extends State<FolderScreen> {
     );
   }
 
-  Widget _buildAppBar() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+  Widget _topRow() {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    return AppBar(
-      centerTitle: false,
-      elevation: 0,
-      backgroundColor: _darkTheme ? darkThemeAppBar : lightThemeSurface,
-      automaticallyImplyLeading: false,
-      titleSpacing: 0.0,
-      title: Padding(
-        padding: const EdgeInsets.only(left: 40.0),
-        child: Text('Folders',
-            style: TextStyle(fontSize: 34, fontWeight: FontWeight.w600)),
-      ),
+    return Column(
+      children: <Widget>[
+        SizedBox(
+          height: 35,
+          child: Container(
+            color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
+          ),
+        ),
+        Container(
+          height: 50,
+          color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 40.0),
+            child: Row(
+              children: [
+                Text('Folders',
+                    style: TextStyle(
+                        color: _darkTheme ? darkThemeButton : lightThemeButton,
+                        fontSize: 34,
+                        fontWeight: FontWeight.w600)),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
   Widget _bottomRow(Database database) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Visibility(
       visible: _addButtonVisible,
       child: Container(
         decoration: BoxDecoration(
-          color: _darkTheme ? Colors.black12 : lightThemeSurface,
+          color: _darkTheme ? darkThemeDrawer : lightThemeAppBar,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20.0),
             topRight: Radius.circular(20.0),
@@ -246,15 +271,16 @@ class FolderScreenState extends State<FolderScreen> {
             Padding(
               padding: const EdgeInsets.only(left: 25.0),
               child: FlatButton.icon(
-                icon: Icon(
-//                                FontAwesomeIcons.folder,
-                  EvaIcons.folderAddOutline,
-                  size: 30,
-                ),
+                icon: Icon(EvaIcons.folderAddOutline,
+                    size: 30,
+                    color: _darkTheme ? darkThemeButton : lightThemeButton),
                 label: Text(
-                  'Add Folder',
-                  style: TextStyle(fontSize: 18),
-//                                  style: Theme.of(context).textTheme.headline6,
+                  'Create Folder',
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: _darkTheme
+                          ? darkThemeWords.withOpacity(0.7)
+                          : lightThemeWords.withOpacity(0.7)),
                 ),
                 onPressed: () => _showAddDialog(database),
               ),
@@ -269,10 +295,12 @@ class FolderScreenState extends State<FolderScreen> {
                 openBuilder: (BuildContext context, VoidCallback _) {
                   return AddNoteScreen(database: database);
                 },
-                closedElevation: 6.0,
+                closedElevation: 0.0,
                 closedColor: Colors.transparent,
-                closedShape: const RoundedRectangleBorder(
-                  side: BorderSide(color: Colors.white, width: 2.0),
+                closedShape: RoundedRectangleBorder(
+                  side: BorderSide(
+                      color: _darkTheme ? darkThemeButton : lightThemeButton,
+                      width: 2.0),
                   borderRadius: BorderRadius.all(
                     Radius.circular(_fabDimension / 2),
                   ),
@@ -283,11 +311,11 @@ class FolderScreenState extends State<FolderScreen> {
                       height: _fabDimension,
                       width: _fabDimension,
                       child: Center(
-                        child: Icon(
-                          Icons.add,
-                          size: 30,
-                          color: Colors.white,
-                        ),
+                        child: Icon(Icons.add,
+                            size: 30,
+                            color: _darkTheme
+                                ? darkThemeButton
+                                : lightThemeButton),
                       ));
                 },
               ),
@@ -303,10 +331,13 @@ class FolderScreenState extends State<FolderScreen> {
       child: CustomScrollView(
         shrinkWrap: true,
         controller: _hideButtonController,
-        // put AppBar in NestedScrollView to have it sliver off on scrolling
         slivers: <Widget>[
-          _buildBoxAdaptorForSearch(notes),
-          _buildEmptyFolderGrid(database, notes),
+          _buildBoxAdaptorForSearch(database, notes, defaultFolders),
+          _buildDefaultFolderGrid(database, notes, defaultFolders),
+          SliverToBoxAdapter(
+              child: notes.length > 0
+                  ? Container()
+                  : EmptyContent(text: emptyNoteAndFolder)),
         ],
       ),
     );
@@ -314,15 +345,20 @@ class FolderScreenState extends State<FolderScreen> {
 
   ContainerTransitionType _transitionType = ContainerTransitionType.fade;
 
-  Widget _buildBoxAdaptorForSearch(List<Note> allNotes) {
+  Widget _buildBoxAdaptorForSearch(
+      Database database, List<Note> allNotes, List<Folder> folders) {
     return SliverToBoxAdapter(
-      child: allNotes.length == 0
-          ? Container()
-          : Padding(
-              padding: const EdgeInsets.only(
-                  left: 40.0, right: 40, top: 20, bottom: 10),
-              child: NoteSearchBar(onPressed: null),
-            ),
+      child: Padding(
+        padding:
+            const EdgeInsets.only(left: 40.0, right: 40, top: 20, bottom: 10),
+        child: NoteSearchBar(
+          onPressed: () => showSearch(
+            context: context,
+            delegate: SearchNote(
+                database: database, notes: allNotes, folders: folders),
+          ),
+        ),
+      ),
     );
   }
 
@@ -348,16 +384,9 @@ class FolderScreenState extends State<FolderScreen> {
 
   //https://medium.com/@lets4r/flutorial-create-a-staggered-gridview-9c881a9b0b98
   int axisCount = 2;
+
   Widget _buildFolderGrid(
       Database database, List<Note> notes, List<Folder> folders) {
-    ///move default to steam builder list
-//    List defaultFolders = [
-//      Folder(id: 0.toString(), title: 'All Notes'),
-//      Folder(id: 1.toString(), title: 'Notes'),
-//    ];
-//
-//    List finalFolderList = defaultFolders..addAll(folders);
-//    int columnCount = orientation == Orientation.portrait ? 2 : 3;
     return SliverPadding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
       sliver: SliverStaggeredGrid.countBuilder(
@@ -369,87 +398,77 @@ class FolderScreenState extends State<FolderScreen> {
         crossAxisSpacing: 10.0,
         itemCount: folders.length, //this includes default folders
         // set itemBuilder
+        ///_showEditDialog and _showDeleteDialog all get context from here
         itemBuilder: (BuildContext context, int index) {
           final folder = folders[index];
-          return Slidable(
-              key: UniqueKey(),
-              closeOnScroll: true,
-              actionPane: SlidableDrawerActionPane(),
-              actionExtentRatio: 0.25,
-              child: OpenContainer(
-                transitionType: _transitionType,
-                closedElevation: 0,
-                closedColor: Colors.transparent,
-                closedShape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(0))),
-                closedBuilder: (BuildContext _, VoidCallback openContainer) {
-                  return Stack(
-                    alignment: Alignment.topCenter,
-                    children: [
-                      NotesFolderContainer(
-                        folder: folder,
-                        notesNumber: _getNotesNumber(notes, folder),
-                      ),
-
-                      ///not looking good
-//                    Row(
-//                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                      children: [
-//                        IconButton(
-//                            icon: Icon(EvaIcons.edit2Outline),
-//                            onPressed: () =>
-//                                _showEditDialog(context, database, folder)),
-//                        IconButton(
-//                            icon: Icon(EvaIcons.trash2Outline),
-//                            onPressed: () => _showFlushBar(context, folder))
-//                      ],
-//                    )
-                    ],
-                  );
-                },
-                openElevation: 0,
-                openColor: Colors.transparent,
-                openBuilder: (BuildContext context, VoidCallback _) {
-                  return NotesInFolderScreen(
-                      database: database, folder: folder, folders: folders);
-                },
-              ),
-              actions: <Widget>[
-                (folder.id != 0.toString()) && (folder.id != 1.toString())
-                    ? IconSlideAction(
-                        caption: 'Edit',
-                        foregroundColor: Colors.lightBlue,
-                        color: Colors.black45,
-                        icon: EvaIcons.edit2Outline,
-                        onTap: () => _showEditDialog(context, database, folder),
-                      )
-                    : null,
-              ],
-              secondaryActions: <Widget>[
-                (folder.id != 0.toString()) && (folder.id != 1.toString())
-                    ? IconSlideAction(
-                        caption: 'Delete',
-                        foregroundColor: Colors.red,
-                        color: Colors.black45,
-                        icon: EvaIcons.trash2Outline,
-
-                        ///add a flush bar and prevent edit on default one
-                        onTap: () =>
-                            _showDeleteDialog(context, database, folder),
-                      )
-                    : null,
-              ]);
+          return slidableItem(database, notes, folders, folder);
         },
       ),
     );
   }
 
+  Widget slidableItem(Database database, List<Note> notes, List<Folder> folders,
+      Folder folder) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    return Slidable(
+        key: UniqueKey(),
+        closeOnScroll: true,
+        actionPane: SlidableDrawerActionPane(),
+        actionExtentRatio: 0.25,
+        child: openContainerFolder(database, notes, folders, folder),
+        actions: <Widget>[
+          (folder.id != 0.toString()) && (folder.id != 1.toString())
+              ? IconSlideAction(
+                  caption: 'Edit',
+                  foregroundColor: Colors.lightBlue,
+                  color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
+                  icon: EvaIcons.edit2Outline,
+                  onTap: () => _showEditDialog(database, folder),
+                )
+              : null,
+        ],
+        secondaryActions: <Widget>[
+          (folder.id != 0.toString()) && (folder.id != 1.toString())
+              ? IconSlideAction(
+                  caption: 'Delete',
+                  foregroundColor: Colors.red,
+                  color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
+                  icon: EvaIcons.trash2Outline,
+
+                  ///add a flush bar and prevent edit on default one
+                  onTap: () => _showDeleteDialog(database, folder),
+                )
+              : null,
+        ]);
+  }
+
+  Widget openContainerFolder(Database database, List<Note> notes,
+      List<Folder> folders, Folder folder) {
+    return OpenContainer(
+      transitionType: _transitionType,
+      closedElevation: 0,
+      closedColor: Colors.transparent,
+      closedShape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(0))),
+      closedBuilder: (BuildContext _, VoidCallback openContainer) {
+        return FolderContainer(
+          folder: folder,
+          notesNumber: _getNotesNumber(notes, folder),
+        );
+      },
+      openElevation: 0,
+      openColor: Colors.transparent,
+      openBuilder: (BuildContext context, VoidCallback _) {
+        return NotesInFolderScreen(
+            database: database, folder: folder, folders: folders);
+      },
+    );
+  }
+
   // with default folder
-  Widget _buildEmptyFolderGrid(Database database, List<Note> notes) {
-    List defaultFolders = [
-      Folder(id: 0.toString(), title: 'All Notes'),
-      Folder(id: 1.toString(), title: 'Notes'),
-    ];
+  Widget _buildDefaultFolderGrid(
+      Database database, List<Note> notes, List<Folder> folders) {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
       sliver: SliverStaggeredGrid.countBuilder(
@@ -460,34 +479,14 @@ class FolderScreenState extends State<FolderScreen> {
         itemCount: defaultFolders.length,
         itemBuilder: (BuildContext context, int index) {
           final folder = defaultFolders[index];
-          return OpenContainer(
-            transitionType: _transitionType,
-            closedBuilder: (BuildContext _, VoidCallback openContainer) {
-              return NotesFolderContainer(
-                folder: folder,
-                notesNumber: _getNotesNumber(notes, folder),
-//                onTap: () => _gotoNotesInFolder(database,
-//                    folder),
-              );
-            },
-            closedElevation: 0,
-            openElevation: 0,
-            closedColor: Colors.transparent,
-            closedShape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(0))),
-            openColor: Colors.transparent,
-            openBuilder: (BuildContext context, VoidCallback _) {
-              return NotesInFolderScreen(database: database, folder: folder);
-            },
-          );
+          return openContainerFolder(database, notes, folders, folder);
         },
         //the vertical space
       ),
     );
   }
 
-  void _showDeleteDialog(
-      BuildContext context, Database database, Folder folder) async {
+  void _showDeleteDialog(Database database, Folder folder) async {
     await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -514,44 +513,41 @@ class FolderScreenState extends State<FolderScreen> {
                 )
               ],
             ),
-            content: Container(
-//              color: Colors.purpleAccent,
-              child: Form(
-                key: _formKey,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Container(
+            content: Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Container(
 //                      color: Colors.black,
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              FlatButton(
-                                  child: Text(
-                                    'Cancel',
-                                    style: TextStyle(
-                                        fontSize: 18, color: Colors.lightBlue),
-                                  ),
-                                  onPressed: () => Navigator.of(context).pop()),
-                              FlatButton(
-                                  child: Text(
-                                    'Delete',
-                                    style: TextStyle(
-                                        fontSize: 18, color: Colors.red),
-                                  ),
-                                  onPressed: () =>
-                                      _delete(context, database, folder)),
-                            ],
-                          ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            FlatButton(
+                                child: Text(
+                                  'Cancel',
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.lightBlue),
+                                ),
+                                onPressed: () => Navigator.of(context).pop()),
+                            FlatButton(
+                                child: Text(
+                                  'Delete',
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.red),
+                                ),
+                                onPressed: () =>
+                                    _deleteFolder(context, database, folder)),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -563,13 +559,13 @@ class FolderScreenState extends State<FolderScreen> {
   }
 
   ///delete
-  Future<void> _delete(
+  ///When removing BuildContext context, it goes back to black screen after delete.
+  Future<void> _deleteFolder(
       BuildContext context, Database database, Folder folder) async {
-    ///so this database here needs to be passed and context needs to BuildContext
-//    final database = Provider.of<Database>(context, listen: false);
     try {
-      await database.deleteFolder(folder);
       Navigator.pop(context);
+      await database.deleteFolder(folder);
+      print('deleted folder: ${folder.title}');
     } on PlatformException catch (e) {
       PlatformExceptionAlertDialog(
         title: 'Operation failed',
@@ -587,21 +583,18 @@ class FolderScreenState extends State<FolderScreen> {
   // so I make add and edit separate, lots of repeated code
   //https://stackoverflow.com/questions/50964365/alert-dialog-with-rounded-corners-in-flutter/50966702#50966702
   void _showAddDialog(Database database) async {
-//    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-//    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-
     setState(() {
       _addButtonVisible = false;
     });
     await showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) {
+      builder: (BuildContext _) {
+        ///this StatefulBuilder has a context that can be used in addFolder and cancel
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
             contentPadding: EdgeInsets.only(top: 10.0),
             backgroundColor: Color(0xf01b262c),
-            // //
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20.0))),
             title: Column(
@@ -616,112 +609,99 @@ class FolderScreenState extends State<FolderScreen> {
                   'Enter a name for this folder.',
                   style: TextStyle(
                       fontSize: 16,
-                      color: Colors.white,
+                      color: Colors.white60,
                       fontStyle: FontStyle.italic),
 //                  style: Theme.of(context).textTheme.subtitle2,
                 )
               ],
             ),
-            content: Container(
-//              color: Colors.purpleAccent,
-              child: Form(
-                key: _formKey,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Container(
-//                      color: Colors.red,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 15),
-                          child: TextFormField(
-                            onChanged: (value) {
-                              setState(() {
-                                value.length == 0
-                                    ? _isFolderNameEmpty = true
-                                    : _isFolderNameEmpty = false;
-                              });
-                            },
-                            maxLength: 20,
-                            maxLines: 1, //limit only one line
-                            initialValue: _newFolderName,
-                            validator: (value) => (value.isNotEmpty)
-                                ? null
-                                : 'Folder name can not be empty',
-                            onSaved: (value) => _newFolderName = value,
-                            style: TextStyle(fontSize: 20.0),
-                            autofocus: true,
-                            cursorColor: Colors.white,
-                            decoration: InputDecoration(
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
+            content: Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: TextFormField(
+                        onChanged: (value) {
+                          setState(() {
+                            value.length == 0
+                                ? _isFolderNameEmpty = true
+                                : _isFolderNameEmpty = false;
+                          });
+                        },
+                        maxLength: 20,
+                        maxLines: 1, //limit only one line
+                        initialValue: _newFolderName,
+                        validator: (value) => (value.isNotEmpty)
+                            ? null
+                            : 'Folder name can not be empty',
+                        onSaved: (value) {
+                          _newFolderName = value.firstCaps;
+                        },
+                        style: TextStyle(fontSize: 20.0, color: Colors.white70),
+                        autofocus: true,
+                        cursorColor: Colors.white70,
+                        decoration: InputDecoration(
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: darkThemeHint),
+                          ),
+                          enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                            color: darkThemeHint,
+                          )),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          FlatButton(
+                              child: Text(
+                                'Cancel',
+                                style: GoogleFonts.varelaRound(
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                              enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                color: Colors.white,
-                              )),
-                            ),
-                          ),
-                        ),
+                              shape: _isFolderNameEmpty
+                                  ? RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(68.0),
+                                      side: BorderSide(
+                                          color: Colors.white70, width: 2.0))
+                                  : null,
+                              onPressed: () {
+                                setState(() {
+                                  _addButtonVisible = true;
+                                });
+                                Navigator.of(context).pop();
+                              }),
+                          FlatButton(
+                              child: Text(
+                                'Save',
+                                style: GoogleFonts.varelaRound(
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              shape: _isFolderNameEmpty
+                                  ? null
+                                  : RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(68.0),
+                                      side: BorderSide(
+                                          color: Colors.white70, width: 2.0)),
+                              onPressed: () => _addFolder(context, database)),
+                        ],
                       ),
-                      Container(
-//                      color: Colors.black,
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              ///Todo: change color when typing
-                              FlatButton(
-                                  child: Text(
-                                    'Cancel',
-                                    style: GoogleFonts.varelaRound(
-                                      fontSize: 18,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  shape: _isFolderNameEmpty
-                                      ? RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(68.0),
-                                          side: BorderSide(
-                                              color: Colors.white70,
-                                              width: 2.0))
-                                      : null,
-                                  onPressed: () {
-                                    setState(() {
-                                      _addButtonVisible = true;
-                                    });
-                                    Navigator.of(context).pop();
-                                  }),
-                              FlatButton(
-                                  child: Text(
-                                    'Save',
-                                    style: GoogleFonts.varelaRound(
-                                      fontSize: 18,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  shape: _isFolderNameEmpty
-                                      ? null
-                                      : RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(68.0),
-                                          side: BorderSide(
-                                              color: Colors.white70,
-                                              width: 2.0)),
-                                  onPressed: () =>
-                                      _addFolder(context, database)),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -732,7 +712,6 @@ class FolderScreenState extends State<FolderScreen> {
     );
   }
 
-  /// only allow unique name for folder, and can not be notes or all notes
   bool _validateAndSaveForm() {
     final form = _formKey.currentState;
     //validate
@@ -744,7 +723,9 @@ class FolderScreenState extends State<FolderScreen> {
     return false;
   }
 
-  //when we don't have BuildContext context, we used a wrong context and it popped to black screen
+  /// only allow unique name for folder, and can not be notes or all notes
+  ///when we don't have BuildContext context, we used a wrong context and it
+  ///popped to black screen
   void _addFolder(BuildContext context, Database database) async {
     if (_validateAndSaveForm()) {
       try {
@@ -766,14 +747,15 @@ class FolderScreenState extends State<FolderScreen> {
         } else {
           final newFolder = Folder(
             id: documentIdFromCurrentDate(),
-            title: _newFolderName.firstCaps,
+            title: _newFolderName,
           );
+          // pop
+          Navigator.of(context).pop();
           //add newTodo to database
           await database.setFolder(newFolder);
           setState(() {
             _addButtonVisible = true;
           });
-          Navigator.of(context).pop();
         }
       } on PlatformException catch (e) {
         PlatformExceptionAlertDialog(
@@ -785,17 +767,15 @@ class FolderScreenState extends State<FolderScreen> {
   }
 
   //The reason not to put the add and edit together is because in add button, no access to folder.
-  void _showEditDialog(
-      BuildContext context, Database database, Folder folder) async {
-//    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-//    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+  void _showEditDialog(Database database, Folder folder) async {
     setState(() {
       _addButtonVisible = false;
     });
     await showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) {
+      builder: (BuildContext _) {
+        ///cancel and edit function all used this context
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
             contentPadding: EdgeInsets.only(top: 10.0),
@@ -823,92 +803,82 @@ class FolderScreenState extends State<FolderScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      Container(
-//                      color: Colors.red,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 15),
-                          child: TextFormField(
-                            onChanged: (value) {
-                              setState(() {
-                                value.length == 0
-                                    ? _isFolderNameEmpty = true
-                                    : _isFolderNameEmpty = false;
-                              });
-                            },
-                            maxLines: 1,
-                            maxLength: 20,
-                            initialValue: folder.title,
-                            validator: (value) => (value.isNotEmpty)
-                                ? null
-                                : 'Folder name can not be empty',
-                            onSaved: (value) => _newFolderName = value,
-                            style: TextStyle(fontSize: 20.0),
-                            autofocus: true,
-                            cursorColor: Colors.white,
-                            decoration: InputDecoration(
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
-                              ),
-                              enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(
-                                color: Colors.white,
-                              )),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        child: TextFormField(
+                          onChanged: (value) {
+                            setState(() {
+                              value.length == 0
+                                  ? _isFolderNameEmpty = true
+                                  : _isFolderNameEmpty = false;
+                            });
+                          },
+                          maxLines: 1,
+                          maxLength: 20,
+                          initialValue: folder.title,
+                          validator: (value) => (value.isNotEmpty)
+                              ? null
+                              : 'Folder name can not be empty',
+                          onSaved: (value) => _newFolderName = value.firstCaps,
+                          style:
+                              TextStyle(fontSize: 20.0, color: Colors.white70),
+                          autofocus: true,
+                          cursorColor: Colors.white70,
+                          decoration: InputDecoration(
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: darkThemeHint),
                             ),
+                            enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: darkThemeHint)),
                           ),
                         ),
                       ),
-                      Container(
-//                      color: Colors.black,
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              ///Todo: change color when typing
-                              FlatButton(
-                                  child: Text(
-                                    'Cancel',
-                                    style: GoogleFonts.varelaRound(
-                                      fontSize: 18,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            FlatButton(
+                                child: Text(
+                                  'Cancel',
+                                  style: GoogleFonts.varelaRound(
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
                                   ),
-                                  shape: _isFolderNameEmpty
-                                      ? RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(68.0),
-                                          side: BorderSide(
-                                              color: Colors.white70,
-                                              width: 2.0))
-                                      : null,
-                                  onPressed: () {
-                                    setState(() {
-                                      _addButtonVisible = true;
-                                    });
-                                    Navigator.of(context).pop();
-                                  }),
-                              FlatButton(
-                                  child: Text(
-                                    'Save',
-                                    style: GoogleFonts.varelaRound(
-                                      fontSize: 18,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                                ),
+                                shape: _isFolderNameEmpty
+                                    ? RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(68.0),
+                                        side: BorderSide(
+                                            color: Colors.white70, width: 2.0))
+                                    : null,
+                                onPressed: () {
+                                  setState(() {
+                                    _addButtonVisible = true;
+                                  });
+                                  Navigator.of(context).pop();
+                                }),
+                            FlatButton(
+                                child: Text(
+                                  'Save',
+                                  style: GoogleFonts.varelaRound(
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
                                   ),
-                                  shape: _isFolderNameEmpty
-                                      ? null
-                                      : RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(68.0),
-                                          side: BorderSide(
-                                              color: Colors.white70,
-                                              width: 2.0)),
-                                  onPressed: () =>
-                                      _editFolder(context, database, folder)),
-                            ],
-                          ),
+                                ),
+                                shape: _isFolderNameEmpty
+                                    ? null
+                                    : RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(68.0),
+                                        side: BorderSide(
+                                            color: Colors.white70, width: 2.0)),
+                                onPressed: () =>
+                                    _editFolder(context, database, folder)),
+                          ],
                         ),
                       ),
                     ],
@@ -945,7 +915,7 @@ class FolderScreenState extends State<FolderScreen> {
           final id = folder?.id ?? documentIdFromCurrentDate();
           final newFolder = Folder(
             id: id,
-            title: _newFolderName.firstCaps,
+            title: _newFolderName,
           );
           await database.setFolder(newFolder);
           setState(() {
@@ -962,258 +932,3 @@ class FolderScreenState extends State<FolderScreen> {
     }
   }
 }
-
-/// spent a lot of time on Sliver App Bar but the space is too big or too small,
-/// later learnt that I should use SliverToBoxAdapter
-//  Widget _buildSearchAppBar() {
-//    final themeNotifier = Provider.of<ThemeNotifier>(context);
-//    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-//    return SliverPadding(
-//      padding: const EdgeInsets.only(top: 0.0),
-//      sliver: SliverAppBar(
-//        backgroundColor: Colors.transparent,
-////        backgroundColor: _darkTheme ? Colors.black38 : lightSurface,
-//        titleSpacing: 0,
-//        elevation: 0,
-//        centerTitle: true,
-//        snap: true,
-//        toolbarHeight: 100,
-//        automaticallyImplyLeading: false,
-//        stretch: false,
-//        floating: true,
-////        bottom: PreferredSize(
-////          // Add this code
-////          preferredSize: Size.fromHeight(0.0), // Add this code
-////          child: Text(''), // Add this code
-////        ), // Add this code
-////          flexibleSpace: /title
-//        title: Column(
-//          children: [
-////              Container(
-//////                height: 80,
-////                child: Row(
-////                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-////                  children: <Widget>[
-////                    Padding(
-////                      padding: const EdgeInsets.only(left: 25.0),
-////                      child: Text('Folders',
-////                          style: Theme.of(context).textTheme.headline4),
-////                    ),
-////                    FlatButton(
-////                        onPressed: () => _showEditDialog(context),
-////                        child: Text('Edit'))
-////                  ],
-////                ),
-////              ),
-//            Padding(
-//              padding: const EdgeInsets.only(left: 25.0, right: 25, bottom: 0),
-//              child: Container(
-//                  decoration: BoxDecoration(
-//                      color: _darkTheme ? Colors.black38 : lightSurface,
-//                      borderRadius: BorderRadius.all(Radius.circular(20.0))),
-//                  child: Row(
-//                    children: <Widget>[
-//                      FlatButton.icon(
-//                          onPressed: null,
-//                          icon: Icon(
-//                            Icons.search,
-//                            color: Colors.white70,
-//                          ),
-//                          label: Text(
-//                            'Search your notes',
-//                            style: TextStyle(color: Colors.white70),
-//                          ))
-//                    ],
-//                  )),
-//            ),
-//          ],
-//        ),
-//      ),
-//    );
-//  }
-
-///the original StaggeredGridView.countBuilder
-//  Widget getDefaultFolderList(Database database) {
-//    List defaultFolders = [
-//      Folder(id: 0.toString(), title: 'All Notes', colorCode: '4278238420'),
-//      Folder(id: 1.toString(), title: 'Notes', colorCode: '4278228616'),
-//    ];
-//
-//    return StaggeredGridView.countBuilder(
-//        controller: _hideButtonController,
-//        staggeredTileBuilder: (int index) => StaggeredTile.fit(axisCount),
-//        mainAxisSpacing: 8.0,
-//        crossAxisSpacing: 8.0,
-//        physics: BouncingScrollPhysics(),
-//        crossAxisCount: 4,
-//        itemCount: defaultFolders.length,
-//        shrinkWrap: true,
-//        itemBuilder: (BuildContext context, int index) {
-//          final folder = defaultFolders[index];
-//          return Slidable(
-////            controller: slidableController,
-//            key: UniqueKey(),
-//            closeOnScroll: true,
-//            actionPane: SlidableDrawerActionPane(),
-//            dismissal: SlidableDismissal(
-//              child: SlidableDrawerDismissal(),
-//              onDismissed: (actionType) {
-//                _delete(context, folder);
-//              },
-//            ),
-//            actionExtentRatio: 0.25,
-//            child: OpenContainer(
-//              useRootNavigator: true,
-//              transitionType: _transitionType,
-//              closedBuilder: (BuildContext _, VoidCallback openContainer) {
-//                return Stack(
-//                  alignment: Alignment.topRight,
-//                  children: <Widget>[
-//                    NotesFolderContainer(
-//                      folder: folder,
-////                onTap: () => _gotoNotesInFolder(database,
-////                    folder),
-//                    ),
-//                    IconButton(
-//                      icon: FaIcon(
-//                        FontAwesomeIcons.trashAlt,
-//                        size: 20,
-//                        color: Colors.white,
-//                      ),
-//                      onPressed: () => _delete(context, folder),
-//                    )
-//                  ],
-//                );
-//              },
-//              closedElevation: 0,
-//              openElevation: 0,
-//              closedColor: Colors.transparent,
-//              closedShape: const RoundedRectangleBorder(
-//                  borderRadius: BorderRadius.all(Radius.circular(0))),
-//              openColor: Colors.transparent,
-//              openBuilder: (BuildContext context, VoidCallback _) {
-//                return NotesInFolder(database: database, folder: folder);
-//              },
-//            ),
-//
-////            NotesFolderContainer(
-////                folder: folder,
-////                onTap: () => _gotoNotesInFolder(database,
-////                    folder)), //on tap: NoteFolderDetail(note: folder);
-//            actions: <Widget>[],
-//            secondaryActions: <Widget>[
-//              IconSlideAction(
-//                caption: 'Delete',
-//                color: Colors.black12,
-//                iconWidget: FaIcon(
-//                  FontAwesomeIcons.trashAlt,
-//                  color: Colors.white,
-//                ),
-////                icon: Icons.delete,
-//                onTap: () => _delete(context, folder),
-//              ),
-//            ],
-//          );
-//        });
-//  }
-
-//  Widget getFolderList(Database database, List<Folder> folders) {
-//    List defaultFolders = [
-//      Folder(id: 0.toString(), title: 'All Notes', colorCode: '4278238420'),
-//      Folder(id: 1.toString(), title: 'Notes', colorCode: '4278228616'),
-//    ];
-//
-//    List finalFolderList = defaultFolders..addAll(folders);
-//
-//    return StaggeredGridView.countBuilder(
-//        controller: _hideButtonController,
-//        staggeredTileBuilder: (int index) => StaggeredTile.fit(axisCount),
-//        mainAxisSpacing: 15.0,
-//        crossAxisSpacing: 15.0,
-//        physics: BouncingScrollPhysics(),
-//        crossAxisCount: 4,
-//        itemCount: finalFolderList.length,
-//        shrinkWrap: true,
-//        itemBuilder: (BuildContext context, int index) {
-//          final folder = finalFolderList[index];
-//          return Slidable(
-////            controller: slidableController,
-//            key: UniqueKey(),
-//            closeOnScroll: true,
-//            actionPane: SlidableDrawerActionPane(),
-//            dismissal: SlidableDismissal(
-//              child: SlidableDrawerDismissal(),
-//              onDismissed: (actionType) {
-//                _delete(context, folder);
-//              },
-//            ),
-//            actionExtentRatio: 0.25,
-//            child: OpenContainer(
-//              useRootNavigator: true,
-//              transitionType: _transitionType,
-//              closedBuilder: (BuildContext _, VoidCallback openContainer) {
-//                return NotesFolderContainer(
-//                  folder: folder,
-////                onTap: () => _gotoNotesInFolder(database,
-////                    folder),
-//                );
-//              },
-//              closedElevation: 0,
-//              openElevation: 0,
-//              closedColor: Colors.transparent,
-//              closedShape: const RoundedRectangleBorder(
-//                  borderRadius: BorderRadius.all(Radius.circular(0))),
-//              openColor: Colors.transparent,
-//              openBuilder: (BuildContext context, VoidCallback _) {
-//                return NotesInFolder(database: database, folder: folder);
-//              },
-//            ), //on tap: NoteFolderDetail(note: folder);
-//            actions: <Widget>[
-//              IconSlideAction(
-//                caption: 'Edit folder name',
-//                color: Colors.black12,
-//                iconWidget: FaIcon(
-//                  FontAwesomeIcons.trashAlt,
-//                  color: Colors.white,
-//                ),
-////                icon: Icons.delete,
-//                onTap: () => _showAddDialog(context),
-//              ),
-//            ],
-//            secondaryActions: <Widget>[
-//              IconSlideAction(
-//                caption: 'Delete',
-//                color: Colors.black12,
-//                iconWidget: FaIcon(
-//                  FontAwesomeIcons.trashAlt,
-//                  color: Colors.white,
-//                ),
-////                icon: Icons.delete,
-//                onTap: () => _delete(context, folder),
-//              ),
-//            ],
-//          );
-//        });
-//  }
-
-//this is just to make UI look consistent
-//  Widget getButtonFolderContainer(Database database) {
-//    List defaultFolders = [
-//      NotesFolderContainerButton(onTap: () => _showAddDialog(context)),
-//    ];
-//
-//    return StaggeredGridView.countBuilder(
-////        controller: _hideButtonController,
-//        staggeredTileBuilder: (int index) => StaggeredTile.fit(axisCount),
-//        mainAxisSpacing: 8.0,
-//        crossAxisSpacing: 8.0,
-//        physics: BouncingScrollPhysics(),
-//        crossAxisCount: 4,
-//        itemCount: defaultFolders.length,
-//        shrinkWrap: true,
-//        itemBuilder: (BuildContext context, int index) {
-////          final folder = defaultFolders[index];
-//          return NotesFolderContainerButton(
-//              onTap: () => _showAddDialog(context));
-//        });
-//  }

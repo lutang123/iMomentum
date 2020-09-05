@@ -23,64 +23,32 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'empty_content.dart';
 import 'move_folder_screen.dart';
-import 'my_flutter_app_icon.dart';
 
-class NotesInFolderScreen extends StatefulWidget {
-  final Folder folder;
+class SearchResult extends StatefulWidget {
   final List<Folder> folders;
   final Database database;
+  final String query;
 
-  const NotesInFolderScreen({Key key, this.folder, this.folders, this.database})
+  const SearchResult({Key key, this.folders, this.database, this.query})
       : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return NotesInFolderScreenState();
+    return SearchResultState();
   }
 }
 
-const double _fabDimension = 56.0;
-
-class NotesInFolderScreenState extends State<NotesInFolderScreen> {
-  Folder get folder => widget.folder;
+class SearchResultState extends State<SearchResult> {
   List<Folder> get folders => widget.folders;
   Database get database => widget.database;
+  String get query => widget.query;
 
-  bool _addButtonVisible = true;
-  ScrollController _hideButtonController;
+  List<Note> filteredNotes = [];
 
-  @override
-  void initState() {
-    super.initState();
-//    print('folders: $folders');
-    _hideButtonController = ScrollController();
-    _hideButtonController.addListener(() {
-      if (_hideButtonController.position.userScrollDirection ==
-          ScrollDirection.reverse) {
-        if (_addButtonVisible == true) {
-          setState(() {
-            _addButtonVisible = false;
-          });
-        }
-      } else {
-        if (_hideButtonController.position.userScrollDirection ==
-            ScrollDirection.forward) {
-          if (_addButtonVisible == false) {
-            setState(() {
-              _addButtonVisible = true;
-            });
-          }
-        }
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _hideButtonController.removeListener(() {});
-    _hideButtonController.dispose(); //what's the difference?
-    super.dispose();
-  }
+  final List<Folder> defaultFolders = [
+    Folder(id: 0.toString(), title: 'All Notes'),
+    Folder(id: 1.toString(), title: 'Notes'),
+  ];
 
   int counter = 0;
   void _onDoubleTap() {
@@ -88,20 +56,6 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
       ImageUrl.randomImageUrl = '${ImageUrl.randomImageUrlFirstPart}$counter';
       counter++;
     });
-  }
-
-  List<Note> _getNotesInThisFolder(List<Note> allNotes, Folder folder) {
-    final List<Note> _newList = [];
-    for (Note note in allNotes) {
-      if (folder.id == 0.toString()) {
-        _newList.add(note); //add all notes
-      } else if (folder.id != 0.toString()) {
-        if (note.folderId == folder.id) {
-          _newList.add(note);
-        }
-      }
-    }
-    return _newList;
   }
 
   List<Note> _getPinnedNote(List<Note> allNotes) {
@@ -122,6 +76,17 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
       }
     });
     return pinnedNotes;
+  }
+
+  List<Note> _getFilteredNotes(List<Note> notes) {
+    List<Note> filteredNotes = [];
+    notes.forEach((note) {
+      if (note.title.toLowerCase().contains(query.toLowerCase()) ||
+          note.description.toLowerCase().contains(query.toLowerCase()))
+        filteredNotes.add(note);
+    });
+    print('filteredNotes: $filteredNotes');
+    return filteredNotes;
   }
 
   @override
@@ -150,68 +115,48 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
                 builder: (con, snapshot) {
                   if (snapshot.hasData) {
                     final List<Note> allNotes = snapshot.data;
-                    final List<Note> pinnedNotes = _getPinnedNote(allNotes);
+                    filteredNotes = _getFilteredNotes(allNotes);
+                    final List<Note> pinnedNotes =
+                        _getPinnedNote(filteredNotes);
                     final List<Note> notPinnedNotes =
-                        _getNotPinnedNote(allNotes);
+                        _getNotPinnedNote(filteredNotes);
 
-                    final List<Note> allNotesInThisFolder =
-                        _getNotesInThisFolder(allNotes, folder);
-
-                    final _pinnedNotesInThisFolder =
-                        _getNotesInThisFolder(pinnedNotes, folder);
-
-                    final _notPinnedNotesInThisFolder =
-                        _getNotesInThisFolder(notPinnedNotes, folder);
-
-                    if (_notPinnedNotesInThisFolder.isNotEmpty ||
-                        _pinnedNotesInThisFolder.isNotEmpty) {
+                    if (pinnedNotes.isNotEmpty || notPinnedNotes.isNotEmpty) {
                       return Column(
                         children: [
-                          _topRow(allNotesInThisFolder),
                           Expanded(
                             child: Opacity(
                               opacity: _notesOpacity,
                               child: CustomScrollView(
-                                controller: _hideButtonController,
                                 slivers: <Widget>[
-                                  //this is for search bar.
-                                  _buildBoxAdaptorForSearch(
-                                      allNotesInThisFolder),
                                   //this is just for the word 'PINNED'
-                                  _buildBoxAdaptorForPinned(
-                                      _pinnedNotesInThisFolder),
+                                  _buildBoxAdaptorForPinned(pinnedNotes),
                                   //this is for pinned notes
-                                  ///we are passing context and use context for flushBar,
-                                  ///or we can create a global key for scaffold
-                                  _buildNotesGrid(_pinnedNotesInThisFolder),
+                                  _buildNotesGrid(pinnedNotes),
                                   //this is just for the word 'OTHERS'
-                                  _pinnedNotesInThisFolder.length > 0
+                                  pinnedNotes.length > 0
                                       ? _buildBoxAdaptorForOthers(
-                                          _notPinnedNotesInThisFolder)
+                                          notPinnedNotes)
                                       : SliverToBoxAdapter(child: Container()),
-                                  //this is for
-                                  _buildNotesGrid(_notPinnedNotesInThisFolder),
+                                  //this is for not pinned notes
+                                  _buildNotesGrid(notPinnedNotes),
                                 ],
                               ),
                             ),
                           ),
-                          _bottomRow(),
-//                          SizedBox(height: 25),
                         ],
                       );
                     } else {
                       return Column(
                         children: [
-                          _topRow(allNotesInThisFolder),
-                          Expanded(child: EmptyContent(text: emptyNote)),
-                          _bottomRow(), //empty content
+                          Expanded(
+                              child: EmptyContent(text: 'No result found.')),
                         ],
                       );
                     }
                   } else if (snapshot.hasError) {
                     return Column(
                       children: [
-                        _topErrorRow(), //no toggle button
                         Expanded(
                           child: Center(
                             child: Column(
@@ -227,7 +172,7 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
                             ),
                           ),
                         ),
-                        _bottomRow(),
+                        // _bottomRow(),
                       ],
                     );
                   }
@@ -238,114 +183,6 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _topRow(List<Note> notes) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    return Column(
-      children: <Widget>[
-        //this is to make top bar color cover all
-        SizedBox(
-          height: 35,
-          child: Container(
-            color: _darkTheme ? darkThemeDrawer : lightThemeAppBar,
-          ),
-        ),
-        Container(
-          height: 50,
-          color: _darkTheme ? darkThemeDrawer : lightThemeAppBar,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              IconButton(
-                  icon: Icon(Icons.arrow_back_ios),
-                  onPressed: () => Navigator.pop(context)),
-              Text(folder.title, style: Theme.of(context).textTheme.headline6),
-              Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: Opacity(
-                  opacity: notes.length > 1 ? 1 : 0,
-                  child: IconButton(
-                    icon: Icon(
-                      axisCount == 2
-                          ? MyFlutterAppIcon.menu_outline
-                          : MyFlutterAppIcon.th_large_outline,
-                      size: 20,
-                      color: _darkTheme ? Colors.white : lightThemeButton,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        axisCount = axisCount == 2 ? 4 : 2;
-                      });
-                    },
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  //if there is error, still want to show top row, this one does not have toggle view button
-  Widget _topErrorRow() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    return Column(
-      children: <Widget>[
-        SizedBox(
-          height: 35,
-          child: Container(
-            color: _darkTheme ? darkThemeDrawer : lightThemeAppBar,
-          ),
-        ),
-        Container(
-          height: 50,
-          color: _darkTheme ? darkThemeDrawer : lightThemeAppBar,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              IconButton(
-                  icon: Icon(Icons.arrow_back_ios),
-                  onPressed: () => Navigator.pop(context)),
-              Text(folder.title, style: Theme.of(context).textTheme.headline6),
-              Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: Opacity(
-                  opacity: 0,
-                  child: IconButton(
-                    icon: Icon(
-                      axisCount == 2
-                          ? MyFlutterAppIcon.menu_outline
-                          : MyFlutterAppIcon.th_large_outline,
-                      size: 20,
-                      color: _darkTheme ? Colors.white : lightThemeButton,
-                    ),
-                    onPressed: () {},
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  ContainerTransitionType _transitionType = ContainerTransitionType.fade;
-
-  int axisCount = 2;
-  Widget _buildBoxAdaptorForSearch(List<Note> notes) {
-    return SliverToBoxAdapter(
-      child: notes.length == 0
-          ? Container()
-          : Padding(
-              padding: const EdgeInsets.only(left: 25.0, right: 25, top: 20),
-              child: NoteSearchBar(onPressed: null),
-            ),
     );
   }
 
@@ -371,6 +208,7 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
     );
   }
 
+  int axisCount = 2;
   Widget _buildNotesGrid(List<Note> notes) {
     return SliverPadding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -386,6 +224,7 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
             }));
   }
 
+  ContainerTransitionType _transitionType = ContainerTransitionType.fade;
   Widget _slidableItem(Note note) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
@@ -406,7 +245,7 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
           return NoteContainer(
             note: note,
             database: database,
-            folder: folder,
+            folder: defaultFolders[0],
             folders: folders,
           );
         },
@@ -414,7 +253,7 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
         openColor: Colors.transparent,
         openBuilder: (BuildContext context, VoidCallback _) {
           return AddNoteScreen(
-              database: database, note: note, folder: folder, folders: folders);
+              database: database, note: note, folders: folders);
         },
       ),
       actions: <Widget>[
@@ -438,70 +277,12 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
     );
   }
 
-  Widget _bottomRow() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    return Visibility(
-      visible: _addButtonVisible,
-      child: Container(
-        // decoration: BoxDecoration(
-        //   color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
-        //   borderRadius: BorderRadius.only(
-        //     topLeft: Radius.circular(20.0),
-        //     topRight: Radius.circular(20.0),
-        //   ),
-        // ),
-        height: 60,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(right: 12.0),
-              child: OpenContainer(
-                useRootNavigator: true,
-                transitionType: _transitionType,
-                openElevation: 0.0,
-                openColor: Colors.transparent,
-                openBuilder: (BuildContext context, VoidCallback _) {
-                  return AddNoteScreen(database: database, folder: folder);
-                },
-                closedElevation: 0.0,
-                closedColor: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
-                closedShape: RoundedRectangleBorder(
-                  side: BorderSide(
-                      color: _darkTheme ? darkThemeButton : lightThemeButton,
-                      width: 2.0),
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(_fabDimension / 2),
-                  ),
-                ),
-                closedBuilder:
-                    (BuildContext context, VoidCallback openContainer) {
-                  return SizedBox(
-                      height: _fabDimension,
-                      width: _fabDimension,
-                      child: Center(
-                        child: Icon(Icons.add,
-                            size: 30,
-                            color: _darkTheme
-                                ? darkThemeButton
-                                : lightThemeButton),
-                      ));
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   double _notesOpacity = 1.0;
 
   void _move(Note note) async {
     setState(() {
       _notesOpacity = 0.0;
-      _addButtonVisible = false;
+      // _addButtonVisible = false;
     });
     await showModalBottomSheet(
         context: context,
@@ -516,7 +297,7 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
 
     setState(() {
       _notesOpacity = 1.0;
-      _addButtonVisible = true;
+      // _addButtonVisible = true;
     });
   }
 
@@ -525,7 +306,7 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
   /// if we don't add BuildContext, context is red color
   Future<void> _delete(Database database, Note note) async {
     setState(() {
-      _addButtonVisible = false;
+      // _addButtonVisible = false;
     });
     try {
       await database.deleteNote(note);
@@ -578,8 +359,6 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: KFlushBarMessage),
-    )..show(context).then((value) => setState(() {
-          _addButtonVisible = true;
-        }));
+    )..show(context);
   }
 }

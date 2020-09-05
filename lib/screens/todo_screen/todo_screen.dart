@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
@@ -33,28 +32,6 @@ import 'package:iMomentum/app/utils/format.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'dart:math' as math;
 import '../../app/services/auth.dart';
-
-const String textTodoList1 = "Hi, Lu, thanks again for choosing iMomentum! "
-    "\n"
-    "\n"
-    "Do you have any tasks to complete today? We have 5 categories "
-    "(Focus, Work, Home, Shopping and Others) "
-    "to help you organize your daily tasks. Tasks in Focus category will show "
-    "on Home screen to enable Focus Mode for these tasks. "
-    "\n"
-    "\n"
-    "Tap the plus button to enter your first task today.";
-
-const String textTodoList2 =
-    'Tips: You can also tap on any date on calendar and long press to add a task on a specific day.';
-
-const String textError1 =
-    'Oops! Something went wrong, please check your internet connection and come back later.';
-const String textError2 = '';
-
-const String textPieChart1 = 'You have not done any focused task on this day.';
-const String textPieChart2 =
-    'Enter a task from Home screen (or from Todo screen and choose task category as Focus), and then you will see Focus Mode button on Home screen. This button will take you to Pomodoro Timer screen. When you complete a focus session, you will see a pie chart showing your daily focus summary on this screen.';
 
 class TodoScreen extends StatefulWidget {
   //from tab page
@@ -93,9 +70,10 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
 
   ///for todoList
   ///
+
+  Map<DateTime, List> _events; // for first calendar
+  Map<DateTime, List> _notDoneEvents; //for first calendar marker
   //we assign value in StreamBuilder, but must have an initial value
-  Map<DateTime, List> _events;
-  Map<DateTime, List> _notDoneEvents;
   List<Todo> _todayList = [];
   List<Todo> _todayNotDoneList = [];
 
@@ -143,6 +121,8 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
 
   ///for pie chart
   /// groupby only one day, change to: map[date] = entry.todosDetails, instead of map[date] = entry;
+
+  Map<DateTime, List> _eventsNew; //for second calendar
   // this is map because this is the value used in pie chart
   Map<String, double> _todayDataMap; //again we assign value in SteamBuilder
   Map<String, double> _selectedDataMap =
@@ -215,9 +195,6 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
     super.initState();
   }
 
-  // https://source.unsplash.com/daily?nature
-  //'https://source.unsplash.com/random?nature'
-  //https://source.unsplash.com/random?nature/$counter
   int counter = 0;
   void _onDoubleTap() {
     setState(() {
@@ -279,10 +256,6 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                                   DailyTodosDetails.getNotDoneTodosGroupByData(
                                       DateTime.now(), todos);
 
-                              // final _selectedDay = DateTime.now();
-                              // _selectedList = _events[_selectedDay] ?? [];
-                              // print(_selectedList);
-
                               return StreamBuilder<List<TodoDuration>>(
                                   stream: bloc
                                       .allTodoDurationStream, //print: flutter: Instance of '_MapStream<List<TodoDuration>, dynamic>'
@@ -292,7 +265,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                                           .data; //print('x: $entries'); //x: [Instance of 'TodoDuration', Instance of 'TodoDuration']
                                       if (entries.isNotEmpty) {
                                         ///for second calendar
-                                        final _eventsNew =
+                                        _eventsNew =
                                             DailyTodosDetails.getEventsNew(
                                                 entries);
 
@@ -363,7 +336,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                             return TabBarView(
                               children: <Widget>[
                                 firstTabNoDataContent(database, _eventNoData,
-                                    textError1, textError2),
+                                    textError, textError2),
                                 secondTabNoDataContent(database, _eventNoData),
                               ],
                             );
@@ -435,13 +408,13 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
   }
 
   Widget todoListCustomScrollView(Database database, List<Todo> todos) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Expanded(
       child: Visibility(
         visible: _listVisible,
         child: CustomizedContainerNew(
-          color: _darkTheme ? darkThemeSurfaceTodo : lightThemeSurface,
+          color: _darkTheme ? darkThemeSurface : lightThemeSurface,
           child: Column(
             children: [
               Expanded(
@@ -508,17 +481,14 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
         padding: const EdgeInsets.only(bottom: 3.0, right: 15),
         child: Visibility(
           visible: _addButtonVisible,
-          child: MyFAB(
-              heroTag: "btn1",
-              child: Icon(Icons.add, size: 30, color: Colors.white),
-              onPressed: () => _add(database)),
+          child: MyFAB(heroTag: "btn1", onPressed: () => _add(database)),
         ),
       ),
     );
   }
 
   Widget _buildBoxAdaptorForTodoList() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return SliverToBoxAdapter(
       child: Padding(
@@ -531,15 +501,16 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                 // Child text spans will inherit styles from parent
                 style: TextStyle(
                     fontSize: 22.0,
-                    color: _darkTheme ? Colors.white : Colors.black87),
+                    color: _darkTheme ? darkThemeWords : lightThemeWords),
                 children: <TextSpan>[
                   TextSpan(text: 'Task list on '),
                   TextSpan(
                     text: _titleDateString,
                     style: TextStyle(
-                        fontSize: 22,
-                        color: _darkTheme ? Colors.white : Colors.black87,
-                        fontWeight: FontWeight.bold),
+                      fontSize: 22,
+                      color: _darkTheme ? darkThemeWords : lightThemeWords,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
@@ -585,7 +556,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
   }
 
   Widget _todoListDivider() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Divider(
       indent: 75,
@@ -597,6 +568,8 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
 
   Widget _slidableListItem(
       Database database, List<Todo> todos, List<Todo> anyList, int index) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     final user = Provider.of<User>(context, listen: false);
     final Todo todo = anyList[index - 1];
     // this is to make sure only today or after today can add reminder
@@ -615,7 +588,9 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                     ? 'Add reminder'
                     : 'Change reminder',
                 foregroundColor: Colors.yellow,
-                color: Colors.black12,
+                color: _darkTheme
+                    ? Colors.black12
+                    : lightThemeButton.withOpacity(0.3),
                 icon: todo.hasReminder == null || todo.hasReminder == false
                     ? FontAwesomeIcons.bell
                     : FontAwesomeIcons.solidBell,
@@ -633,7 +608,8 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
         IconSlideAction(
           caption: 'Delete',
           foregroundColor: Colors.red,
-          color: Colors.black12,
+          color:
+              _darkTheme ? Colors.black12 : lightThemeButton.withOpacity(0.3),
           icon: EvaIcons.trash2Outline,
           onTap: () => _delete(
             context,
@@ -644,15 +620,11 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
         ),
       ],
       child: TodoListTile(
-        todo: todo,
-        onPressed: () => _update(database, todos, todo),
-        onTap: () => _update(database, todos, todo),
-        onChangedCheckbox: (newValue) =>
-            _onChangedCheckbox(newValue, context, todo),
-        // alarmText: todo.hasReminder == null || todo.hasReminder == false
-        //     ? ''
-        //     : '${Format.time(todo.reminderDate)}'
-      ),
+          todo: todo,
+          onPressed: () => _update(database, todos, todo),
+          onTap: () => _update(database, todos, todo),
+          onChangedCheckbox: (newValue) =>
+              _onChangedCheckbox(newValue, context, todo)),
     );
   }
 
@@ -679,12 +651,12 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
   }
 
   Widget pieChartCustomScrollView() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Expanded(
       //this Expanded is within a column
       child: CustomizedContainerNew(
-          color: _darkTheme ? darkThemeSurfaceTodo : lightThemeSurface,
+          color: _darkTheme ? darkThemeSurface : lightThemeSurface,
           child: CustomScrollView(
             shrinkWrap: true,
             slivers: <Widget>[
@@ -703,7 +675,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildSliverToBoxForPieChartTitle() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return SliverToBoxAdapter(
       child: Padding(
@@ -777,13 +749,13 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
   }
 
   Widget todoListEmptyContent(String text1, String text2) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Expanded(
       child: Visibility(
         visible: _listVisible,
         child: CustomizedContainerNew(
-          color: _darkTheme ? darkThemeSurfaceTodo : lightThemeSurface,
+          color: _darkTheme ? darkThemeSurface : lightThemeSurface,
           child: CustomScrollView(
             shrinkWrap: true,
             controller: _hideButtonController,
@@ -844,6 +816,8 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
   Future<void> _delete(BuildContext context, List<Todo> _selectedList,
       int index, Todo todo) async {
     final database = Provider.of<Database>(context, listen: false);
+
+    ///in callback function, listen should be false
     // final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     // bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
 
@@ -879,7 +853,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                 exception: e,
               ).show(context);
             }
-//          Navigator.of(context).pop();
+            Navigator.of(context).pop();
             setState(() {
               _selectedList.insert(index - 1, deletedItem);
             });
@@ -894,7 +868,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
 //      reverseAnimationCurve: Curves.decelerate,
 //      forwardAnimationCurve: Curves.elasticOut,
         backgroundGradient: LinearGradient(colors: [
-          Color(0xF0888888).withOpacity(0.95),
+          Color(0xF0888888).withOpacity(0.85),
           darkThemeNoPhotoBkgdColor
         ]),
         duration: Duration(seconds: 3),
@@ -1192,375 +1166,3 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
     _animationController.dispose();
   }
 }
-
-///note on setting reminder on this page:
-// void _showAddDialog(Todo todo) async {
-//   setState(() {
-//     _addButtonVisible = false;
-//     _listVisible = false;
-//   });
-//   await showDialog(
-//     context: context,
-//     barrierDismissible: false,
-//     builder: (BuildContext context) {
-//       return StatefulBuilder(builder: (context, setState) {
-//         return AlertDialog(
-//           contentPadding: EdgeInsets.only(top: 10.0),
-//           backgroundColor: CustomColors.pageBackgroundColor,
-//           shape: RoundedRectangleBorder(
-//               borderRadius: BorderRadius.all(Radius.circular(20.0))),
-//           title: Column(
-//             children: <Widget>[
-//               Text("Add Reminder",
-//                   style: TextStyle(
-//                     fontSize: 20,
-//                     color: Colors.white,
-//                   )),
-//               SizedBox(height: 15),
-//               Text(
-//                 'Remind me for this task at: .',
-//                 style: TextStyle(
-//                     fontSize: 16,
-//                     color: Colors.white60,
-//                     fontStyle: FontStyle.italic),
-// //                  style: Theme.of(context).textTheme.subtitle2,
-//               )
-//             ],
-//           ),
-//           content: Padding(
-//             padding: const EdgeInsets.symmetric(horizontal: 15),
-//             child: Column(
-//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//               mainAxisSize: MainAxisSize.min,
-//               children: <Widget>[
-//                 _buildReminderDate(),
-//                 Padding(
-//                   padding: const EdgeInsets.all(10.0),
-//                   child: Row(
-//                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                     children: [
-//                       ///Todo: change color when typing
-//                       FlatButton(
-//                           child: Text(
-//                             'Cancel',
-//                             style: GoogleFonts.varelaRound(
-//                               fontSize: 18,
-//                               color: Colors.white,
-//                               fontWeight: FontWeight.w600,
-//                             ),
-//                           ),
-//                           // shape: _isFolderNameEmpty
-//                           //     ? RoundedRectangleBorder(
-//                           //     borderRadius:
-//                           //     BorderRadius.circular(68.0),
-//                           //     side: BorderSide(
-//                           //         color: Colors.white70,
-//                           //         width: 2.0))
-//                           //     : null,
-//                           onPressed: () {
-//                             setState(() {
-//                               _addButtonVisible = true;
-//                               _listVisible = true;
-//                             });
-//                             Navigator.of(context).pop();
-//                           }),
-//                       FlatButton(
-//                         child: Text(
-//                           'Save',
-//                           style: GoogleFonts.varelaRound(
-//                             fontSize: 18,
-//                             color: Colors.white,
-//                             fontWeight: FontWeight.w600,
-//                           ),
-//                         ),
-//                         // shape: _isFolderNameEmpty
-//                         //     ? null
-//                         //     : RoundedRectangleBorder(
-//                         //     borderRadius:
-//                         //     BorderRadius.circular(68.0),
-//                         //     side: BorderSide(
-//                         //         color: Colors.white70,
-//                         //         width: 2.0)),
-//                         onPressed: () => _setReminder(context),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
-// //            actions: <Widget>[],
-//         );
-//       });
-//     },
-//   );
-// }
-//
-// Widget _buildReminderDate() {
-//   return DateTimePicker(
-//     selectedDate: _startDate,
-//     selectedTime: _startTime,
-//     onSelectedDate: (date) => _onSelectedDate(date),
-//     onSelectedTime: (time) => _onSelectedTime(time),
-//   );
-// }
-//
-// _onSelectedDate(date) {
-//   print('date: $date');
-//   setState(() => _startDate = date);
-// }
-//
-// _onSelectedTime(time) {
-//   print('time: $time'); //time: TimeOfDay(01:00)
-//   setState(() => _startTime = time);
-// }
-//
-// void _setReminder(BuildContext context) {
-//   setState(() {
-//     _addButtonVisible = true;
-//     _listVisible = true;
-//   });
-//   Navigator.of(context).pop();
-//   _showDailyAtTime();
-// }
-//
-// Future<void> _showDailyAtTime() async {
-//   String _toTwoDigitString(int value) {
-//     return value.toString().padLeft(2, '0');
-//   }
-//
-//   /// for local notification
-//   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-//   FlutterLocalNotificationsPlugin();
-//
-//   var time = Time(1, 13, 0);
-//   var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-//       'repeatDailyAtTime channel id',
-//       'repeatDailyAtTime channel name',
-//       'repeatDailyAtTime description');
-//   var iOSPlatformChannelSpecifics = IOSNotificationDetails();
-//
-//   var platformChannelSpecifics = NotificationDetails(
-//       androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-//   await flutterLocalNotificationsPlugin.showDailyAtTime(
-//       0, //id
-//       'show daily title', //title
-//       //body
-//       'Daily notification shown at approximately ${_toTwoDigitString(time.hour)}:${_toTwoDigitString(time.minute)}:${_toTwoDigitString(time.second)}',
-//       //notificationTime
-//       time,
-//       //NotificationDetails notificationDetails
-//       platformChannelSpecifics);
-// }
-//
-
-///Auto animate note (difficult to use since I have delegate list and staggered grid
-///add auto animation
-// final options = LiveOptions(
-//   // Start animation after (default zero)
-//   delay: Duration(seconds: 1),
-//
-//   // Show each item through (default 250)
-//   showItemInterval: Duration(milliseconds: 500),
-//
-//   // Animation duration (default 250)
-//   showItemDuration: Duration(seconds: 1),
-//
-//   // Animations starts at 0.05 visible
-//   // item fraction in sight (default 0.025)
-//   visibleFraction: 0.05,
-//
-//   // Repeat the animation of the appearance
-//   // when scrolling in the opposite direction (default false)
-//   // To get the effect as in a showcase for ListView, set true
-//   reAnimateOnVisibility: false,
-// );
-//
-// // Build animated item (helper for all examples)
-// Widget buildAnimatedItem(
-//     BuildContext context,
-//     Database database,
-//     List<Todo> todos,
-//     List<Todo> anyList,
-//     int index,
-//     Animation<double> animation,
-//     ) =>
-//     // For example wrap with fade transition
-// FadeTransition(
-//   opacity: Tween<double>(
-//     begin: 0,
-//     end: 1,
-//   ).animate(animation),
-//   // And slide transition
-//   child: SlideTransition(
-//     position: Tween<Offset>(
-//       begin: Offset(0, -0.1),
-//       end: Offset.zero,
-//     ).animate(animation),
-//     // Paste you Widget
-//     child: slidableListItem(database, todos, anyList, index + 1),
-//   ),
-// );
-//
-// // final Duration listShowItemDuration = Duration(milliseconds: 250);
-// Widget _buildLiveSliverListView(
-//     Database database, List<Todo> todos, List<Todo> anyList) {
-//   return LiveSliverList.options(
-//     options: options,
-//     // And attach root sliver scrollController to widgets
-//     controller: _hideButtonController,
-//
-//     // showItemDuration: listShowItemDuration,
-//     itemCount: listItemCount,
-//     itemBuilder: buildAnimatedItem,
-//   );
-// }
-
-///layout builder note
-//  LayoutBuilder(
-//    builder: (context, constraint) {
-//      return SingleChildScrollView(
-//        child: ConstrainedBox(
-//          constraints: BoxConstraints(minHeight: constraint.maxHeight),
-//          child: IntrinsicHeight(
-//            child: Column(
-//              children: <Widget>[
-//                Text("Header"),
-//                Expanded(
-//                  child: Container(
-//                    color: Colors.red,
-//                  ),
-//                ),
-//                Text("Footer"),
-//              ],
-//            ),
-//          ),
-//        ),
-//      );
-//    },
-//  )
-//
-//  Widget pieChartContent() {
-//    final themeNotifier = Provider.of<ThemeNotifier>(context);
-//    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-//    return LayoutBuilder(builder: (context, constraint) {
-//      return SingleChildScrollView(
-//        child: ConstrainedBox(
-//          constraints: BoxConstraints(minHeight: constraint.maxHeight),
-//          child: IntrinsicHeight(
-//            child: Column(
-//              children: [
-//                Expanded(
-//                  //this is within a column
-//                  child:
-////      SingleChildScrollView(
-////        child:
-//                      CustomizedContainerNew(
-//                    color: _darkTheme ? darkSurfaceTodo : lightSurface,
-//                    child: Padding(
-//                      padding: const EdgeInsets.all(15.0),
-//                      child: Column(
-//                        children: <Widget>[
-//                          Text(
-//                            _dataMapSelected.isEmpty
-//                                ? 'Focused Time on Today'
-//                                : 'Focused Time on ${Format.date(_calendarControllerNew.selectedDay)}',
-//                            style: Theme.of(context).textTheme.headline5,
-//                            textAlign: TextAlign.center,
-//                          ),
-//                          Padding(
-//                            padding: const EdgeInsets.only(top: 8.0),
-//                            child: Text(
-//                              _dataMapSelected.isEmpty
-//                                  ? 'Total ${Format.minutes(_todayDuration)}'
-//                                  : 'Total ${Format.minutes(_selectedDuration)}',
-//                              style: Theme.of(context).textTheme.headline6,
-//                              textAlign: TextAlign.center,
-//                            ),
-//                          ),
-//                          SizedBox(height: 10.0),
-////              Expanded(  //why adding Expanded here is wrong, because we have SingleChildScrollView
-////                child:
-//                          _dataMapSelected.isEmpty
-//                              ? NewPieChart(dataMap: _dataMapToday)
-//                              : NewPieChart(dataMap: _dataMapSelected),
-//
-////              ),
-//                          Spacer()
-//                        ],
-//                      ),
-//                    ),
-//                  ),
-////      ),
-//                ),
-//              ],
-//            ),
-//          ),
-//        ),
-//      );
-//    });
-//  }
-///original without sliver
-//  Widget buildListView(
-//      Database database, List<Todo> todos, List<Todo> anyList) {
-//    final themeNotifier = Provider.of<ThemeNotifier>(context);
-//    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-//    return ListView.separated(
-//        controller: _hideButtonController,
-//        itemCount: anyList.length + 2,
-//        separatorBuilder: (context, index) => Divider(
-//              indent: 75,
-//              endIndent: 75,
-//              height: 0.5,
-//              color: _darkTheme ? Colors.white70 : Colors.black38,
-//            ),
-////        shrinkWrap: true,
-//        itemBuilder: (context, index) {
-//          if (index == 0 || index == anyList.length + 1) {
-//            return Container();
-//          }
-//          return slidableListItem(database, todos, anyList, index);
-//        });
-//  }
-
-///notes for trying Reorderable: it's only working for selectedList, and the order is temporary
-//
-//  Widget buildListView(
-//      Database database, List<Todo> todos, List<Todo> anyList) {
-//    void _onReorder(int oldIndex, int newIndex) {
-//      setState(
-//        () {
-//          if (newIndex > oldIndex) {
-//            newIndex -= 1;
-//          }
-//          final Todo todo = anyList.removeAt(oldIndex);
-//          anyList.insert(newIndex, todo);
-//        },
-//      );
-//    }
-//
-//    return ReorderableListView(
-//        //replaced ListView.builder
-//        onReorder: _onReorder,
-//        scrollDirection: Axis.vertical,
-////        shrinkWrap: true,
-////        itemCount: anyList.length, //The getter 'length' was called on null.
-//        children: List.generate(
-//          anyList.length,
-//          (index) {
-//            return DismissibleListItem(
-//              //this one take a TodoListTile
-//              index: index,
-//              key: Key('$index'),
-//              listItems: anyList,
-//              database: database,
-//              delete: () => _delete(context, anyList[index]),
-//              onTap: () => _onTap(database, todos, anyList[index]),
-//              onChangedCheckbox: (newValue) =>
-//                  _onChangedCheckbox(newValue, context, anyList[index]),
-//            );
-//          },
-//        ));
-//  }
-
-///tried to move stream builder down but has error because of TabBarView

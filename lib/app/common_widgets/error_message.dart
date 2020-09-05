@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class EmptyMessage extends StatelessWidget {
-  const EmptyMessage({
+class ErrorMessage extends StatelessWidget {
+  const ErrorMessage({
     Key key,
     this.title = 'Nothing here',
     this.message = 'Add a new item to get started',

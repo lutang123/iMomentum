@@ -67,14 +67,12 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
           : _dateController.text = _dateFormatter.format(dateNew);
 //      print('widget.dateController.text if NOT null: ${_dateController.text}');
       if (todo.category != null) {
-        print(
-            'todo.category if todo is not null: ${todo.category}'); //todo.category: -1 if we moved a task that don't have category
         //RangeError (index): Invalid value: Not in inclusive range 0..4: -1
         //add this the range error will be gone
         todo.category < 0
             ? _currentCategory = _categories[todo.category + 1]
             : _currentCategory =
-                _categories[todo.category]; //todo.category is a number (index)
+                _categories[todo.category]; //todocategory is a number (index)
       } else {
         //if category is null, we assign a default value
         _currentCategory = _categories[0];
@@ -121,7 +119,12 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
     for (String city in _categories) {
       // here we are creating the drop down menu items, you can customize the item right here
       // but I'll just use a simple text for this
-      items.add(DropdownMenuItem(value: city, child: Text(city)));
+      items.add(DropdownMenuItem(
+          value: city,
+          child: Text(
+            city,
+            // style: TextStyle(color: darkThemeWords),
+          )));
     }
     return items;
   }
@@ -175,7 +178,6 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
     super.dispose();
   }
 
-  // bool _tipVisible = true;
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
@@ -183,13 +185,18 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
     return SingleChildScrollView(
       child: CustomizedBottomSheet(
         color: _darkTheme ? darkThemeAdd : lightThemeAdd,
+        // color: _darkTheme ? Colors.white.withOpacity(0.7) : Colors.white70,
         child: Form(
           key: _formKey,
           child: Column(
             children: <Widget>[
               SizedBox(height: 20),
               Text(todo != null ? 'Edit Task' : 'Add Task',
-                  style: Theme.of(context).textTheme.headline5),
+                  style: TextStyle(
+                    fontSize: 24,
+                    color: _darkTheme ? Colors.white : lightThemeWords,
+                    fontWeight: FontWeight.w600,
+                  )),
               SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -227,9 +234,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                   IconButton(
                       icon: Icon(EvaIcons.calendarOutline,
                           color:
-                              Theme.of(context).brightness == Brightness.light
-                                  ? Colors.grey.shade700
-                                  : Colors.white70),
+                              _darkTheme ? darkThemeButton : lightThemeButton),
                       onPressed: _handleDatePicker),
                 ],
               ),
@@ -247,7 +252,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                     //if submit successfully, we pop this page and go to home page
 //                    onEditingComplete: _submit,
                     style: TextStyle(
-                        color: _darkTheme ? Colors.white : Color(0xF01b262c),
+                        color: _darkTheme ? Colors.white : lightThemeWords,
                         fontSize: 16.0),
                     autofocus: true,
 //                    textAlign: TextAlign.center,
@@ -259,17 +264,17 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                       hintText: 'Title',
                       hintStyle: TextStyle(
                           fontSize: 15,
-                          color: _darkTheme ? Colors.white54 : Colors.black38),
+                          color: _darkTheme ? darkThemeHint : lightThemeHint),
                       focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
                               color: _darkTheme
-                                  ? Colors.white
-                                  : lightThemeButton)),
+                                  ? darkThemeDivider
+                                  : lightThemeDivider)),
                       enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
                               color: _darkTheme
-                                  ? Colors.white
-                                  : lightThemeButton)),
+                                  ? darkThemeDivider
+                                  : lightThemeDivider)),
                     ),
                   ),
                 ),
@@ -280,34 +285,34 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: TextFormField(
                     initialValue: comment,
-//                    focusNode: _textFocusNode,
+//                    focusNode: _textFocusNode, //no need
+                    ///we need to keep keyboard open, can not have .done
 //                    textInputAction: TextInputAction.done,
                     onSaved: (value) => comment = value,
-                    //if submit successfully, we pop this page and go to home page
-//                    onEditingComplete: _submit,
                     style: TextStyle(
-                        color: _darkTheme ? Colors.white70 : Color(0xF01b262c),
+                        color: _darkTheme
+                            ? Colors.white70
+                            : lightThemeWords.withOpacity(0.9),
                         fontSize: 14.0),
-//                    autofocus: true,
-//                    textAlign: TextAlign.center,
-                    cursorColor: _darkTheme ? Colors.white : lightThemeButton,
+                    cursorColor:
+                        _darkTheme ? darkThemeButton : lightThemeButton,
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
                     decoration: InputDecoration(
                       hintText: 'Comment (optional)',
                       hintStyle: TextStyle(
                           fontSize: 13,
-                          color: _darkTheme ? Colors.white54 : Colors.black38),
+                          color: _darkTheme ? darkThemeHint : lightThemeHint),
                       focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
                               color: _darkTheme
-                                  ? Colors.white
-                                  : lightThemeButton)),
+                                  ? darkThemeDivider
+                                  : lightThemeDivider)),
                       enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
                               color: _darkTheme
-                                  ? Colors.white
-                                  : lightThemeButton)),
+                                  ? darkThemeDivider
+                                  : lightThemeDivider)),
                     ),
                   ),
                 ),
@@ -323,15 +328,24 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                         'Task Category',
                         style: TextStyle(
                             fontSize: 13,
-                            color:
-                                _darkTheme ? Colors.white54 : Colors.black38),
+                            color: _darkTheme ? darkThemeHint : lightThemeHint),
                       ),
-                      DropdownButton(
-                        value: _currentCategory,
-                        items: _dropDownMenuItems,
-                        onChanged: changedDropDownItem,
-                        dropdownColor: darkThemeAdd,
+                      Theme(
+                        //backgroundColor will match the canvasColor in your ThemeData clas
+                        data: _darkTheme
+                            ? Theme.of(context).copyWith(
+                                canvasColor: darkThemeAdd,
+                              )
+                            : Theme.of(context).copyWith(
+                                canvasColor: lightThemeAdd,
+                              ),
+                        child: DropdownButton(
+                          value: _currentCategory,
+                          items: _dropDownMenuItems,
+                          onChanged: changedDropDownItem,
+                          // dropdownColor: darkThemeAdd,
 //                          focusColor: Colors.orangeAccent,
+                        ),
                       ),
                     ],
                   ),
@@ -341,6 +355,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
               MyFlatButton(
                   onPressed: _save,
                   text: 'SAVE',
+                  bkgdColor: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
                   color: _darkTheme ? Colors.white : lightThemeButton),
               // Visibility(
               //   visible: _tipVisible,
@@ -393,105 +408,3 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
     }
   }
 }
-
-///https://medium.com/@gshubham030/custom-dropdown-menu-in-flutter-7d8d1e026c6b
-
-/// notes on adding project
-//  List _projects = [
-//    'Project 1', //0, default
-//    'Project 2', //1
-//    'Others' //2
-//  ];
-
-//  List<DropdownMenuItem<String>> _dropDownMenuItemsProjects;
-//  String _currentProject;
-
-//  void changedDropDownItemProjects(String selectedCity) {
-////    print("Selected city $selectedCity, we are going to refresh the UI");
-//    setState(() {
-//      _currentProject = selectedCity;
-//    });
-////    _dropDownFocusNode.unfocus();
-////    FocusScope.of(context).requestFocus(_dropDownFocusNode);
-//  }
-//
-//  // here we are creating the list needed for the DropDownButton
-//  List<DropdownMenuItem<String>> getDropDownMenuItemsProjects() {
-//    List<DropdownMenuItem<String>> items = List();
-//    for (String city in _projects) {
-//      // here we are creating the drop down menu items, you can customize the item right here
-//      // but I'll just use a simple text for this
-//      items.add(DropdownMenuItem(value: city, child: Text(city)));
-//    }
-//    return items;
-//  }
-
-///note for project
-//              _currentCategory == 'Focus'
-//                  ? Container(
-//                      width: 350,
-//                      child: Padding(
-//                        padding:
-//                            EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-//                        child: Row(
-//                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                          children: <Widget>[
-//                            Text(
-//                              'Project name',
-//                              style: TextStyle(
-//                                  fontSize: 13,
-//                                  color: _darkTheme
-//                                      ? Colors.white54
-//                                      : Colors.black38),
-//                            ),
-//                            DropdownButton(
-//                              value: _currentProject,
-//                              items: _dropDownMenuItemsProjects,
-//                              onChanged: changedDropDownItemProjects,
-//                              dropdownColor: darkAdd,
-////                        focusNode: _dropDownFocusNode,
-//                            ),
-//                          ],
-//                        ),
-//
-////                  DropdownButtonFormField(
-////                    isDense: true,
-////                    icon: Icon(Icons.arrow_drop_down_circle),
-////                    iconSize: 22.0,
-////                    iconEnabledColor: Theme.of(context).primaryColor,
-////                    items: _priorities.map((String priority) {
-////                      return DropdownMenuItem(
-////                        value: priority,
-////                        child: Text(
-////                          priority,
-////                          style: TextStyle(
-////                            fontSize: 18.0,
-////                          ),
-////                        ),
-////                      );
-////                    }).toList(),
-////                    style: TextStyle(
-////                        color: _darkTheme ? Colors.white70 : Color(0xF01b262c),
-////                        fontSize: 14.0),
-////                    decoration: InputDecoration(
-////                      hintText: 'Category',
-////                      hintStyle: TextStyle(
-////                          fontSize: 13,
-////                          color: _darkTheme ? Colors.white54 : Colors.black38),
-////                      focusedBorder: UnderlineInputBorder(
-////                          borderSide: BorderSide(
-////                              color: _darkTheme ? Colors.white : lightButton)),
-////                      enabledBorder: UnderlineInputBorder(
-////                          borderSide: BorderSide(
-////                              color: _darkTheme ? Colors.white : lightButton)),
-////                    ),
-////                    onChanged: (value) {
-////                      setState(() {
-////                        _priority = value;
-////                      });
-////                    },
-////                    value: _priority,
-////                  ),
-//                      ),
-//                    )
-//                  : Container(),

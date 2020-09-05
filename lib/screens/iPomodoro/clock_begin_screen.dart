@@ -12,6 +12,7 @@ import 'package:iMomentum/app/utils/extensions.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/utils/pages_routes.dart';
+import 'package:iMomentum/app/utils/tooltip_shape_border.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'clock_bottom.dart';
@@ -115,8 +116,8 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                       text1: Duration(minutes: _durationInMin).clockFmt(),
                       text2: '',
                       height: 0,
-                      onPressed: () => _play(context),
-                      onPressedEdit: () => showEditDialog(context),
+                      onPressed: () => _play(),
+                      onPressedEdit: () => showEditDialog(),
                     ),
                     SizedBox(height: 60),
                     ClockBottomToday(text: '${widget.todo.title}'),
@@ -130,30 +131,25 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
     );
   }
 
-  void _play(BuildContext context) {
-    ///this one is too fast, (changed millisecond)
-    ///
+  //if add BuildContext context in play method, context changes to white color,
+  // but nothing else seems changed.
+  void _play() {
     /// on timer screen, if cancelled, we do this: Navigator.pop(context);
     /// if using SharedAxisPageRoute, it pop up to Timer begin Screen
-//    final route = SharedAxisPageRoute(
-//      page: ClockTimerScreen(
-//        database: widget.database,
-//        todo: widget.todo,
-//        duration: Duration(minutes: _durationInMin),
-//        restDuration: Duration(minutes: _restInMin),
-//        playSound: _playSound,
-//      ),
-//      transitionType: SharedAxisTransitionType.scaled,
-////        milliseconds: 400, //default
-//    );
-//    //if add BuildContext context in play method, context changes to white color,
-//    // but nothing else seems changed, I want to make navigation not having black screen flash
-//    Navigator.of(context).push(route);
+//     final route = SharedAxisPageRoute(
+//       page: ClockTimerScreen(
+//         database: widget.database,
+//         todo: widget.todo,
+//         duration: Duration(minutes: _durationInMin),
+//         restDuration: Duration(minutes: _restInMin),
+//         playSound: _playSound,
+//       ),
+//       transitionType: SharedAxisTransitionType.scaled,
+// //        milliseconds: 400, //default
+//     );
+//     Navigator.of(context).push(route);
 
-    ///somehow this is changed to be black and then comes out
-    ///
-    ///  if using SharedAxisPageRoute, from Timer Screen cancel button,
-    ///  it pop up to Home Screen
+    /// this one, if canceled, it goes to HomeScreen which is what we want.
     //default milliseconds = 1800
     Navigator.of(context).pushReplacement(
       PageRoutes.fade(
@@ -171,27 +167,23 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
   bool _playSound = true;
 
   bool _isDifferentLength = false;
-  void showEditDialog(BuildContext context) async {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
 
+  void showEditDialog() async {
     setState(() {
       _topOpacity = 0.0;
     });
     await showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext _) {
+        ///cancel and done button all have context from here
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
             contentPadding: EdgeInsets.only(top: 10.0),
             backgroundColor: Color(0xf01b262c),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20.0))),
-            title: Text(
-              "Change Focus Setting",
-              textAlign: TextAlign.center,
-//            style: Theme.of(context).textTheme.headline6,
-            ),
+            title: Text("Change Focus Setting",
+                textAlign: TextAlign.center, style: KDialogTitle),
             content: Form(
               key: _formKey,
               child: Padding(
@@ -203,7 +195,10 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text('Focus length'),
+                        Text(
+                          'Focus length',
+                          style: KDialogContent,
+                        ),
                         Row(
                           children: <Widget>[
                             Container(
@@ -213,31 +208,33 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                                     const EdgeInsets.symmetric(horizontal: 15),
                                 child: TextFormField(
                                   initialValue: _durationInMin.toString(),
-//
-                                  validator: (value) => (value.length == 0) ||
-                                          (int.parse(value) < 0) ||
-                                          (int.parse(value) == 0)
-                                      ? 'Error'
-                                      : null,
+
+                                  ///int.tryParse returns a null on an invalid number;
+                                  ///int.parse returns an exception on an invalid number;
+                                  //it does not matter in this case, because it's always number
+                                  validator: (value) => (value.isNotEmpty) &&
+                                          (int.parse(value) > 0)
+                                      ? null
+                                      : 'error',
+
+                                  ///below not good
+                                  // (value) => (value.length == 0) ||
+                                  //     (int.tryParse(value) < 0) ||
+                                  //     (int.tryParse(value) == 0)
+                                  // ? 'Error'
+                                  // : null,
                                   onChanged: (value) {
                                     setState(() {
-                                      _durationInMin != int.parse(value)
+                                      _durationInMin != int.tryParse(value)
                                           ? _isDifferentLength = true
                                           : _isDifferentLength = false;
                                     });
                                   },
                                   onSaved: (value) =>
-                                      _durationInMin = int.parse(value),
-                                  //if submit successfully, we pop this page and go to home page
-//                              onEditingComplete: _onEditingComplete,
-//                                focusNode: _durationFocusNode,
-                                  textInputAction: TextInputAction.next,
+                                      _durationInMin = int.tryParse(value),
                                   keyboardType: TextInputType.number,
-                                  style: TextStyle(
-//                        color: _darkTheme ? Colors.white : Color(0xF01b262c),
-                                      fontSize: 20.0),
+                                  style: KDialogContent,
                                   autofocus: true,
-//                    textAlign: TextAlign.center,
                                   cursorColor: Colors.white,
                                   decoration: InputDecoration(
                                     focusedBorder: UnderlineInputBorder(
@@ -252,7 +249,7 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                                 ),
                               ),
                             ),
-                            Text('min'),
+                            Text('min', style: KDialogContent),
                           ],
                         ),
                       ],
@@ -260,7 +257,7 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text('Rest length'),
+                        Text('Rest length', style: KDialogContent),
                         Row(
                           children: <Widget>[
                             Container(
@@ -270,11 +267,10 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                                     const EdgeInsets.symmetric(horizontal: 15),
                                 child: TextFormField(
                                   initialValue: _restInMin.toString(),
-                                  validator: (value) => (value.length == 0) ||
-                                          (int.parse(value) < 0) ||
-                                          (int.parse(value) == 0)
-                                      ? 'Error'
-                                      : null,
+                                  validator: (value) => (value.isNotEmpty) &&
+                                          (int.parse(value) > 0)
+                                      ? null
+                                      : 'error',
                                   onChanged: (value) {
                                     setState(() {
                                       _restInMin != int.parse(value)
@@ -284,16 +280,8 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                                   },
                                   onSaved: (value) =>
                                       _restInMin = int.parse(value),
-//                              focusNode: _restFocusNode,
-//                                textInputAction: TextInputAction.done,
                                   keyboardType: TextInputType.number,
-                                  //if submit successfully, we pop this page and go to home page
-//                    onEditingComplete: _submit,
-                                  style: TextStyle(
-//                        color: _darkTheme ? Colors.white : Color(0xF01b262c),
-                                      fontSize: 20.0),
-//                              autofocus: true,
-//                    textAlign: TextAlign.center,
+                                  style: KDialogContent,
                                   cursorColor: Colors.white,
                                   decoration: InputDecoration(
                                     focusedBorder: UnderlineInputBorder(
@@ -308,7 +296,7 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                                 ),
                               ),
                             ),
-                            Text('min'),
+                            Text('min', style: KDialogContent),
                           ],
                         ),
                       ],
@@ -317,108 +305,72 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text('Play sounds'),
+                        Text('Play sounds', style: KDialogContent),
                         SizedBox(
                           width: 50,
-                          child: Container(
-//                        color: Colors.purpleAccent,
-                            child: Transform.scale(
-                              scale: 0.9,
-                              child: CupertinoSwitch(
-                                activeColor: switchActiveColor,
-                                trackColor: Colors.grey,
-                                value: _playSound,
-                                onChanged: (val) {
-                                  print(val);
-                                  setState(() {
-                                    _playSound = val;
-                                  });
-                                },
-                              ),
+                          child: Transform.scale(
+                            scale: 0.9,
+                            child: CupertinoSwitch(
+                              activeColor: switchActiveColor,
+                              trackColor: Colors.grey,
+                              value: _playSound,
+                              onChanged: (val) {
+                                print(val);
+                                setState(() {
+                                  _playSound = val;
+                                });
+                              },
                             ),
                           ),
                         ),
                       ],
                     ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          FlatButton(
+                              child: Text(
+                                'Cancel',
+                                style: KDialogButton,
+                              ),
+                              shape: _isDifferentLength || _playSound == false
+                                  ? null
+                                  : RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(68.0),
+                                      side: BorderSide(
+                                          color: Colors.white70, width: 2.0)),
+                              onPressed: () {
+                                setState(() {
+                                  _topOpacity = 1.0;
+                                });
+                                Navigator.of(context).pop();
+                              }),
+                          FlatButton(
+                              child: Text(
+                                'Done',
+                                style: KDialogButton,
+                              ),
+                              shape: _isDifferentLength || _playSound == false
+                                  ? RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(68.0),
+                                      side: BorderSide(
+                                          color: Colors.white70, width: 2.0))
+                                  : null,
 
-                    Container(
-//                      color: Colors.black,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            ///Todo: change color when typing
-                            FlatButton(
-                                child: Text(
-                                  'Cancel',
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      color: _darkTheme
-                                          ? Colors.white70
-                                          : Colors.black54),
-                                ),
-                                shape: _isDifferentLength || _playSound == false
-                                    ? null
-                                    : RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(68.0),
-                                        side: BorderSide(
-                                            color: Colors.white70, width: 2.0)),
-                                onPressed: () {
-                                  setState(() {
-                                    _topOpacity = 1.0;
-                                  });
-                                  Navigator.of(context).pop();
-                                }),
-                            FlatButton(
-                                child: Text('Done',
-                                    style:
-                                        Theme.of(context).textTheme.headline6),
-                                shape: _isDifferentLength || _playSound == false
-                                    ? RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(68.0),
-                                        side: BorderSide(
-                                            color: Colors.white70, width: 2.0))
-                                    : null,
-                                onPressed: () => _done(context)),
-                          ],
-                        ),
+                              ///_done must have a BuildContext, so that it will
+                              ///use the same context as cancel button, which is all from StatefulBuilder
+                              onPressed: () => _done(context)),
+                        ],
                       ),
                     ),
 
-                    ///tried to use ListTile as in drawer but design not looking good
-//                ListTile(
-//                  title: Text('Play sounds'),
-//                  trailing: Transform.scale(
-//                    scale: 0.9,
-//                    child: CupertinoSwitch(
-//                      activeColor: switchActiveColor,
-//                      trackColor: Colors.grey,
-//                      value: _playSound,
-//                      onChanged: (val) {
-//                        _playSound = val;
-//                      },
-//                    ),
-//                  ),
-//                ),
+                    ///tried to use ListTile for switch button as in drawer but design not looking good
                   ],
                 ),
               ),
             ),
-//            actions: <Widget>[
-//              FlatButton(
-//                  child: Text('Cancel',
-//                      style: TextStyle(
-//                          fontSize: 20,
-//                          color: _darkTheme ? Colors.white70 : Colors.black54)),
-//                  onPressed: () => Navigator.of(context).pop()),
-//              FlatButton(
-//                  child: Text('Done',
-//                      style: Theme.of(context).textTheme.headline6),
-//                  onPressed: () => _done(context)),
-//            ],
           );
         });
       },
@@ -439,8 +391,8 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
     }
     return false;
   }
-  //when we don't have BuildContext context, we used a wrong context and it popped to home screen
 
+  ///when we don't have BuildContext context, we used a wrong context and it popped to home screen
   void _done(BuildContext context) {
     if (_validateAndSaveForm()) {
       setState(() {
@@ -450,14 +402,6 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
       _restInMin = _restInMin;
       Navigator.of(context).pop();
     }
-
-    ///this is wrong
-//    if (mounted) {
-//      setState(() {
-//        _durationInMin = typedNumber[0];
-//      });
-//    }
-//    _restInMin = typedNumber[1];
   }
 
   double _topOpacity = 1.0;
@@ -489,7 +433,7 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
       ///todo: change color
       backgroundGradient:
           LinearGradient(colors: [Color(0xF00f4c75), Color(0xF03282b8)]),
-      duration: Duration(seconds: 10),
+      duration: Duration(seconds: 4),
       titleText: RichText(
         text: TextSpan(
           style: KFlushBarTitle,
@@ -508,10 +452,6 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
           ],
         ),
       ),
-
-//      Text(
-//          'Our Focus Mode uses Pomodoro Technique to help you focus.',
-//          style: KFlushBarTitle),
       messageText: GestureDetector(
         onTap: () async {
           const url = 'https://en.wikipedia.org/wiki/Pomodoro_Technique';

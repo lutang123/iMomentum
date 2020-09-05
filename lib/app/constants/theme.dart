@@ -1,45 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:iMomentum/app/constants/theme_color.dart';
 
-// switch active color Color(0xFFade498)a2de96
 const Color switchActiveColor = Color(0xFF006a71); //Color(0xFF206a5d);
-//const Color switchTrackColor = Color(0xFFffffdd);
 
 //f6f5f5
 //Drawer Icon and other Icons
-const Color lightThemeButton = Colors.black54; //button. icon
 //const Color darkButton = Color(0xFFE7E7E8); //same as app bar color
 const Color darkThemeButton = Colors.white;
+const Color lightThemeButton = Color(0xf0086972); //button. icon
 
-const Color lightThemeHint = Colors.black38;
 const Color darkThemeHint = Colors.white54;
+const Color lightThemeHint = Colors.black38;
 
-const Color lightThemeWords = Color(0xf01b262c);
 const Color darkThemeWords = Colors.white;
+const Color lightThemeWords = Color(0xf01b262c);
 
-const Color darkThemeAppBar =
-    Colors.black12; //lightAppBar is the same as lightSurface
+// app bar
+const Color darkThemeAppBar = Colors.black12;
+final Color lightThemeAppBar = Colors.white.withOpacity(0.5);
 
-//drawer
+//drawer and NoteFolder
+//also in photo Preview and ImagePage, and NotesInFolderScreen as AppBar color
 const Color darkThemeDrawer = Colors.black38;
+//same as app bar
+final Color lightThemeDrawer = Colors.white.withOpacity(0.5);
 
-//todo list and pie chart, note bkgd
-const Color lightThemeSurface = Color(0xF0F9F9F9);
+//calendar, todoList and pie chart, note bkgd
+const Color darkThemeSurface = Colors.black45;
+//calendar is lightThemeSurface.withOpacity(0.7), todoList and pie chart is: lightThemeSurface.withOpacity(0.85)
+final Color lightThemeSurface = Colors.white.withOpacity(0.8);
 
-//todo container and note container
-const Color darkThemeSurfaceTodo = Colors.black45;
-
-//add todo and note
-const Color lightThemeAdd = Color(0xFFf5f5f6);
+const Color darkThemeDivider = Colors.white38;
+const Color lightThemeDivider = Colors.black26;
 
 ///use in all modal bottom
 const Color darkThemeAdd = Colors.black45; //Color(0xf01b262c) : Colors.grey[50]
+//we can not use .withOpacity in const
+final Color lightThemeAdd = Colors.white.withOpacity(0.7);
 
-///image gallary, alert dialog, default calendar background
-const Color darkThemeNoPhotoBkgdColor = Color(0xf01b262c);
+///image gallary, alert di alog, default calendar background
+// const Color darkThemeNoPhotoBkgdColor = Color(0xf01b262c);
+const Color darkThemeNoPhotoBkgdColor = Color(0xFF2D2F41);
+// const Color lightThemeNoPhotoBkdgColor = Colors.grey[50]; //this can not be const
 
-const Color darkThemeNoteFolder = Colors.black38;
+///calendar
+const Color darkThemeCalendarSelected = Color(0xFF3282b8);
+const Color lightThemeCalendarSelected = Color(0xf0086972);
 
 ///Light theme
 final ThemeData lightTheme = ThemeData.light().copyWith(
@@ -47,12 +53,12 @@ final ThemeData lightTheme = ThemeData.light().copyWith(
   // This makes the visual density adapt to the platform that you run
   // the app on. For desktop platforms, the controls will be smaller and
   // closer together (more dense) than on mobile platforms.
+  appBarTheme: AppBarTheme(color: lightThemeAppBar),
   visualDensity: VisualDensity.adaptivePlatformDensity,
   unselectedWidgetColor: Colors.black54,
 //  disabledColor: Color(0xFFd0d0d1),
-  canvasColor: Colors
-      .transparent, //e.g. container box decoration, //primary color: e.g. app bar color
-  accentColor: Colors.transparent, //e.g. button color
+  accentColor: Colors.transparent, //e.g. container box decoration
+  canvasColor: Colors.transparent, //e.g. button color //e.g. button color
 //  bottomSheetTheme: BottomSheetThemeData(
 //    backgroundColor: Colors.transparent,
 //  ),
@@ -99,7 +105,7 @@ final ThemeData lightTheme = ThemeData.light().copyWith(
     //calendar date
     bodyText1: TextStyle(
       //16
-      color: Colors.black38,
+      color: Colors.black54,
     ),
     bodyText2: TextStyle(color: Colors.black38), //14
   ),
@@ -116,7 +122,7 @@ final ThemeData darkTheme = ThemeData.dark().copyWith(
   accentColor: Colors.transparent, //e.g. container box decoration
   canvasColor: Colors.transparent, //e.g. button color
   iconTheme: IconThemeData(color: darkThemeButton),
-  appBarTheme: AppBarTheme(color: Color(0xf01b262c)),
+  appBarTheme: AppBarTheme(color: darkThemeNoPhotoBkgdColor),
   textTheme: TextTheme(
     //todo title, add todo title
     headline5: TextStyle(
@@ -125,6 +131,7 @@ final ThemeData darkTheme = ThemeData.dark().copyWith(
       fontWeight: FontWeight.w400,
     ),
     //pie chart subtitle
+    // can not have GoogleFonts.varelaRound this as const
     headline6: GoogleFonts.varelaRound(
       //20
 //      color: Color(0xF0323232),

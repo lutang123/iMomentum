@@ -46,13 +46,15 @@ class _CompletionScreenState extends State<CompletionScreen> {
 
   int _restDurationInMin;
 
+  double _topOpacity = 1.0;
+  double _todayDuration = 0; //this is just inital value
+
   @override
   void initState() {
     _restDurationInMin = widget.restDuration.inMinutes;
     super.initState();
   }
 
-  //, rootNavigator: true
   void _play() {
     Navigator.of(context).pushReplacement(
       PageRoutes.fade(
@@ -67,13 +69,8 @@ class _CompletionScreenState extends State<CompletionScreen> {
   }
 
   void _clearButton() {
-    //https://stackoverflow.com/questions/49672706/flutter-navigation-pop-to-index-1
-//    int count = 0;
-//    Navigator.popUntil(context, (route) {
-//      return count++ == 2;
-//    });
     /// not go back to HomeScreen
-//    Navigator.pop(context);
+//  Navigator.pop(context);
     Navigator.of(context).pushReplacement(PageRoutes.fade(
         () => ClockBeginScreen(
               database: widget.database,
@@ -141,10 +138,10 @@ class _CompletionScreenState extends State<CompletionScreen> {
                                               DateTime.now(), entries);
 //                                            print(_todayDuration); // if no data, it will show null, not 0
                                       ///moved StreamBuilder up above TabBarView, otherwise we got error: Bad state: Stream has already been listened to
-                                      return progressButton();
+                                      return progressButton(_todayDuration);
                                     } else {
                                       ///actually we don't need to check this
-                                      return progressButton();
+                                      return progressButton(_todayDuration);
                                     }
                                   } else if (snapshot.hasError) {
                                     ///still show it but onPress is null
@@ -168,6 +165,7 @@ class _CompletionScreenState extends State<CompletionScreen> {
                                       padding: const EdgeInsets.all(8.0),
                                       message: 'See my progress for today',
                                       child: RoundSmallIconButton(
+                                        //this is only for if it has error
                                         icon: EvaIcons.trendingUpOutline,
                                         onPressed: null,
                                         color: Colors.white,
@@ -193,7 +191,7 @@ class _CompletionScreenState extends State<CompletionScreen> {
                       text2: 'Take a break',
                       height: 10,
                       onPressed: _play,
-                      onPressedEdit: () => showEditDialog(context),
+                      onPressedEdit: () => showEditDialog(),
                     ),
                     SizedBox(height: 60),
                     ClockBottomToday(text: '${widget.todo.title}'),
@@ -207,7 +205,7 @@ class _CompletionScreenState extends State<CompletionScreen> {
     );
   }
 
-  Widget progressButton() {
+  Widget progressButton(double todayDuration) {
     return Tooltip(
       message: 'See my progress for today',
       textStyle: TextStyle(color: Colors.white),
@@ -225,90 +223,136 @@ class _CompletionScreenState extends State<CompletionScreen> {
       padding: const EdgeInsets.all(8.0),
       child: RoundSmallIconButton(
         icon: EvaIcons.trendingUpOutline,
-        onPressed: () => _showFlushBar(context, _todayDuration),
+        onPressed: () => _showFlushBar(todayDuration),
         color: Colors.white,
       ),
     );
   }
 
   final _formKey = GlobalKey<FormState>();
-
-  void showEditDialog(BuildContext context) async {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+  bool _isDifferentLength = false;
+  void showEditDialog() async {
     await showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Color(0xf01b262c), // //
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(20.0))),
-          title: Text(
-            "Change Focus Setting",
-            textAlign: TextAlign.center,
-          ),
-          content: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text('Rest length'),
-                    Row(
-                      children: <Widget>[
-                        Container(
-                          width: 70,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 15),
-                            child: TextFormField(
-                              initialValue: _restDurationInMin.toString(),
-                              textInputAction: TextInputAction.done,
-                              keyboardType: TextInputType.number,
-                              validator: (value) =>
-                                  (value.isNotEmpty) && (int.parse(value) > 0)
-                                      ? null
-                                      : 'error',
-                              onSaved: (value) =>
-                                  _restDurationInMin = int.parse(value),
-                              style: TextStyle(fontSize: 20.0),
-                              autofocus: true,
-                              cursorColor: Colors.white,
-                              decoration: InputDecoration(
-                                focusedBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.white),
+      builder: (BuildContext _) {
+        ///cancel and done button all have context from here
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            backgroundColor: Color(0xf01b262c), // //
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(20.0))),
+            title: Text(
+              "Change Focus Setting",
+              textAlign: TextAlign.center,
+              style: KDialogTitle,
+            ),
+            content: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text('Rest length', style: KDialogContent),
+                      Row(
+                        children: <Widget>[
+                          Container(
+                            width: 70,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 15),
+                              child: TextFormField(
+                                initialValue: _restDurationInMin.toString(),
+                                textInputAction: TextInputAction.done,
+                                keyboardType: TextInputType.number,
+                                validator: (value) =>
+                                    (value.isNotEmpty) && (int.parse(value) > 0)
+                                        ? null
+                                        : 'error',
+                                onChanged: (value) {
+                                  setState(() {
+                                    _restDurationInMin != int.parse(value)
+                                        ? _isDifferentLength = true
+                                        : _isDifferentLength = false;
+                                  });
+                                },
+                                onSaved: (value) =>
+                                    _restDurationInMin = int.parse(value),
+                                style: KDialogContent,
+                                autofocus: true,
+                                cursorColor: Colors.white,
+                                decoration: InputDecoration(
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.white),
+                                  ),
+                                  enabledBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                    color: Colors.white,
+                                  )),
                                 ),
-                                enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                  color: Colors.white,
-                                )),
                               ),
                             ),
                           ),
-                        ),
-                        Text('min'),
+                          Text('min', style: KDialogContent),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        FlatButton(
+                            child: Text(
+                              'Cancel',
+                              style: KDialogButton,
+                            ),
+                            shape: _isDifferentLength
+                                ? null
+                                : RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(68.0),
+                                    side: BorderSide(
+                                        color: Colors.white70, width: 2.0)),
+                            onPressed: () {
+                              setState(() {
+                                _topOpacity = 1.0;
+                              });
+                              Navigator.of(context).pop();
+                            }),
+                        FlatButton(
+                            child: Text(
+                              'Done',
+                              style: KDialogButton,
+                            ),
+                            shape: _isDifferentLength
+                                ? RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(68.0),
+                                    side: BorderSide(
+                                        color: Colors.white70, width: 2.0))
+                                : null,
+
+                            ///_done must have a BuildContext, so that it will
+                            ///use the same context as cancel button, which is all from StatefulBuilder
+                            onPressed: () => _done(context)),
                       ],
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          actions: <Widget>[
-            FlatButton(
-                child: Text('Cancel',
-                    style: TextStyle(
-                        fontSize: 20,
-                        color: _darkTheme ? Colors.white70 : Colors.black54)),
-                onPressed: () => Navigator.of(context).pop()),
-            FlatButton(
-                child:
-                    Text('Done', style: Theme.of(context).textTheme.headline6),
-                onPressed: () => _done(context)),
-          ],
-        );
+            // actions: <Widget>[
+            //   FlatButton(
+            //       child: Text('Cancel', style: KDialogButton),
+            //       onPressed: () => Navigator.of(context).pop()),
+            //   FlatButton(
+            //       child: Text('Done', style: KDialogButton),
+            //       onPressed: () => _done(context)),
+            // ],
+          );
+        });
       },
     );
   }
@@ -322,6 +366,7 @@ class _CompletionScreenState extends State<CompletionScreen> {
     return false;
   }
 
+  ///when we don't have BuildContext context, we used a wrong context and it popped to home screen
   void _done(BuildContext context) {
     if (_validateAndSaveForm()) {
       setState(() {
@@ -332,9 +377,7 @@ class _CompletionScreenState extends State<CompletionScreen> {
     }
   }
 
-  double _topOpacity = 1.0;
-  double _todayDuration = 0; //this is just inital value
-  void _showFlushBar(BuildContext context, double todayDuration) {
+  void _showFlushBar(double todayDuration) {
     setState(() {
       _topOpacity = 0.0;
     });
@@ -353,21 +396,16 @@ class _CompletionScreenState extends State<CompletionScreen> {
       borderRadius: 10,
       flushbarPosition: FlushbarPosition.TOP,
       flushbarStyle: FlushbarStyle.FLOATING,
-////      reverseAnimationCurve: Curves.decelerate,
-//      reverseAnimationCurve: Curves.easeOutCirc,
-//      forwardAnimationCurve: Curves.easeOutCirc,
-//      backgroundColor: darkBkgdColor, //no effect?
-      ///todo: change color
       backgroundGradient:
           LinearGradient(colors: [Color(0xF00f4c75), Color(0xF03282b8)]),
-      duration: Duration(seconds: 10),
+      duration: Duration(seconds: 4),
       titleText: RichText(
         text: TextSpan(
           style: KFlushBarTitle,
           children: <TextSpan>[
             TextSpan(text: 'Your total focused time for today is: '),
             TextSpan(
-                text: '${Format.minutes(_todayDuration)}. ',
+                text: '${Format.minutes(todayDuration)}. ',
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16.0,
@@ -387,14 +425,4 @@ class _CompletionScreenState extends State<CompletionScreen> {
           _topOpacity = 1.0;
         }));
   }
-
-//  Widget progress() {
-//    return Padding(
-//      padding: const EdgeInsets.all(8.0),
-//      child: Text(
-//          'Your total focused time for today is $_todayDuration minutes so far. Keep going!',
-//          textAlign: TextAlign.center,
-//          style: TextStyle(fontWeight: FontWeight.w600)),
-//    );
-//  }
 }

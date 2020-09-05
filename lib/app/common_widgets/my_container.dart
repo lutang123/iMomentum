@@ -25,20 +25,20 @@ class FlushBarButtonChild extends StatelessWidget {
   }
 }
 
-class ContainerForNotesPinned extends StatelessWidget {
+class ContainerOnlyText extends StatelessWidget {
   final String text;
 
-  const ContainerForNotesPinned({Key key, this.text}) : super(key: key);
+  const ContainerOnlyText({Key key, this.text}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Container(
         child: Row(
       children: [
         Container(
             decoration: BoxDecoration(
-                color: _darkTheme ? Colors.black12 : lightThemeSurface,
+                color: _darkTheme ? Colors.black12 : Colors.white12,
                 borderRadius: BorderRadius.all(Radius.circular(10.0))),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -60,11 +60,11 @@ class NoteSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Container(
         decoration: BoxDecoration(
-            color: _darkTheme ? Colors.black38 : lightThemeSurface,
+            color: _darkTheme ? darkThemeDrawer : lightThemeAppBar,
             borderRadius: BorderRadius.all(Radius.circular(20.0))),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -73,13 +73,16 @@ class NoteSearchBar extends StatelessWidget {
 
                 ///Todo: implement search
                 onPressed: onPressed,
-                icon: Icon(
-                  Icons.search,
-                  color: Colors.white70,
-                ),
+                icon: Icon(Icons.search,
+                    color: _darkTheme
+                        ? Colors.white70
+                        : lightThemeButton.withOpacity(0.7)),
                 label: Text(
                   'Search your notes',
-                  style: TextStyle(color: Colors.white70),
+                  style: TextStyle(
+                      color: _darkTheme
+                          ? Colors.white70
+                          : lightThemeWords.withOpacity(0.7)),
                 )),
           ],
         ));

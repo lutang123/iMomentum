@@ -31,21 +31,21 @@ class StartScreen extends StatelessWidget {
               padding: const EdgeInsets.all(15.0),
               child: Text(
                 "Welcome to iMomentum",
-                style: KStartTitle,
+                style: KLandingTitle,
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(15.0),
               child: Text(
                 "xxxxxx",
-                style: KStartSubtitle,
+                style: KLandingSubtitle,
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(15.0),
               child: Text(
                 "xxxxxx",
-                style: KStartSubtitle,
+                style: KLandingSubtitle,
               ),
             ),
             SizedBox(height: 10),

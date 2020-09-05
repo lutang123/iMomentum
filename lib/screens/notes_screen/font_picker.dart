@@ -46,7 +46,7 @@ class _FontPickerState extends State<FontPicker> {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
 
     if (selectedFont == null) {
@@ -79,16 +79,24 @@ class _FontPickerState extends State<FontPicker> {
                         child: Text('Example',
                             style: GoogleFonts.getFont(fontList[index],
                                 color: _darkTheme
-                                    ? darkThemeButton
-                                    : lightThemeButton,
+                                    ? darkThemeWords
+                                    : lightThemeWords,
                                 fontSize: 12))),
                     decoration: BoxDecoration(
                         color: widget.backgroundColor,
                         borderRadius: BorderRadius.circular(10.0),
-                        border: Border.all(width: 1, color: Colors.white70)),
+                        border: Border.all(
+                            width: 1,
+                            color: _darkTheme
+                                ? Colors.white70
+                                : lightThemeWords.withOpacity(0.5))),
                   ),
                 ),
-                selectedFont == fontList[index] ? Icon(Icons.done) : Container()
+                selectedFont == fontList[index]
+                    ? Icon(
+                        Icons.done,
+                      )
+                    : Container()
               ],
             ),
           );

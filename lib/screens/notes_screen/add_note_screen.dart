@@ -18,7 +18,6 @@ import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 import 'package:iMomentum/app/utils/cap_string.dart';
 import 'package:flutter/widgets.dart';
-
 import 'font_picker.dart';
 import 'my_flutter_app_icon.dart';
 
@@ -111,7 +110,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Scaffold(
       backgroundColor: _darkTheme ? colorsDark[color] : colorsLight[color],
@@ -143,14 +142,15 @@ class AddNoteScreenState extends State<AddNoteScreen> {
   }
 
   Widget _buildAppBar() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
 
     return AppBar(
       backgroundColor: _darkTheme ? colorsDark[color] : colorsLight[color],
       automaticallyImplyLeading: false,
       leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios),
+          icon: Icon(Icons.arrow_back_ios,
+              color: _darkTheme ? darkThemeButton : lightThemeButton),
           onPressed: () => _saveAndBack(database, note)),
       titleSpacing: 0.0,
       title: note != null
@@ -164,8 +164,10 @@ class AddNoteScreenState extends State<AddNoteScreen> {
           padding: const EdgeInsets.only(right: 8.0),
           child: IconButton(
             icon: isPinned
-                ? Icon(MyFlutterAppIcon.pin)
-                : Icon(MyFlutterAppIcon.pin_outline),
+                ? Icon(MyFlutterAppIcon.pin,
+                    color: _darkTheme ? darkThemeButton : lightThemeButton)
+                : Icon(MyFlutterAppIcon.pin_outline,
+                    color: _darkTheme ? darkThemeButton : lightThemeButton),
             onPressed: _togglePinned,
           ),
         ),
@@ -192,7 +194,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
   }
 
   Widget _buildMiddleContent() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return SliverToBoxAdapter(
         child: Column(
@@ -206,7 +208,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
               maxLines: null,
               style: GoogleFonts.getFont(
                 fontFamily,
-                color: _darkTheme ? darkThemeButton : lightThemeButton,
+                color: _darkTheme ? darkThemeWords : lightThemeWords,
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
               ),
@@ -238,7 +240,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
               decoration: InputDecoration.collapsed(
                   hintText: 'Title',
                   hintStyle: GoogleFonts.getFont(fontFamily,
-                      color: _darkTheme ? Colors.white54 : Colors.black38,
+                      color: _darkTheme ? darkThemeHint : lightThemeHint,
                       fontSize: 20,
                       fontWeight: FontWeight.w600)),
             ),
@@ -255,7 +257,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
               maxLines: null,
               style: GoogleFonts.getFont(
                 fontFamily,
-                color: _darkTheme ? darkThemeButton : lightThemeButton,
+                color: _darkTheme ? darkThemeWords : lightThemeWords,
                 fontSize: 18,
               ),
               onChanged: (value) {
@@ -278,7 +280,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                 hintText: 'Note',
                 hintStyle: GoogleFonts.getFont(
                   fontFamily,
-                  color: _darkTheme ? Colors.white54 : Colors.black38,
+                  color: _darkTheme ? darkThemeHint : lightThemeHint,
                   fontSize: 18,
                 ),
               ),
@@ -290,7 +292,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
   }
 
   Widget _lastRow() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
 
     return ClipRRect(

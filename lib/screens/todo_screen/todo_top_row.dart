@@ -14,13 +14,13 @@ class TodoTopRow extends StatelessWidget {
       children: [
         SizedBox(
           height: 30,
-          child: Container(
-              color: _darkTheme ? darkThemeAppBar : lightThemeSurface),
+          child:
+              Container(color: _darkTheme ? darkThemeAppBar : lightThemeAppBar),
         ),
         SizedBox(
           height: 50,
           child: Container(
-            color: _darkTheme ? darkThemeAppBar : lightThemeSurface,
+            color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: TabBar(

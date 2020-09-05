@@ -42,7 +42,6 @@ class _MoveFolderScreenState extends State<MoveFolderScreen> {
   Note get note => widget.note;
 
   final List<Folder> defaultFolders = [
-    // Folder(id: 0.toString(), title: 'All Notes'),
     Folder(id: 1.toString(), title: 'Notes'),
   ];
 
@@ -58,7 +57,7 @@ class _MoveFolderScreenState extends State<MoveFolderScreen> {
           SizedBox(height: 20),
           Text('Select a folder', style: Theme.of(context).textTheme.headline5),
 
-          ///todo: why after adding new folder the list not immediately update?
+          ///todo: why after adding new folder the list showing multi times??
           // SizedBox(height: 10),
           // Padding(
           //   padding: const EdgeInsets.only(left: 10.0),
@@ -66,7 +65,8 @@ class _MoveFolderScreenState extends State<MoveFolderScreen> {
           //     children: [
           //       MyFlatButtonUnderline(
           //           text: 'Add New',
-          //           color: Colors.lightBlueAccent,
+          //           color:
+          //               _darkTheme ? Colors.lightBlueAccent : lightThemeButton,
           //           onPressed: () => _showAddDialog(database)),
           //     ],
           //   ),
@@ -113,14 +113,15 @@ class _MoveFolderScreenState extends State<MoveFolderScreen> {
   }
 
   Widget _buildFolderListView(Note note, List<Folder> folders) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return ListView.separated(
         itemCount: folders.length,
         separatorBuilder: (context, index) => Divider(
-              indent: 15,
-              endIndent: 15,
-              height: 0.5,
-              color: Colors.white70,
-            ),
+            indent: 15,
+            endIndent: 15,
+            height: 0.5,
+            color: _darkTheme ? darkThemeDivider : lightThemeDivider),
         shrinkWrap: true,
         itemBuilder: (context, index) {
           return FolderListTile(
@@ -147,16 +148,13 @@ class _MoveFolderScreenState extends State<MoveFolderScreen> {
   String _newFolderName = '';
   bool _isFolderNameEmpty = true;
   void _showAddDialog(Database database) async {
-//    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-//    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     await showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext _) {
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
             contentPadding: EdgeInsets.only(top: 10.0),
             backgroundColor: Color(0xf01b262c),
-            // //
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20.0))),
             title: Column(
@@ -173,9 +171,8 @@ class _MoveFolderScreenState extends State<MoveFolderScreen> {
                       'Enter a name for this folder.',
                       style: TextStyle(
                           fontSize: 18,
-                          color: Colors.white,
+                          color: Colors.white60,
                           fontStyle: FontStyle.italic),
-//                  style: Theme.of(context).textTheme.subtitle2,
                     ),
                   ],
                 )
@@ -206,16 +203,16 @@ class _MoveFolderScreenState extends State<MoveFolderScreen> {
                             ? null
                             : 'Folder name can not be empty',
                         onSaved: (value) => _newFolderName = value,
-                        style: TextStyle(fontSize: 20.0),
+                        style: TextStyle(fontSize: 20.0, color: Colors.white70),
                         autofocus: true,
-                        cursorColor: Colors.white,
+                        cursorColor: Colors.white70,
                         decoration: InputDecoration(
                           focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white),
+                            borderSide: BorderSide(color: darkThemeHint),
                           ),
                           enabledBorder: UnderlineInputBorder(
                               borderSide: BorderSide(
-                            color: Colors.white,
+                            color: darkThemeHint,
                           )),
                         ),
                       ),
@@ -225,7 +222,6 @@ class _MoveFolderScreenState extends State<MoveFolderScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          ///Todo: change color when typing
                           FlatButton(
                               child: Text(
                                 'Cancel',
@@ -290,12 +286,6 @@ class _MoveFolderScreenState extends State<MoveFolderScreen> {
         final folders = await database.foldersStream().first;
         final allNames =
             folders.map((folder) => folder.title.toLowerCase()).toList();
-//        print('allNames: $allNames');
-        //and this is to make sure when we edit job, we can keep the name
-//        if (folder != null) {
-//          allNames.remove(widget.job.name);
-//        }
-        //this is to make sure when we create job, we do not write the same name
         if (allNames.contains(_newFolderName.toLowerCase())) {
           PlatformAlertDialog(
             title: 'Name already used',

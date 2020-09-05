@@ -3,11 +3,16 @@ import 'package:flutter/material.dart';
 class CustomColors {
   static Color primaryTextColor = Colors.white;
   static Color dividerColor = Colors.white54;
+
+  ///used in image gallery dark theme
   static Color pageBackgroundColor = Color(0xFF2D2F41);
   static Color menuBackgroundColor = Color(0xFF242634);
 
   static Color clockBG = Color(0xFF444974);
-  static Color clockOutline = Color(0xFFEAECFF);
+
+  ///used in image gallery light theme
+  // static Color clockOutline = Color(0xFFEAECFF);
+  static Color clockOutline = Color(0xFFfffafa);
   static Color secHandColor = Colors.orange[300];
   static Color minHandStatColor = Color(0xFF748EF6);
   static Color minHandEndColor = Color(0xFF77DDFF);

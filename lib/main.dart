@@ -71,33 +71,33 @@ void main() async {
             id: id, title: title, body: body, payload: payload));
       });
 
-  //another example for onDidReceiveLocalNotification:
-  Future onDidReceiveLocalNotification(BuildContext context, int id,
-      String title, String body, String payload) async {
-    // display a dialog with the notification details, tap ok to go to another page
-    showDialog(
-      context: context,
-      builder: (BuildContext context) => CupertinoAlertDialog(
-        title: Text(title),
-        content: Text(body),
-        actions: [
-          CupertinoDialogAction(
-            isDefaultAction: true,
-            child: Text('Ok'),
-            onPressed: () async {
-              Navigator.of(context, rootNavigator: true).pop();
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SecondScreen(payload),
-                ),
-              );
-            },
-          )
-        ],
-      ),
-    );
-  }
+  // //another example for onDidReceiveLocalNotification:
+  // Future onDidReceiveLocalNotification(BuildContext context, int id,
+  //     String title, String body, String payload) async {
+  //   // display a dialog with the notification details, tap ok to go to another page
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) => CupertinoAlertDialog(
+  //       title: Text(title),
+  //       content: Text(body),
+  //       actions: [
+  //         CupertinoDialogAction(
+  //           isDefaultAction: true,
+  //           child: Text('Ok'),
+  //           onPressed: () async {
+  //             Navigator.of(context, rootNavigator: true).pop();
+  //             await Navigator.push(
+  //               context,
+  //               MaterialPageRoute(
+  //                 builder: (context) => SecondScreen(payload),
+  //               ),
+  //             );
+  //           },
+  //         )
+  //       ],
+  //     ),
+  //   );
+  // }
 
   var initializationSettings = InitializationSettings(
     initializationSettingsAndroid,
@@ -116,34 +116,34 @@ void main() async {
     }
     selectNotificationSubject.add(payload);
   });
-
-  //another example for onSelectNotification
-  Future onSelectNotification(BuildContext context, String payload) async {
-    if (payload != null) {
-      debugPrint('notification payload: ' + payload);
-    }
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => SecondScreen(payload)),
-    );
-  }
-
-  //In the real world, this payload could represent the id of the item you want
-  // to display the details of. Once the initialisation is complete, then you can
-  // manage the displaying of notifications.
-
-  // ⚠ If the app has been launched by tapping on a notification created by this plugin, calling initialize is what will trigger the onSelectNotification to trigger to handle the notification that the user tapped on. An alternative to handling the "launch notification" is to call the getNotificationAppLaunchDetails method that is available in the plugin. This could be used, for example, to change the home route of the app for deep-linking. Calling initialize will still cause the onSelectNotification callback to fire for the launch notification. It will be up to developers to ensure that they don't process the same notification twice (e.g. by storing and comparing the notification id).
-
-  //Then call the requestPermissions method with desired permissions at the appropriate point in your application
-  //The ?. operator is used here as the result will be null when run on other platforms.
-  var result = await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<
-          IOSFlutterLocalNotificationsPlugin>()
-      ?.requestPermissions(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
+  //
+  // //another example for onSelectNotification
+  // Future onSelectNotification(BuildContext context, String payload) async {
+  //   if (payload != null) {
+  //     debugPrint('notification payload: ' + payload);
+  //   }
+  //   await Navigator.push(
+  //     context,
+  //     MaterialPageRoute(builder: (context) => SecondScreen(payload)),
+  //   );
+  // }
+  //
+  // //In the real world, this payload could represent the id of the item you want
+  // // to display the details of. Once the initialisation is complete, then you can
+  // // manage the displaying of notifications.
+  //
+  // // ⚠ If the app has been launched by tapping on a notification created by this plugin, calling initialize is what will trigger the onSelectNotification to trigger to handle the notification that the user tapped on. An alternative to handling the "launch notification" is to call the getNotificationAppLaunchDetails method that is available in the plugin. This could be used, for example, to change the home route of the app for deep-linking. Calling initialize will still cause the onSelectNotification callback to fire for the launch notification. It will be up to developers to ensure that they don't process the same notification twice (e.g. by storing and comparing the notification id).
+  //
+  // //Then call the requestPermissions method with desired permissions at the appropriate point in your application
+  // //The ?. operator is used here as the result will be null when run on other platforms.
+  // var result = await flutterLocalNotificationsPlugin
+  //     .resolvePlatformSpecificImplementation<
+  //         IOSFlutterLocalNotificationsPlugin>()
+  //     ?.requestPermissions(
+  //       alert: true,
+  //       badge: true,
+  //       sound: true,
+  //     );
 
   //The payload has been specified ('item x'), that will passed back through your application when the user has tapped on a notification.
   //
@@ -227,8 +227,8 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _requestIOSPermissions();
-    _configureDidReceiveLocalNotificationSubject();
-    _configureSelectNotificationSubject();
+    // _configureDidReceiveLocalNotificationSubject();
+    // _configureSelectNotificationSubject();
 
     /// test on where to call this function
     _showDailyAtTime();
@@ -240,7 +240,7 @@ class _MyAppState extends State<MyApp> {
       return value.toString().padLeft(2, '0');
     }
 
-    var time = Time(17, 0, 0);
+    var time = Time(10, 0, 0);
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
         'repeatDailyAtTime channel id',
         'repeatDailyAtTime channel name',
@@ -271,47 +271,48 @@ class _MyAppState extends State<MyApp> {
         );
   }
 
-  void _configureDidReceiveLocalNotificationSubject() {
-    didReceiveLocalNotificationSubject.stream
-        .listen((ReceivedNotification receivedNotification) async {
-      await showDialog(
-        context: context,
-        builder: (BuildContext context) => CupertinoAlertDialog(
-          title: receivedNotification.title != null
-              ? Text(receivedNotification.title)
-              : null,
-          content: receivedNotification.body != null
-              ? Text(receivedNotification.body)
-              : null,
-          actions: [
-            CupertinoDialogAction(
-              isDefaultAction: true,
-              child: Text('Ok'),
-              onPressed: () async {
-                Navigator.of(context, rootNavigator: true).pop();
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        SecondScreen(receivedNotification.payload),
-                  ),
-                );
-              },
-            )
-          ],
-        ),
-      );
-    });
-  }
+  ///not sure what are these for
+  // void _configureDidReceiveLocalNotificationSubject() {
+  //   didReceiveLocalNotificationSubject.stream
+  //       .listen((ReceivedNotification receivedNotification) async {
+  //     await showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) => CupertinoAlertDialog(
+  //         title: receivedNotification.title != null
+  //             ? Text(receivedNotification.title)
+  //             : null,
+  //         content: receivedNotification.body != null
+  //             ? Text(receivedNotification.body)
+  //             : null,
+  //         actions: [
+  //           CupertinoDialogAction(
+  //             isDefaultAction: true,
+  //             child: Text('Ok'),
+  //             onPressed: () async {
+  //               Navigator.of(context, rootNavigator: true).pop();
+  //               await Navigator.push(
+  //                 context,
+  //                 MaterialPageRoute(
+  //                   builder: (context) =>
+  //                       SecondScreen(receivedNotification.payload),
+  //                 ),
+  //               );
+  //             },
+  //           )
+  //         ],
+  //       ),
+  //     );
+  //   });
+  // }
 
-  void _configureSelectNotificationSubject() {
-    selectNotificationSubject.stream.listen((String payload) async {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => SecondScreen(payload)),
-      );
-    });
-  }
+  // void _configureSelectNotificationSubject() {
+  //   selectNotificationSubject.stream.listen((String payload) async {
+  //     await Navigator.push(
+  //       context,
+  //       MaterialPageRoute(builder: (context) => SecondScreen(payload)),
+  //     );
+  //   });
+  // }
 
   @override
   void dispose() {
@@ -323,7 +324,6 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
-    //then Auth as the very top, then KeyboardVisibilityProvider
     return Provider<AuthBase>(
       create: (context) => Auth(),
       child: Builder(

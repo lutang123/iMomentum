@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:iMomentum/app/constants/theme.dart';
+import 'package:iMomentum/app/services/multi_notifier.dart';
+import 'package:provider/provider.dart';
 
 class MyFlatButton extends StatelessWidget {
-  const MyFlatButton(
-      {@required this.onPressed,
-      @required this.text,
-      this.color = Colors.white,
-      this.backgroundColor = Colors.black12});
+  const MyFlatButton({
+    @required this.onPressed,
+    @required this.text,
+    //this is the design that can be best used on image
+    this.color = Colors.white,
+    this.bkgdColor = Colors.black12,
+  });
 
   final VoidCallback onPressed;
   final String text;
   final Color color;
-  final Color backgroundColor;
+  final Color bkgdColor;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +24,7 @@ class MyFlatButton extends StatelessWidget {
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(68.0),
           side: BorderSide(color: color, width: 2.0)),
-      color: backgroundColor,
+      color: bkgdColor,
       onPressed: onPressed,
       child: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -27,41 +32,6 @@ class MyFlatButton extends StatelessWidget {
           text,
           style: GoogleFonts.varelaRound(
               color: color, fontWeight: FontWeight.w600, fontSize: 20.0),
-        ),
-      ),
-    );
-  }
-}
-
-class MyFlatButtonUnderline extends StatelessWidget {
-  const MyFlatButtonUnderline({
-    @required this.onPressed,
-    @required this.text,
-    this.color = Colors.lightBlueAccent,
-  });
-
-  final VoidCallback onPressed;
-  final String text;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return FlatButton(
-      // shape: RoundedRectangleBorder(
-      //     borderRadius: BorderRadius.circular(68.0),
-      //     side: BorderSide(color: color, width: 2.0)),
-      // color: backgroundColor,
-      onPressed: onPressed,
-      child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Text(
-          text,
-          style: GoogleFonts.varelaRound(
-              color: color,
-              fontWeight: FontWeight.w600,
-              fontSize: 18.0,
-              decoration: TextDecoration.underline,
-              fontStyle: FontStyle.italic),
         ),
       ),
     );

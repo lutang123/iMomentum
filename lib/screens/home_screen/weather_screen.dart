@@ -1,11 +1,10 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:iMomentum/app/common_widgets/my_round_button.dart';
 import 'package:iMomentum/app/common_widgets/setting_switch.dart';
+import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/utils/format.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
-import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/services/network_service/weather_service.dart';
 import 'package:provider/provider.dart';
 import 'package:iMomentum/app/utils/cap_string.dart';
@@ -52,84 +51,70 @@ class _WeatherScreenState extends State<WeatherScreen> {
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
     if (!mounted) return;
-    if (mounted) {
-      setState(() {
-        _state = AppState.DOWNLOADING;
-      });
+    // if (mounted) {
+    setState(() {
+      _state = AppState.DOWNLOADING;
+    });
 
-      var weatherData = await WeatherService.getCurrentWeather(
-          _metricUnitOn ? 'metric' : 'imperial');
-      var weatherOneCall = await WeatherService.getForecastWeather(
-          _metricUnitOn ? 'metric' : 'imperial');
+    var weatherData = await WeatherService.getCurrentWeather(
+        _metricUnitOn ? 'metric' : 'imperial');
+    var weatherOneCall = await WeatherService.getForecastWeather(
+        _metricUnitOn ? 'metric' : 'imperial');
 
-      hourlyWeatherDataList = List<HourlyWeatherData>.generate(
-          weatherOneCall['hourly'].take(12).toList().length, (index) {
-        return HourlyWeatherData(
-          hourlyTem: weatherOneCall['hourly'][index]['temp'].toInt(),
-          hourlyIcon: weatherOneCall['hourly'][index]['weather'][0]['icon'],
-        );
-      });
+    hourlyWeatherDataList = List<HourlyWeatherData>.generate(
+        weatherOneCall['hourly'].take(12).toList().length, (index) {
+      return HourlyWeatherData(
+        hourlyTem: weatherOneCall['hourly'][index]['temp'].toInt(),
+        hourlyIcon: weatherOneCall['hourly'][index]['weather'][0]['icon'],
+      );
+    });
 
-      dailyWeatherDataList = List<DailyWeatherData>.generate(
-          weatherOneCall['daily'].take(6).toList().length, (index) {
-        return DailyWeatherData(
-          dailyIcon: weatherOneCall['daily'][index]['weather'][0]['icon'],
-          maxTem: weatherOneCall['daily'][index]['temp']['max'].toInt(),
-          minTem: weatherOneCall['daily'][index]['temp']['min'].toInt(),
-        );
-      });
+    dailyWeatherDataList = List<DailyWeatherData>.generate(
+        weatherOneCall['daily'].take(6).toList().length, (index) {
+      return DailyWeatherData(
+        dailyIcon: weatherOneCall['daily'][index]['weather'][0]['icon'],
+        maxTem: weatherOneCall['daily'][index]['temp']['max'].toInt(),
+        minTem: weatherOneCall['daily'][index]['temp']['min'].toInt(),
+      );
+    });
 
-      setState(() {
-        if (weatherData == null || weatherOneCall == null) {
-          return;
-        }
-        cityName = weatherData['name'];
-        //for current details
-        var current = weatherOneCall['current'];
-        temperature = current['temp'].toInt();
-        feelLike = current['feels_like'].toInt();
-        weatherIcon = current['weather'][0]['icon'];
-        description = current['weather'][0]['description'];
+    setState(() {
+      if (weatherData == null || weatherOneCall == null) {
+        return;
+      }
+      cityName = weatherData['name'];
+      //for current details
+      var current = weatherOneCall['current'];
+      temperature = current['temp'].toInt();
+      feelLike = current['feels_like'].toInt();
+      weatherIcon = current['weather'][0]['icon'];
+      description = current['weather'][0]['description'];
 
-        ///https://stackoverflow.com/questions/50632217/dart-flutter-converting-timestamp
-        //1598361536
-        sunrise = Format.timeAMPM(
-            DateTime.fromMillisecondsSinceEpoch(current['sunrise'] * 1000));
-        sunset = Format.timeAMPM(DateTime.fromMillisecondsSinceEpoch(
-            current['sunset'] * 1000)); //current.sunrise
-        uvi = current['uvi'].toDouble(); //current.uvi
+      ///https://stackoverflow.com/questions/50632217/dart-flutter-converting-timestamp
+      //1598361536
+      sunrise = Format.timeAMPM(
+          DateTime.fromMillisecondsSinceEpoch(current['sunrise'] * 1000));
+      sunset = Format.timeAMPM(DateTime.fromMillisecondsSinceEpoch(
+          current['sunset'] * 1000)); //current.sunrise
+      uvi = current['uvi'].toDouble(); //current.uvi
 //Unhandled Exception: type 'int' is not a subtype of type 'double'
-        speed = current['wind_speed'].toDouble(); //current.wind_speed
-        //extract the last three zero
-        var x = current['visibility'].toString();
-        visibility = x.substring(0, x.length - 3); //current.visibility
-        humidity = current['humidity'].toInt(); //current.humidity
-      });
+      speed = current['wind_speed'].toDouble(); //current.wind_speed
+      //extract the last three zero
+      var x = current['visibility'].toString();
+      visibility = x.substring(0, x.length - 3); //current.visibility
+      humidity = current['humidity'].toInt(); //current.humidity
+    });
 
-      setState(() {
-        _state = AppState.FINISHED_DOWNLOADING;
-      });
-    }
+    setState(() {
+      _state = AppState.FINISHED_DOWNLOADING;
+    });
+    // }
   }
 
   Widget getWeatherIconImage(String weatherIcon, {double size = 20}) {
-    // if (weatherIcon == '01d') {
-    //   return Icon(FontAwesomeIcons.sun, color: Colors.redAccent, size: size);
-    // } else
-
     if (weatherIcon == '01n') {
       return Icon(EvaIcons.moonOutline, color: Colors.white, size: size);
-    }
-
-    ///todo
-//    else if (weatherIcon == '02d') {
-//      return BoxedIcon(WeatherIcons.day_sunny);
-//    } else if (weatherIcon == '02n') {
-//      return Icon(FontAwesomeIcons.cloudMoon, color: Colors.white);
-//    } else if (weatherIcon == '13d' || weatherIcon == '13n') {
-//      return Icon(FontAwesomeIcons.snowflake, color: Colors.white);
-//    }
-    else {
+    } else {
       return Image(
         image: NetworkImage(
             //https://openweathermap.org/img/wn/04n@2x.png
@@ -146,8 +131,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
         InkWell(
           onTap: _toggleSwitchVisible,
           child: _switchVisible == true
-              ? Icon(EvaIcons.closeCircleOutline, size: 25)
-              : Icon(EvaIcons.moreHorizotnalOutline),
+              ? Icon(EvaIcons.closeCircleOutline, size: 25, color: Colors.white)
+              : Icon(EvaIcons.moreHorizotnalOutline, color: Colors.white),
         ),
       ],
     );
@@ -170,8 +155,6 @@ class _WeatherScreenState extends State<WeatherScreen> {
   }
 
   Widget contentFinishedDownload() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     final metricNotifier = Provider.of<MetricNotifier>(context, listen: false);
     bool _metricUnitOn = metricNotifier.getMetric();
     return Column(
@@ -179,43 +162,43 @@ class _WeatherScreenState extends State<WeatherScreen> {
         _getSettingButton(context),
         Row(
           children: [
-            Text(cityName,
-                style: TextStyle(
-                    fontSize: 23,
-                    color: _darkTheme ? Colors.white : Colors.black87)),
+            Text(cityName, style: TextStyle(fontSize: 23, color: Colors.white)),
           ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-//                crossAxisAlignment: CrossAxisAlignment.end,
-//                textBaseline: TextBaseline.ideographic,
-                children: [
-                  Container(
-                    height: 60,
-                    width: 60,
-                    child: getWeatherIconImage(weatherIcon, size: 40),
-                  ),
-                  SizedBox(width: 3.0),
-                  Text(
-                    _metricUnitOn ? '$temperature°C' : '$temperature°F',
-                    style: TextStyle(
-                        color: _darkTheme ? darkThemeButton : lightThemeButton,
-                        fontSize: 26.0),
-                  ),
-                ]),
+            Row(children: [
+              Container(
+                height: 60,
+                width: 60,
+                child: getWeatherIconImage(weatherIcon, size: 40),
+              ),
+              SizedBox(width: 3.0),
+              Text(
+                _metricUnitOn ? '$temperature°C' : '$temperature°F',
+                style: TextStyle(color: Colors.white, fontSize: 26.0),
+              ),
+            ]),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('${description.firstCaps}',
-                    style: Theme.of(context).textTheme.subtitle2),
+                Text(
+                  '${description.firstCaps}',
+                  style: TextStyle(
+                      color: Colors.white70,
+                      fontStyle: FontStyle.italic,
+                      fontSize: 17),
+                ),
                 SizedBox(height: 5),
                 Text(
                     _metricUnitOn
                         ? 'Feels like $feelLike°C'
                         : 'Feels like $feelLike°F',
-                    style: Theme.of(context).textTheme.subtitle2)
+                    style: TextStyle(
+                        color: Colors.white70,
+                        fontStyle: FontStyle.italic,
+                        fontSize: 17))
               ],
             )
           ],
@@ -231,27 +214,35 @@ class _WeatherScreenState extends State<WeatherScreen> {
           child: Column(
             children: [
               Divider(color: Colors.white70),
-              SettingSwitchNoIcon(
-                title: 'Metric Units',
-                value: _metricUnitOn,
-                onChanged: (val) {
-                  ///why here has to add setState, but other switch don't need?
-                  setState(() {
-                    _metricUnitOn = val;
-                  });
-                  _onMetricChanged(val, metricNotifier);
-                },
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: Text(
-                  "Tips: Double tap on the top-right side of Home screen to update weather information anytime.",
-                  style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.white70,
-                      fontStyle: FontStyle.italic),
+              ListTile(
+                title: Text('Metric Units',
+                    style: TextStyle(fontSize: 15, color: Colors.white)),
+                trailing: Transform.scale(
+                  scale: 0.9,
+                  child: CupertinoSwitch(
+                    activeColor: switchActiveColor,
+                    trackColor: Colors.grey,
+                    value: _metricUnitOn,
+                    onChanged: (val) {
+                      ///why here has to add setState, but other switch don't need?
+                      setState(() {
+                        _metricUnitOn = val;
+                      });
+                      _onMetricChanged(val, metricNotifier);
+                    },
+                  ),
                 ),
-              )
+              ),
+              // Padding(
+              //   padding: const EdgeInsets.symmetric(horizontal: 15),
+              //   child: Text(
+              //     "Tips: Swipe horizontally to view more days on weather forecast. Double tap on the weather information on Home screen to update weather at anytime. ",
+              //     style: TextStyle(
+              //         fontSize: 13,
+              //         color: Colors.white70,
+              //         fontStyle: FontStyle.italic),
+              //   ),
+              // )
             ],
           ),
         )
@@ -292,6 +283,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     child: getWeatherIconImage(hourlyIcon)),
                 Text(
                   _metricUnitOn ? '$hourlyTemp°C' : '$hourlyTemp°F',
+                  style: TextStyle(color: Colors.white),
                 ),
               ],
             ),
@@ -411,33 +403,26 @@ class _WeatherScreenState extends State<WeatherScreen> {
           String dailyIcon = daily.dailyIcon;
           int maxTemp = daily.maxTem;
           int minTemp = daily.minTem;
-          return Container(
-//            color: Colors.purple,
-            padding: EdgeInsets.symmetric(horizontal: 4.0),
-//            width: 100,
-            height: 50,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  Format.dayOfWeek(
-                      DateTime.now().add(Duration(days: index + 1))),
-                  style: TextStyle(color: Colors.white70),
-                ),
-                Container(
-//                  color: Colors.yellow,
-                  child: Row(
+          return Row(
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    Format.dayOfWeek(
+                        DateTime.now().add(Duration(days: index + 1))),
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                  Row(
                     children: [
                       Container(
                           height: 30,
                           width: 30,
-//                          color: Colors.blue,
                           child: getWeatherIconImage(dailyIcon)),
                       SizedBox(width: 3),
-                      Text(
-                        _metricUnitOn ? '$maxTemp°C' : '$maxTemp°F',
-                      ),
+                      Text(_metricUnitOn ? '$maxTemp°C' : '$maxTemp°F',
+                          style: TextStyle(color: Colors.white)),
                       SizedBox(width: 3),
                       Text(
                         _metricUnitOn ? '$minTemp°C' : '$minTemp°F',
@@ -445,9 +430,14 @@ class _WeatherScreenState extends State<WeatherScreen> {
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+              SizedBox(width: 3),
+              VerticalDivider(
+                color: Colors.white54,
+                width: 1,
+              ),
+            ],
           );
         },
       ),
@@ -461,7 +451,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
           Center(
             child: Text(
               'Fetching Weather...',
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(fontSize: 20, color: Colors.white),
             ),
           ),
           Container(
@@ -477,6 +467,10 @@ class _WeatherScreenState extends State<WeatherScreen> {
         Center(
           child: Text(
             'Failed to load weather data',
+            style: TextStyle(
+                fontSize: 18,
+                color: Colors.white70,
+                fontStyle: FontStyle.italic),
           ),
         ),
       ],
