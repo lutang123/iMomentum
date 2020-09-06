@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
+import 'package:iMomentum/app/common_widgets/my_tooltip.dart';
+import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/utils/format.dart';
 import 'package:iMomentum/app/common_widgets/my_round_button.dart';
 import 'package:iMomentum/app/utils/tooltip_shape_border.dart';
 import 'package:iMomentum/app/constants/constants.dart';
-import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/models/data/congrats_list.dart';
 import 'package:iMomentum/app/models/todo.dart';
 import 'package:iMomentum/app/utils/extensions.dart';
@@ -82,8 +83,7 @@ class _CompletionScreenState extends State<CompletionScreen> {
   int counter = 0;
   void _onDoubleTap() {
     setState(() {
-      ImageUrl.randomImageUrl =
-          'https://source.unsplash.com/random?nature/$counter';
+      ImageUrl.randomImageUrl = '${ImageUrl.randomImageUrlFirstPart}$counter';
       counter++;
     });
   }
@@ -91,10 +91,9 @@ class _CompletionScreenState extends State<CompletionScreen> {
   @override
   Widget build(BuildContext context) {
     final bloc = Provider.of<CalendarBloc>(context, listen: false);
-
-    final randomNotifier = Provider.of<RandomNotifier>(context);
+    final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
     bool _randomOn = (randomNotifier.getRandom() == true);
-    final imageNotifier = Provider.of<ImageNotifier>(context);
+    final imageNotifier = Provider.of<ImageNotifier>(context, listen: false);
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
@@ -145,24 +144,7 @@ class _CompletionScreenState extends State<CompletionScreen> {
                                     }
                                   } else if (snapshot.hasError) {
                                     ///still show it but onPress is null
-                                    return Tooltip(
-                                      textStyle: TextStyle(color: Colors.white),
-                                      preferBelow: false,
-                                      verticalOffset: 0,
-                                      decoration: ShapeDecoration(
-                                        color:
-                                            Color(0xf0086972).withOpacity(0.9),
-                                        shape:
-                                            TooltipShapeBorder(arrowArc: 0.5),
-                                        shadows: [
-                                          BoxShadow(
-                                              color: Colors.black26,
-                                              blurRadius: 4.0,
-                                              offset: Offset(2, 2))
-                                        ],
-                                      ),
-                                      margin: const EdgeInsets.all(30.0),
-                                      padding: const EdgeInsets.all(8.0),
+                                    return MyToolTip(
                                       message: 'See my progress for today',
                                       child: RoundSmallIconButton(
                                         //this is only for if it has error
@@ -206,21 +188,8 @@ class _CompletionScreenState extends State<CompletionScreen> {
   }
 
   Widget progressButton(double todayDuration) {
-    return Tooltip(
+    return MyToolTip(
       message: 'See my progress for today',
-      textStyle: TextStyle(color: Colors.white),
-      preferBelow: false,
-      verticalOffset: 0,
-      decoration: ShapeDecoration(
-        color: Color(0xf0086972).withOpacity(0.9),
-        shape: TooltipShapeBorder(arrowArc: 0.5),
-        shadows: [
-          BoxShadow(
-              color: Colors.black26, blurRadius: 4.0, offset: Offset(2, 2))
-        ],
-      ),
-      margin: const EdgeInsets.all(30.0),
-      padding: const EdgeInsets.all(8.0),
       child: RoundSmallIconButton(
         icon: EvaIcons.trendingUpOutline,
         onPressed: () => _showFlushBar(todayDuration),
@@ -238,7 +207,7 @@ class _CompletionScreenState extends State<CompletionScreen> {
         ///cancel and done button all have context from here
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
-            backgroundColor: Color(0xf01b262c), // //
+            backgroundColor: darkThemeNoPhotoColor,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20.0))),
             title: Text(
@@ -265,7 +234,6 @@ class _CompletionScreenState extends State<CompletionScreen> {
                                   const EdgeInsets.symmetric(horizontal: 15),
                               child: TextFormField(
                                 initialValue: _restDurationInMin.toString(),
-                                textInputAction: TextInputAction.done,
                                 keyboardType: TextInputType.number,
                                 validator: (value) =>
                                     (value.isNotEmpty) && (int.parse(value) > 0)
@@ -283,15 +251,7 @@ class _CompletionScreenState extends State<CompletionScreen> {
                                 style: KDialogContent,
                                 autofocus: true,
                                 cursorColor: Colors.white,
-                                decoration: InputDecoration(
-                                  focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.white),
-                                  ),
-                                  enabledBorder: UnderlineInputBorder(
-                                      borderSide: BorderSide(
-                                    color: Colors.white,
-                                  )),
-                                ),
+                                decoration: KTextFieldInputDecoration,
                               ),
                             ),
                           ),
@@ -343,14 +303,6 @@ class _CompletionScreenState extends State<CompletionScreen> {
                 ],
               ),
             ),
-            // actions: <Widget>[
-            //   FlatButton(
-            //       child: Text('Cancel', style: KDialogButton),
-            //       onPressed: () => Navigator.of(context).pop()),
-            //   FlatButton(
-            //       child: Text('Done', style: KDialogButton),
-            //       onPressed: () => _done(context)),
-            // ],
           );
         });
       },

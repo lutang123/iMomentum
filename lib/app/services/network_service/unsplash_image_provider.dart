@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:iMomentum/app/constants/api_key.dart';
 import '../../models/unsplash_image.dart';
-import 'package:http/http.dart' as http;
 
 /// Helper class to interact with the Unsplash Api and provide [UnsplashImage].
 class UnsplashImageProvider {
@@ -53,7 +52,8 @@ class UnsplashImageProvider {
       int perPage = 10}) async {
     // Search for image associated with the keyword
     String url =
-        'https://api.unsplash.com/search/photos?query=$keywords&page=$page&per_page=$perPage&order_by=popular&client_id=${APIKeys.unsplashAPI}';
+        //&order_by=popular??? (Optional; default: relevant). Valid values are latest and relevant.) //&orientation=portrait
+        'https://api.unsplash.com/search/photos?query=$keywords&page=$page&per_page=$perPage&client_id=${APIKeys.unsplashAPI}';
     // receive image data from unsplash associated to the given keyword
     var data = await _getImageData(url);
     // generate UnsplashImage List from received data

@@ -159,17 +159,16 @@ class _RestScreenState extends State<RestScreen>
   int counter = 0;
   void _onDoubleTap() {
     setState(() {
-      ImageUrl.randomImageUrl =
-          'https://source.unsplash.com/random?nature/$counter';
+      ImageUrl.randomImageUrl = '${ImageUrl.randomImageUrlFirstPart}$counter';
       counter++;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final randomNotifier = Provider.of<RandomNotifier>(context);
+    final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
     bool _randomOn = (randomNotifier.getRandom() == true);
-    final imageNotifier = Provider.of<ImageNotifier>(context);
+    final imageNotifier = Provider.of<ImageNotifier>(context, listen: false);
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
@@ -289,8 +288,8 @@ class _RestScreenState extends State<RestScreen>
           ///this link can only use 10 times/hours
 //          .get('http://quotes.rest/qod.json?maxlength=100&category=life&love');
           .get('https://favqs.com/api/qotd');
-      print(
-          'response.statusCode in rest quote: ${response.statusCode}'); //429, meaning too many request
+      // print(
+      //     'response.statusCode in rest quote: ${response.statusCode}'); //429, meaning too many request
       if (response.statusCode == 200) {
         var quoteData = json.decode(response.body)['quote'];
         setState(() {
@@ -310,7 +309,7 @@ class _RestScreenState extends State<RestScreen>
         dailyQuote = RestQuoteList().getRestQuote().body;
         author = RestQuoteList().getRestQuote().author;
       });
-      print('error in fetching quote: $e');
+      print('error in fetching rest quote: $e');
     }
     setState(() {
       _state = QuoteLoadingState.FINISHED_DOWNLOADING;

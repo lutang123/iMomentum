@@ -3,6 +3,21 @@ import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:provider/provider.dart';
 
+class MyDotContainer extends StatelessWidget {
+  final Color color;
+
+  const MyDotContainer({Key key, this.color}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 8.0,
+      height: 8.0,
+      margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+      decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+    );
+  }
+}
+
 class FlushBarButtonChild extends StatelessWidget {
   final String title;
 
@@ -25,26 +40,25 @@ class FlushBarButtonChild extends StatelessWidget {
   }
 }
 
+// for PINNED/OTHERS
 class ContainerOnlyText extends StatelessWidget {
   final String text;
 
   const ContainerOnlyText({Key key, this.text}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Container(
         child: Row(
       children: [
         Container(
             decoration: BoxDecoration(
-                color: _darkTheme ? Colors.black12 : Colors.white12,
+                color: darkThemeAppBar,
                 borderRadius: BorderRadius.all(Radius.circular(10.0))),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(text,
                   style: TextStyle(
-                    color: _darkTheme ? darkThemeWords : lightThemeWords,
+                    color: darkThemeWords,
                     fontWeight: FontWeight.bold,
                   )),
             ))
@@ -64,7 +78,7 @@ class NoteSearchBar extends StatelessWidget {
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Container(
         decoration: BoxDecoration(
-            color: _darkTheme ? darkThemeDrawer : lightThemeAppBar,
+            color: _darkTheme ? darkThemeDrawer : lightThemeDrawer,
             borderRadius: BorderRadius.all(Radius.circular(20.0))),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -89,28 +103,7 @@ class NoteSearchBar extends StatelessWidget {
   }
 }
 
-class CustomizedContainer extends StatelessWidget {
-  CustomizedContainer({this.child, this.color});
-  final Widget child;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      margin: EdgeInsets.only(left: 8.0, right: 8),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20.0),
-          topRight: Radius.circular(20.0),
-        ),
-      ),
-      child: child,
-    );
-  }
-}
-
+///used in todoscreen and mantra and quote
 class CustomizedContainerNew extends StatelessWidget {
   CustomizedContainerNew({this.child, this.color});
   final Widget child;
@@ -123,6 +116,10 @@ class CustomizedContainerNew extends StatelessWidget {
       margin: EdgeInsets.only(left: 8.0, right: 8),
       decoration: BoxDecoration(
         color: color,
+        // borderRadius: BorderRadius.only(
+//           topLeft: Radius.circular(20.0),
+//           topRight: Radius.circular(20.0),
+//         ),
         borderRadius: BorderRadius.all(Radius.circular(20.0)),
       ),
       child: child,
@@ -130,10 +127,10 @@ class CustomizedContainerNew extends StatelessWidget {
   }
 }
 
+//used in NoteContainer for folder name
 class SmallContainer extends StatelessWidget {
-  SmallContainer({this.text, this.bkgdColor = Colors.black38});
+  SmallContainer({this.text});
   final String text;
-  final Color bkgdColor;
 
   ////                              Container(
   ////                                decoration: BoxDecoration(
@@ -148,24 +145,30 @@ class SmallContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 3),
       decoration: BoxDecoration(
-        color: bkgdColor,
+        color: _darkTheme ? darkThemeDrawer : lightThemeDrawer,
         borderRadius: BorderRadius.all(Radius.circular(20.0)),
-        border: Border.all(color: Colors.white54, width: 1),
+        border: Border.all(
+            color: _darkTheme ? darkThemeDivider : lightThemeDivider, width: 1),
       ),
       child: Padding(
         padding: const EdgeInsets.all(3.0),
-        child:
-            Text(text, style: TextStyle(color: Colors.white70, fontSize: 10)),
+        child: Text(text,
+            style: TextStyle(
+                color: _darkTheme ? darkThemeHint : lightThemeHint,
+                fontSize: 10)),
       ),
     );
   }
 }
 
+///not used yet
 class SmallContainerForReminder extends StatelessWidget {
-  SmallContainerForReminder({this.text, this.bkgdColor = Colors.black38});
+  SmallContainerForReminder({this.text = '', this.bkgdColor = Colors.black38});
   final String text;
   final Color bkgdColor;
 

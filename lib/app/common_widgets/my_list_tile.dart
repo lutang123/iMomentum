@@ -85,8 +85,6 @@ class TodoListTile extends StatelessWidget {
 
   Widget getIcon() {
     if (todo.category == 0 || todo.category == null) {
-//      return Icon(Icons.timer); //clock-outline
-//      return Icon(EvaIcons.clockOutline); //clock-outline, bulb-outline
       return Icon(EvaIcons.bulbOutline);
     } else if (todo.category == 1) {
       return Icon(EvaIcons.briefcaseOutline);
@@ -107,8 +105,7 @@ class TodoListTile extends StatelessWidget {
     return ListTile(
       leading: Theme(
         data: ThemeData(
-            unselectedWidgetColor:
-                _darkTheme ? getColor() : getColorLight()), //Colors.grey[350]
+            unselectedWidgetColor: _darkTheme ? getColor() : getColorLight()),
         child: Checkbox(
             activeColor: Colors.transparent, //black54
             checkColor: _darkTheme
@@ -206,10 +203,10 @@ class HomeTodoListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: Theme(
-          data: ThemeData(unselectedWidgetColor: Colors.grey[350]),
+          data: ThemeData(unselectedWidgetColor: Colors.grey[200]),
           child: Checkbox(
             activeColor: Colors.transparent,
-            checkColor: Colors.grey[350],
+            checkColor: Colors.grey[200],
             value: todo.isDone ? true : false,
             onChanged: onChangedCheckbox,
           )),
@@ -228,9 +225,8 @@ class HomeTodoListTile extends StatelessWidget {
         ),
       ),
       trailing: IconButton(
-        color: Colors.grey[350],
+        color: Colors.grey[200],
         iconSize: 18,
-//        icon: Icon(FontAwesomeIcons.edit),
         icon: Icon(Icons.clear),
         onPressed: onPressed,
         tooltip: 'Delete Task',
@@ -324,7 +320,7 @@ class MantraListTile extends StatelessWidget {
       title: AutoSizeText(mantra.title,
           maxLines: 3,
           maxFontSize: 20,
-          minFontSize: 15,
+          minFontSize: 20,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             color: _darkTheme ? Colors.white : Color(0xF01b262c),
@@ -355,13 +351,13 @@ class QuoteListTile extends StatelessWidget {
           quote.author == null || quote.author == ''
               ? '"${quote.title}"'
               : '"${quote.title} -- ${quote.author}"',
-          maxLines: 3,
-          maxFontSize: 20,
-          minFontSize: 15,
+          maxLines: 4,
+          maxFontSize: 18,
+          minFontSize: 18,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
               color: _darkTheme ? Colors.white : Color(0xF01b262c),
-              fontSize: 20.0,
+              fontSize: 18.0,
               fontStyle: FontStyle.italic)),
       onTap: onTap,
     );

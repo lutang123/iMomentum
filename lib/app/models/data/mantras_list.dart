@@ -28,11 +28,11 @@ class DefaultMantraList {
   //a function to return a random mantra
   DefaultMantra showMantra() {
     var r = Random(DateTime.now().millisecondsSinceEpoch);
-    var randInt = r.nextInt(_mantraList.length);
-    return _mantraList[randInt];
+    var randInt = r.nextInt(mantraList.length);
+    return mantraList[randInt];
   }
 
-  List<DefaultMantra> _mantraList = [
+  List<DefaultMantra> mantraList = [
     DefaultMantra(body: 'Live in the moment.'),
     DefaultMantra(body: 'You are capable of wonderful things.'),
     DefaultMantra(body: 'Breathe'),

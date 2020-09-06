@@ -2,7 +2,7 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:iMomentum/app/common_widgets/error_message.dart';
+import 'package:iMomentum/app/common_widgets/empty_and_error_content.dart';
 import 'package:iMomentum/screens/home_drawer/unsplash/widget/image_tile.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/services/network_service/unsplash_image_provider.dart';
@@ -13,11 +13,14 @@ import '../../../app/models/unsplash_image.dart';
 
 class StaggeredView extends StatefulWidget {
   final Database database;
-
   final query;
-  final bool searching;
-  const StaggeredView(this.query,
-      {Key key, this.database, this.searching = true});
+  // final bool searching;
+  const StaggeredView(
+    this.query, {
+    Key key,
+    this.database,
+    // this.searching = true,
+  });
 
   @override
   _StaggeredViewState createState() => _StaggeredViewState();
@@ -28,14 +31,14 @@ class _StaggeredViewState extends State<StaggeredView> {
 
   Future<List<UnsplashImage>> imageList;
   get query => widget.query;
-  get searching => widget.searching;
+  // get searching => widget.searching;
 
   @override
   void initState() {
     super.initState();
-
     //We instantiate it within our initState method
     _scrollController = ScrollController();
+
     imageList = _loadImages(keyword: query);
     _scrollController.addListener(() {
       if (_scrollController.position.maxScrollExtent ==
@@ -169,13 +172,11 @@ class _StaggeredViewState extends State<StaggeredView> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        // pass image loader
-//        future: updatedInfo(query),
+//        future: updatedInfo(query), //do not use this one.
         future: imageList,
         builder: (context, snapshot) {
 //          print('snapshot.connectionState: ${snapshot.connectionState}');
 //          print('snapshot.data: ${snapshot.data}');
-
           ///we can not have ConnectionState.done, because we need to keep loading new
 //          if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.data != null) {
@@ -203,29 +204,9 @@ class _StaggeredViewState extends State<StaggeredView> {
               ),
             );
           } else if (snapshot.hasError) {
-            return Center(
-              child: Column(
-                children: <Widget>[
-                  /// type String is not a subtype of type 'int' of 'index' ??
-                  /// Http error: 403 //The HTTP 403 is a HTTP status code meaning access to the requested resource is forbidden for some reason
-                  ///
-                  /// NoSuchMethodError: The getter 'length' was called on null
-                  /// it appears when x.length: 40
-                  Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Text(
-                      snapshot.error.toString(),
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  ErrorMessage(
-                    title: 'Something went wrong',
-                    message:
-                        'Can\'t load items right now, please try again later',
-                  )
-                ],
-              ),
-            );
+            print(
+                'snapshot.hasError in fetching unsplash images: ${snapshot.error.toString()}');
+            return ErrorMessage();
           }
 //          }
           return Center(

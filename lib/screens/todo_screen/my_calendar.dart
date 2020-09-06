@@ -103,20 +103,20 @@ class MyCalendar extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: _darkTheme
                         ? calendarController.isSelected(today)
-                            ? darkThemeCalendarSelected
-                            : darkThemeCalendarSelected
+                            ? darkThemeCalendarSelectedDay
+                            : darkThemeCalendarSelectedDay
                         : calendarController.isSelected(today)
-                            ? lightThemeCalendarSelected
-                            : lightThemeCalendarSelected,
+                            ? lightThemeCalendarSelectedDay
+                            : lightThemeCalendarSelectedDay,
                     borderRadius: BorderRadius.circular(50.0),
                     border: Border.all(
                       color: _darkTheme
                           ? calendarController.isSelected(today)
-                              ? darkThemeCalendarSelected
-                              : darkThemeCalendarSelected
+                              ? darkThemeCalendarSelectedDay
+                              : darkThemeCalendarSelectedDay
                           : calendarController.isSelected(today)
-                              ? lightThemeCalendarSelected
-                              : lightThemeCalendarSelected,
+                              ? lightThemeCalendarSelectedDay
+                              : lightThemeCalendarSelectedDay,
                       width: 2.0,
                     ),
                   ),
@@ -136,8 +136,8 @@ class MyCalendar extends StatelessWidget {
                     borderRadius: BorderRadius.circular(50.0),
                     border: Border.all(
                       color: _darkTheme
-                          ? darkThemeCalendarSelected
-                          : lightThemeCalendarSelected,
+                          ? darkThemeCalendarSelectedDay
+                          : lightThemeCalendarSelectedDay,
                       width: 2.0,
                     ),
                   ),
@@ -148,8 +148,8 @@ class MyCalendar extends StatelessWidget {
                       style: TextStyle(
                           fontSize: 16,
                           color: _darkTheme
-                              ? darkThemeCalendarSelected.withOpacity(0.6)
-                              : lightThemeCalendarSelected.withOpacity(0.6)),
+                              ? darkThemeCalendarSelectedDay.withOpacity(0.6)
+                              : lightThemeCalendarSelectedDay.withOpacity(0.6)),
                     ),
                   ));
             },

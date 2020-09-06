@@ -323,15 +323,20 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     return Provider<AuthBase>(
       create: (context) => Auth(),
+
+      /// must have a Builder here
+      /// we use `builder` to obtain a new `BuildContext` that has access to the provider
       child: Builder(
         builder: (context) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'iMomentum',
             theme: themeNotifier.getTheme(),
+            darkTheme:
+                darkTheme, //add this so that the app will follow phone setting
             themeMode: ThemeMode.system,
 
             ///todo: local
@@ -358,37 +363,37 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-class SecondScreen extends StatefulWidget {
-  SecondScreen(this.payload);
-
-  final String payload;
-
-  @override
-  State<StatefulWidget> createState() => SecondScreenState();
-}
-
-class SecondScreenState extends State<SecondScreen> {
-  String _payload;
-  @override
-  void initState() {
-    super.initState();
-    _payload = widget.payload;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Second Screen with payload: ${(_payload ?? '')}'),
-      ),
-      body: Center(
-        child: RaisedButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: Text('Go back!'),
-        ),
-      ),
-    );
-  }
-}
+// class SecondScreen extends StatefulWidget {
+//   SecondScreen(this.payload);
+//
+//   final String payload;
+//
+//   @override
+//   State<StatefulWidget> createState() => SecondScreenState();
+// }
+//
+// class SecondScreenState extends State<SecondScreen> {
+//   String _payload;
+//   @override
+//   void initState() {
+//     super.initState();
+//     _payload = widget.payload;
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Second Screen with payload: ${(_payload ?? '')}'),
+//       ),
+//       body: Center(
+//         child: RaisedButton(
+//           onPressed: () {
+//             Navigator.pop(context);
+//           },
+//           child: Text('Go back!'),
+//         ),
+//       ),
+//     );
+//   }
+// }

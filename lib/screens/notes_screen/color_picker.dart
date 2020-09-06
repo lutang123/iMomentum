@@ -3,7 +3,6 @@ import 'package:iMomentum/app/constants/theme_color.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:provider/provider.dart';
-import 'package:tinycolor/tinycolor.dart';
 
 // List<Color> colorsDark2 = [
 //   darkThemeNoPhotoBkgdColor,

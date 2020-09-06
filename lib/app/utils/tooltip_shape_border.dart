@@ -11,9 +11,9 @@ class TooltipShapeBorder extends ShapeBorder {
   final double radius;
 
   TooltipShapeBorder({
-    this.radius = 16.0,
-    this.arrowWidth = 20.0,
-    this.arrowHeight = 10.0,
+    this.radius = 10.0,
+    this.arrowWidth = 10.0,
+    this.arrowHeight = 15.0,
     this.arrowArc = 0.0,
   }) : assert(arrowArc <= 1.0 && arrowArc >= 0.0);
 

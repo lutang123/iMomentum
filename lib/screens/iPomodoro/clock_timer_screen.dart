@@ -198,17 +198,16 @@ class _ClockTimerScreenState extends State<ClockTimerScreen>
   int counter = 0;
   void _onDoubleTap() {
     setState(() {
-      ImageUrl.randomImageUrl =
-          'https://source.unsplash.com/random?nature/$counter';
+      ImageUrl.randomImageUrl = '${ImageUrl.randomImageUrlFirstPart}$counter';
       counter++;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final randomNotifier = Provider.of<RandomNotifier>(context);
+    final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
     bool _randomOn = (randomNotifier.getRandom() == true);
-    final imageNotifier = Provider.of<ImageNotifier>(context);
+    final imageNotifier = Provider.of<ImageNotifier>(context, listen: false);
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
@@ -227,6 +226,7 @@ class _ClockTimerScreenState extends State<ClockTimerScreen>
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
+                    ///just to make sure the clock is in the same position
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
@@ -303,9 +303,10 @@ class _ClockTimerScreenState extends State<ClockTimerScreen>
       ],
     );
   }
+}
 
-  ///we can not update it because it's not StreamBuilder
-  /// update & at the same time update _selectedList
+///we can not update it because it's not StreamBuilder
+/// update & at the same time update _selectedList
 //  void _onTapTodo(Database database, Todo todo) async {
 //    var _typedTitleAndComment = await showModalBottomSheet(
 //      context: context,
@@ -347,4 +348,3 @@ class _ClockTimerScreenState extends State<ClockTimerScreen>
 //      }
 //    }
 //  }
-}

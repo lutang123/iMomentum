@@ -1,7 +1,6 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:iMomentum/app/common_widgets/setting_switch.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/utils/format.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';

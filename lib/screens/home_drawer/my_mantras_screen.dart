@@ -43,14 +43,13 @@ class _MyMantrasState extends State<MyMantras> {
 
   @override
   Widget build(BuildContext context) {
-    /// Todo: listen is false or not
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
 
-    final randomNotifier = Provider.of<RandomNotifier>(context);
+    final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
     bool _randomOn = randomNotifier.getRandom();
 
-    final imageNotifier = Provider.of<ImageNotifier>(context);
+    final imageNotifier = Provider.of<ImageNotifier>(context, listen: false);
 
     ///for mantra
     final mantraNotifier = Provider.of<MantraNotifier>(context);
@@ -250,20 +249,19 @@ class _MyMantrasState extends State<MyMantras> {
               _fabVisible = false;
             });
             widget.database.setMantra(mantra);
-            Navigator.pop(context);
+
+            ///must remove
+            // Navigator.pop(context);
           },
           child: FlushBarButtonChild(
             title: 'UNDO',
           )),
       margin: const EdgeInsets.all(20),
-      padding: const EdgeInsets.only(left: 10),
+      padding: const EdgeInsets.all(8),
       borderRadius: 10,
       flushbarPosition: FlushbarPosition.BOTTOM,
       flushbarStyle: FlushbarStyle.FLOATING,
-      backgroundGradient: LinearGradient(colors: [
-        Color(0xF0888888).withOpacity(0.85),
-        Colors.black54,
-      ]),
+      backgroundGradient: KFlushBarGradient,
       duration: Duration(seconds: 5),
       titleText: Text(
         'Deleted',

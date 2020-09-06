@@ -141,7 +141,7 @@ class _ImageGalleryState extends State<ImageGallery> {
           body: SafeArea(
             child: TabBarView(
               children: <Widget>[
-                StaggeredView('nature'),
+                StaggeredView('nature,wallpaper,travel,landscape'),
                 secondTab(),
               ],
             ),
@@ -463,7 +463,7 @@ class _ImageGalleryState extends State<ImageGallery> {
     pr.style(
       message: 'Please wait',
       borderRadius: 20.0,
-      backgroundColor: darkThemeNoPhotoBkgdColor,
+      backgroundColor: darkThemeNoPhotoColor,
       elevation: 10.0,
       insetAnimCurve: Curves.easeInOut,
       progress: 0.0,

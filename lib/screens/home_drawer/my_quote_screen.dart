@@ -242,21 +242,20 @@ class _MyQuotesState extends State<MyQuotes> {
             _fabVisible = false;
           });
           widget.database.setQuote(quote);
-          Navigator.pop(context);
+
+          ///can not have this
+          // Navigator.pop(context);
         },
         child: FlushBarButtonChild(
           title: 'UNDO',
         ),
       ),
       margin: const EdgeInsets.all(20),
-      padding: const EdgeInsets.only(left: 10),
+      padding: const EdgeInsets.all(8),
       borderRadius: 10,
       flushbarPosition: FlushbarPosition.BOTTOM,
       flushbarStyle: FlushbarStyle.FLOATING,
-      backgroundGradient: LinearGradient(colors: [
-        Color(0xF0888888).withOpacity(0.85),
-        Colors.black54,
-      ]),
+      backgroundGradient: KFlushBarGradient,
       duration: Duration(seconds: 3),
       titleText: Text(
         'Deleted',

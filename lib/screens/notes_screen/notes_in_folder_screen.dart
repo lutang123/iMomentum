@@ -15,13 +15,12 @@ import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/models/note.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/notes_screen/note_container.dart';
-import 'package:iMomentum/app/common_widgets/error_message.dart';
 import 'package:provider/provider.dart';
 import 'add_note_screen.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
-import 'empty_content.dart';
+import '../../app/common_widgets/empty_and_error_content.dart';
 import 'move_folder_screen.dart';
 import 'my_flutter_app_icon.dart';
 
@@ -82,14 +81,6 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
     super.dispose();
   }
 
-  int counter = 0;
-  void _onDoubleTap() {
-    setState(() {
-      ImageUrl.randomImageUrl = '${ImageUrl.randomImageUrlFirstPart}$counter';
-      counter++;
-    });
-  }
-
   List<Note> _getNotesInThisFolder(List<Note> allNotes, Folder folder) {
     final List<Note> _newList = [];
     for (Note note in allNotes) {
@@ -122,6 +113,14 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
       }
     });
     return pinnedNotes;
+  }
+
+  int counter = 0;
+  void _onDoubleTap() {
+    setState(() {
+      ImageUrl.randomImageUrl = '${ImageUrl.randomImageUrlFirstPart}$counter';
+      counter++;
+    });
   }
 
   @override
@@ -174,29 +173,22 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
                               child: CustomScrollView(
                                 controller: _hideButtonController,
                                 slivers: <Widget>[
-                                  //this is for search bar.
-                                  _buildBoxAdaptorForSearch(
-                                      allNotesInThisFolder),
-                                  //this is just for the word 'PINNED'
                                   _buildBoxAdaptorForPinned(
                                       _pinnedNotesInThisFolder),
                                   //this is for pinned notes
-                                  ///we are passing context and use context for flushBar,
-                                  ///or we can create a global key for scaffold
                                   _buildNotesGrid(_pinnedNotesInThisFolder),
                                   //this is just for the word 'OTHERS'
                                   _pinnedNotesInThisFolder.length > 0
                                       ? _buildBoxAdaptorForOthers(
                                           _notPinnedNotesInThisFolder)
                                       : SliverToBoxAdapter(child: Container()),
-                                  //this is for
+                                  //this is for not pinned notes.
                                   _buildNotesGrid(_notPinnedNotesInThisFolder),
                                 ],
                               ),
                             ),
                           ),
                           _bottomRow(),
-//                          SizedBox(height: 25),
                         ],
                       );
                     } else {
@@ -209,25 +201,13 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
                       );
                     }
                   } else if (snapshot.hasError) {
+                    print(
+                        'snapshot.hasError in notes stream: ${snapshot.error.toString()}');
                     return Column(
                       children: [
-                        _topErrorRow(), //no toggle button
-                        Expanded(
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Text(snapshot.error.toString()),
-                                ErrorMessage(
-                                  title: 'Something went wrong',
-                                  message:
-                                      'Can\'t load items right now, please try again later',
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        _bottomRow(),
+                        //this must include, it shows folder name and go back button, only not include toggle button
+                        _topErrorRow(),
+                        Expanded(child: ErrorMessage()),
                       ],
                     );
                   }
@@ -338,16 +318,6 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
   ContainerTransitionType _transitionType = ContainerTransitionType.fade;
 
   int axisCount = 2;
-  Widget _buildBoxAdaptorForSearch(List<Note> notes) {
-    return SliverToBoxAdapter(
-      child: notes.length == 0
-          ? Container()
-          : Padding(
-              padding: const EdgeInsets.only(left: 25.0, right: 25, top: 20),
-              child: NoteSearchBar(onPressed: null),
-            ),
-    );
-  }
 
   Widget _buildBoxAdaptorForPinned(List<Note> notes) {
     return SliverToBoxAdapter(
@@ -451,7 +421,7 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
         //     topRight: Radius.circular(20.0),
         //   ),
         // ),
-        height: 60,
+        height: 50,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
@@ -544,7 +514,7 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
             try {
               ///add BuildContext context, so that it won't pop to folder screen,
               ///it doesn't seem to matter
-              Navigator.of(context).pop();
+              // Navigator.of(context).pop();
               await database.setNote(note);
             } on PlatformException catch (e) {
               PlatformExceptionAlertDialog(
@@ -557,14 +527,11 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
             title: 'UNDO',
           )),
       margin: const EdgeInsets.all(20),
-      padding: const EdgeInsets.only(left: 10),
+      padding: const EdgeInsets.all(8),
       borderRadius: 15,
       flushbarPosition: FlushbarPosition.BOTTOM,
       flushbarStyle: FlushbarStyle.FLOATING,
-      backgroundGradient: LinearGradient(colors: [
-        Color(0xF0888888).withOpacity(0.85),
-        darkThemeNoPhotoBkgdColor,
-      ]),
+      backgroundGradient: KFlushBarGradient,
       duration: Duration(seconds: 3),
       icon: Icon(
         EvaIcons.trash2Outline,

@@ -60,8 +60,8 @@ class NoteContainer extends StatelessWidget {
                         child: Text(note.title,
                             style: GoogleFonts.getFont(note.fontFamily,
                                 color: _darkTheme
-                                    ? darkThemeButton
-                                    : lightThemeButton,
+                                    ? darkThemeWords
+                                    : lightThemeWords,
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600)),
                       ),
@@ -76,10 +76,10 @@ class NoteContainer extends StatelessWidget {
                         child: Text(
                           note.description,
                           style: GoogleFonts.getFont(
-//                            'Crafty Girls',
+                            // e.g. 'Crafty Girls',
                             note.fontFamily,
                             color:
-                                _darkTheme ? darkThemeButton : lightThemeButton,
+                                _darkTheme ? darkThemeWords : lightThemeWords,
                             fontSize: 16,
                           ),
                           overflow: TextOverflow.ellipsis,

@@ -101,18 +101,21 @@ class _APIQuoteState extends State<APIQuote> {
 }
 
 class DailyQuote extends StatelessWidget {
-  DailyQuote({Key key, @required this.title, this.author}) : super(key: key);
+  DailyQuote(
+      {Key key, @required this.title, this.author, this.bottomPadding = 15})
+      : super(key: key);
 
   final String title;
   final String author;
+  final double bottomPadding;
 
   @override
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(
-        padding: const EdgeInsets.only(left: 10, right: 10, bottom: 15.0),
-        child: (title.length) < 60
+        padding: EdgeInsets.only(left: 10, right: 10, bottom: bottomPadding),
+        child: (title.length) < 90
             ? Text(
                 author == null || author == ''
                     ? '"$title"'
@@ -133,7 +136,7 @@ class DailyQuote extends StatelessWidget {
       text: TextSpan(
         style: KQuote,
         children: <TextSpan>[
-          TextSpan(text: '"${title.substring(0, 60)}'),
+          TextSpan(text: '"${title.substring(0, 90)}'),
           TextSpan(
               text: '...',
               style: KQuoteDot,
@@ -160,7 +163,7 @@ class DailyQuote extends StatelessWidget {
         textStyle: TextStyle(color: Colors.white),
         height: 200,
         width: 100,
-        backgroundColor: darkThemeNoPhotoBkgdColor,
+        backgroundColor: darkThemeNoPhotoColor,
         padding: EdgeInsets.all(6.0),
         borderRadius: BorderRadius.circular(10.0));
 
@@ -230,7 +233,7 @@ class RestQuoteClass extends StatelessWidget {
         textStyle: TextStyle(color: Colors.white),
         height: 200,
         width: 100,
-        backgroundColor: darkThemeNoPhotoBkgdColor,
+        backgroundColor: darkThemeNoPhotoColor,
         padding: EdgeInsets.all(6.0),
         borderRadius: BorderRadius.circular(10.0));
 

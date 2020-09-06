@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
-import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/constants/constants.dart';
@@ -15,48 +13,34 @@ import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/models/note.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/notes_screen/note_container.dart';
-import 'package:iMomentum/app/common_widgets/error_message.dart';
 import 'package:provider/provider.dart';
 import 'add_note_screen.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
-import 'empty_content.dart';
+import '../../app/common_widgets/empty_and_error_content.dart';
 import 'move_folder_screen.dart';
 
-class SearchResult extends StatefulWidget {
+class NotesSearchResult extends StatefulWidget {
   final List<Folder> folders;
   final Database database;
   final String query;
 
-  const SearchResult({Key key, this.folders, this.database, this.query})
+  const NotesSearchResult({Key key, this.folders, this.database, this.query})
       : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return SearchResultState();
+    return NotesSearchResultState();
   }
 }
 
-class SearchResultState extends State<SearchResult> {
+class NotesSearchResultState extends State<NotesSearchResult> {
   List<Folder> get folders => widget.folders;
   Database get database => widget.database;
   String get query => widget.query;
 
   List<Note> filteredNotes = [];
-
-  final List<Folder> defaultFolders = [
-    Folder(id: 0.toString(), title: 'All Notes'),
-    Folder(id: 1.toString(), title: 'Notes'),
-  ];
-
-  int counter = 0;
-  void _onDoubleTap() {
-    setState(() {
-      ImageUrl.randomImageUrl = '${ImageUrl.randomImageUrlFirstPart}$counter';
-      counter++;
-    });
-  }
 
   List<Note> _getPinnedNote(List<Note> allNotes) {
     List<Note> pinnedNotes = [];
@@ -85,104 +69,64 @@ class SearchResultState extends State<SearchResult> {
           note.description.toLowerCase().contains(query.toLowerCase()))
         filteredNotes.add(note);
     });
-    print('filteredNotes: $filteredNotes');
     return filteredNotes;
   }
 
   @override
   Widget build(BuildContext context) {
-    final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
-    bool _randomOn = (randomNotifier.getRandom() == true);
-    final imageNotifier = Provider.of<ImageNotifier>(context, listen: false);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
 
-    return Stack(
-      fit: StackFit.expand,
-      children: <Widget>[
-        BuildPhotoView(
-          imageUrl:
-              _randomOn ? ImageUrl.randomImageUrl : imageNotifier.getImage(),
-        ),
-        ContainerLinearGradient(),
-        GestureDetector(
-          onDoubleTap: _onDoubleTap,
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: SafeArea(
-              top: false,
-              child: StreamBuilder<List<Note>>(
-                stream: database
-                    .notesStream(), // print(database.todosStream());//Instance of '_MapStream<QuerySnapshot, List<TodoModel>>'
-                builder: (con, snapshot) {
-                  if (snapshot.hasData) {
-                    final List<Note> allNotes = snapshot.data;
-                    filteredNotes = _getFilteredNotes(allNotes);
-                    final List<Note> pinnedNotes =
-                        _getPinnedNote(filteredNotes);
-                    final List<Note> notPinnedNotes =
-                        _getNotPinnedNote(filteredNotes);
+    return Scaffold(
+      backgroundColor:
+          _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
+      body: SafeArea(
+        top: false,
+        child: StreamBuilder<List<Note>>(
+          stream: database
+              .notesStream(), // print(database.todosStream());//Instance of '_MapStream<QuerySnapshot, List<TodoModel>>'
+          builder: (con, snapshot) {
+            if (snapshot.hasData) {
+              final List<Note> allNotes = snapshot.data;
+              filteredNotes = _getFilteredNotes(allNotes);
+              final List<Note> pinnedNotes = _getPinnedNote(filteredNotes);
+              final List<Note> notPinnedNotes =
+                  _getNotPinnedNote(filteredNotes);
 
-                    if (pinnedNotes.isNotEmpty || notPinnedNotes.isNotEmpty) {
-                      return Column(
-                        children: [
-                          Expanded(
-                            child: Opacity(
-                              opacity: _notesOpacity,
-                              child: CustomScrollView(
-                                slivers: <Widget>[
-                                  //this is just for the word 'PINNED'
-                                  _buildBoxAdaptorForPinned(pinnedNotes),
-                                  //this is for pinned notes
-                                  _buildNotesGrid(pinnedNotes),
-                                  //this is just for the word 'OTHERS'
-                                  pinnedNotes.length > 0
-                                      ? _buildBoxAdaptorForOthers(
-                                          notPinnedNotes)
-                                      : SliverToBoxAdapter(child: Container()),
-                                  //this is for not pinned notes
-                                  _buildNotesGrid(notPinnedNotes),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    } else {
-                      return Column(
-                        children: [
-                          Expanded(
-                              child: EmptyContent(text: 'No result found.')),
-                        ],
-                      );
-                    }
-                  } else if (snapshot.hasError) {
-                    return Column(
-                      children: [
-                        Expanded(
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Text(snapshot.error.toString()),
-                                ErrorMessage(
-                                  title: 'Something went wrong',
-                                  message:
-                                      'Can\'t load items right now, please try again later',
-                                )
-                              ],
-                            ),
-                          ),
+              if (pinnedNotes.isNotEmpty || notPinnedNotes.isNotEmpty) {
+                return Column(
+                  children: [
+                    Expanded(
+                      child: Opacity(
+                        opacity: _notesOpacity,
+                        child: CustomScrollView(
+                          slivers: <Widget>[
+                            //this is just for the word 'PINNED'
+                            _buildBoxAdaptorForPinned(pinnedNotes),
+                            //this is for pinned notes
+                            _buildNotesGrid(pinnedNotes),
+                            //this is just for the word 'OTHERS'
+                            pinnedNotes.length > 0
+                                ? _buildBoxAdaptorForOthers(notPinnedNotes)
+                                : SliverToBoxAdapter(child: Container()),
+                            //this is for not pinned notes
+                            _buildNotesGrid(notPinnedNotes),
+                          ],
                         ),
-                        // _bottomRow(),
-                      ],
-                    );
-                  }
-                  return Center(child: CircularProgressIndicator());
-                },
-              ),
-            ),
-          ),
+                      ),
+                    ),
+                  ],
+                );
+              } else {
+                return EmptyContent(text: 'No result found.');
+              }
+            } else if (snapshot.hasError) {
+              return ErrorMessage();
+            }
+            return Center(child: CircularProgressIndicator());
+          },
         ),
-      ],
+      ),
     );
   }
 
@@ -245,7 +189,7 @@ class SearchResultState extends State<SearchResult> {
           return NoteContainer(
             note: note,
             database: database,
-            folder: defaultFolders[0],
+            folder: Folder(id: 0.toString(), title: 'All Notes'),
             folders: folders,
           );
         },
@@ -344,7 +288,7 @@ class SearchResultState extends State<SearchResult> {
       flushbarStyle: FlushbarStyle.FLOATING,
       backgroundGradient: LinearGradient(colors: [
         Color(0xF0888888).withOpacity(0.85),
-        darkThemeNoPhotoBkgdColor,
+        darkThemeNoPhotoColor,
       ]),
       duration: Duration(seconds: 3),
       icon: Icon(

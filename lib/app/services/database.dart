@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:iMomentum/app/models/duration_model.dart';
 import 'package:iMomentum/app/models/folder.dart';
-import 'package:iMomentum/app/models/image_model_NOTUSED.dart';
 import 'package:iMomentum/app/models/mantra_model.dart';
 import 'package:iMomentum/app/models/note.dart';
 import 'package:iMomentum/app/models/quote_model.dart';

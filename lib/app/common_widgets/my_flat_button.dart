@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:iMomentum/app/constants/theme.dart';
-import 'package:iMomentum/app/services/multi_notifier.dart';
-import 'package:provider/provider.dart';
 
 class MyFlatButton extends StatelessWidget {
   const MyFlatButton({

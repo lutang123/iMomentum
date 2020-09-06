@@ -9,7 +9,6 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
-import 'package:iMomentum/app/common_widgets/error_message.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
@@ -19,12 +18,12 @@ import 'package:iMomentum/app/models/note.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/notes_screen/notes_in_folder_screen.dart';
-import 'package:iMomentum/screens/notes_screen/search_note.dart';
+import 'package:iMomentum/screens/notes_screen/search_delegate_note.dart';
 import 'package:provider/provider.dart';
 import 'add_note_screen.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'empty_content.dart';
+import '../../app/common_widgets/empty_and_error_content.dart';
 import 'folder_container.dart';
 import 'package:iMomentum/app/utils/cap_string.dart';
 
@@ -36,11 +35,6 @@ class FolderScreen extends StatefulWidget {
 }
 
 const double _fabDimension = 56.0;
-
-final List<Folder> defaultFolders = [
-  Folder(id: 0.toString(), title: 'All Notes'),
-  Folder(id: 1.toString(), title: 'Notes'),
-];
 
 class FolderScreenState extends State<FolderScreen> {
   bool _addButtonVisible = true;
@@ -97,10 +91,10 @@ class FolderScreenState extends State<FolderScreen> {
   Widget build(BuildContext context) {
     final database = Provider.of<Database>(context, listen: false);
 
-    final randomNotifier = Provider.of<RandomNotifier>(context);
+    final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
     bool _randomOn = (randomNotifier.getRandom() == true);
 
-    final imageNotifier = Provider.of<ImageNotifier>(context);
+    final imageNotifier = Provider.of<ImageNotifier>(context, listen: false);
 
 //    double deviceHeight = MediaQuery.of(context).size.height;
 //    double deviceWidth = MediaQuery.of(context).size.width;
@@ -142,7 +136,14 @@ class FolderScreenState extends State<FolderScreen> {
                                 if (snapshot.hasData) {
                                   //this is a list of folder use has added.
                                   final List<Folder> folders = snapshot.data;
+                                  // print('folders.length: ${folders.length}');
                                   if (folders.isNotEmpty) {
+                                    ///when move this list outside of StreamBuilder as a constant, it keeps showing repeated folders on screen.
+                                    final List<Folder> defaultFolders = [
+                                      Folder(
+                                          id: 0.toString(), title: 'All Notes'),
+                                      Folder(id: 1.toString(), title: 'Notes'),
+                                    ];
                                     // we always have two default folders on the screen.
                                     final List<Folder> finalFolders =
                                         defaultFolders..addAll(folders);
@@ -160,28 +161,16 @@ class FolderScreenState extends State<FolderScreen> {
                                       ),
                                     );
                                   } else {
+                                    //this is for if no added folder
                                     return _noAddedFolderContent(
                                       database,
                                       allNotes,
                                     );
                                   }
                                 } else if (snapshot.hasError) {
-                                  return Expanded(
-                                    child: Center(
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          Text(snapshot.error.toString()),
-                                          ErrorMessage(
-                                            title: 'Something went wrong',
-                                            message:
-                                                'Can\'t load items right now, please try again later',
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  );
+                                  print(
+                                      'snapshot.hasError in folder stream: ${snapshot.error.toString()}');
+                                  return Expanded(child: ErrorMessage());
                                 }
                                 return Center(
                                     child: CircularProgressIndicator());
@@ -192,21 +181,9 @@ class FolderScreenState extends State<FolderScreen> {
                             return _noAddedFolderContent(database, allNotes);
                           }
                         } else if (snapshot.hasError) {
-                          return Expanded(
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Text(snapshot.error.toString()),
-                                  ErrorMessage(
-                                    title: 'Something went wrong',
-                                    message:
-                                        'Can\'t load items right now, please try again later',
-                                  )
-                                ],
-                              ),
-                            ),
-                          );
+                          print(
+                              'snapshot.hasError in note stream: ${snapshot.error.toString()}');
+                          return Expanded(child: ErrorMessage());
                         }
                         return Center(child: CircularProgressIndicator());
                       }),
@@ -258,7 +235,7 @@ class FolderScreenState extends State<FolderScreen> {
       visible: _addButtonVisible,
       child: Container(
         decoration: BoxDecoration(
-          color: _darkTheme ? darkThemeDrawer : lightThemeAppBar,
+          color: _darkTheme ? darkThemeDrawer : lightThemeDrawer,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20.0),
             topRight: Radius.circular(20.0),
@@ -327,6 +304,10 @@ class FolderScreenState extends State<FolderScreen> {
   }
 
   Widget _noAddedFolderContent(Database database, List<Note> notes) {
+    final List<Folder> defaultFolders = [
+      Folder(id: 0.toString(), title: 'All Notes'),
+      Folder(id: 1.toString(), title: 'Notes'),
+    ];
     return Expanded(
       child: CustomScrollView(
         shrinkWrap: true,
@@ -469,6 +450,10 @@ class FolderScreenState extends State<FolderScreen> {
   // with default folder
   Widget _buildDefaultFolderGrid(
       Database database, List<Note> notes, List<Folder> folders) {
+    final List<Folder> defaultFolders = [
+      Folder(id: 0.toString(), title: 'All Notes'),
+      Folder(id: 1.toString(), title: 'Notes'),
+    ];
     return SliverPadding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
       sliver: SliverStaggeredGrid.countBuilder(

@@ -1,10 +1,8 @@
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
-import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/constants/constants.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/models/todo.dart';
@@ -12,7 +10,6 @@ import 'package:iMomentum/app/utils/extensions.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/utils/pages_routes.dart';
-import 'package:iMomentum/app/utils/tooltip_shape_border.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'clock_bottom.dart';
@@ -32,7 +29,7 @@ class ClockBeginScreen extends StatefulWidget {
 }
 
 class _ClockBeginScreenState extends State<ClockBeginScreen> {
-  // Keeps track of how much time has elapsed
+//  Keeps track of how much time has elapsed
 //  Duration _duration; //old
   int _durationInMin;
   int _restInMin;
@@ -52,17 +49,16 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
   int counter = 0;
   void _onDoubleTap() {
     setState(() {
-      ImageUrl.randomImageUrl =
-          'https://source.unsplash.com/random?nature/$counter';
+      ImageUrl.randomImageUrl = '${ImageUrl.randomImageUrlFirstPart}$counter';
       counter++;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final randomNotifier = Provider.of<RandomNotifier>(context);
+    final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
     bool _randomOn = (randomNotifier.getRandom() == true);
-    final imageNotifier = Provider.of<ImageNotifier>(context);
+    final imageNotifier = Provider.of<ImageNotifier>(context, listen: false);
 
     return Stack(
       fit: StackFit.expand,
@@ -165,9 +161,7 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
   }
 
   bool _playSound = true;
-
-  bool _isDifferentLength = false;
-
+  bool _isDifferentLength = false; //this is for changing duration.
   void showEditDialog() async {
     setState(() {
       _topOpacity = 0.0;
@@ -179,7 +173,7 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
             contentPadding: EdgeInsets.only(top: 10.0),
-            backgroundColor: Color(0xf01b262c),
+            backgroundColor: darkThemeNoPhotoColor,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20.0))),
             title: Text("Change Focus Setting",
@@ -207,46 +201,36 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 15),
                                 child: TextFormField(
-                                  initialValue: _durationInMin.toString(),
+                                    initialValue: _durationInMin.toString(),
 
-                                  ///int.tryParse returns a null on an invalid number;
-                                  ///int.parse returns an exception on an invalid number;
-                                  //it does not matter in this case, because it's always number
-                                  validator: (value) => (value.isNotEmpty) &&
-                                          (int.parse(value) > 0)
-                                      ? null
-                                      : 'error',
+                                    ///int.tryParse returns a null on an invalid number;
+                                    ///int.parse returns an exception on an invalid number;
+                                    //it does not matter in this case, because it's always number
+                                    validator: (value) => (value.isNotEmpty) &&
+                                            (int.parse(value) > 0)
+                                        ? null
+                                        : 'error',
 
-                                  ///below not good
-                                  // (value) => (value.length == 0) ||
-                                  //     (int.tryParse(value) < 0) ||
-                                  //     (int.tryParse(value) == 0)
-                                  // ? 'Error'
-                                  // : null,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _durationInMin != int.tryParse(value)
-                                          ? _isDifferentLength = true
-                                          : _isDifferentLength = false;
-                                    });
-                                  },
-                                  onSaved: (value) =>
-                                      _durationInMin = int.tryParse(value),
-                                  keyboardType: TextInputType.number,
-                                  style: KDialogContent,
-                                  autofocus: true,
-                                  cursorColor: Colors.white,
-                                  decoration: InputDecoration(
-                                    focusedBorder: UnderlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Colors.white),
-                                    ),
-                                    enabledBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                      color: Colors.white,
-                                    )),
-                                  ),
-                                ),
+                                    ///below not good
+                                    // (value) => (value.length == 0) ||
+                                    //     (int.tryParse(value) < 0) ||
+                                    //     (int.tryParse(value) == 0)
+                                    // ? 'Error'
+                                    // : null,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _durationInMin != int.tryParse(value)
+                                            ? _isDifferentLength = true
+                                            : _isDifferentLength = false;
+                                      });
+                                    },
+                                    onSaved: (value) =>
+                                        _durationInMin = int.tryParse(value),
+                                    keyboardType: TextInputType.number,
+                                    style: KDialogContent,
+                                    autofocus: true,
+                                    cursorColor: Colors.white,
+                                    decoration: KTextFieldInputDecoration),
                               ),
                             ),
                             Text('min', style: KDialogContent),
@@ -266,34 +250,24 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 15),
                                 child: TextFormField(
-                                  initialValue: _restInMin.toString(),
-                                  validator: (value) => (value.isNotEmpty) &&
-                                          (int.parse(value) > 0)
-                                      ? null
-                                      : 'error',
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _restInMin != int.parse(value)
-                                          ? _isDifferentLength = true
-                                          : _isDifferentLength = false;
-                                    });
-                                  },
-                                  onSaved: (value) =>
-                                      _restInMin = int.parse(value),
-                                  keyboardType: TextInputType.number,
-                                  style: KDialogContent,
-                                  cursorColor: Colors.white,
-                                  decoration: InputDecoration(
-                                    focusedBorder: UnderlineInputBorder(
-                                      borderSide:
-                                          BorderSide(color: Colors.white),
-                                    ),
-                                    enabledBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                      color: Colors.white,
-                                    )),
-                                  ),
-                                ),
+                                    initialValue: _restInMin.toString(),
+                                    validator: (value) => (value.isNotEmpty) &&
+                                            (int.parse(value) > 0)
+                                        ? null
+                                        : 'error',
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _restInMin != int.parse(value)
+                                            ? _isDifferentLength = true
+                                            : _isDifferentLength = false;
+                                      });
+                                    },
+                                    onSaved: (value) =>
+                                        _restInMin = int.parse(value),
+                                    keyboardType: TextInputType.number,
+                                    style: KDialogContent,
+                                    cursorColor: Colors.white,
+                                    decoration: KTextFieldInputDecoration),
                               ),
                             ),
                             Text('min', style: KDialogContent),
@@ -411,28 +385,12 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
     });
 
     Flushbar(
-      mainButton: FlatButton(
-        onPressed: () {
-          setState(() {
-            _topOpacity = 1.0;
-          });
-          Navigator.pop(context);
-        },
-        child: FlushBarButtonChild(
-          title: 'Got it.',
-        ),
-      ),
       margin: const EdgeInsets.all(20),
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(8),
       borderRadius: 15,
       flushbarPosition: FlushbarPosition.TOP,
       flushbarStyle: FlushbarStyle.FLOATING,
-//      reverseAnimationCurve: Curves.easeOutCirc,
-//      forwardAnimationCurve: Curves.easeOutCirc,
-//      backgroundColor: darkBkgdColor, //no effect?
-      ///todo: change color
-      backgroundGradient:
-          LinearGradient(colors: [Color(0xF00f4c75), Color(0xF03282b8)]),
+      backgroundGradient: KFlushBarGradient,
       duration: Duration(seconds: 4),
       titleText: RichText(
         text: TextSpan(
@@ -441,12 +399,7 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
             TextSpan(text: 'Our Focus Mode uses '),
             TextSpan(
               text: 'Pomodoro Technique ',
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16.0,
-                  fontStyle: FontStyle.italic,
-                  color: Colors.white,
-                  fontFamily: "ShadowsIntoLightTwo"),
+              style: KFlushBarEmphasis,
             ),
             TextSpan(text: 'to help you focus.')
           ],
@@ -463,14 +416,7 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
         },
         child: Padding(
           padding: const EdgeInsets.only(top: 5),
-          child: Text(
-            'Learn more.',
-            style: GoogleFonts.varelaRound(
-                fontSize: 16.0,
-                color: Colors.white,
-                fontStyle: FontStyle.italic,
-                decoration: TextDecoration.underline),
-          ),
+          child: Text('Learn more.', style: KTextButton),
         ),
       ),
     )..show(context).then((value) => setState(() {

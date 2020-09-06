@@ -208,9 +208,9 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
     final database = Provider.of<Database>(context, listen: false);
     final bloc = Provider.of<CalendarBloc>(context, listen: false);
 
-    final randomNotifier = Provider.of<RandomNotifier>(context);
+    final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
     bool _randomOn = (randomNotifier.getRandom() == true);
-    final imageNotifier = Provider.of<ImageNotifier>(context);
+    final imageNotifier = Provider.of<ImageNotifier>(context, listen: false);
 
     return Stack(
       fit: StackFit.expand,
@@ -423,50 +423,40 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                   controller: _hideButtonController,
                   // put AppBar in NestedScrollView to have it sliver off on scrolling
                   slivers: <Widget>[
-                    _buildBoxAdaptorForTodoList(),
-                    _selectedList.isEmpty
+                    _buildBoxAdaptorForTodoListTitle(),
+                    (_todayList.isEmpty) && (_selectedList.isEmpty)
+                        ? SliverToBoxAdapter(
+                            child: TodoScreenEmptyMessage(
+                                text1: textTodoList1, tips: textTodoList2),
+                          )
+                        : _selectedList.isEmpty
 
-                        ///not working
-                        // _firstCalendarController.selectedDay == null
-                        //
-                        //     /// it's null, so the method .format get error: getter month was called on null
-                        //     // ||
-                        //     //     (DateFormat('M/d/y')
-                        //     //             .format(_secondCalendarController.selectedDay) ==
-                        //     //         DateFormat('M/d/y').format(DateTime.now()))
-                        ? _buildSliverList(database, todos,
-                            _todayList) //this should always dynamically updated when adding new data in home screen
-                        : _buildSliverList(database, todos, _selectedList),
+                            ///not working
+                            // _firstCalendarController.selectedDay == null
+                            //
+                            //     /// it's null, so the method .format get error: getter month was called on null
+                            //     // ||
+                            //     //     (DateFormat('M/d/y')
+                            //     //             .format(_secondCalendarController.selectedDay) ==
+                            //     //         DateFormat('M/d/y').format(DateTime.now()))
+                            ? _buildSliverList(database, todos,
+                                _todayList) //this should always dynamically updated when adding new data in home screen
+                            : _buildSliverList(database, todos, _selectedList),
                   ],
                 ),
               ),
               //add this to make add button not hiding task item
-              Visibility(
-                  visible: _addButtonVisible,
-                  child: Column(
-                    children: [
-                      SizedBox(height: 30),
-
-                      ///todo: implement tips
-                      Row(
-                        children: [
-                          SizedBox(width: 20),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              '',
-                              // 'Show tips',
-                              style: Theme.of(context).textTheme.subtitle2,
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
-                  )),
 
               //tried again but can't solve some issues like always
               // showing today's list if other day is empty, and also sometimes not immediately update the screen,
               // thinking about adding a tip but not good UI.
+              Visibility(
+                  visible: _addButtonVisible,
+                  child: Column(
+                    children: [
+                      // SizedBox(height: 30),
+                    ],
+                  )),
             ],
           ),
         ),
@@ -487,7 +477,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildBoxAdaptorForTodoList() {
+  Widget _buildBoxAdaptorForTodoListTitle() {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return SliverToBoxAdapter(
@@ -526,7 +516,6 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                       : '${_selectedNotDoneList.length.toString()} / ${_selectedList.length.toString()} tasks',
                   style: Theme.of(context).textTheme.subtitle2,
                 )),
-            // _todoListDivider(),
           ],
         ),
       ),
@@ -663,10 +652,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
               _buildSliverToBoxForPieChartTitle(), //first two line for title and sutitle
               SliverToBoxAdapter(
                 child: _selectedDataMap.isEmpty
-                    ? NewPieChart(
-                        dataMap: _todayDataMap,
-                        textPieChart1: textPieChart1,
-                        textPieChart2: textPieChart2)
+                    ? NewPieChart(dataMap: _todayDataMap)
                     : NewPieChart(dataMap: _selectedDataMap),
               )
             ],
@@ -728,7 +714,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
         Column(
           children: <Widget>[
             firstCalendarEmpty(calendarEvent),
-            todoListEmptyContent(text1, text2),
+            todoListEmptyContent(),
           ],
         ),
         todoAddButton(database),
@@ -748,7 +734,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget todoListEmptyContent(String text1, String text2) {
+  Widget todoListEmptyContent() {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Expanded(
@@ -761,9 +747,10 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
             controller: _hideButtonController,
             // put AppBar in NestedScrollView to have it sliver off on scrolling
             slivers: <Widget>[
-              _buildBoxAdaptorForTodoList(),
+              _buildBoxAdaptorForTodoListTitle(),
               SliverToBoxAdapter(
-                child: TodoScreenEmptyMessage(text1: text1, text2: text2),
+                child: TodoScreenEmptyMessage(
+                    text1: textTodoList1, tips: textTodoList2),
               )
             ],
           ),
@@ -783,7 +770,8 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
           onDaySelected: (date, _) => _getPieChartTitle(date),
           animationController: _animationController,
         ), //calendar
-        pieChartCustomScrollView(), //this already included the content if it's empty
+        //this already included the content if it's empty
+        pieChartCustomScrollView(),
       ],
     );
   }
@@ -791,10 +779,8 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
   void _showAddReminderScreen(Todo todo, User user, Database database) async {
     setState(() {
       _listVisible = false;
-      // _calendarOpacity = 0.0;
     });
 
-    // var _typedTitleAndComment =
     await showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -803,13 +789,8 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
               user: user,
               database: database,
             ));
-    //
-    // alarmText =
-    //     '${Format.date(_typedTitleAndComment[0])} ${_typedTitleAndComment[1].format(context)}';
-
     setState(() {
       _listVisible = true;
-      // _calendarOpacity = 1.0;
     });
   }
 
@@ -853,7 +834,9 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                 exception: e,
               ).show(context);
             }
-            Navigator.of(context).pop();
+
+            ///we can nit have this
+            // Navigator.of(context).pop();
             setState(() {
               _selectedList.insert(index - 1, deletedItem);
             });
@@ -865,13 +848,12 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
         borderRadius: 15,
         flushbarPosition: FlushbarPosition.BOTTOM,
         flushbarStyle: FlushbarStyle.FLOATING,
-//      reverseAnimationCurve: Curves.decelerate,
-//      forwardAnimationCurve: Curves.elasticOut,
-        backgroundGradient: LinearGradient(colors: [
-          Color(0xF0888888).withOpacity(0.85),
-          darkThemeNoPhotoBkgdColor
-        ]),
+        backgroundGradient: KFlushBarGradient,
         duration: Duration(seconds: 3),
+        icon: Icon(
+          EvaIcons.trash2Outline,
+          color: Colors.white,
+        ),
         titleText: Text(
           'Deleted',
           style: KFlushBarTitle,
@@ -1039,8 +1021,6 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
         final hasReminder = todo?.hasReminder ?? false;
         final reminderData = todo?.reminderDate ?? null;
         // final category = todo?.category ?? _typedTitleAndComment[3]; //this makes category can not be updated
-        final category = _typedTitleAndComment[3];
-
         // print('update: category: $category');
 
         ///first we find this specific Todo item that we want to update
@@ -1050,7 +1030,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
           comment: _typedTitleAndComment[1],
           date: _typedTitleAndComment[2],
           isDone: isDone,
-          category: category,
+          category: _typedTitleAndComment[3],
           hasReminder: hasReminder,
           reminderDate: reminderData,
         );

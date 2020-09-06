@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
+import 'package:iMomentum/app/common_widgets/my_tooltip.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/setting_switch.dart';
 import 'package:iMomentum/app/utils/shared_axis.dart';
@@ -70,7 +71,7 @@ class MyDrawerState extends State<MyDrawer>
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
 
-    ///we can not set the following two as listen to false otherwise UI will not change.
+    ///we can not set the following two as listen : false otherwise UI will not change.
     final randomNotifier = Provider.of<RandomNotifier>(context);
     bool _randomOn = (randomNotifier.getRandom() == true);
     final imageNotifier = Provider.of<ImageNotifier>(context);
@@ -190,8 +191,8 @@ class MyHomeDrawer extends StatelessWidget {
     final database = Provider.of<Database>(context, listen: false);
 
     ///error if no user name
-    //    final user = Provider.of<User>(context, listen: false);
-//        final String firstName =
+//    final user = Provider.of<User>(context, listen: false);
+//    final String firstName =
 //        user.displayName.substring(0, user.displayName.indexOf(' '));
 
     ///for theme
@@ -204,9 +205,8 @@ class MyHomeDrawer extends StatelessWidget {
     bool _focusModeOn = focusNotifier.getFocus();
 
     ///for random on
-    ///this one listen to false or not does not seem to matter
+    ///this one listen to false or not does not seem to matter, but why??
     final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
-    //if getImage is random, means random is on
     bool _randomOn = randomNotifier.getRandom();
 
     return SizedBox(
@@ -228,28 +228,11 @@ class MyHomeDrawer extends StatelessWidget {
               children: [
                 SizedBox(height: 30),
                 settingTitle(context, title: 'Settings'),
-                Tooltip(
+                MyToolTip(
                   message:
                       'This switch controls the theme color, either dark or light.',
-                  textStyle: TextStyle(color: Colors.white),
-                  preferBelow: false,
-                  verticalOffset: 0,
-
-                  ///can't make it a const
-                  decoration: ShapeDecoration(
-                    color: Color(0xf0086972).withOpacity(0.9),
-                    shape: TooltipShapeBorder(arrowArc: 0.5),
-                    shadows: [
-                      BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 4.0,
-                          offset: Offset(2, 2))
-                    ],
-                  ),
-                  margin: const EdgeInsets.all(30.0),
-                  padding: const EdgeInsets.all(8.0),
                   child: SettingSwitch(
-                    size: 20,
+                    size: 23,
                     icon: FontAwesomeIcons.adjust,
                     title: 'Dark Theme',
                     value: _darkTheme,
@@ -259,76 +242,33 @@ class MyHomeDrawer extends StatelessWidget {
                     },
                   ),
                 ),
-                Tooltip(
+                MyToolTip(
                   message:
                       'This switch controls whether to show productivity feature on Home Screen.',
-                  textStyle: TextStyle(color: Colors.white),
-                  preferBelow: false,
-                  verticalOffset: 0,
-
-                  ///can't make it a const
-                  decoration: ShapeDecoration(
-                    color: Color(0xf0086972).withOpacity(0.9),
-                    shape: TooltipShapeBorder(arrowArc: 0.5),
-                    shadows: [
-                      BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 4.0,
-                          offset: Offset(2, 2))
-                    ],
-                  ),
-                  margin: const EdgeInsets.all(30.0),
-                  padding: const EdgeInsets.all(8.0),
                   child: SettingSwitch(
                     icon: EvaIcons.bulbOutline,
                     title: 'Focus Mode',
                     value: _focusModeOn,
                     onChanged: (val) {
                       _focusModeOn = val;
-                      _onFocusChanged(val, focusNotifier, context);
+                      _onFocusChanged(context, val, focusNotifier);
                     },
                   ),
                 ),
-                Tooltip(
+                MyToolTip(
                   message:
                       'This switch controls the display of background photo, either the same photo of your choice or a random one from our photo gallery.',
-                  textStyle: TextStyle(color: Colors.white),
-                  preferBelow: false,
-                  verticalOffset: 0,
-                  decoration: ShapeDecoration(
-                    color: Color(0xf0086972).withOpacity(0.9),
-                    shape: TooltipShapeBorder(arrowArc: 0.5),
-                    shadows: [
-                      BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 4.0,
-                          offset: Offset(2, 2))
-                    ],
-                  ),
-                  margin: const EdgeInsets.all(30.0),
-                  padding: const EdgeInsets.all(8.0),
                   child: SettingSwitch(
                     icon: EvaIcons.shuffle2Outline,
                     title: 'Shuffle Photos',
                     value: _randomOn,
                     onChanged: (val) {
                       _randomOn = val;
-                      _onRandomChanged(val, randomNotifier, context);
+                      _onRandomChanged(context, val, randomNotifier);
                     },
                   ),
                 ),
 
-                // settingListTile(
-                //   context,
-                //   icon: EvaIcons.moreHorizotnalOutline,
-                //   title: 'More Settings',
-                //   onTap: () {
-                //     final route = SharedAxisPageRoute(
-                //         page: MoreSettingScreen(database: database),
-                //         transitionType: _transitionType);
-                //     Navigator.of(context, rootNavigator: true).push(route);
-                //   },
-                // ),
                 settingDivider(context),
                 settingTitle(context, title: 'Customizations'),
                 settingListTile(
@@ -338,7 +278,7 @@ class MyHomeDrawer extends StatelessWidget {
                   onTap: () {
                     final route = SharedAxisPageRoute(
 
-                        ///this page get context from HomeDrawer, same as all other page
+                        ///this page get context from HomeDrawer build, same as all other page
                         page: ImageGallery(
                           database: database,
                         ),
@@ -431,14 +371,10 @@ class MyHomeDrawer extends StatelessWidget {
     );
   }
 
-  ///The Consumer widget rebuilds any widgets below it whenever notifyListeners()
-  ///gets called. The button doesn’t need to get updated, though, so rather than
-  ///using a Consumer, you can use Provider.of and set the listener to false.
-  ///That way the button won’t be rebuilt when there are changes.
+  /// this is StatelessWidget, all the method outside of build do not have context, so we need to add BuildContext context
+  /// and it will still show flush bar
   Widget settingTitle(BuildContext context, {String title}) {
-    ///, listen: false
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    // final themeNotifier = Provider.of<ThemeNotifier>(context);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return ListTile(
       leading: Text(
@@ -457,9 +393,7 @@ class MyHomeDrawer extends StatelessWidget {
 
   Widget settingListTile(BuildContext context,
       {IconData icon, String title, Function onTap}) {
-    ///, listen: false
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    // final themeNotifier = Provider.of<ThemeNotifier>(context);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return ListTile(
         leading: Icon(
@@ -476,7 +410,6 @@ class MyHomeDrawer extends StatelessWidget {
   }
 
   Widget settingDivider(BuildContext context) {
-    ///, listen: false
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Divider(
@@ -494,35 +427,32 @@ class MyHomeDrawer extends StatelessWidget {
     prefs.setBool('darkMode', value);
   }
 
-  /// but this one does not have context, so we need to add BuildContext context
-  /// and it will still show flush bar
   Future<void> _onFocusChanged(
-      bool value, FocusNotifier focusNotifier, BuildContext context) async {
+      BuildContext context, bool value, FocusNotifier focusNotifier) async {
     //change the value
     focusNotifier.setFocus(value);
     //save settings
     var prefs = await SharedPreferences.getInstance();
     prefs.setBool('focusMode', value);
 
+    ///should not add this line, because when it's going to be automatically
+    ///dismissed, and then press this will take to black screen.
+    // Navigator.pop(context);
     value
         ? Flushbar(
             isDismissible: true,
-            mainButton: FlatButton(
-                onPressed: () => Navigator.pop(context),
-                child: FlushBarButtonChild(title: 'OK')),
             margin: const EdgeInsets.all(20),
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(8),
             borderRadius: 15,
             flushbarPosition: FlushbarPosition.BOTTOM,
             flushbarStyle: FlushbarStyle.FLOATING,
-            backgroundGradient:
-                LinearGradient(colors: [Color(0xF00f4c75), Color(0xF03282b8)]),
-            duration: Duration(seconds: 6),
+            backgroundGradient: KFlushBarGradient,
+            duration: Duration(seconds: 4),
             titleText: Text(
                 'This will enable productivity features on home screen.',
                 style: KFlushBarTitle),
             messageText: Padding(
-              padding: const EdgeInsets.only(top: 5),
+              padding: const EdgeInsets.only(top: 3),
               child: Text(
                 'Focus on what is the most important to us.',
                 style: KFlushBarMessage,
@@ -531,24 +461,19 @@ class MyHomeDrawer extends StatelessWidget {
           ).show(context)
         : Flushbar(
             isDismissible: true,
-            mainButton: FlatButton(
-              onPressed: () => Navigator.pop(context),
-              child: FlushBarButtonChild(title: 'OK'),
-            ),
             margin: const EdgeInsets.all(20),
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(8),
             borderRadius: 15,
             flushbarPosition: FlushbarPosition.BOTTOM,
             flushbarStyle: FlushbarStyle.FLOATING,
-            backgroundGradient:
-                LinearGradient(colors: [Color(0xF00f4c75), Color(0xF03282b8)]),
-            duration: Duration(seconds: 6),
+            backgroundGradient: KFlushBarGradient,
+            duration: Duration(seconds: 4),
             titleText: Text(
               'This will hide productivity features on home screen.',
               style: KFlushBarTitle,
             ),
             messageText: Padding(
-              padding: const EdgeInsets.only(top: 5),
+              padding: const EdgeInsets.only(top: 3),
               child: Text('We all need some downtime in a day.',
                   style: KFlushBarMessage),
             ),
@@ -556,7 +481,7 @@ class MyHomeDrawer extends StatelessWidget {
   }
 
   Future<void> _onRandomChanged(
-      bool value, RandomNotifier randomNotifier, BuildContext context) async {
+      BuildContext context, bool value, RandomNotifier randomNotifier) async {
     //change the value
     randomNotifier.setRandom(value);
     //save settings
@@ -566,24 +491,19 @@ class MyHomeDrawer extends StatelessWidget {
     value
         ? Flushbar(
             isDismissible: true,
-            mainButton: FlatButton(
-              onPressed: () => Navigator.pop(context),
-              child: FlushBarButtonChild(title: 'OK'),
-            ),
             margin: const EdgeInsets.all(20),
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(8),
             borderRadius: 15,
             flushbarPosition: FlushbarPosition.BOTTOM,
             flushbarStyle: FlushbarStyle.FLOATING,
-            backgroundGradient:
-                LinearGradient(colors: [Color(0xF00f4c75), Color(0xF03282b8)]),
-            duration: Duration(seconds: 6),
+            backgroundGradient: KFlushBarGradient,
+            duration: Duration(seconds: 4),
             titleText: Text(
-              'This will enable a new photo to show every time when opening iMomentum App',
+              'This will enable a new photo to show every time when opening iMomentum App.',
               style: KFlushBarTitle,
             ),
             messageText: Padding(
-              padding: const EdgeInsets.only(top: 5),
+              padding: const EdgeInsets.only(top: 3),
               child: Text(
                 'You can double tap on screen to change photo anytime.',
                 style: KFlushBarMessage,
@@ -592,22 +512,17 @@ class MyHomeDrawer extends StatelessWidget {
           ).show(context)
         : Flushbar(
             isDismissible: true,
-            mainButton: FlatButton(
-              onPressed: () => Navigator.pop(context),
-              child: FlushBarButtonChild(title: 'OK'),
-            ),
             margin: const EdgeInsets.all(20),
             padding: const EdgeInsets.all(10),
             borderRadius: 15,
             flushbarPosition: FlushbarPosition.BOTTOM,
             flushbarStyle: FlushbarStyle.FLOATING,
-            backgroundGradient:
-                LinearGradient(colors: [Color(0xF00f4c75), Color(0xF03282b8)]),
-            duration: Duration(seconds: 6),
-            titleText: Text('This will set background photo as a fixed one.',
+            backgroundGradient: KFlushBarGradient,
+            duration: Duration(seconds: 4),
+            titleText: Text('This will set background photo as a default ones.',
                 style: KFlushBarTitle),
             messageText: Padding(
-              padding: const EdgeInsets.only(top: 5),
+              padding: const EdgeInsets.only(top: 3),
               child: Text(
                   'You can choose your favourite photo and change the photo anytime.',
                   style: KFlushBarMessage),

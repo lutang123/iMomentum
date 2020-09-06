@@ -138,9 +138,10 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
         builder: (BuildContext context, Widget child) {
           return Theme(
             data: ThemeData.dark().copyWith(
-              backgroundColor: darkThemeNoPhotoBkgdColor,
-              dialogBackgroundColor: darkThemeNoPhotoBkgdColor,
-              primaryColor: const Color(0xFF0f4c75), //header
+              backgroundColor: darkThemeNoPhotoColor,
+              dialogBackgroundColor: darkThemeNoPhotoColor,
+
+              primaryColor: const Color(0xFF0f4c75), //header, no chang
               accentColor: const Color(0xFFbbe1fa), //selection color
 //              colorScheme: ColorScheme.light(primary: const Color(0xFF0f4c75)),
               buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.accent),
@@ -185,7 +186,6 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
     return SingleChildScrollView(
       child: CustomizedBottomSheet(
         color: _darkTheme ? darkThemeAdd : lightThemeAdd,
-        // color: _darkTheme ? Colors.white.withOpacity(0.7) : Colors.white70,
         child: Form(
           key: _formKey,
           child: Column(

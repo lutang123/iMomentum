@@ -10,7 +10,6 @@ import 'package:iMomentum/app/models/todo.dart';
 import 'package:iMomentum/app/services/auth.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
-import 'package:iMomentum/app/utils/format.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';

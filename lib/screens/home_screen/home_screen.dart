@@ -8,11 +8,11 @@ import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_text_field.dart';
+import 'package:iMomentum/app/common_widgets/my_tooltip.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
 import 'package:iMomentum/app/services/network_service/weather_service.dart';
 import 'package:iMomentum/app/utils/show_up.dart';
-import 'package:iMomentum/app/utils/tooltip_shape_border.dart';
 import 'package:iMomentum/app/utils/top_sheet.dart';
 import 'package:iMomentum/app/constants/constants.dart';
 import 'package:iMomentum/app/constants/theme.dart';
@@ -111,96 +111,76 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Widget contentFinishedDownload(BuildContext context) {
+  Widget contentFinishedDownload() {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+
+    ///because we call fetch weather again after changing.
     final metricNotifier = Provider.of<MetricNotifier>(context, listen: false);
     bool _metricUnitOn = metricNotifier.getMetric();
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Row(children: [
-            Container(
-              decoration: BoxDecoration(
-                  color: _darkTheme ? Colors.transparent : Colors.transparent,
-                  shape: BoxShape.circle),
-              height: 30,
-              width: 30,
-              child: _getWeatherIconImage(weatherIcon),
-            ),
-            SizedBox(width: 3.0),
-            Text(
-              _metricUnitOn ? '$temperature°C' : '$temperature°F',
-              style: TextStyle(
-                  // color: Colors.white,
-                  color: _darkTheme ? darkThemeWords : lightThemeWords,
-                  fontSize: 15.0),
-            ),
-          ]),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Row(children: [
+          Container(
+            decoration: BoxDecoration(
+                color: _darkTheme ? Colors.transparent : Colors.transparent,
+                shape: BoxShape.circle),
+            height: 30,
+            width: 30,
+            child: _getWeatherIconImage(weatherIcon),
+          ),
+          SizedBox(width: 3.0),
           Text(
-            '$cityName',
+            _metricUnitOn ? '$temperature°C' : '$temperature°F',
             style: TextStyle(
                 // color: Colors.white,
                 color: _darkTheme ? darkThemeWords : lightThemeWords,
                 fontSize: 15.0),
           ),
-        ],
-      ),
+        ]),
+        Text(
+          '$cityName',
+          style: TextStyle(
+              // color: Colors.white,
+              color: _darkTheme ? darkThemeWords : lightThemeWords,
+              fontSize: 15.0),
+        ),
+      ],
     );
   }
 
-  Widget contentDownloading() {
-    return Center(child: CircularProgressIndicator(strokeWidth: 10));
-  }
-
-  Widget contentNotDownloaded() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(
-            '',
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _resultView(BuildContext context) =>
-      _state == CurrentWeatherState.FINISHED_DOWNLOADING
-          ? contentFinishedDownload(context)
-          : _state == CurrentWeatherState.DOWNLOADING
-              ? contentDownloading()
-              : contentNotDownloaded();
+  Widget _resultView() => _state == CurrentWeatherState.FINISHED_DOWNLOADING
+      ? contentFinishedDownload()
+      : _state == CurrentWeatherState.DOWNLOADING
+          ? Center(child: CircularProgressIndicator(strokeWidth: 10))
+          : Container();
 
   Widget _topBar() {
+    /// TODO: why this one can set listen: false but not others ??
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    return Opacity(
-      opacity: _topBarOpacity,
-      child: Container(
-        color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
-        child: Column(
-          children: <Widget>[
-            SizedBox(height: 30),
-            SizedBox(
-                height: 50,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    InkWell(
-                      onTap: _showTopSheet,
-                      onDoubleTap: _fetchWeather,
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 15, left: 5),
-                        child: _resultView(context),
-                      ),
+    return Container(
+      color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
+      child: Column(
+        children: <Widget>[
+          SizedBox(height: 30),
+          SizedBox(
+              height: 50,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  InkWell(
+                    onTap: _showTopSheet,
+                    onDoubleTap: _fetchWeather,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 15, left: 5),
+                      child: _resultView(),
                     ),
-                  ],
-                )),
-          ],
-        ),
+                  ),
+                ],
+              )),
+        ],
       ),
     );
   }
@@ -235,22 +215,21 @@ class _HomeScreenState extends State<HomeScreen> {
     // );
   }
 
-//  final String formattedTime = DateFormat('kk:mm').format(DateTime.now());
   final String dayOfWeek = DateFormat.E().format(DateTime.now());
   final String formattedDate = DateFormat.MMMd().format(DateTime.now());
-  String _secondGreetings;
-  String _focusAnswer = '';
+  final String _congrats = CongratsList().getCongrats().body;
+  String _defaultMantra;
 
   bool _middleColumnVisible = true;
-  // change visible to opacity, otherwise, quote always updates.
-  // bool _quoteVisible = true;
+
+  /// change visible to opacity, otherwise, quote always updates.
   double _quoteOpacity = 1.0;
 
   DateTime _date = DateTime.now();
 
   @override
   void initState() {
-    _secondGreetings = DefaultMantraList().showMantra().body;
+    _defaultMantra = DefaultMantraList().showMantra().body;
     _fetchWeather();
     super.initState();
   }
@@ -265,6 +244,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    /// in homepage this can not have listen to false (same as HomeDrawer) otherwise the screen photo
+    /// not immediately updates, but in other screen it can have listen to false
+    /// because it only need to get the value when we fist come to the page.
     final randomNotifier = Provider.of<RandomNotifier>(context);
     bool _randomOn = (randomNotifier.getRandom() == true);
     final imageNotifier = Provider.of<ImageNotifier>(context);
@@ -278,9 +260,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ContainerLinearGradient(),
         GestureDetector(
           onDoubleTap: _onDoubleTap,
-          onTap: () {
-            FocusScope.of(context).unfocus();
-          },
+          onTap: () => FocusScope.of(context).unfocus(),
           child: Scaffold(
             backgroundColor: Colors.transparent,
             body: SafeArea(
@@ -289,11 +269,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _topBar(),
-                  _buildStream(), //Expanded
+                  Opacity(
+                      opacity: _topBarOpacity, child: _topBar()), //for weather
+                  Visibility(
+                      visible: _middleColumnVisible,
+                      child: _middleContent()), //Expanded
                   Opacity(
                     opacity: _quoteOpacity,
-                    // visible: _quoteVisible,
                     child: _buildQuoteStream(),
                   ),
                 ],
@@ -305,24 +287,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  List<Todo> _getTodayNotDone(List<Todo> todos) {
-    List<Todo> todayTodos = [];
-    todos.forEach((todo) {
-      DateTime today = DateTime(
-          DateTime.now().year, DateTime.now().month, DateTime.now().day);
-      DateTime date = DateTime(todo.date.year, todo.date.month, todo.date.day);
-      if ((date == today) && (todo.isDone == false) && (todo.category == 0)) {
-        todayTodos.add(todo);
-      }
-    });
-    return todayTodos;
-  }
-
-  int _current = 0;
-  Widget _buildStream() {
-    // final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    // bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+  int _current = 0; // for the dot
+  Widget _middleContent() {
     final database = Provider.of<Database>(context, listen: false);
+
+    ///we can not set this to listen: false, otherwise the screen will not update immediately
     final focusNotifier = Provider.of<FocusNotifier>(context);
     bool _focusModeOn = focusNotifier.getFocus();
 
@@ -335,134 +304,33 @@ class _HomeScreenState extends State<HomeScreen> {
             final todayTodosNotDone = _getTodayNotDone(todos);
             if (todayTodosNotDone.length > 0) {
 //              final todo = todayTodosNotDone.first; //changed to carousal
-              return Visibility(
-                visible: _middleColumnVisible,
-                child: Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Spacer(flex: _focusModeOn ? 3 : 1),
-                      Opacity(
-                        opacity: _mantraOpacity,
-                        child: Column(
-                          children: <Widget>[
-                            _buildMantraStream(),
-                            Visibility(
-                              visible: _focusModeOn ? true : false,
-                              child: Column(
-                                children: <Widget>[
-                                  SizedBox(height: 50), //space between mantra
-                                  CarouselSlider(
-                                    options: CarouselOptions(
-//                                    height: 250.0, //default height is good enough
-                                      viewportFraction: 1.0,
-                                      initialPage: 0, //default
-                                      onPageChanged: (index, reason) {
-                                        setState(() {
-                                          _current = index;
-                                        });
-                                      },
-                                    ),
-                                    items: todayTodosNotDone.map((todo) {
-                                      return Builder(
-                                        builder: (BuildContext context) {
-                                          return Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: <Widget>[
-                                              getToday, //25
-                                              SizedBox(height: 5),
-                                              Center(
-                                                child: HomeTodoListTile(
-                                                  todo: todo,
-                                                  onChangedCheckbox:
-                                                      (newValue) =>
-                                                          _onChangedCheckbox(
-                                                              newValue,
-                                                              database,
-                                                              todo),
-                                                  onTap: () => _onTapTodo(
-                                                      database,
-//                                                      todayTodosNotDone,
-                                                      todo),
-                                                  onPressed: () =>
-                                                      _delete(database, todo),
-                                                ),
-                                              ),
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 10.0),
-                                                child: Tooltip(
-                                                  message:
-                                                      'This button takes you to Pomodoro Timer Page.',
-                                                  textStyle: TextStyle(
-                                                      color: Colors.white),
-                                                  preferBelow: false,
-                                                  verticalOffset: 0,
-                                                  decoration: ShapeDecoration(
-                                                    color: Color(0xf0086972)
-                                                        .withOpacity(0.9),
-                                                    shape: TooltipShapeBorder(
-                                                        arrowArc: 0.5),
-                                                    shadows: [
-                                                      BoxShadow(
-                                                          color: Colors.black26,
-                                                          blurRadius: 4.0,
-                                                          offset: Offset(2, 2))
-                                                    ],
-                                                  ),
-                                                  margin: const EdgeInsets.all(
-                                                      30.0),
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: MyFlatButton(
-                                                    // color: _darkTheme
-                                                    //     ? Colors.white
-                                                    //     : lightThemeButton,
-                                                    onPressed: () =>
-                                                        _focusButton(
-                                                            database, todo),
-                                                    text: 'Focus Mode',
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      );
-                                    }).toList(),
-                                  ),
-                                  Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: todayTodosNotDone.map((todo) {
-                                        int index =
-                                            todayTodosNotDone.indexOf(todo);
-                                        return todayTodosNotDone.length > 1
-                                            ? Container(
-                                                width: 8.0,
-                                                height: 8.0,
-                                                margin: EdgeInsets.symmetric(
-                                                    vertical: 10.0,
-                                                    horizontal: 2.0),
-                                                decoration: BoxDecoration(
-                                                    shape: BoxShape.circle,
-                                                    color: _current == index
-                                                        ? Colors.white70
-                                                        : Colors.white24),
-                                              )
-                                            : Container();
-                                      }).toList()),
-                                ],
-                              ),
+              return Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Spacer(flex: _focusModeOn ? 3 : 1),
+                    Opacity(
+                      opacity: _mantraOpacity,
+                      child: Column(
+                        children: <Widget>[
+                          _buildMantraStream(),
+                          Visibility(
+                            visible: _focusModeOn ? true : false,
+                            child: Column(
+                              children: <Widget>[
+                                SizedBox(
+                                    height:
+                                        50), //space between mantra and Today's Todos
+                                _buildTaskCarouselSlider(
+                                    database, todayTodosNotDone),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                      Spacer()
-                    ],
-                  ),
+                    ),
+                    Spacer()
+                  ],
                 ),
               );
             } else {
@@ -479,86 +347,260 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildTaskCarouselSlider(
+      Database database, List<Todo> todayTodosNotDone) {
+    return Column(
+      children: [
+        CarouselSlider(
+          options: CarouselOptions(
+            //height: 250.0, //default height is good enough
+            viewportFraction: 1.0,
+            initialPage: 0, //default
+            onPageChanged: (index, reason) {
+              setState(() {
+                _current = index;
+              });
+            },
+          ),
+          items: todayTodosNotDone.map((todo) {
+            return Builder(
+              builder: (BuildContext context) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text('TODAY', style: KHomeToday),
+                    SizedBox(height: 5),
+                    HomeTodoListTile(
+                      todo: todo,
+                      onChangedCheckbox: (newValue) =>
+                          _onChangedCheckbox(newValue, database, todo),
+                      onTap: () => _onTapTodo(database, todo),
+                      onPressed: () => _delete(database, todo),
+                    ),
+                    SizedBox(height: 10),
+                    MyToolTip(
+                      message:
+                          'This button takes you to Pomodoro Timer Screen.',
+                      child: MyFlatButton(
+                        onPressed: () => _focusButton(database, todo),
+                        text: 'Focus Mode',
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
+          }).toList(),
+        ),
+        _sliderDot(todayTodosNotDone),
+      ],
+    );
+  }
+
+  Widget _sliderDot(List list) {
+    return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: list.length < 11
+            ? list.map((todo) {
+                int index = list.indexOf(todo);
+                return list.length > 1
+                    ? MyDotContainer(
+                        color:
+                            _current == index ? Colors.white70 : Colors.white38)
+                    : Container();
+              }).toList()
+            : list.take(10).map((todo) {
+                int index = list.indexOf(todo);
+                return list.length > 1
+                    ? MyDotContainer(
+                        color:
+                            _current == index ? Colors.white70 : Colors.white38)
+                    : Container();
+              }).toList());
+  }
+
+  //this means if there is no data from TodoStream, then we display question.
   Widget _emptyListScreen({String text = ''}) {
     final focusNotifier = Provider.of<FocusNotifier>(context);
     bool _focusModeOn = (focusNotifier.getFocus() == true);
 
-    return Expanded(
-      child: Column(
-        children: <Widget>[
-          Visibility(
-              visible: _focusModeOn ? false : true,
-              child: Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    Spacer(),
-                    Opacity(
-                      opacity: _mantraOpacity,
-                      child: Column(
+    return _focusModeOn
+        ? Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Spacer(),
+                Opacity(
+                  opacity: _mantraOpacity,
+                  child: Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: getFirstGreetings,
+                      ), //first greetings
+                      SizedBox(height: 80),
+                      Column(
                         children: <Widget>[
-                          _buildMantraStream(),
+                          Text('$dayOfWeek, $formattedDate ', style: KHomeDate),
+                          SizedBox(height: 20),
+                          getQuestion(), //33
+                          HomeTextField(onSubmitted: _onSubmitted),
+                          SizedBox(height: 10),
+                          Text(
+                              text) // default is empty, but if error, we show error message
                         ],
                       ),
-                    ),
-                    Spacer(),
-                  ],
+                    ],
+                  ),
                 ),
-              )),
-          Visibility(
-            visible: _focusModeOn ? true : false,
-            child: Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Spacer(flex: 1),
-                  SizedBox(height: 30),
-                  Opacity(
-                    opacity: _mantraOpacity,
-                    child: Column(
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: getFirstGreetings,
-                        ), //first greetings
-                        SizedBox(height: 80),
-                        Column(
-                          children: <Widget>[
-                            getFormattedDate, //30
-                            SizedBox(height: 20),
-                            getQuestion(), //33
-                            HomeTextField(
-                              onSubmitted: _onSubmitted,
-                            ),
-                            SizedBox(height: 10),
-                            Text(text)
-                          ],
-                        ),
-                      ],
+                Spacer(),
+              ],
+            ),
+          )
+        : Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Spacer(),
+                Opacity(
+                  opacity: _mantraOpacity,
+                  child: _buildMantraStream(),
+                ),
+                Spacer(),
+              ],
+            ),
+          );
+  }
+
+  ///mantra stream
+  Widget _buildMantraStream() {
+    final database = Provider.of<Database>(context, listen: false);
+    //for mantra
+    final mantraNotifier = Provider.of<MantraNotifier>(context, listen: false);
+    bool _useMyMantra = mantraNotifier.getMantra();
+    return StreamBuilder<List<MantraModel>>(
+      stream: database.mantrasStream(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final List<MantraModel> mantras = snapshot.data;
+          if (mantras.isNotEmpty) {
+            if (_useMyMantra == true) {
+//              final mantra = mantras[mantras.length - 1]; //changed to CarouselSlider
+              return Column(
+                children: [
+                  ShowUp(
+                    delay: 500,
+                    child: CarouselSlider(
+                      options: CarouselOptions(
+                        height:
+                            120.0, //if we don't give it a height, it will set as default height which is higher
+                        viewportFraction: 1,
+                      ),
+                      items: mantras.map((mantra) {
+                        return Builder(
+                          builder: (BuildContext context) {
+                            return Center(
+                              child: HomeMantraListTile(
+                                mantra: mantra,
+                                onTap: () => _onTapMantra(database, mantra),
+                              ),
+                            );
+                          },
+                        );
+                      }).toList(),
                     ),
                   ),
-                  Spacer(),
+                  _sliderDot(mantras),
                 ],
-              ),
-            ),
-          ),
-        ],
-      ),
+              );
+            } else {
+              return getDefaultMantra;
+            }
+          } else {
+            return getDefaultMantra;
+          }
+        } else if (snapshot.hasError) {
+          return getDefaultMantra;
+        }
+        return Center(child: CircularProgressIndicator());
+      },
     );
+  }
+
+  ///quote stream
+  Widget _buildQuoteStream() {
+    final database = Provider.of<Database>(context, listen: false);
+    final quoteNotifier = Provider.of<QuoteNotifier>(context, listen: false);
+    bool _useMyQuote = quoteNotifier.getQuote();
+    return StreamBuilder<List<QuoteModel>>(
+      stream: database.quotesStream(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final List<QuoteModel> quotes = snapshot.data;
+          if (quotes.isNotEmpty) {
+            if (_useMyQuote == true) {
+              return Column(
+                children: [
+                  CarouselSlider(
+                    options: CarouselOptions(
+                      height: 50.0,
+                      viewportFraction: 1,
+                    ),
+                    items: quotes.map((quote) {
+                      return Builder(
+                        builder: (BuildContext context) {
+                          return InkWell(
+                            onTap: () => _onTapQuote(database, quote),
+                            child: Center(
+                              child: DailyQuote(
+                                  title: quote.title,
+                                  author: quote.author,
+                                  bottomPadding: _useMyQuote ? 0 : 15),
+                            ),
+                          );
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  _sliderDot(quotes),
+                ],
+              );
+            } else {
+              return APIQuote();
+            }
+          } else {
+            return APIQuote();
+          }
+        } else if (snapshot.hasError) {
+          return APIQuote();
+        }
+        return Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+
+  List<Todo> _getTodayNotDone(List<Todo> todos) {
+    List<Todo> todayTodos = [];
+    todos.forEach((todo) {
+      DateTime today = DateTime(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day);
+      DateTime date = DateTime(todo.date.year, todo.date.month, todo.date.day);
+      if ((date == today) && (todo.isDone == false) && (todo.category == 0)) {
+        todayTodos.add(todo);
+      }
+    });
+    return todayTodos;
   }
 
   ///all function on task:
   void _onSubmitted(newText) async {
     final database = Provider.of<Database>(context, listen: false);
     if (newText.isNotEmpty) {
-      setState(() {
-        _focusAnswer = newText;
-      });
       FocusScope.of(context).unfocus();
       try {
         final todo = Todo(
           id: documentIdFromCurrentDate(),
-          title: _focusAnswer,
+          title: newText,
           date: DateTime.now(),
           isDone: false,
           category: 0,
@@ -578,7 +620,6 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _quoteOpacity = 0.0;
     });
-
     try {
       await database.deleteTodo(todo);
     } on PlatformException catch (e) {
@@ -603,21 +644,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
             ///should not add this line, because when it's going to be automatically
             ///dismissed, and then press this will take to black screen.
-            ///
-            /// added BuildContext context, then not pop to black screen
-
             // Navigator.pop(context);
           },
           child: FlushBarButtonChild(title: 'UNDO')),
       margin: const EdgeInsets.all(20),
-      padding: const EdgeInsets.only(left: 10),
+      padding: const EdgeInsets.all(8),
       borderRadius: 15,
       flushbarPosition: FlushbarPosition.BOTTOM,
       flushbarStyle: FlushbarStyle.FLOATING,
-      backgroundGradient: LinearGradient(colors: [
-        Color(0xF0888888).withOpacity(0.85),
-        darkThemeNoPhotoBkgdColor,
-      ]),
+      backgroundGradient: KFlushBarGradient,
       duration: Duration(seconds: 3),
       icon: Icon(
         EvaIcons.trash2Outline,
@@ -629,18 +664,14 @@ class _HomeScreenState extends State<HomeScreen> {
           overflow: TextOverflow.ellipsis,
           style: KFlushBarMessage),
     )..show(context).then((value) => setState(() {
-          // _quoteVisible = !_quoteVisible;
           _quoteOpacity = 1.0;
         }));
   }
-
-  final String _congrats = CongratsList().getCongrats().body;
 
   Future<void> _onChangedCheckbox(
       newValue, Database database, Todo todo) async {
     setState(() {
       _quoteOpacity = 0.0;
-      // _quoteVisible = !_quoteVisible;
     });
 
     try {
@@ -656,16 +687,11 @@ class _HomeScreenState extends State<HomeScreen> {
     Flushbar(
       isDismissible: true,
       margin: const EdgeInsets.all(20),
-      padding: const EdgeInsets.only(left: 10, top: 5, bottom: 5),
+      padding: const EdgeInsets.all(8),
       borderRadius: 15,
       flushbarPosition: FlushbarPosition.BOTTOM,
       flushbarStyle: FlushbarStyle.FLOATING,
-//      reverseAnimationCurve: Curves.decelerate,
-//      forwardAnimationCurve: Curves.elasticOut,
-      backgroundGradient: LinearGradient(colors: [
-        Color(0xF0a2de96).withOpacity(0.95),
-        Color(0xF03ca59d).withOpacity(0.95)
-      ]),
+      backgroundGradient: KFlushBarGradient,
       duration: Duration(seconds: 3),
       icon: Icon(
         Icons.check,
@@ -682,7 +708,6 @@ class _HomeScreenState extends State<HomeScreen> {
         style: KFlushBarMessage,
       ),
     )..show(context).then((value) => setState(() {
-          // _quoteVisible = !_quoteVisible;
           _quoteOpacity = 1.0;
         }));
   }
@@ -691,7 +716,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void _onTapTodo(Database database, Todo todo) async {
     setState(() {
       _middleColumnVisible = false;
-      // _quoteVisible = false;
       _quoteOpacity = 0.0;
     });
     var _typedTitleAndComment = await showModalBottomSheet(
@@ -736,64 +760,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() {
       _middleColumnVisible = true;
-      // _quoteVisible = true;
       _quoteOpacity = 1.0;
     });
   }
 
-  ///mantra stream
-  Widget _buildMantraStream() {
-    final database = Provider.of<Database>(context, listen: false);
-    //for mantra
-    final mantraNotifier = Provider.of<MantraNotifier>(context);
-    bool _useMyMantra = mantraNotifier.getMantra();
-//    int _getMantraIndex = mantraNotifier.getMantraIndex();
-    return StreamBuilder<List<MantraModel>>(
-      stream: database.mantrasStream(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final List<MantraModel> mantras = snapshot.data;
-          if (mantras.isNotEmpty) {
-            if (_useMyMantra == true) {
-//              final mantra = mantras[mantras.length - 1];
-              return CarouselSlider(
-                options: CarouselOptions(
-                  height:
-                      120.0, //if we don't give it a height, it will set as default height which is higher
-                  viewportFraction: 1,
-//                  //we have change to make the most-recent edited one to be the first
-//                  initialPage: mantras.length - 1,
-                ),
-                items: mantras.map((mantra) {
-                  return Builder(
-                    builder: (BuildContext context) {
-                      return Center(
-                        child: HomeMantraListTile(
-                          mantra: mantra,
-                          onTap: () => _onTapMantra(database, mantra),
-                        ),
-                      );
-                    },
-                  );
-                }).toList(),
-              );
-            } else {
-              return getSecondGreetings;
-            }
-          } else {
-            return getSecondGreetings;
-          }
-        } else if (snapshot.hasError) {
-          return getSecondGreetings;
-        }
-        return Center(child: CircularProgressIndicator());
-      },
-    );
-  }
-
   void _onTapMantra(Database database, MantraModel mantra) async {
     setState(() {
-      // _quoteVisible = false;
       _quoteOpacity = 0.0;
       _middleColumnVisible = false;
     });
@@ -805,60 +777,14 @@ class _HomeScreenState extends State<HomeScreen> {
               mantra: mantra,
             ));
     setState(() {
-      // _quoteVisible = true;
       _quoteOpacity = 1.0;
       _middleColumnVisible = true;
     });
   }
 
-  ///quote stream
-  Widget _buildQuoteStream() {
-    final database = Provider.of<Database>(context, listen: false);
-    final quoteNotifier = Provider.of<QuoteNotifier>(context);
-    bool _useMyQuote = quoteNotifier.getQuote();
-    return StreamBuilder<List<QuoteModel>>(
-      stream: database.quotesStream(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final List<QuoteModel> quotes = snapshot.data;
-          if (quotes.isNotEmpty) {
-            if (_useMyQuote == true) {
-              return CarouselSlider(
-                options: CarouselOptions(
-                  height: 70.0,
-                  viewportFraction: 1,
-//                  initialPage: quotes.length - 1, //default is first, we already changed the order from database
-                ),
-                items: quotes.map((quote) {
-                  return Builder(
-                    builder: (BuildContext context) {
-                      return InkWell(
-                        onTap: () => _onTapQuote(database, quote),
-                        child: DailyQuote(
-                            title: quote.title, author: quote.author),
-                      );
-                    },
-                  );
-                }).toList(),
-              );
-            } else {
-              return APIQuote();
-            }
-          } else {
-            return APIQuote();
-          }
-        } else if (snapshot.hasError) {
-          return APIQuote();
-        }
-        return Center(child: CircularProgressIndicator());
-      },
-    );
-  }
-
   void _onTapQuote(Database database, QuoteModel quote) async {
     setState(() {
       _middleColumnVisible = false;
-      // _quoteVisible = false;
       _quoteOpacity = 0.0;
     });
     await showModalBottomSheet(
@@ -870,20 +796,8 @@ class _HomeScreenState extends State<HomeScreen> {
             ));
     setState(() {
       _middleColumnVisible = true;
-      // _quoteVisible = true;
       _quoteOpacity = 1.0;
     });
-  }
-
-  Text get getFormattedDate {
-    return Text(
-      '$dayOfWeek, $formattedDate ',
-      style: TextStyle(
-        color: Colors.white,
-        fontSize: 25.0,
-        fontWeight: FontWeight.bold,
-      ),
-    );
   }
 
   Widget getQuestion() {
@@ -891,14 +805,12 @@ class _HomeScreenState extends State<HomeScreen> {
       isRepeatingAnimation: false,
       text: ['What is your main focus today?'],
       textAlign: TextAlign.center,
-      textStyle: TextStyle(
-          color: Colors.white, fontSize: 33.0, fontWeight: FontWeight.bold),
+      textStyle: KHomeQuestion,
     );
   }
 
   Widget get getFirstGreetings {
     final User user = Provider.of<User>(context, listen: false);
-
     return AutoSizeText(
       user.displayName == null
           ? '${FirstGreetings().showGreetings()}'
@@ -907,31 +819,21 @@ class _HomeScreenState extends State<HomeScreen> {
       maxFontSize: 35,
       minFontSize: 30,
       textAlign: TextAlign.center,
-      style: TextStyle(
-          fontSize: 35.0, color: Colors.white, fontWeight: FontWeight.bold),
+      style: KHomeGreeting,
     );
   }
 
-  Widget get getSecondGreetings {
+  Widget get getDefaultMantra {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
       child: ShowUp(
         delay: 500,
         child: Text(
-          _secondGreetings, //SecondGreetings().showGreetings().body
+          _defaultMantra, //SecondGreetings().showGreetings().body
           textAlign: TextAlign.center,
-          style: TextStyle(
-              fontSize: 35.0, color: Colors.white, fontWeight: FontWeight.bold),
+          style: KHomeGreeting,
         ),
       ),
-    );
-  }
-
-  Text get getToday {
-    return Text(
-      'TODAY',
-      style: TextStyle(
-          color: Colors.white, fontSize: 25.0, fontWeight: FontWeight.bold),
     );
   }
 }

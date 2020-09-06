@@ -1,18 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:iMomentum/app/constants/constants.dart';
 import 'package:iMomentum/app/constants/piechart_color.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/todo_screen/todo_screen_empty_message.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NewPieChart extends StatelessWidget {
-  NewPieChart({@required this.dataMap, this.textPieChart1, this.textPieChart2});
+  NewPieChart({@required this.dataMap});
 
   final Map<String, double> dataMap;
-  final String textPieChart1;
-  final String textPieChart2;
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +51,16 @@ class NewPieChart extends StatelessWidget {
     } else {
       return TodoScreenEmptyMessage(
         text1: textPieChart1,
-        text2: textPieChart2,
+        tips: textPieTip,
+        textTap: textPieTap,
+        onTap: () async {
+          const url = 'https://en.wikipedia.org/wiki/Pomodoro_Technique';
+          if (await canLaunch(url)) {
+            await launch(url);
+          } else {
+            throw 'Could not launch $url';
+          }
+        },
       );
     }
   }

@@ -25,7 +25,7 @@ class FolderContainer extends StatelessWidget {
         width: 180,
         margin: EdgeInsets.only(left: 8.0, right: 8),
         decoration: BoxDecoration(
-          color: _darkTheme ? darkThemeDrawer : lightThemeAppBar,
+          color: _darkTheme ? darkThemeDrawer : lightThemeDrawer,
           borderRadius: BorderRadius.all(Radius.circular(20.0)),
         ),
         child: Padding(

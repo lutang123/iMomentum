@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:iMomentum/app/common_widgets/empty_and_error_content.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_list_tile.dart';
 import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
@@ -7,9 +8,7 @@ import 'package:iMomentum/app/models/folder.dart';
 import 'package:iMomentum/app/models/note.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:flutter/services.dart';
-import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
-import 'package:iMomentum/app/models/mantra_model.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:provider/provider.dart';
@@ -41,10 +40,6 @@ class _MoveFolderScreenState extends State<MoveFolderScreen> {
   Database get database => widget.database;
   Note get note => widget.note;
 
-  final List<Folder> defaultFolders = [
-    Folder(id: 1.toString(), title: 'Notes'),
-  ];
-
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
@@ -57,26 +52,37 @@ class _MoveFolderScreenState extends State<MoveFolderScreen> {
           SizedBox(height: 20),
           Text('Select a folder', style: Theme.of(context).textTheme.headline5),
 
-          ///todo: why after adding new folder the list showing multi times??
-          // SizedBox(height: 10),
-          // Padding(
-          //   padding: const EdgeInsets.only(left: 10.0),
-          //   child: Row(
-          //     children: [
-          //       MyFlatButtonUnderline(
-          //           text: 'Add New',
-          //           color:
-          //               _darkTheme ? Colors.lightBlueAccent : lightThemeButton,
-          //           onPressed: () => _showAddDialog(database)),
-          //     ],
-          //   ),
-          // ),
+          ///why after adding new folder the list showing multi times??
+          ///because default folder must inside StreamBuilder.
+          SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.only(left: 10.0),
+            child: Row(
+              children: [
+                FlatButton(
+                    child: Text(
+                      'Add New',
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: _darkTheme
+                              ? Colors.lightBlueAccent
+                              : lightThemeButton,
+                          decoration: TextDecoration.underline,
+                          fontStyle: FontStyle.italic),
+                    ),
+                    onPressed: () => _showAddDialog(database)),
+              ],
+            ),
+          ),
           StreamBuilder<List<Folder>>(
             stream: database
                 .foldersStream(), // print(database.todosStream());//Instance of '_MapStream<QuerySnapshot, List<TodoModel>>'
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 final List<Folder> folders = snapshot.data;
+                final List<Folder> defaultFolders = [
+                  Folder(id: 1.toString(), title: 'Notes'),
+                ];
                 if (folders.isNotEmpty) {
                   final List<Folder> finalFolders = defaultFolders
                     ..addAll(folders);
@@ -96,12 +102,9 @@ class _MoveFolderScreenState extends State<MoveFolderScreen> {
                   );
                 }
               } else if (snapshot.hasError) {
-                return Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: _buildFolderListView(note, defaultFolders),
-                  ),
-                );
+                print(
+                    'snapshot.hasError in folder stream: ${snapshot.error.toString()}');
+                return Expanded(child: ErrorMessage());
               }
               return Center(child: CircularProgressIndicator());
             },

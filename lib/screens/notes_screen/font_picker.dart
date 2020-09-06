@@ -14,8 +14,10 @@ List<String> fontList = [
 //  'Ubuntu', //pair with Roboto, If you’re looking for something distinctly modern, try Ubuntu,
 //  'Open Sans', //pair with Roboto, humanist sans serif typeface, open forms and a neutral, yet friendly appearance. It was optimized for print, web, and mobile interfaces, and has excellent legibility characteristics in its letterforms.
 //  'Quicksand', //pair with Open Sans, give the impression of friendliness.
-
+  'Varela Round',
   //handwriting:
+  '  Shadows Into Light Two',
+  'Pacifico',
   'Architects Daughter',
   //handwriting:
   'Crafty Girls',
