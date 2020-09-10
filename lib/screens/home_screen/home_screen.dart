@@ -35,6 +35,7 @@ import 'package:provider/provider.dart';
 import 'quote.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:iMomentum/app/utils/cap_string.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -811,10 +812,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget get getFirstGreetings {
     final User user = Provider.of<User>(context, listen: false);
+    print(user.displayName);
     return AutoSizeText(
       user.displayName == null
           ? '${FirstGreetings().showGreetings()}'
-          : '${FirstGreetings().showGreetings()}, ${user.displayName.substring(0, user.displayName.indexOf(' '))}',
+          : user.displayName.contains(' ')
+              ? '${FirstGreetings().showGreetings()}, ${user.displayName.substring(0, user.displayName.indexOf(' ')).firstCaps}'
+              : '${FirstGreetings().showGreetings()}, ${user.displayName.firstCaps}',
       maxLines: 2,
       maxFontSize: 35,
       minFontSize: 30,

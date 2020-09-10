@@ -50,7 +50,6 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
 
   @override
   void initState() {
-    super.initState();
 //    print('folders: $folders');
     _hideButtonController = ScrollController();
     _hideButtonController.addListener(() {
@@ -72,6 +71,7 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
         }
       }
     });
+    super.initState();
   }
 
   @override
@@ -164,39 +164,53 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
 
                     if (_notPinnedNotesInThisFolder.isNotEmpty ||
                         _pinnedNotesInThisFolder.isNotEmpty) {
-                      return Column(
+                      return Stack(
+                        alignment: Alignment.bottomCenter,
                         children: [
-                          _topRow(allNotesInThisFolder),
-                          Expanded(
-                            child: Opacity(
-                              opacity: _notesOpacity,
-                              child: CustomScrollView(
-                                controller: _hideButtonController,
-                                slivers: <Widget>[
-                                  _buildBoxAdaptorForPinned(
-                                      _pinnedNotesInThisFolder),
-                                  //this is for pinned notes
-                                  _buildNotesGrid(_pinnedNotesInThisFolder),
-                                  //this is just for the word 'OTHERS'
-                                  _pinnedNotesInThisFolder.length > 0
-                                      ? _buildBoxAdaptorForOthers(
-                                          _notPinnedNotesInThisFolder)
-                                      : SliverToBoxAdapter(child: Container()),
-                                  //this is for not pinned notes.
-                                  _buildNotesGrid(_notPinnedNotesInThisFolder),
-                                ],
+                          Column(
+                            children: [
+                              _topRow(allNotesInThisFolder),
+                              Expanded(
+                                child: Opacity(
+                                  opacity: _notesOpacity,
+                                  child: CustomScrollView(
+                                    controller: _hideButtonController,
+                                    slivers: <Widget>[
+                                      _buildBoxAdaptorForPinned(
+                                          _pinnedNotesInThisFolder),
+                                      //this is for pinned notes
+                                      _buildNotesGrid(_pinnedNotesInThisFolder),
+                                      //this is just for the word 'OTHERS'
+                                      _pinnedNotesInThisFolder.length > 0
+                                          ? _buildBoxAdaptorForOthers(
+                                              _notPinnedNotesInThisFolder)
+                                          : SliverToBoxAdapter(
+                                              child: Container()),
+                                      //this is for not pinned notes.
+                                      _buildNotesGrid(
+                                          _notPinnedNotesInThisFolder),
+                                    ],
+                                  ),
+                                ),
                               ),
-                            ),
+                            ],
                           ),
                           _bottomRow(),
                         ],
                       );
                     } else {
-                      return Column(
+                      return Stack(
+                        alignment: Alignment.bottomCenter,
                         children: [
-                          _topRow(allNotesInThisFolder),
-                          Expanded(child: EmptyContent(text: emptyNote)),
-                          _bottomRow(), //empty content
+                          Column(
+                            children: [
+                              _topRow(allNotesInThisFolder),
+                              Expanded(
+                                  child: EmptyContent(
+                                      text: emptyNote)), //empty content
+                            ],
+                          ),
+                          _bottomRow(),
                         ],
                       );
                     }
@@ -421,7 +435,7 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
         //     topRight: Radius.circular(20.0),
         //   ),
         // ),
-        height: 50,
+        height: 60,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
@@ -476,10 +490,12 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
     await showModalBottomSheet(
         context: context,
 
-        ///must not have this line in this case
+        ///must not have this line in this case, otherwise it expands
         // isScrollControlled: true,
         builder: (context) => MoveFolderScreen(
               database: database,
+
+              ///changed to get folder from stream builder, in this way we can add new and see updates immediately
               // folders: folders,
               note: note,
             ));
@@ -492,7 +508,6 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
 
   ///https://stackoverflow.com/questions/54617432/looking-up-a-deactivated-widgets-ancestor-is-unsafe
   ///
-  /// if we don't add BuildContext, context is red color
   Future<void> _delete(Database database, Note note) async {
     setState(() {
       _addButtonVisible = false;

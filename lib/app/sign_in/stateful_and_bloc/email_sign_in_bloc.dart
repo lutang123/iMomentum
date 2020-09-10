@@ -21,10 +21,11 @@ class EmailSignInBloc {
     updateWith(submitted: true, isLoading: true);
     try {
       if (_model.formType == EmailSignInFormType.signIn) {
-        await auth.signInWithEmailAndPassword(_model.email, _model.password);
+        await auth.signInWithEmailAndPassword(
+            _model.name, _model.email, _model.password);
       } else {
         await auth.createUserWithEmailAndPassword(
-            _model.email, _model.password);
+            _model.name, _model.email, _model.password);
       }
     } catch (e) {
       updateWith(isLoading: false);
@@ -37,6 +38,7 @@ class EmailSignInBloc {
         ? EmailSignInFormType.register
         : EmailSignInFormType.signIn;
     updateWith(
+      name: '',
       email: '',
       password: '',
       formType: formType,
@@ -50,6 +52,7 @@ class EmailSignInBloc {
   void updatePassword(String password) => updateWith(password: password);
 
   void updateWith({
+    String name,
     String email,
     String password,
     EmailSignInFormType formType,
@@ -58,6 +61,7 @@ class EmailSignInBloc {
   }) {
     // update model
     _modelSubject.value = _model.copyWith(
+      name: name,
       email: email,
       password: password,
       formType: formType,

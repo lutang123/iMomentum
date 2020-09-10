@@ -1,13 +1,25 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
-import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
+import 'package:iMomentum/app/common_widgets/my_text_field.dart';
 import 'package:iMomentum/app/constants/constants.dart';
-import 'package:iMomentum/screens/landing_and_signIn/sign_in_screen_new.dart';
+import 'package:iMomentum/app/services/auth.dart';
+import 'package:iMomentum/screens/landing_and_signIn/sign_in_screen.dart';
+import 'package:iMomentum/screens/landing_and_signIn/sign_in_screen_old.dart';
 import 'package:iMomentum/app/utils/pages_routes.dart';
+import 'package:provider/provider.dart';
 
-class StartScreen extends StatelessWidget {
-  void _onPressed(BuildContext context) {
-    Navigator.of(context, rootNavigator: true).pushReplacement(
-      PageRoutes.fade(() => SignInScreen.create(context)),
+class StartScreen extends StatefulWidget {
+  @override
+  _StartScreenState createState() => _StartScreenState();
+}
+
+class _StartScreenState extends State<StartScreen> {
+  Widget getQuestion() {
+    return TypewriterAnimatedTextKit(
+      isRepeatingAnimation: false,
+      text: ["Hello, what's your name?"],
+      textAlign: TextAlign.center,
+      textStyle: KHomeQuestion,
     );
   }
 
@@ -17,7 +29,7 @@ class StartScreen extends StatelessWidget {
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/ocean1.jpg'),
+            image: AssetImage('assets/images/landscape.jpg'),
             fit: BoxFit.cover,
           ),
         ),
@@ -27,36 +39,38 @@ class StartScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
+            Padding(padding: const EdgeInsets.all(15.0), child: getQuestion()),
             Padding(
               padding: const EdgeInsets.all(15.0),
-              child: Text(
-                "Welcome to iMomentum",
-                style: KLandingTitle,
-              ),
+              child: HomeTextField(onSubmitted: _onSubmitted),
             ),
-            Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Text(
-                "xxxxxx",
-                style: KLandingSubtitle,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Text(
-                "xxxxxx",
-                style: KLandingSubtitle,
-              ),
-            ),
-            SizedBox(height: 10),
-            MyFlatButton(
-              text: 'Start Now',
-              color: Colors.white,
-              onPressed: () => _onPressed(context),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.all(15.0),
+            //   child: Text(
+            //     "xxxxxx",
+            //     style: KLandingSubtitle,
+            //   ),
+            // ),
+            // SizedBox(height: 10),
+            // MyFlatButton(
+            //   text: 'Start Now',
+            //   color: Colors.white,
+            //   onPressed: () => _onPressed(context),
+            // ),
           ],
         )),
       ),
     );
+  }
+
+  void _onSubmitted(newText) async {
+    final auth = Provider.of<AuthBase>(context, listen: false);
+
+    if (newText.isNotEmpty) {
+      FocusScope.of(context).unfocus();
+      Navigator.of(context).pushReplacement(
+        PageRoutes.fade(() => SignInScreen.create(context, newText, auth)),
+      );
+    }
   }
 }

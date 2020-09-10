@@ -37,10 +37,9 @@ class ClockStart extends StatelessWidget {
             children: <Widget>[
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-//                crossAxisAlignment: CrossAxisAlignment.baseline,
-//                textBaseline: TextBaseline.alphabetic,
                 children: <Widget>[
                   Opacity(
+                    //just to take the space.
                     opacity: 0.0,
                     child: IconButton(
                       icon: Icon(Icons.edit),
@@ -57,12 +56,6 @@ class ClockStart extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: 3),
-//                  // not looking good
-//                  RoundSmallIconButton(
-//                    icon: EvaIcons.moreHorizotnalOutline,
-//                    onPressed: onPressedEdit,
-//                    color: Colors.white70,
-//                  )
                   IconButton(
                     icon: Icon(FontAwesomeIcons.ellipsisH,
                         color: Colors.white.withOpacity(0.85)),
@@ -70,15 +63,17 @@ class ClockStart extends StatelessWidget {
                   )
                 ],
               ),
-//              SizedBox(height: 10),
+              //add SizedBox to make the layout consistent.
               SizedBox(
-                height: 20,
-                child: Text(
-                  text2,
-                  style: GoogleFonts.varelaRound(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 22.0,
-                    color: Colors.white,
+                height: 25,
+                child: Center(
+                  child: Text(
+                    text2, //can be '' or 'Take a break'
+                    style: GoogleFonts.varelaRound(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 22.0,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),

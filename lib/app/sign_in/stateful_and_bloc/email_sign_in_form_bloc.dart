@@ -16,12 +16,15 @@ class EmailSignInFormBloc extends StatefulWidget
 }
 
 class _EmailSignInFormBlocState extends State<EmailSignInFormBloc> {
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
 
   //same as having a variable and then assign value?
+  String get _name => _nameController.text;
   String get _email => _emailController.text;
   String get _password => _passwordController.text;
   EmailSignInFormType _formType = EmailSignInFormType.signIn;
@@ -30,8 +33,10 @@ class _EmailSignInFormBlocState extends State<EmailSignInFormBloc> {
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _nameFocusNode.dispose();
     _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
     super.dispose();
@@ -43,11 +48,12 @@ class _EmailSignInFormBlocState extends State<EmailSignInFormBloc> {
       _isLoading = true;
     });
     try {
-      final auth = Provider.of<AuthBase>(context);
+      ///todo
+      final auth = Provider.of<AuthBase>(context, listen: false);
       if (_formType == EmailSignInFormType.signIn) {
-        await auth.signInWithEmailAndPassword(_email, _password);
+        await auth.signInWithEmailAndPassword(_name, _email, _password);
       } else {
-        await auth.createUserWithEmailAndPassword(_email, _password);
+        await auth.createUserWithEmailAndPassword(_name, _email, _password);
       }
       if (widget.onSignedIn != null) {
         widget.onSignedIn();
@@ -62,6 +68,12 @@ class _EmailSignInFormBlocState extends State<EmailSignInFormBloc> {
         _isLoading = false;
       });
     }
+  }
+
+  void _nameEditingComplete() {
+    final newFocus =
+        widget.nameValidator.isValid(_name) ? _emailFocusNode : _nameFocusNode;
+    FocusScope.of(context).requestFocus(newFocus);
   }
 
   void _emailEditingComplete() {
@@ -95,6 +107,8 @@ class _EmailSignInFormBlocState extends State<EmailSignInFormBloc> {
         !_isLoading;
 
     return [
+      _buildNameTextField(),
+      SizedBox(height: 8.0),
       _buildEmailTextField(),
       SizedBox(height: 8.0),
       _buildPasswordTextField(),
@@ -111,22 +125,23 @@ class _EmailSignInFormBlocState extends State<EmailSignInFormBloc> {
     ];
   }
 
-  TextField _buildPasswordTextField() {
-    bool showErrorText =
-        _submitted && !widget.passwordValidator.isValid(_password);
+  TextField _buildNameTextField() {
+    bool showErrorText = _submitted && !widget.nameValidator.isValid(_name);
     return TextField(
-      key: Key('password'),
-      controller: _passwordController,
-      focusNode: _passwordFocusNode,
+      key: Key('name'),
+      controller: _nameController,
+      focusNode: _nameFocusNode,
       decoration: InputDecoration(
-        labelText: 'Password',
-        errorText: showErrorText ? widget.invalidPasswordErrorText : null,
+        labelText: 'Name',
+        hintText: 'XXX',
+        errorText: showErrorText ? widget.invalidEmailErrorText : null,
         enabled: _isLoading == false,
       ),
-      obscureText: true,
-      textInputAction: TextInputAction.done,
-      onChanged: (password) => _updateState(),
-      onEditingComplete: _submit,
+      autocorrect: false,
+      keyboardType: TextInputType.text,
+      textInputAction: TextInputAction.next,
+      onChanged: (name) => _updateState(),
+      onEditingComplete: _nameEditingComplete,
     );
   }
 
@@ -147,6 +162,25 @@ class _EmailSignInFormBlocState extends State<EmailSignInFormBloc> {
       textInputAction: TextInputAction.next,
       onChanged: (email) => _updateState(),
       onEditingComplete: _emailEditingComplete,
+    );
+  }
+
+  TextField _buildPasswordTextField() {
+    bool showErrorText =
+        _submitted && !widget.passwordValidator.isValid(_password);
+    return TextField(
+      key: Key('password'),
+      controller: _passwordController,
+      focusNode: _passwordFocusNode,
+      decoration: InputDecoration(
+        labelText: 'Password',
+        errorText: showErrorText ? widget.invalidPasswordErrorText : null,
+        enabled: _isLoading == false,
+      ),
+      obscureText: true,
+      textInputAction: TextInputAction.done,
+      onChanged: (password) => _updateState(),
+      onEditingComplete: _submit,
     );
   }
 

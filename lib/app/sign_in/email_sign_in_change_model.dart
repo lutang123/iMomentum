@@ -6,6 +6,7 @@ import 'package:iMomentum/app/sign_in/validators.dart';
 class EmailSignInChangeModel with EmailAndPasswordValidators, ChangeNotifier {
   EmailSignInChangeModel({
     @required this.auth,
+    this.name = '',
     this.email = '',
     this.password = '',
     this.formType = EmailSignInFormType.signIn,
@@ -13,6 +14,7 @@ class EmailSignInChangeModel with EmailAndPasswordValidators, ChangeNotifier {
     this.submitted = false,
   });
   final AuthBase auth;
+  String name;
   String email;
   String password;
   EmailSignInFormType formType;
@@ -23,9 +25,9 @@ class EmailSignInChangeModel with EmailAndPasswordValidators, ChangeNotifier {
     updateWith(submitted: true, isLoading: true);
     try {
       if (formType == EmailSignInFormType.signIn) {
-        await auth.signInWithEmailAndPassword(email, password);
+        await auth.signInWithEmailAndPassword(email, password, name);
       } else {
-        await auth.createUserWithEmailAndPassword(email, password);
+        await auth.createUserWithEmailAndPassword(email, password, name);
       }
     } catch (e) {
       updateWith(isLoading: false);
@@ -51,9 +53,9 @@ class EmailSignInChangeModel with EmailAndPasswordValidators, ChangeNotifier {
         !isLoading;
   }
 
-  String get passwordErrorText {
-    bool showErrorText = submitted && !passwordValidator.isValid(password);
-    return showErrorText ? invalidPasswordErrorText : null;
+  String get nameErrorText {
+    bool showErrorText = submitted && !nameValidator.isValid(name);
+    return showErrorText ? invalidNameErrorText : null;
   }
 
   String get emailErrorText {
@@ -61,11 +63,17 @@ class EmailSignInChangeModel with EmailAndPasswordValidators, ChangeNotifier {
     return showErrorText ? invalidEmailErrorText : null;
   }
 
+  String get passwordErrorText {
+    bool showErrorText = submitted && !passwordValidator.isValid(password);
+    return showErrorText ? invalidPasswordErrorText : null;
+  }
+
   void toggleFormType() {
     final formType = this.formType == EmailSignInFormType.signIn
         ? EmailSignInFormType.register
         : EmailSignInFormType.signIn;
     updateWith(
+      name: '',
       email: '',
       password: '',
       formType: formType,
@@ -74,17 +82,21 @@ class EmailSignInChangeModel with EmailAndPasswordValidators, ChangeNotifier {
     );
   }
 
+  void updateName(String name) => updateWith(name: name);
+
   void updateEmail(String email) => updateWith(email: email);
 
   void updatePassword(String password) => updateWith(password: password);
 
   void updateWith({
+    String name,
     String email,
     String password,
     EmailSignInFormType formType,
     bool isLoading,
     bool submitted,
   }) {
+    this.name = name ?? this.name;
     this.email = email ?? this.email;
     this.password = password ?? this.password;
     this.formType = formType ?? this.formType;

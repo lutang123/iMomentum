@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -127,7 +129,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
           ),
           Align(
             alignment: Alignment.bottomCenter,
-            child: _lastRow(), // Your footer widget
+            child: _bottomRow(), // Your footer widget
           ),
         ],
       ),
@@ -161,7 +163,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
       centerTitle: false,
       actions: [
         Padding(
-          padding: const EdgeInsets.only(right: 8.0),
+          padding: EdgeInsets.only(right: _isEdited ? 0.0 : 8.0),
           child: IconButton(
             icon: isPinned
                 ? Icon(MyFlutterAppIcon.pin,
@@ -213,17 +215,9 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                 fontWeight: FontWeight.w600,
               ),
               onChanged: (value) {
-                if (value.length > 0) {
-                  setState(() {
-                    _isEdited = true;
-                  });
-                  title = value.firstCaps; //we should add here
-                }
-
-                if (note != null) {
-                  //not executed?
-                  print('note is not null');
-                  if (value != note.title) {
+                if (note == null) {
+                  if (value.isNotEmpty) {
+                    print('value: $value');
                     setState(() {
                       _isEdited = true;
                     });
@@ -231,11 +225,16 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                   }
                 }
 
-                ///why this is not executed ?
-//                else if (note == null) {
-//                  print(value.length);
-//                }
+                if (note != null) {
+                  if (value != note.title && value.isNotEmpty) {
+                    setState(() {
+                      _isEdited = true;
+                    });
+                    title = value.firstCaps; //we should add here
+                  }
+                }
               },
+              // onSaved: (value) => title = value.firstCaps,
               cursorColor: _darkTheme ? darkThemeButton : lightThemeButton,
               decoration: InputDecoration.collapsed(
                   hintText: 'Title',
@@ -261,14 +260,17 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                 fontSize: 18,
               ),
               onChanged: (value) {
-                if (value.length > 0) {
-                  setState(() {
-                    _isEdited = true;
-                  });
-                  description = value.firstCaps; //we should add here
+                if (note == null) {
+                  if (value.isNotEmpty) {
+                    setState(() {
+                      _isEdited = true;
+                    });
+                    description = value.firstCaps; //we should add here
+                  }
                 }
+
                 if (note != null) {
-                  if (value != note.description) {
+                  if (value != note.description && value.isNotEmpty) {
                     setState(() {
                       _isEdited = true;
                     });
@@ -276,6 +278,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                   }
                 }
               },
+              // onSaved: (value) => description = value.firstCaps,
               decoration: InputDecoration.collapsed(
                 hintText: 'Note',
                 hintStyle: GoogleFonts.getFont(
@@ -291,7 +294,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
     ));
   }
 
-  Widget _lastRow() {
+  Widget _bottomRow() {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
 
@@ -304,7 +307,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
           color: _darkTheme ? colorsDark[color] : colorsLight[color],
           boxShadow: [
             BoxShadow(
-              color: Colors.black87,
+              color: Colors.black12,
               offset: Offset(0.0, 1.0), //(x,y)
               blurRadius: 4.0,
             ),
@@ -326,6 +329,10 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                             padding: const EdgeInsets.only(left: 15.0, top: 10),
                             child: Text(
                               'Pick a font for your Note.',
+                              style: TextStyle(
+                                  color: _darkTheme
+                                      ? darkThemeHint
+                                      : lightThemeHint),
                             ),
                           ),
                         ],
@@ -341,7 +348,11 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                         children: [
                           Padding(
                             padding: const EdgeInsets.only(left: 15.0, top: 10),
-                            child: Text('Pick a color for your Note.'),
+                            child: Text('Pick a color for your Note.',
+                                style: TextStyle(
+                                    color: _darkTheme
+                                        ? darkThemeHint
+                                        : lightThemeHint)),
                           ),
                         ],
                       ),
@@ -366,16 +377,26 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                     tooltip: 'Add more',
                   ),
                   widget.note == null
-                      ? Text('Edited ${Format.time(DateTime.now())}')
+                      ? Text('Edited ${Format.time(DateTime.now())}',
+                          style: TextStyle(
+                              color:
+                                  _darkTheme ? darkThemeHint : lightThemeHint))
                       : formattedToday == formattedDate
-                          ? Text('Edited ${Format.time(note.date)}')
-                          : Text('Edited ${Format.date(note.date)}'),
+                          ? Text('Edited ${Format.time(note.date)}',
+                              style: TextStyle(
+                                  color: _darkTheme
+                                      ? darkThemeHint
+                                      : lightThemeHint))
+                          : Text('Edited ${Format.date(note.date)}',
+                              style: TextStyle(
+                                  color: _darkTheme
+                                      ? darkThemeHint
+                                      : lightThemeHint)),
                   IconButton(
                     key: RIKeys.riKey1,
                     iconSize: 28,
                     color: _darkTheme ? darkThemeButton : lightThemeButton,
                     icon: Icon(EvaIcons.moreVerticalOutline),
-//              onPressed: () => _addAction(widget.database, widget.note),
                     onPressed: _showPopUp,
                     tooltip: 'more',
                   ),
@@ -420,29 +441,45 @@ class AddNoteScreenState extends State<AddNoteScreen> {
     }
   }
 
-  Future<void> _saveAndBack(Database database, Note note) async {
-    if (_isEdited) {
-      try {
-        final id = note?.id ?? documentIdFromCurrentDate();
+  // bool _validateAndSaveForm() {
+  //   final form = _formKey.currentState;
+  //   //validate
+  //   if (form.validate()) {
+  //     //save
+  //     form.save();
+  //     return true;
+  //   }
+  //   return false;
+  // }
 
-        ///first we find this specific Todo item that we want to update
-        final newNote = Note(
-          id: id,
-          folderId: folderId,
-          title: title,
-          description: description,
-          date: DateTime.now(),
-          colorIndex: color,
-          fontFamily: fontFamily,
-          isPinned: isPinned,
-        );
-        //add newTodo to database
-        await database.setNote(newNote);
-      } on PlatformException catch (e) {
-        PlatformExceptionAlertDialog(
-          title: 'Operation failed',
-          exception: e,
-        ).show(context);
+  Future<void> _saveAndBack(Database database, Note note) async {
+    // if (_validateAndSaveForm()) {
+    if (_isEdited) {
+      if ((title.isNotEmpty) || (description.isNotEmpty)) {
+        print('title: $title');
+        print('description: $description');
+        try {
+          final id = note?.id ?? documentIdFromCurrentDate();
+
+          ///first we find this specific Todo item that we want to update
+          final newNote = Note(
+            id: id,
+            folderId: folderId,
+            title: title,
+            description: description,
+            date: DateTime.now(),
+            colorIndex: color,
+            fontFamily: fontFamily,
+            isPinned: isPinned,
+          );
+          //add newTodo to database
+          await database.setNote(newNote);
+        } on PlatformException catch (e) {
+          PlatformExceptionAlertDialog(
+            title: 'Operation failed',
+            exception: e,
+          ).show(context);
+        }
       }
       Navigator.of(context).pop();
     } else {
@@ -488,21 +525,27 @@ class AddNoteScreenState extends State<AddNoteScreen> {
   void _share() {
     final RenderBox box = context.findRenderObject();
     if (note == null) {
-      Share.share(title,
-          subject: description,
-          sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+      if (title.length == 0) {
+        Share.share('To title',
+            subject: description,
+            sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+      }
+
+      if (description.length == 0) {
+        Share.share(description,
+            subject: 'No description',
+            sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+      } else {
+        Share.share(title,
+            subject: description,
+            sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+      }
+
+      ///this is the case note is not null
     } else {
       if (note.title.isEmpty && note.description.isEmpty) {
         return null;
       } else {
-        // A builder is used to retrieve the context immediately
-        // surrounding the RaisedButton.
-        //
-        // The context's `findRenderObject` returns the first
-        // RenderObject in its descendent tree when it's not
-        // a RenderObjectWidget. The RaisedButton's RenderObject
-        // has its position and size after it's built.
-        print(note.description);
         if (note.title.isEmpty) {
           Share.share('No Title',
               subject: note.description,
@@ -535,7 +578,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
       }
       Navigator.of(context).pop();
     } else {
-      Navigator.of(context).pop();
+      return null;
     }
   }
 }

@@ -92,7 +92,7 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                               color: Colors.white,
                             ),
                             IconButton(
-                              onPressed: () => _showFlushBar(context),
+                              onPressed: () => _showFlushBar(),
                               icon: Icon(Icons.info_outline,
                                   color: Colors.white, size: 32),
                               color: Colors.white,
@@ -379,7 +379,7 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
   }
 
   double _topOpacity = 1.0;
-  void _showFlushBar(BuildContext context) {
+  void _showFlushBar() {
     setState(() {
       _topOpacity = 0.0;
     });

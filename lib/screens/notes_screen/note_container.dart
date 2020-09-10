@@ -110,25 +110,6 @@ class NoteContainer extends StatelessWidget {
   }
 }
 
-//class MyContainer extends StatelessWidget {
-//  const MyContainer({Key key, this.child}) : super(key: key);
-//  final Widget child;
-//
-//  @override
-//  Widget build(BuildContext context) {
-//
-//    return Container(
-//      child: child,
-//      padding: EdgeInsets.all(8.0),
-//      decoration: BoxDecoration(
-//          color: _darkTheme ? darkSurfaceTodo : lightSurface,
-//          border: Border.all(
-//              width: 2, color: _darkTheme ? Colors.white54 : Colors.black54),
-//          borderRadius: BorderRadius.circular(10.0)),
-//    );
-//  }
-//}
-
 class MySignInContainer extends StatelessWidget {
   const MySignInContainer({Key key, this.child}) : super(key: key);
   final Widget child;

@@ -21,9 +21,6 @@ enum QuoteLoadingState { NOT_DOWNLOADED, DOWNLOADING, FINISHED_DOWNLOADING }
 // This error might indicate a memory leak if setState() is being called because another object is retaining a reference to this State object after it has been removed from the tree. To avoid memory leaks, consider breaking the reference to this object during dispose().
 
 class APIQuote extends StatefulWidget {
-//  final Database database;
-//  const QuoteStream({Key key, this.database}) : super(key: key);
-//
   @override
   _APIQuoteState createState() => _APIQuoteState();
 }
@@ -96,7 +93,6 @@ class _APIQuoteState extends State<APIQuote> {
       _state = QuoteLoadingState.FINISHED_DOWNLOADING;
     });
   }
-
   // }
 }
 
@@ -154,8 +150,6 @@ class DailyQuote extends StatelessWidget {
     );
   }
 
-  ///notes on show more text
-
   final GlobalKey key = RIKeys.riKey3;
   void _showMoreText(String text, BuildContext context) {
     ShowMoreTextPopup popup = ShowMoreTextPopup(context,
@@ -187,7 +181,7 @@ class RestQuoteClass extends StatelessWidget {
       alignment: Alignment.bottomCenter,
       child: Padding(
         padding: const EdgeInsets.only(left: 10, right: 10, bottom: 15.0),
-        child: (title.length + author.length) < 101
+        child: (title.length) < 100
             ? Text(
                 author == null || author == ''
                     ? '"$title"'

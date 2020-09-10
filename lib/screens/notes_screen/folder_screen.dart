@@ -778,96 +778,90 @@ class FolderScreenState extends State<FolderScreen> {
                 ),
               ],
             ),
-            content: Container(
-//              color: Colors.purpleAccent,
-              child: Form(
-                key: _formKey,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                        child: TextFormField(
-                          onChanged: (value) {
-                            setState(() {
-                              value.length == 0
-                                  ? _isFolderNameEmpty = true
-                                  : _isFolderNameEmpty = false;
-                            });
-                          },
-                          maxLines: 1,
-                          maxLength: 20,
-                          initialValue: folder.title,
-                          validator: (value) => (value.isNotEmpty)
-                              ? null
-                              : 'Folder name can not be empty',
-                          onSaved: (value) => _newFolderName = value.firstCaps,
-                          style:
-                              TextStyle(fontSize: 20.0, color: Colors.white70),
-                          autofocus: true,
-                          cursorColor: Colors.white70,
-                          decoration: InputDecoration(
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: darkThemeHint),
-                            ),
-                            enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: darkThemeHint)),
+            content: Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      child: TextFormField(
+                        onChanged: (value) {
+                          setState(() {
+                            value.length == 0
+                                ? _isFolderNameEmpty = true
+                                : _isFolderNameEmpty = false;
+                          });
+                        },
+                        maxLines: 1,
+                        maxLength: 20,
+                        initialValue: folder.title,
+                        validator: (value) => (value.isNotEmpty)
+                            ? null
+                            : 'Folder name can not be empty',
+                        onSaved: (value) => _newFolderName = value.firstCaps,
+                        style: TextStyle(fontSize: 20.0, color: Colors.white70),
+                        autofocus: true,
+                        cursorColor: Colors.white70,
+                        decoration: InputDecoration(
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: darkThemeHint),
                           ),
+                          enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: darkThemeHint)),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            FlatButton(
-                                child: Text(
-                                  'Cancel',
-                                  style: GoogleFonts.varelaRound(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          FlatButton(
+                              child: Text(
+                                'Cancel',
+                                style: GoogleFonts.varelaRound(
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
                                 ),
-                                shape: _isFolderNameEmpty
-                                    ? RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(68.0),
-                                        side: BorderSide(
-                                            color: Colors.white70, width: 2.0))
-                                    : null,
-                                onPressed: () {
-                                  setState(() {
-                                    _addButtonVisible = true;
-                                  });
-                                  Navigator.of(context).pop();
-                                }),
-                            FlatButton(
-                                child: Text(
-                                  'Save',
-                                  style: GoogleFonts.varelaRound(
-                                    fontSize: 18,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                              ),
+                              shape: _isFolderNameEmpty
+                                  ? RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(68.0),
+                                      side: BorderSide(
+                                          color: Colors.white70, width: 2.0))
+                                  : null,
+                              onPressed: () {
+                                setState(() {
+                                  _addButtonVisible = true;
+                                });
+                                Navigator.of(context).pop();
+                              }),
+                          FlatButton(
+                              child: Text(
+                                'Save',
+                                style: GoogleFonts.varelaRound(
+                                  fontSize: 18,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
                                 ),
-                                shape: _isFolderNameEmpty
-                                    ? null
-                                    : RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(68.0),
-                                        side: BorderSide(
-                                            color: Colors.white70, width: 2.0)),
-                                onPressed: () =>
-                                    _editFolder(context, database, folder)),
-                          ],
-                        ),
+                              ),
+                              shape: _isFolderNameEmpty
+                                  ? null
+                                  : RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(68.0),
+                                      side: BorderSide(
+                                          color: Colors.white70, width: 2.0)),
+                              onPressed: () =>
+                                  _editFolder(context, database, folder)),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),

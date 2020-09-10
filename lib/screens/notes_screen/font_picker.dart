@@ -16,7 +16,7 @@ List<String> fontList = [
 //  'Quicksand', //pair with Open Sans, give the impression of friendliness.
   'Varela Round',
   //handwriting:
-  '  Shadows Into Light Two',
+  'Shadows Into Light Two',
   'Pacifico',
   'Architects Daughter',
   //handwriting:

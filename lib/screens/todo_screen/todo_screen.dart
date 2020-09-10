@@ -69,8 +69,6 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
   String _titleDateStringPieChart = 'Today';
 
   ///for todoList
-  ///
-
   Map<DateTime, List> _events; // for first calendar
   Map<DateTime, List> _notDoneEvents; //for first calendar marker
   //we assign value in StreamBuilder, but must have an initial value
@@ -121,7 +119,6 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
 
   ///for pie chart
   /// groupby only one day, change to: map[date] = entry.todosDetails, instead of map[date] = entry;
-
   Map<DateTime, List> _eventsNew; //for second calendar
   // this is map because this is the value used in pie chart
   Map<String, double> _todayDataMap; //again we assign value in SteamBuilder
@@ -129,7 +126,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
       {}; // again we gave an empty value to this because we have _dataMapSelected.isEmpty ?
 
   // must give an initial value because it directly used in Text
-  double _todayDuration = 0; //this is just inital value
+  double _todayDuration = 0;
   double _selectedDuration = 0;
 
   void _onDaySelected2(DateTime date, List<TodoDuration> entries) {
@@ -233,8 +230,9 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                     TodoTopRow(),
                     // two SteamBuilder nested together, The returned value is
                     // TabBarView, and this must be below StreamBuilder
+                    ///StreamBuilder must wrap with Scaffold first, otherwise the empty list message will look terrible
+                    /// can not remove this Expanded
                     Expanded(
-                      ///StreamBuilder must wrap with Scaffold first, otherwise the empty list message will look terrible
                       child: StreamBuilder<List<Todo>>(
                         stream: database
                             .todosStream(), // print(database.todosStream());//Instance of '_MapStream<QuerySnapshot, List<TodoModel>>'
@@ -445,11 +443,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                   ],
                 ),
               ),
-              //add this to make add button not hiding task item
-
-              //tried again but can't solve some issues like always
-              // showing today's list if other day is empty, and also sometimes not immediately update the screen,
-              // thinking about adding a tip but not good UI.
+              //add this to make add button not hiding task item // or add show tip
               Visibility(
                   visible: _addButtonVisible,
                   child: Column(
@@ -551,7 +545,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
       indent: 75,
       endIndent: 75,
       height: 0.5,
-      color: _darkTheme ? Colors.white70 : Colors.black38,
+      color: _darkTheme ? darkThemeDivider : lightThemeDivider,
     );
   }
 
@@ -572,25 +566,18 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
         difference.inDays > 0 || difference.inDays == 0
             ? IconSlideAction(
 
-                ///this is not all necessary, but previously many todos were added without hasReminder property
+                ///this is not all necessary, but previously many todos were added without hasReminder property, so to prevent error, we add this
                 caption: todo.hasReminder == null || todo.hasReminder == false
                     ? 'Add reminder'
                     : 'Change reminder',
                 foregroundColor: Colors.yellow,
                 color: _darkTheme
                     ? Colors.black12
-                    : lightThemeButton.withOpacity(0.3),
+                    : lightThemeButton.withOpacity(0.4),
                 icon: todo.hasReminder == null || todo.hasReminder == false
                     ? FontAwesomeIcons.bell
                     : FontAwesomeIcons.solidBell,
-                onTap: () =>
-                    // todo.hasReminder == null || todo.hasReminder == false
-                    //     ?
-                    _showAddReminderScreen(todo, user, database)
-                // : _cancelReminder(database, todo),
-
-                // onTap: () => _showAddDialog(anyList[index - 1]),
-                )
+                onTap: () => _showAddReminderScreen(todo, user, database))
             : null
       ],
       secondaryActions: <Widget>[
@@ -598,7 +585,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
           caption: 'Delete',
           foregroundColor: Colors.red,
           color:
-              _darkTheme ? Colors.black12 : lightThemeButton.withOpacity(0.3),
+              _darkTheme ? Colors.black12 : lightThemeButton.withOpacity(0.4),
           icon: EvaIcons.trash2Outline,
           onTap: () => _delete(
             context,
@@ -622,20 +609,14 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
       List<TodoDuration> entries, Map<DateTime, List<dynamic>> calendarEvent) {
     return Column(
       children: <Widget>[
-        secondCalendar(entries, calendarEvent),
+        MyCalendar(
+          events: calendarEvent,
+          calendarController: _secondCalendarController,
+          onDaySelected: (date, _) => _onDaySelected2(date, entries),
+          animationController: _animationController,
+        ),
         pieChartCustomScrollView(),
       ],
-    );
-  }
-  // this is the title and subtitle for pie chart in second tap
-
-  Widget secondCalendar(
-      List<TodoDuration> entries, Map<DateTime, List<dynamic>> calendarEvent) {
-    return MyCalendar(
-      events: calendarEvent,
-      calendarController: _secondCalendarController,
-      onDaySelected: (date, _) => _onDaySelected2(date, entries),
-      animationController: _animationController,
     );
   }
 
@@ -884,8 +865,6 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
   bool _listVisible = true;
   final DateFormat _dateFormatter = DateFormat('M/d/y');
 
-  /// add new & at the same time update _selectedList
-  /// just found that I can not remove todos as a parameter, because we have to create a newList and then add newTodo into the newList and in setState we assign it to anyList, otherwise every time we add a item, the screen only shows the newly added item, the previous is gone unless tap on the day
   Future<void> _add(Database database) async {
     setState(() {
       _listVisible = false;
@@ -909,7 +888,6 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
           id: documentIdFromCurrentDate(),
           title: _typedTitleAndComment[0],
           comment: _typedTitleAndComment[1],
-//            date: _taskDate,
           date: _typedTitleAndComment[2],
           isDone: false,
           category: _typedTitleAndComment[3],
@@ -964,8 +942,8 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
         /// then we add newTodo to selectedList!!! how to solve this? the solution
         /// is to add this if statement:
         ///
-        print(
-            '_firstCalendarController.selectedDay: ${_firstCalendarController.selectedDay}');
+        // print(
+        //     '_firstCalendarController.selectedDay: ${_firstCalendarController.selectedDay}');
 
         if (_dateFormatter.format(_firstCalendarController.selectedDay) ==
             _dateFormatter.format(newTodo.date)) {

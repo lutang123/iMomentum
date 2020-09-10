@@ -22,7 +22,7 @@ final Color lightThemeAppBar = Colors.white.withOpacity(0.5);
 
 //drawer and NoteFolder
 //also in photo Preview and ImagePage, and NotesInFolderScreen as AppBar color
-const Color darkThemeDrawer = Colors.black38;
+const Color darkThemeDrawer = Colors.black26;
 
 ///used in EmptyContent in folder and notes screen, folder search bar and
 // folder bottom row
@@ -30,7 +30,7 @@ const Color darkThemeDrawer = Colors.black38;
 final Color lightThemeDrawer = Colors.white.withOpacity(0.7);
 
 //calendar, todoList and pie chart,
-const Color darkThemeSurface = Colors.black45;
+const Color darkThemeSurface = Colors.black38;
 
 ///used in TodoScreen for calendar and list, MyMantra and MyQuote
 final Color lightThemeSurface = Colors.white.withOpacity(0.8);
@@ -39,14 +39,14 @@ const Color darkThemeDivider = Colors.white38;
 const Color lightThemeDivider = Colors.black26;
 
 ///use in all modal bottom
-const Color darkThemeAdd = Colors.black45; //Color(0xf01b262c) : Colors.grey[50]
+const Color darkThemeAdd = Colors.black38; //Color(0xf01b262c) : Colors.grey[50]
 //we can not use .withOpacity in const
 final Color lightThemeAdd = Colors.white.withOpacity(0.7);
 
 ///image gallary, alert dialog, search photo
 // const Color darkThemeNoPhotoBkgdColor = Color(0xf01b262c);
-const Color darkThemeNoPhotoColor = Color(0xFF2D2F41);
-const Color lightThemeNoPhotoColor = Color(0xfffffafa);
+const Color darkThemeNoPhotoColor = Color(0xFF2D2F41); //f4f9f4
+const Color lightThemeNoPhotoColor = Color(0xfff4f9f4); //Color(0xfffffafa)
 
 ///calendar
 const Color darkThemeCalendarSelectedDay =

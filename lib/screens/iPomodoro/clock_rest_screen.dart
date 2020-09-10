@@ -252,16 +252,13 @@ class _RestScreenState extends State<RestScreen>
                     SizedBox(height: 60),
                     Padding(
                       padding: const EdgeInsets.all(15.0),
-                      child: Column(
-                        children: <Widget>[
-                          _state == QuoteLoadingState.FINISHED_DOWNLOADING
-                              ? RestQuoteClass(
-                                  title: dailyQuote, author: author)
-                              : _state == QuoteLoadingState.DOWNLOADING
-                                  ? Center(child: CircularProgressIndicator())
-                                  : Container(),
-                        ],
-                      ),
+                      child: _state == QuoteLoadingState.FINISHED_DOWNLOADING
+
+                          /// Same as Daily, but different Global key on show more
+                          ? RestQuoteClass(title: dailyQuote, author: author)
+                          : _state == QuoteLoadingState.DOWNLOADING
+                              ? Center(child: CircularProgressIndicator())
+                              : Container(),
                     ),
                   ],
                 ),
@@ -288,8 +285,6 @@ class _RestScreenState extends State<RestScreen>
           ///this link can only use 10 times/hours
 //          .get('http://quotes.rest/qod.json?maxlength=100&category=life&love');
           .get('https://favqs.com/api/qotd');
-      // print(
-      //     'response.statusCode in rest quote: ${response.statusCode}'); //429, meaning too many request
       if (response.statusCode == 200) {
         var quoteData = json.decode(response.body)['quote'];
         setState(() {

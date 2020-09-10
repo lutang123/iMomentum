@@ -42,9 +42,7 @@ import 'package:provider/provider.dart';
 //   Colors.blueGrey,
 // ];
 List<Color> colorsDark = [
-  // darkThemeNoPhotoBkgdColor,
-  CustomColors.pageBackgroundColor,
-  // Color(0xffff6363),
+  darkThemeNoPhotoColor,
   Color(0xFFbb596b),
   Color(0xFF87556f),
   Color(0xffe79c2a),
@@ -63,15 +61,22 @@ List<Color> colorsDark = [
 ];
 
 final colorsLight = [
-  lightThemeSurface, // classic white
-  Color(0xfff28b81), // light pink
-  Color(0xfff7bd02), // yellow
-  Color(0xfffbf476), // light yellow
-  Color(0xffcdff90), // light green
+  lightThemeNoPhotoColor, // greenwhite
+  Color(0xfff28b81),
+  Color(0xffffb6b9),
+  Color(0xfff76a8c),
+  Color(0xfff8dc88),
+  Color(0xfff8fab8),
+  Color(0xffccf0e1),
+  // light pink //ffb6b9, ffacb7
+  Color(0xfff7bd02), // yellow //fafba4, feb377, ffe0ac
+  Color(0xfffbf476), // light yellow, f8fab8
+  Color(0xffcdff90), // light green, cee397
   Color(0xffa7feeb), // turquoise
   Color(0xffcbf0f8), // light cyan
   Color(0xffafcbfa), // light blue
-  Color(0xffd7aefc), // plum
+  Color(0xffd7aefc), // plum,
+  Color(0xffffc1f3),
   Color(0xfffbcfe9), // misty rose
   Color(0xffe6c9a9), // light brown
   Color(0xffe9eaee) // light gray

@@ -339,7 +339,7 @@ class _MyAppState extends State<MyApp> {
                 darkTheme, //add this so that the app will follow phone setting
             themeMode: ThemeMode.system,
 
-            ///todo: local
+            /// todo: local
             /// from plugin: flutter_localizations
             localizationsDelegates: [
               GlobalMaterialLocalizations.delegate,

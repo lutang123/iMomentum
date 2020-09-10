@@ -3,12 +3,10 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
-import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_tooltip.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/utils/format.dart';
 import 'package:iMomentum/app/common_widgets/my_round_button.dart';
-import 'package:iMomentum/app/utils/tooltip_shape_border.dart';
 import 'package:iMomentum/app/constants/constants.dart';
 import 'package:iMomentum/app/models/data/congrats_list.dart';
 import 'package:iMomentum/app/models/todo.dart';
@@ -166,12 +164,12 @@ class _CompletionScreenState extends State<CompletionScreen> {
                       child: ClockTitle(
                           title: _congrats,
                           subtitle:
-                              'Your have stayed focused for ${widget.duration.inMinutes} minutes'),
+                              'Your have stayed focused for ${widget.duration.inMinutes} minutes.'),
                     ), //clear button
                     ClockStart(
                       text1: Duration(minutes: _restDurationInMin).clockFmt(),
                       text2: 'Take a break',
-                      height: 10,
+                      height: 15,
                       onPressed: _play,
                       onPressedEdit: () => showEditDialog(),
                     ),
@@ -334,22 +332,22 @@ class _CompletionScreenState extends State<CompletionScreen> {
       _topOpacity = 0.0;
     });
     Flushbar(
-      mainButton: FlatButton(
-        onPressed: () {
-          setState(() {
-            _topOpacity = 1.0;
-          });
-          Navigator.pop(context);
-        },
-        child: FlushBarButtonChild(title: 'OK.'),
-      ),
+      ///must remove
+      // mainButton: FlatButton(
+      //   onPressed: () {
+      //     setState(() {
+      //       _topOpacity = 1.0;
+      //     });
+      //     Navigator.pop(context);
+      //   },
+      //   child: FlushBarButtonChild(title: 'OK.'),
+      // ),
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(10),
       borderRadius: 10,
       flushbarPosition: FlushbarPosition.TOP,
       flushbarStyle: FlushbarStyle.FLOATING,
-      backgroundGradient:
-          LinearGradient(colors: [Color(0xF00f4c75), Color(0xF03282b8)]),
+      backgroundGradient: KFlushBarGradient,
       duration: Duration(seconds: 4),
       titleText: RichText(
         text: TextSpan(
@@ -357,7 +355,7 @@ class _CompletionScreenState extends State<CompletionScreen> {
           children: <TextSpan>[
             TextSpan(text: 'Your total focused time for today is: '),
             TextSpan(
-                text: '${Format.minutes(todayDuration)}. ',
+                text: '${Format.minutes(todayDuration)} so far.',
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16.0,
@@ -370,7 +368,8 @@ class _CompletionScreenState extends State<CompletionScreen> {
       ),
       messageText: Padding(
         padding: const EdgeInsets.only(top: 5),
-        child: Text('You can find detailed summary from Todo screen.',
+        child: Text(
+            'You can find detailed daily focus summary from Todo screen.',
             style: KFlushBarMessage),
       ),
     )..show(context).then((value) => setState(() {

@@ -78,15 +78,13 @@ class _ImageGalleryState extends State<ImageGallery> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-          backgroundColor: _darkTheme
-              ? CustomColors.pageBackgroundColor
-              : CustomColors.clockOutline,
+          backgroundColor:
+              _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
           extendBodyBehindAppBar: true,
           appBar: AppBar(
             // elevation: 0.0,
-            backgroundColor: _darkTheme
-                ? CustomColors.pageBackgroundColor
-                : CustomColors.clockOutline,
+            backgroundColor:
+                _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
             leading: IconButton(
               icon: Icon(
                 Icons.arrow_back_ios,
@@ -186,8 +184,8 @@ class _ImageGalleryState extends State<ImageGallery> {
                         margin: const EdgeInsets.only(top: 6.0),
                         decoration: BoxDecoration(
                           color: _darkTheme
-                              ? CustomColors.pageBackgroundColor
-                              : CustomColors.clockOutline,
+                              ? darkThemeNoPhotoColor
+                              : lightThemeNoPhotoColor,
                           borderRadius: BorderRadius.circular(5.0),
                           boxShadow: [
                             BoxShadow(
@@ -303,8 +301,8 @@ class _ImageGalleryState extends State<ImageGallery> {
                     margin: const EdgeInsets.only(top: 6.0),
                     decoration: BoxDecoration(
                       color: _darkTheme
-                          ? CustomColors.pageBackgroundColor
-                          : CustomColors.clockOutline,
+                          ? darkThemeNoPhotoColor
+                          : lightThemeNoPhotoColor,
                       borderRadius: BorderRadius.circular(5.0),
                       boxShadow: [
                         BoxShadow(

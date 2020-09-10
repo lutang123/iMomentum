@@ -12,7 +12,8 @@ class EmailSignInFormChangeNotifier extends StatefulWidget {
   final EmailSignInChangeModel model;
 
   static Widget create(BuildContext context) {
-    final AuthBase auth = Provider.of<AuthBase>(context);
+    ///todo
+    final AuthBase auth = Provider.of<AuthBase>(context, listen: false);
     return ChangeNotifierProvider<EmailSignInChangeModel>(
       create: (context) => EmailSignInChangeModel(auth: auth),
       child: Consumer<EmailSignInChangeModel>(
@@ -29,9 +30,13 @@ class EmailSignInFormChangeNotifier extends StatefulWidget {
 
 class _EmailSignInFormChangeNotifierState
     extends State<EmailSignInFormChangeNotifier> {
+  final TextEditingController _nameController = TextEditingController();
+
   final TextEditingController _emailController = TextEditingController();
 
   final TextEditingController _passwordController = TextEditingController();
+
+  final FocusNode _nameFocusNode = FocusNode();
 
   final FocusNode _emailFocusNode = FocusNode();
 
@@ -41,8 +46,10 @@ class _EmailSignInFormChangeNotifierState
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _nameFocusNode.dispose();
     _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
     super.dispose();
@@ -61,6 +68,14 @@ class _EmailSignInFormChangeNotifierState
   }
 
   //make keyboard go to next field only when the email field is valid
+  void _nameEditingComplete() {
+    final newFocus = model.nameValidator.isValid(model.name)
+        ? _emailFocusNode
+        : _nameFocusNode;
+    FocusScope.of(context).requestFocus(newFocus);
+  }
+
+  //make keyboard go to next field only when the email field is valid
   void _emailEditingComplete() {
     final newFocus = model.emailValidator.isValid(model.email)
         ? _passwordFocusNode
@@ -71,12 +86,15 @@ class _EmailSignInFormChangeNotifierState
   //toggle form and clear content
   void _toggleFormType() {
     model.toggleFormType();
+    _nameController.clear();
     _emailController.clear();
     _passwordController.clear();
   }
 
   List<Widget> _buildChildren() {
     return [
+      _buildNameTextField(),
+      SizedBox(height: 8.0),
       _buildEmailTextField(),
       SizedBox(height: 8.0),
       _buildPasswordTextField(),
@@ -93,22 +111,20 @@ class _EmailSignInFormChangeNotifierState
     ];
   }
 
-  TextField _buildPasswordTextField() {
+  TextField _buildNameTextField() {
     return TextField(
-      controller: _passwordController,
-      focusNode: _passwordFocusNode,
+      controller: _nameController,
+      focusNode: _nameFocusNode,
       decoration: InputDecoration(
-        labelText: 'Password',
-        errorText: model.passwordErrorText,
+        labelText: 'Name',
+        errorText: model.nameErrorText,
         enabled: model.isLoading == false,
       ),
-      obscureText: true,
-      //make keyboard has done
-      textInputAction: TextInputAction.done,
+      textInputAction: TextInputAction.next,
       //when typing password, button chang color
-      onChanged: model.updatePassword,
+      onChanged: model.updateName,
       //if submit successfully, we pop this page and go to home page
-      onEditingComplete: _submit,
+      onEditingComplete: () => _nameEditingComplete(),
     );
   }
 
@@ -127,6 +143,25 @@ class _EmailSignInFormChangeNotifierState
       textInputAction: TextInputAction.next,
       onChanged: model.updateEmail,
       onEditingComplete: () => _emailEditingComplete(),
+    );
+  }
+
+  TextField _buildPasswordTextField() {
+    return TextField(
+      controller: _passwordController,
+      focusNode: _passwordFocusNode,
+      decoration: InputDecoration(
+        labelText: 'Password',
+        errorText: model.passwordErrorText,
+        enabled: model.isLoading == false,
+      ),
+      obscureText: true,
+      //make keyboard has done
+      textInputAction: TextInputAction.done,
+      //when typing password, button chang color
+      onChanged: model.updatePassword,
+      //if submit successfully, we pop this page and go to home page
+      onEditingComplete: _submit,
     );
   }
 

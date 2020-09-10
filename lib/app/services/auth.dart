@@ -18,14 +18,19 @@ abstract class AuthBase {
   Stream<User> get onAuthStateChanged;
   Future<User> currentUser();
   Future<User> signInAnonymously();
-  Future<User> signInWithEmailAndPassword(String email, String password);
-  Future<User> createUserWithEmailAndPassword(String email, String password);
+  Future<User> signInWithEmailAndPassword(
+      String email, String password, String name);
+  Future<User> createUserWithEmailAndPassword(
+      String email, String password, String name);
   Future<User> signInWithGoogle();
   Future<void> signOut();
 }
 
 class Auth implements AuthBase {
-  final _firebaseAuth = FirebaseAuth.instance;
+  // ?? Before using Firebase Auth, you must first have ensured you have initialized FlutterFire.
+  //
+  // To create a new Firebase Auth instance, call the instance getter on FirebaseAuth:
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   User _userFromFirebase(FirebaseUser user) {
     if (user == null) {
@@ -56,18 +61,37 @@ class Auth implements AuthBase {
   }
 
   @override
-  Future<User> signInWithEmailAndPassword(String email, String password) async {
+  Future<User> signInWithEmailAndPassword(
+      String email, String password, String name) async {
     final authResult = await _firebaseAuth.signInWithEmailAndPassword(
         email: email, password: password);
+    // Update the username
+    await updateUserName(name, authResult.user);
+    // return authResult.user.uid;
     return _userFromFirebase(authResult.user);
+  }
+
+  // Reset Password
+  Future sendPasswordResetEmail(String email) async {
+    return _firebaseAuth.sendPasswordResetEmail(email: email);
   }
 
   @override
   Future<User> createUserWithEmailAndPassword(
-      String email, String password) async {
+      String email, String password, String name) async {
     final authResult = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email, password: password);
+    // Update the username
+    await updateUserName(name, authResult.user);
+    // return authResult.user.uid;
     return _userFromFirebase(authResult.user);
+  }
+
+  Future updateUserName(String name, FirebaseUser currentUser) async {
+    var userUpdateInfo = UserUpdateInfo();
+    userUpdateInfo.displayName = name;
+    await currentUser.updateProfile(userUpdateInfo);
+    await currentUser.reload();
   }
 
   @override

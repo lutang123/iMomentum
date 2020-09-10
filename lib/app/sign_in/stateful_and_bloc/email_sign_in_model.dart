@@ -6,12 +6,14 @@ enum EmailSignInFormType { signIn, register }
 
 class EmailSignInModel with EmailAndPasswordValidators {
   EmailSignInModel({
+    this.name = '',
     this.email = '',
     this.password = '',
     this.formType = EmailSignInFormType.signIn,
     this.isLoading = false,
     this.submitted = false,
   });
+  final String name;
   final String email;
   final String password;
   final EmailSignInFormType formType;
@@ -47,6 +49,7 @@ class EmailSignInModel with EmailAndPasswordValidators {
   }
 
   EmailSignInModel copyWith({
+    String name,
     String email,
     String password,
     EmailSignInFormType formType,
@@ -54,6 +57,7 @@ class EmailSignInModel with EmailAndPasswordValidators {
     bool submitted,
   }) {
     return EmailSignInModel(
+      name: name ?? this.name,
       email: email ?? this.email,
       password: password ?? this.password,
       formType: formType ?? this.formType,

@@ -292,7 +292,6 @@ class _ClockTimerScreenState extends State<ClockTimerScreen>
                     SizedBox(height: 15),
                     ClockBottomToday(
                       text: '${widget.todo.title}',
-//                      maxLines: 1,
                     ), //clock
                   ],
                 ),

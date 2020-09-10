@@ -357,27 +357,6 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                   text: 'SAVE',
                   bkgdColor: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
                   color: _darkTheme ? Colors.white : lightThemeButton),
-              // Visibility(
-              //   visible: _tipVisible,
-              //   child: Row(
-              //     children: [
-              //       Padding(
-              //         padding: const EdgeInsets.all(8.0),
-              //         child: Text(
-              //           'Show tips',
-              //           style: Theme.of(context).textTheme.subtitle2,
-              //         ),
-              //       ),
-              //       IconButton(
-              //         icon: Icon(Icons.clear,
-              //             size: 18,
-              //             color:
-              //                 _darkTheme ? Colors.white60 : lightThemeButton),
-              //         onPressed: () => setState(() => _tipVisible = false),
-              //       )
-              //     ],
-              //   ),
-              // ),
               SizedBox(height: 30)
             ],
           ),

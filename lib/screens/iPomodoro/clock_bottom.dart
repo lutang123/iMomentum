@@ -26,7 +26,7 @@ class ClockBottomToday extends StatelessWidget {
             child: AutoSizeText(
               text,
               maxLines: maxLines,
-              minFontSize: 15,
+              minFontSize: 16,
               maxFontSize: 18,
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
