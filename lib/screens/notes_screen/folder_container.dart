@@ -39,7 +39,10 @@ class FolderContainer extends StatelessWidget {
                   child: Column(
                     children: [
                       Spacer(),
-                      Icon(EvaIcons.bookOutline, size: 50),
+                      Icon(EvaIcons.bookOutline,
+                          size: 50,
+                          color:
+                              _darkTheme ? darkThemeButton : lightThemeButton),
                       SizedBox(height: 8),
                       Padding(
                         padding: const EdgeInsets.all(8.0),

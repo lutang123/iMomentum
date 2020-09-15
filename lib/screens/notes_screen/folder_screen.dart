@@ -160,30 +160,66 @@ class FolderScreenState extends State<FolderScreen> {
                                         ],
                                       ),
                                     );
-                                  } else {
-                                    //this is for if no added folder
+                                  }
+                                  //this is for if no added folder, but may have notes
+                                  else {
                                     return _noAddedFolderContent(
-                                      database,
-                                      allNotes,
-                                    );
+                                        database,
+                                        allNotes,
+                                        // if notes.isNotEmpty ? return Container()
+                                        // only if no added folder and no notes, we show the message
+                                        emptyNoteAndFolder, //text
+                                        '', //tips
+                                        '', //textTap
+                                        null //onTap
+                                        );
                                   }
                                 } else if (snapshot.hasError) {
                                   print(
                                       'snapshot.hasError in folder stream: ${snapshot.error.toString()}');
-                                  return Expanded(child: ErrorMessage());
+                                  //this is for if folder StreamBuilder has error
+                                  return _noAddedFolderContent(
+                                      database,
+                                      allNotes,
+                                      '', //text
+                                      textError, //tips
+                                      'Or contact us.', //textTap
+                                      ///TODO contact us.
+                                      null //onTap
+                                      );
                                 }
                                 return Center(
                                     child: CircularProgressIndicator());
                               },
                             );
                           } else {
-                            //this is for if no notes
-                            return _noAddedFolderContent(database, allNotes);
+                            //this is for the very beginning, and when no notes,
+                            // we do not have folder stream too, it's all empty,
+                            // and once we add folder or add notes, we no longer use this one.
+                            return _noAddedFolderContent(
+                              database,
+                              allNotes,
+                              emptyNoteAndFolder, //text
+                              '', //tips
+                              '', //textTap
+                              null, //onTap
+                            );
                           }
                         } else if (snapshot.hasError) {
                           print(
                               'snapshot.hasError in note stream: ${snapshot.error.toString()}');
-                          return Expanded(child: ErrorMessage());
+                          return Expanded(
+                              child: Column(
+                            children: [
+                              Spacer(),
+                              EmptyOrError(
+                                  text: '',
+                                  tips: textError,
+                                  textTap: 'Or contact us.',
+                                  onTap: null),
+                              Spacer(),
+                            ],
+                          ));
                         }
                         return Center(child: CircularProgressIndicator());
                       }),
@@ -303,7 +339,8 @@ class FolderScreenState extends State<FolderScreen> {
     );
   }
 
-  Widget _noAddedFolderContent(Database database, List<Note> notes) {
+  Widget _noAddedFolderContent(Database database, List<Note> notes,
+      String text1, String text2, String text3, Function onTap) {
     final List<Folder> defaultFolders = [
       Folder(id: 0.toString(), title: 'All Notes'),
       Folder(id: 1.toString(), title: 'Notes'),
@@ -316,9 +353,10 @@ class FolderScreenState extends State<FolderScreen> {
           _buildBoxAdaptorForSearch(database, notes, defaultFolders),
           _buildDefaultFolderGrid(database, notes, defaultFolders),
           SliverToBoxAdapter(
-              child: notes.length > 0
+              child: notes.isNotEmpty
                   ? Container()
-                  : EmptyContent(text: emptyNoteAndFolder)),
+                  : EmptyOrError(
+                      text: text1, tips: text2, textTap: text3, onTap: onTap)),
         ],
       ),
     );

@@ -1,13 +1,21 @@
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:iMomentum/app/constants/constants.dart';
-import 'package:iMomentum/app/services/auth.dart';
+import 'package:iMomentum/screens/landing_and_signIn/auth_widget_(landing).dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'screens/landing_and_signIn/landing_page.dart';
+import 'screens/landing_and_signIn/auth_widget_builder.dart';
+import 'app/sign_in/apple_sign_in_available.dart';
+import 'app/sign_in/auth_service.dart';
+import 'app/sign_in/auth_service_adapter.dart';
+import 'app/sign_in/email_secure_store.dart';
+import 'app/sign_in/firebase_email_link_handler.dart';
+import 'app/sign_in/email_link_error_presenter.dart';
 import 'app/constants/theme.dart';
 import 'app/services/multi_notifier.dart';
 import 'package:rxdart/subjects.dart';
@@ -45,6 +53,7 @@ class ReceivedNotification {
 }
 
 void main() async {
+  // Fix for: Unhandled Exception: ServicesBinding.defaultBinaryMessenger was accessed before the binding was initialized.
   // needed if you intend to initialize in the `main` function
   // Ensure services are loaded before the widgets get loaded
   WidgetsFlutterBinding.ensureInitialized();
@@ -132,7 +141,13 @@ void main() async {
   // // to display the details of. Once the initialisation is complete, then you can
   // // manage the displaying of notifications.
   //
-  // // ⚠ If the app has been launched by tapping on a notification created by this plugin, calling initialize is what will trigger the onSelectNotification to trigger to handle the notification that the user tapped on. An alternative to handling the "launch notification" is to call the getNotificationAppLaunchDetails method that is available in the plugin. This could be used, for example, to change the home route of the app for deep-linking. Calling initialize will still cause the onSelectNotification callback to fire for the launch notification. It will be up to developers to ensure that they don't process the same notification twice (e.g. by storing and comparing the notification id).
+  // // ⚠ If the app has been launched by tapping on a notification created by this plugin,
+  // calling initialize is what will trigger the onSelectNotification to trigger to
+  // handle the notification that the user tapped on. An alternative to handling
+  // the "launch notification" is to call the getNotificationAppLaunchDetails
+  // method that is available in the plugin. This could be used, for example, to
+  // change the home route of the app for deep-linking. Calling initialize will
+  // still cause the onSelectNotification callback to fire for the launch notification. It will be up to developers to ensure that they don't process the same notification twice (e.g. by storing and comparing the notification id).
   //
   // //Then call the requestPermissions method with desired permissions at the appropriate point in your application
   // //The ?. operator is used here as the result will be null when run on other platforms.
@@ -160,9 +175,10 @@ void main() async {
   // androidAllowWhileIdle to true when calling the schedule method.
 
   ///Todo, what is this?
-  SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]).then((_) {
+  SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom])
+      .then((_) async {
     ///this is for setting
-    SharedPreferences.getInstance().then((prefs) {
+    SharedPreferences.getInstance().then((prefs) async {
       bool darkModeOn = prefs.getBool('darkMode') ?? true;
       bool focusModeOn = prefs.getBool('focusMode') ?? true;
       bool randomOn = prefs.getBool('randomOn') ?? true;
@@ -172,51 +188,59 @@ void main() async {
       bool useYourMantras = prefs.getBool('useMyMantras') ?? true;
       int index = prefs.getInt('indexMantra') ?? 0;
       bool useMyQuote = prefs.getBool('useMyQuote') ?? true;
+      String userName = prefs.getString('userName') ?? null;
+
+      final appleSignInAvailable = await AppleSignInAvailable.check();
 
       ///then runApp
-      runApp(
-        MultiProvider(
-          providers: [
-            ///for theme
-            ChangeNotifierProvider<ThemeNotifier>(
-                create: (_) =>
-                    ThemeNotifier(darkModeOn ? darkTheme : lightTheme)),
+      runApp(MultiProvider(providers: [
+        ///for theme
+        ChangeNotifierProvider<ThemeNotifier>(
+            create: (_) => ThemeNotifier(darkModeOn ? darkTheme : lightTheme)),
 
-            ///for focus
-            ChangeNotifierProvider<FocusNotifier>(
-                create: (_) => FocusNotifier(focusModeOn)),
+        ///for focus
+        ChangeNotifierProvider<FocusNotifier>(
+            create: (_) => FocusNotifier(focusModeOn)),
 
-            ///for image
-            ChangeNotifierProvider<RandomNotifier>(
-                create: (_) => RandomNotifier(randomOn)),
-            ChangeNotifierProvider<ImageNotifier>(
-                create: (_) => ImageNotifier(backgroundImage)),
+        ///for image
+        ChangeNotifierProvider<RandomNotifier>(
+            create: (_) => RandomNotifier(randomOn)),
+        ChangeNotifierProvider<ImageNotifier>(
+            create: (_) => ImageNotifier(backgroundImage)),
 
-            ///for metric
-            ChangeNotifierProvider<MetricNotifier>(
-                create: (_) => MetricNotifier(metricUnitOn)),
+        ///for metric
+        ChangeNotifierProvider<MetricNotifier>(
+            create: (_) => MetricNotifier(metricUnitOn)),
 
-            ///for mantra
-            ChangeNotifierProvider<MantraNotifier>(
-                create: (_) => MantraNotifier(useYourMantras, index)),
+        ///for mantra
+        ChangeNotifierProvider<MantraNotifier>(
+            create: (_) => MantraNotifier(useYourMantras, index)),
 
-            ///for quote
-            ChangeNotifierProvider<QuoteNotifier>(
-                create: (_) => QuoteNotifier(useMyQuote)),
-          ],
-          child: MyApp(),
-        ),
-      );
+        ///for quote
+        ChangeNotifierProvider<QuoteNotifier>(
+            create: (_) => QuoteNotifier(useMyQuote)),
+
+        ///for userName
+        ChangeNotifierProvider<UserNameNotifier>(
+            create: (_) => UserNameNotifier(userName)),
+      ], child: MyApp(appleSignInAvailable: appleSignInAvailable)));
     });
   });
 }
 
+/// https://github.com/bizz84/firebase_auth_demo_flutter
 class MyApp extends StatefulWidget {
+  const MyApp({
+    // [initialAuthServiceType] is made configurable for testing
+    this.initialAuthServiceType = AuthServiceType.firebase,
+    this.appleSignInAvailable,
+  });
+  final AuthServiceType initialAuthServiceType;
+  final AppleSignInAvailable appleSignInAvailable;
+
   @override
   _MyAppState createState() => _MyAppState();
 }
-
-///https://github.com/flutter/flutter/issues/21810
 
 class _MyAppState extends State<MyApp> {
   ///for local notification
@@ -229,35 +253,6 @@ class _MyAppState extends State<MyApp> {
     _requestIOSPermissions();
     // _configureDidReceiveLocalNotificationSubject();
     // _configureSelectNotificationSubject();
-
-    /// test on where to call this function
-    _showDailyAtTime();
-  }
-
-  /// Showing a daily notification at a specific time
-  Future<void> _showDailyAtTime() async {
-    String _toTwoDigitString(int value) {
-      return value.toString().padLeft(2, '0');
-    }
-
-    var time = Time(10, 0, 0);
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-        'repeatDailyAtTime channel id',
-        'repeatDailyAtTime channel name',
-        'repeatDailyAtTime description');
-    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
-
-    var platformChannelSpecifics = NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.showDailyAtTime(
-        0, //id
-        'show daily title', //title
-        //body
-        'Daily notification shown at approximately ${_toTwoDigitString(time.hour)}:${_toTwoDigitString(time.minute)}:${_toTwoDigitString(time.second)}',
-        //notificationTime
-        time,
-        //NotificationDetails notificationDetails
-        platformChannelSpecifics);
   }
 
   void _requestIOSPermissions() {
@@ -323,77 +318,67 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    return Provider<AuthBase>(
-      create: (context) => Auth(),
+    ///we can not change this off
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
 
-      /// must have a Builder here
-      /// we use `builder` to obtain a new `BuildContext` that has access to the provider
-      child: Builder(
-        builder: (context) {
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: 'iMomentum',
-            theme: themeNotifier.getTheme(),
-            darkTheme:
-                darkTheme, //add this so that the app will follow phone setting
-            themeMode: ThemeMode.system,
+    /// MultiProvider for top-level services that can be created right away
+    return MultiProvider(
+      providers: [
+        Provider<AppleSignInAvailable>.value(
+            value: widget.appleSignInAvailable),
+        Provider<AuthService>(
+          create: (_) => AuthServiceAdapter(
+            initialAuthServiceType: widget.initialAuthServiceType,
+          ),
+          dispose: (_, AuthService authService) => authService.dispose(),
+        ),
+        Provider<EmailSecureStore>(
+          create: (_) => EmailSecureStore(
+            flutterSecureStorage: FlutterSecureStorage(),
+          ),
+        ),
+        ProxyProvider2<AuthService, EmailSecureStore, FirebaseEmailLinkHandler>(
+          update: (_, AuthService authService, EmailSecureStore storage, __) =>
+              FirebaseEmailLinkHandler(
+            auth: authService,
+            emailStore: storage,
+            firebaseDynamicLinks: FirebaseDynamicLinks.instance,
+          )..init(),
+          dispose: (_, linkHandler) => linkHandler.dispose(),
+        ),
+      ],
+      child: AuthWidgetBuilder(
+          builder: (BuildContext context, AsyncSnapshot<User> userSnapshot) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'iMomentum',
+          theme: themeNotifier.getTheme(),
 
-            /// todo: local
-            /// from plugin: flutter_localizations
-            localizationsDelegates: [
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              DefaultCupertinoLocalizations.delegate,
-              GlobalCupertinoLocalizations
-                  .delegate, // Add global cupertino localiztions.
-            ],
+          ///it seems does not matter here
+          // darkTheme:
+          //     darkTheme, //add this so that the app will follow phone setting
+          // themeMode: ThemeMode.system,
 
-            locale: Locale('en', 'US'), // Current locale
-            supportedLocales: [
-              const Locale('en', 'US'), // English
-              const Locale('zh', 'ZH'), // Chinese??
-            ],
+          /// todo: local
+          /// from plugin: flutter_localizations
+          localizationsDelegates: [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            DefaultCupertinoLocalizations.delegate,
+            GlobalCupertinoLocalizations
+                .delegate, // Add global cupertino localiztions.
+          ],
 
-            home: LandingPage(),
-          );
-        },
-      ),
+          locale: Locale('en', 'US'), // Current locale
+          supportedLocales: [
+            const Locale('en', 'US'), // English
+            const Locale('zh', 'ZH'), // Chinese??
+          ],
+
+          home: EmailLinkErrorPresenter.create(context,
+              child: AuthWidget(userSnapshot: userSnapshot)),
+        );
+      }),
     );
   }
 }
-
-// class SecondScreen extends StatefulWidget {
-//   SecondScreen(this.payload);
-//
-//   final String payload;
-//
-//   @override
-//   State<StatefulWidget> createState() => SecondScreenState();
-// }
-//
-// class SecondScreenState extends State<SecondScreen> {
-//   String _payload;
-//   @override
-//   void initState() {
-//     super.initState();
-//     _payload = widget.payload;
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Second Screen with payload: ${(_payload ?? '')}'),
-//       ),
-//       body: Center(
-//         child: RaisedButton(
-//           onPressed: () {
-//             Navigator.pop(context);
-//           },
-//           child: Text('Go back!'),
-//         ),
-//       ),
-//     );
-//   }
-// }

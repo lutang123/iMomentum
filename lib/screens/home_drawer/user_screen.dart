@@ -4,16 +4,17 @@ import 'package:iMomentum/app/common_widgets/avatar.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/constants/constants.dart';
+import 'package:iMomentum/app/sign_in/auth_service.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/cupertino.dart';
 import '../../app/common_widgets/avatar.dart';
 import '../../app/common_widgets/platform_alert_dialog.dart';
 import '../../app/constants/constants.dart';
-import '../../app/services/auth.dart';
 import '../../app/constants/theme.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:iMomentum/app/utils/cap_string.dart';
 
 class UserScreen extends StatefulWidget {
   final User user;
@@ -32,7 +33,6 @@ class _UserScreenState extends State<UserScreen> {
   /// Select an image via gallery or camera
   Future<void> _pickImage(ImageSource source) async {
     final PickedFile selectedImage = await picker.getImage(source: source);
-
     setState(() {
       _image = File(selectedImage.path);
     });
@@ -58,9 +58,9 @@ class _UserScreenState extends State<UserScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final randomNotifier = Provider.of<RandomNotifier>(context);
+    final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
     bool _randomOn = (randomNotifier.getRandom() == true);
-    final imageNotifier = Provider.of<ImageNotifier>(context);
+    final imageNotifier = Provider.of<ImageNotifier>(context, listen: false);
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
@@ -73,7 +73,7 @@ class _UserScreenState extends State<UserScreen> {
           backgroundColor: Colors.transparent,
           appBar: AppBar(
             elevation: 0.0,
-            backgroundColor: Colors.transparent,
+            backgroundColor: Colors.black12,
             leading: IconButton(
               onPressed: () => Navigator.pop(context),
               icon: Icon(
@@ -97,82 +97,80 @@ class _UserScreenState extends State<UserScreen> {
           ),
           body: Center(
               child: Column(
-//            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               _buildUserInfo(context, widget.user),
-//              Row(
-//                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//                children: <Widget>[
-//                  Align(
-//                    alignment: Alignment.centerLeft,
-//                    child: Container(
-//                      child: Column(
-//                        children: <Widget>[
-//                          Align(
-//                            alignment: Alignment.centerLeft,
-//                            child: Text('Username',
-//                                style: TextStyle(
-//                                    color: Colors.blueGrey, fontSize: 18.0)),
-//                          ),
-//                          Align(
-//                            alignment: Alignment.centerLeft,
-//                            child: Text('Michelle James',
-//                                style: TextStyle(
-//                                    color: Colors.black,
-//                                    fontSize: 20.0,
-//                                    fontWeight: FontWeight.bold)),
-//                          ),
-//                        ],
-//                      ),
-//                    ),
-//                  ),
-//                  Align(
-//                    alignment: Alignment.centerRight,
-//                    child: Container(
-//                      child: Icon(
-//                        FontAwesomeIcons.pen,
-//                        color: Color(0xff476cfb),
-//                      ),
-//                    ),
-//                  ),
-//                ],
-//              ),
-//              SizedBox(height: 20.0),
-//              Container(
-//                margin: EdgeInsets.all(20.0),
-//                child: Row(
-//                  mainAxisAlignment: MainAxisAlignment.start,
-//                  children: <Widget>[
-//                    Text('Email',
-//                        style:
-//                            TextStyle(color: Colors.blueGrey, fontSize: 18.0)),
-//                    SizedBox(width: 20.0),
-//                    Text('michelle123@gmail.com',
-//                        style: TextStyle(
-//                            color: Colors.black,
-//                            fontSize: 20.0,
-//                            fontWeight: FontWeight.bold)),
-//                  ],
-//                ),
-//              ),
-//              SizedBox(
-//                height: 20.0,
-//              ),
-//              Padding(
-//                padding: const EdgeInsets.all(15.0),
-//                child: Text(
-//                  "xxxxxx",
-//                  style: KStartSubtitle,
-//                ),
-//              ),
-//              Padding(
-//                padding: const EdgeInsets.all(15.0),
-//                child: Text(
-//                  "xxxxxx",
-//                  style: KStartSubtitle,
-//                ),
-//              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      child: Column(
+                        children: <Widget>[
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Username',
+                                style: TextStyle(
+                                    color: Colors.blueGrey, fontSize: 18.0)),
+                          ),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text('Michelle James',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      child: Icon(
+                        FontAwesomeIcons.pen,
+                        color: Color(0xff476cfb),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20.0),
+              Container(
+                margin: EdgeInsets.all(20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                    Text('Email',
+                        style:
+                            TextStyle(color: Colors.blueGrey, fontSize: 18.0)),
+                    SizedBox(width: 20.0),
+                    Text('michelle123@gmail.com',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 20.0,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Text(
+                  "xxxxxx",
+                  style: KLandingSubtitle,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Text(
+                  "xxxxxx",
+                  style: KLandingSubtitle,
+                ),
+              ),
               SizedBox(height: 10),
             ],
           )),
@@ -183,10 +181,10 @@ class _UserScreenState extends State<UserScreen> {
 
   Future<void> _signOut(BuildContext context) async {
     try {
-      final auth = Provider.of<AuthBase>(context, listen: false);
+      final AuthService auth = Provider.of<AuthService>(context, listen: false);
       await auth.signOut();
     } catch (e) {
-//      print(e.toString());
+      print(e.toString());
     }
   }
 
@@ -203,7 +201,7 @@ class _UserScreenState extends State<UserScreen> {
   }
 
   Widget _buildUserInfo(BuildContext context, User user) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Column(
       children: <Widget>[
@@ -216,14 +214,14 @@ class _UserScreenState extends State<UserScreen> {
 //              photoUrl: _uploadedFileURL != null
 //                  ? user.photoUrl == null ? _uploadedFileURL : 'No Image'
 //              : user.photoUrl,
-                  photoUrl:
-                      _uploadedFileURL != null ? _uploadedFileURL : 'No Image',
-                  radius: 50,
+                  photoUrl: user.photoUrl,
+                  // _uploadedFileURL != null ? _uploadedFileURL : 'No Image',
+                  radius: 30,
                 ),
                 SizedBox(height: 8),
                 if (user.displayName != null)
                   Text(
-                    user.displayName,
+                    user.displayName.firstCaps,
                     style: TextStyle(
                       color: _darkTheme ? darkThemeButton : lightThemeButton,
                       fontSize: 18.0,

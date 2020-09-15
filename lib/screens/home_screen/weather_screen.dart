@@ -253,7 +253,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
     final metricNotifier = Provider.of<MetricNotifier>(context, listen: false);
     bool _metricUnitOn = metricNotifier.getMetric();
     return SizedBox(
-      height: 63,
+      height: 65,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: hourlyWeatherDataList.length,
@@ -262,10 +262,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
           String hourlyIcon = hourly.hourlyIcon;
           int hourlyTemp = hourly.hourlyTem;
           return Container(
-//            color: Colors.orange,
             padding: EdgeInsets.symmetric(horizontal: 4.0),
-//            width: 50,
-            height: 63,
+            height: 65,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -276,13 +274,12 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   style: TextStyle(color: Colors.white60, fontSize: 13),
                 ),
                 Container(
-//                    color: Colors.blu e,
                     height: 28,
                     width: 28,
                     child: getWeatherIconImage(hourlyIcon)),
                 Text(
                   _metricUnitOn ? '$hourlyTemp°C' : '$hourlyTemp°F',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.white, fontSize: 14),
                 ),
               ],
             ),
@@ -411,22 +408,23 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   Text(
                     Format.dayOfWeek(
                         DateTime.now().add(Duration(days: index + 1))),
-                    style: TextStyle(color: Colors.white70),
+                    style: TextStyle(color: Colors.white60, fontSize: 13),
                   ),
                   Row(
                     children: [
                       Container(
-                          height: 30,
-                          width: 30,
+                          height: 28,
+                          width: 28,
                           child: getWeatherIconImage(dailyIcon)),
-                      SizedBox(width: 3),
+                      SizedBox(width: 2),
                       Text(_metricUnitOn ? '$maxTemp°C' : '$maxTemp°F',
-                          style: TextStyle(color: Colors.white)),
+                          style: TextStyle(color: Colors.white, fontSize: 14)),
                       SizedBox(width: 3),
                       Text(
                         _metricUnitOn ? '$minTemp°C' : '$minTemp°F',
-                        style: TextStyle(color: Colors.white60),
+                        style: TextStyle(color: Colors.white60, fontSize: 14),
                       ),
+                      SizedBox(width: 1),
                     ],
                   ),
                 ],

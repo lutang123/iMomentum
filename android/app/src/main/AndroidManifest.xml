@@ -29,6 +29,7 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="iMomentum"
         android:icon="@mipmap/ic_launcher">
+
         <!-- for image cropper -->
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"

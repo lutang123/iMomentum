@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:iMomentum/app/common_widgets/empty_and_error_content.dart';
+import 'package:iMomentum/app/constants/constants.dart';
 import 'package:iMomentum/screens/home_drawer/unsplash/widget/image_tile.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/services/network_service/unsplash_image_provider.dart';
@@ -206,7 +207,13 @@ class _StaggeredViewState extends State<StaggeredView> {
           } else if (snapshot.hasError) {
             print(
                 'snapshot.hasError in fetching unsplash images: ${snapshot.error.toString()}');
-            return ErrorMessage();
+
+            ///TODO contact us
+            return EmptyOrError(
+              tips: textError,
+              textTap: textErrorOnTap,
+              onTap: null,
+            );
           }
 //          }
           return Center(

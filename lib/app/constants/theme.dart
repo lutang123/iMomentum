@@ -5,15 +5,13 @@ const Color switchActiveColor = Color(0xFF006a71); //Color(0xFF206a5d);
 
 //f6f5f5
 //Drawer Icon and other Icons
-//const Color darkButton = Color(0xFFE7E7E8); //same as app bar color
 const Color darkThemeButton = Colors.white;
 const Color lightThemeButton = Color(0xf0086972); //button. icon
 
-const Color darkThemeHint = Colors.white54;
+const Color darkThemeHint = Colors.white60;
 const Color lightThemeHint = Colors.black54;
 
 const Color darkThemeWords = Colors.white;
-// const Color lightThemeWords = Color(0xf01b262c);
 const Color lightThemeWords = Colors.black87;
 
 // app bar
@@ -24,9 +22,7 @@ final Color lightThemeAppBar = Colors.white.withOpacity(0.5);
 //also in photo Preview and ImagePage, and NotesInFolderScreen as AppBar color
 const Color darkThemeDrawer = Colors.black26;
 
-///used in EmptyContent in folder and notes screen, folder search bar and
-// folder bottom row
-// and folder container
+///used in EmptyContent in folder and notes screen, folder search bar and folder bottom row and folder container
 final Color lightThemeDrawer = Colors.white.withOpacity(0.7);
 
 //calendar, todoList and pie chart,
@@ -71,23 +67,9 @@ final ThemeData lightTheme = ThemeData.light().copyWith(
 //  splashColor: Colors.transparent,
   iconTheme: IconThemeData(color: lightThemeButton),
 //  buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.accent),
-//NAME         SIZE  WEIGHT  SPACING
-//headline1    96.0  light   -1.5
-//headline2    60.0  light   -0.5
-//headline3    48.0  regular  0.0
-//headline4    34.0  regular  0.25
-//headline5    24.0  regular  0.0
-//headline6    20.0  medium   0.15
-//subtitle1    16.0  regular  0.15
-//subtitle2    14.0  medium   0.1
-//bodyText1    16.0  regular  0.5
-//bodyText2    14.0  regular  0.25
-//button       14.0  medium   1.25
-//caption      12.0  regular  0.4
-//overline     10.0  regular  1.5
 
   textTheme: TextTheme(
-    //todoList title, add todo title
+    //todoList title,
     headline5: TextStyle(
       //24
       color: Color(0xF0323232),
@@ -110,20 +92,13 @@ final ThemeData lightTheme = ThemeData.light().copyWith(
 
     ///Empty message
     subtitle2: TextStyle(
-        color: Colors.black54, fontStyle: FontStyle.italic, fontSize: 17),
+        color: Colors.black.withOpacity(0.7),
+        fontStyle: FontStyle.italic,
+        fontSize: 17),
 
     ///calendar date
-    bodyText1: TextStyle(
-      //16
-      color: Colors.black54,
-    ),
-
-    ///used in tap inline text
-    // bodyText2: TextStyle(
-    //     color: Colors.black45,
-    //     fontStyle: FontStyle.italic,
-    //     fontSize: 17,
-    //     decoration: TextDecoration.underline), //14
+    bodyText1: TextStyle(color: Colors.black54, fontSize: 16), //16
+    bodyText2: TextStyle(color: Colors.black87, fontSize: 17), //14
   ),
   dialogBackgroundColor: lightThemeNoPhotoColor,
   dialogTheme: DialogTheme(
@@ -147,7 +122,7 @@ final ThemeData darkTheme = ThemeData.dark().copyWith(
     ///todoList title, add todo title
     headline5: TextStyle(
       //24
-//      color: Color(0xF0323232),
+      color: Colors.white,
       fontWeight: FontWeight.w400,
     ),
 
@@ -155,20 +130,23 @@ final ThemeData darkTheme = ThemeData.dark().copyWith(
     // can not have GoogleFonts.varelaRound this as const
     headline6: GoogleFonts.varelaRound(
       //20
+      color: Colors.white,
 //      color: Color(0xF0323232),
       fontWeight: FontWeight.w600,
     ),
 
     ///calendar month
     subtitle1: TextStyle(
-//      color: Color(0xF03f3f44),
       fontWeight: FontWeight.w400,
+      color: Colors.white,
       fontSize: 18.0,
     ),
 
     ///Empty message
     subtitle2: TextStyle(
-        color: Colors.white70, fontStyle: FontStyle.italic, fontSize: 17),
+        color: Colors.white.withOpacity(0.8),
+        fontStyle: FontStyle.italic,
+        fontSize: 17),
 
     ///calendar date
     bodyText1: TextStyle(
@@ -177,14 +155,30 @@ final ThemeData darkTheme = ThemeData.dark().copyWith(
     ),
 
     // ///used in tap inline text
-    // bodyText2: TextStyle(
-    //     color: Colors.white70,
-    //     fontStyle: FontStyle.italic,
-    //     fontSize: 17,
-    //     decoration: TextDecoration.underline), //14
+    bodyText2: TextStyle(
+      color: Colors.white70,
+      // fontStyle: FontStyle.italic,
+      fontSize: 17,
+      // decoration: TextDecoration.underline,
+    ), //14
   ),
   dialogBackgroundColor: darkThemeNoPhotoColor,
   dialogTheme: DialogTheme(
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(20.0)))),
 );
+
+//NAME         SIZE  WEIGHT  SPACING
+//headline1    96.0  light   -1.5
+//headline2    60.0  light   -0.5
+//headline3    48.0  regular  0.0
+//headline4    34.0  regular  0.25
+//headline5    24.0  regular  0.0
+//headline6    20.0  medium   0.15
+//subtitle1    16.0  regular  0.15
+//subtitle2    14.0  medium   0.1
+//bodyText1    16.0  regular  0.5
+//bodyText2    14.0  regular  0.25
+//button       14.0  medium   1.25
+//caption      12.0  regular  0.4
+//overline     10.0  regular  1.5

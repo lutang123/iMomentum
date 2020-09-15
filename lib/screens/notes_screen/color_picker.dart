@@ -52,12 +52,12 @@ List<Color> colorsDark = [
   Color(0xff158467),
   Color(0xFF086972),
   Color(0xFF0f4c75),
-  // Colors.purple,
+  Colors.purple,
   Color(0xFF6f4a8e),
   Color(0xff6a2c70),
   Colors.brown,
   Color(0xFF557571),
-  // Color(0xffb55400),
+  Color(0xffb55400),
 ];
 
 final colorsLight = [

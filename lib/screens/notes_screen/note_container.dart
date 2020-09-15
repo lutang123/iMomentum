@@ -109,23 +109,3 @@ class NoteContainer extends StatelessWidget {
     );
   }
 }
-
-class MySignInContainer extends StatelessWidget {
-  const MySignInContainer({Key key, this.child}) : super(key: key);
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    return Container(
-      child: child,
-      padding: EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-          color: _darkTheme ? darkThemeSurface : lightThemeSurface,
-          border: Border.all(
-              width: 2, color: _darkTheme ? Colors.white54 : Colors.black38),
-          borderRadius: BorderRadius.circular(20.0)),
-    );
-  }
-}

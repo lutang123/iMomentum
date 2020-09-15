@@ -15,13 +15,14 @@ import 'package:iMomentum/app/common_widgets/my_list_tile.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/constants/constants.dart';
 import 'package:iMomentum/app/models/todo.dart';
+import 'package:iMomentum/app/sign_in/auth_service.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/services/calendar_bloc.dart';
 import 'package:iMomentum/app/services/daily_todos_details.dart';
 import 'package:iMomentum/screens/todo_screen/new_pie_chart.dart';
 import 'package:iMomentum/screens/todo_screen/add_reminder_screen.dart';
-import 'package:iMomentum/screens/todo_screen/todo_screen_empty_message.dart';
+import 'package:iMomentum/screens/todo_screen/todo_screen_empty_or_error.dart';
 import 'package:iMomentum/screens/todo_screen/todo_top_row.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +32,6 @@ import 'my_calendar.dart';
 import 'package:iMomentum/app/utils/format.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'dart:math' as math;
-import '../../app/services/auth.dart';
 
 class TodoScreen extends StatefulWidget {
   //from tab page
@@ -313,12 +313,13 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                                         child: CircularProgressIndicator());
                                   });
 
-                              ///here means if no data in todoList, that also means no data in pie chart, we show empty one
+                              ///here means if no data in todoList, that also
+                              ///means no data in pie chart, we show both empty one
                             } else {
                               return TabBarView(
                                 children: <Widget>[
                                   firstTabNoDataContent(database, _eventNoData,
-                                      textTodoList1, textTodoList2),
+                                      textTodoList1, textTodoList2, ''),
                                   secondTabNoDataContent(
                                       database, _eventNoData),
                                 ],
@@ -333,8 +334,9 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
 
                             return TabBarView(
                               children: <Widget>[
+                                ///Todo, contact us
                                 firstTabNoDataContent(database, _eventNoData,
-                                    textError, textError2),
+                                    '', textError, 'Or contact us'),
                                 secondTabNoDataContent(database, _eventNoData),
                               ],
                             );
@@ -424,7 +426,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                     _buildBoxAdaptorForTodoListTitle(),
                     (_todayList.isEmpty) && (_selectedList.isEmpty)
                         ? SliverToBoxAdapter(
-                            child: TodoScreenEmptyMessage(
+                            child: TodoScreenEmptyOrError(
                                 text1: textTodoList1, tips: textTodoList2),
                           )
                         : _selectedList.isEmpty
@@ -553,7 +555,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
       Database database, List<Todo> todos, List<Todo> anyList, int index) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    final user = Provider.of<User>(context, listen: false);
+    final User user = Provider.of<User>(context, listen: false);
     final Todo todo = anyList[index - 1];
     // this is to make sure only today or after today can add reminder
     final difference = todo.date.difference(DateTime.now());
@@ -687,15 +689,19 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
   }
 
   /// UI for no data or error
-  Widget firstTabNoDataContent(Database database,
-      Map<DateTime, List<dynamic>> calendarEvent, String text1, String text2) {
+  Widget firstTabNoDataContent(
+      Database database,
+      Map<DateTime, List<dynamic>> calendarEvent,
+      String text1,
+      String text2,
+      String text3) {
     return Stack(
       alignment: Alignment.bottomRight,
       children: <Widget>[
         Column(
           children: <Widget>[
             firstCalendarEmpty(calendarEvent),
-            todoListEmptyContent(),
+            todoListEmptyContent(text1, text2, text3),
           ],
         ),
         todoAddButton(database),
@@ -715,7 +721,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget todoListEmptyContent() {
+  Widget todoListEmptyContent(String text1, String text2, String text3) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Expanded(
@@ -730,8 +736,8 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
             slivers: <Widget>[
               _buildBoxAdaptorForTodoListTitle(),
               SliverToBoxAdapter(
-                child: TodoScreenEmptyMessage(
-                    text1: textTodoList1, tips: textTodoList2),
+                child: TodoScreenEmptyOrError(
+                    text1: text1, tips: text2, textTap: text3),
               )
             ],
           ),

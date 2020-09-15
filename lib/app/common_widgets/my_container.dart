@@ -67,6 +67,53 @@ class ContainerOnlyText extends StatelessWidget {
   }
 }
 
+class ContainerOnlyTextPhotoSearch extends StatelessWidget {
+  final String text;
+
+  const ContainerOnlyTextPhotoSearch({Key key, this.text}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    return Container(
+        child: Row(
+      children: [
+        Container(
+            decoration: BoxDecoration(
+                color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
+                borderRadius: BorderRadius.all(Radius.circular(10.0))),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(text,
+                  style: TextStyle(
+                    color: _darkTheme ? darkThemeWords : lightThemeWords,
+                    fontWeight: FontWeight.bold,
+                  )),
+            ))
+      ],
+    ));
+  }
+}
+
+class MySignInContainer extends StatelessWidget {
+  const MySignInContainer({Key key, this.child}) : super(key: key);
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: child,
+      margin: EdgeInsets.symmetric(horizontal: 15.0),
+      padding: EdgeInsets.all(15.0),
+      decoration: BoxDecoration(
+          color: darkThemeSurface,
+          // border: Border.all(
+          //     width: 2, color: _darkTheme ? Colors.white38 : Colors.black12),
+          borderRadius: BorderRadius.circular(20.0)),
+    );
+  }
+}
+
 class NoteSearchBar extends StatelessWidget {
   final VoidCallback onPressed;
 
@@ -151,7 +198,7 @@ class SmallContainer extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 3),
       decoration: BoxDecoration(
         color: _darkTheme ? darkThemeDrawer : lightThemeDrawer,
-        borderRadius: BorderRadius.all(Radius.circular(20.0)),
+        borderRadius: BorderRadius.all(Radius.circular(10.0)),
         border: Border.all(
             color: _darkTheme ? darkThemeDivider : lightThemeDivider, width: 1),
       ),

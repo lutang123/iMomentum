@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:iMomentum/app/constants/constants.dart';
 import 'package:iMomentum/app/constants/piechart_color.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
-import 'package:iMomentum/screens/todo_screen/todo_screen_empty_message.dart';
+import 'package:iMomentum/screens/todo_screen/todo_screen_empty_or_error.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:provider/provider.dart';
@@ -16,7 +16,7 @@ class NewPieChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     if (dataMap != null && dataMap.isNotEmpty) {
       return Padding(
@@ -49,7 +49,7 @@ class NewPieChart extends StatelessWidget {
         ),
       );
     } else {
-      return TodoScreenEmptyMessage(
+      return TodoScreenEmptyOrError(
         text1: textPieChart1,
         tips: textPieTip,
         textTap: textPieTap,

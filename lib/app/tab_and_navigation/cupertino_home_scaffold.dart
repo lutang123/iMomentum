@@ -21,7 +21,7 @@ class CupertinoHomeScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return CupertinoTabScaffold(
       backgroundColor: Colors.transparent,
@@ -45,7 +45,7 @@ class CupertinoHomeScaffold extends StatelessWidget {
   }
 
   BottomNavigationBarItem _buildItem(BuildContext context, TabItem tabItem) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     final itemData = TabItemData.allTabs[tabItem];
     final color = _darkTheme

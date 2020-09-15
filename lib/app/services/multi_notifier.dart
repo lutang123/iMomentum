@@ -111,3 +111,16 @@ class QuoteNotifier with ChangeNotifier {
     notifyListeners();
   }
 }
+
+class UserNameNotifier with ChangeNotifier {
+  String _imageUrl;
+
+  UserNameNotifier(_imageUrl);
+
+  getUserName() => _imageUrl;
+
+  setUserName(String imageUrl) async {
+    _imageUrl = imageUrl;
+    notifyListeners();
+  }
+}

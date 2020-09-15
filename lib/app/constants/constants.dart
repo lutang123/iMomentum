@@ -11,8 +11,10 @@ class ImageUrl {
   static String randomImageUrlFirstPart =
       'https://source.unsplash.com/random?nature&wallpaper&travel&landscape/';
 
-  static String fixedImageUrl =
-      'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2706&q=80';
+  // static String fixedImageUrl =
+  //     'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2706&q=80';
+  static String fixedImageUrl = 'assets/images/landscape.jpg';
+  static String startImage = 'assets/images/landscape.jpg';
 }
 
 const String textTodoList1 = "Do you have any tasks to complete today? "
@@ -44,9 +46,8 @@ const String textPieTip =
 const String textPieTap = 'Learn more.';
 
 ///Todo: add contact us
-const String textError =
-    'Oops, something went wrong, please check your internet connection and come back later.';
-const String textError2 = '';
+const String textError = 'Oops, something went wrong, please try again later. ';
+const String textErrorOnTap = 'Or contact us';
 
 const textMantra1 =
     'Center yourself with friendly reminders, reinforce new thought patterns, and bring attention to the values or principles that are most important to you. \n'
@@ -158,9 +159,41 @@ const KLandingTitle = TextStyle(
   color: Colors.white,
   fontWeight: FontWeight.w600,
 );
+
 const KLandingSubtitle = TextStyle(
   fontSize: 22,
   color: Colors.white,
-  fontFamily: "Billy",
   fontWeight: FontWeight.w400,
 );
+
+const KAppBarTitle = TextStyle(
+  fontSize: 25,
+  color: Colors.white,
+  fontWeight: FontWeight.w600,
+);
+
+const KErrorMessage = TextStyle(
+    fontSize: 16,
+    color: Color(0xf0fafafa),
+    fontWeight: FontWeight.w400,
+    fontStyle: FontStyle.italic,
+    decoration: TextDecoration.underline);
+
+const KSignInButtonText = TextStyle(
+  fontSize: 18,
+  color: Colors.white,
+  fontWeight: FontWeight.w400,
+);
+
+const KTeddy = TextStyle(
+  fontSize: 18,
+  color: Colors.white,
+  fontWeight: FontWeight.w400,
+  fontFamily: 'Architects Daughter',
+);
+
+const KSignInButtonOr = TextStyle(
+    fontSize: 18,
+    color: Colors.white,
+    fontWeight: FontWeight.w400,
+    fontStyle: FontStyle.italic);

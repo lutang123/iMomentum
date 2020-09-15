@@ -118,10 +118,12 @@ class NotesSearchResultState extends State<NotesSearchResult> {
                   ],
                 );
               } else {
-                return EmptyContent(text: 'No result found.');
+                return EmptyOrError(text: 'No result found.');
               }
             } else if (snapshot.hasError) {
-              return ErrorMessage();
+              //Todo contact us
+              return EmptyOrError(
+                  tips: textError, textTap: textErrorOnTap, onTap: null);
             }
             return Center(child: CircularProgressIndicator());
           },

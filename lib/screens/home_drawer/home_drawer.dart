@@ -6,23 +6,27 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:iMomentum/app/common_widgets/avatar.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/my_tooltip.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/setting_switch.dart';
+import 'package:iMomentum/app/sign_in/auth_service.dart';
 import 'package:iMomentum/app/utils/shared_axis.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/home_drawer/my_mantras_screen.dart';
 import 'package:iMomentum/screens/home_drawer/my_quote_screen.dart';
 import 'package:iMomentum/screens/home_drawer/unsplash/image_gallery.dart';
+import 'package:iMomentum/screens/home_drawer/user_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../app/common_widgets/container_linear_gradient.dart';
 import '../../app/common_widgets/platform_alert_dialog.dart';
 import '../../app/constants/constants.dart';
-import '../../app/services/auth.dart';
 import '../../app/constants/theme.dart';
+import 'about_screen.dart';
+import 'package:iMomentum/app/utils/cap_string.dart';
 
 class MyDrawer extends StatefulWidget {
   final Widget child;
@@ -185,15 +189,15 @@ class MyHomeDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ///, listen: false
     final database = Provider.of<Database>(context, listen: false);
 
     ///error if no user name
-//    final user = Provider.of<User>(context, listen: false);
+    final User user = Provider.of<User>(context, listen: false);
 //    final String firstName =
 //        user.displayName.substring(0, user.displayName.indexOf(' '));
 
     ///for theme
+    /// do not set listen to false here
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
 
@@ -204,7 +208,7 @@ class MyHomeDrawer extends StatelessWidget {
 
     ///for random on
     ///this one listen to false or not does not seem to matter, but why??
-    final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
+    final randomNotifier = Provider.of<RandomNotifier>(context);
     bool _randomOn = randomNotifier.getRandom();
 
     return SizedBox(
@@ -224,7 +228,6 @@ class MyHomeDrawer extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                SizedBox(height: 30),
                 settingTitle(context, title: 'Settings'),
                 MyToolTip(
                   message:
@@ -255,7 +258,7 @@ class MyHomeDrawer extends StatelessWidget {
                 ),
                 MyToolTip(
                   message:
-                      'This switch controls the display of background photo, either the same photo of your choice or a random one from our photo gallery.',
+                      'When this switch is on, you will see a new photo every time when opening the app and you can change the photo anytime with double-tap on screen.',
                   child: SettingSwitch(
                     icon: EvaIcons.shuffle2Outline,
                     title: 'Shuffle Photos',
@@ -266,7 +269,6 @@ class MyHomeDrawer extends StatelessWidget {
                     },
                   ),
                 ),
-
                 settingDivider(context),
                 settingTitle(context, title: 'Customizations'),
                 settingListTile(
@@ -311,21 +313,21 @@ class MyHomeDrawer extends StatelessWidget {
                   },
                 ),
                 settingDivider(context),
-//              settingTitle(context, title: 'Support And Community'),
-                settingListTile(context,
-                    icon: FontAwesomeIcons.directions,
-                    title: 'Guided Tour',
-                    onTap: null),
-//              settingListTile(
-//                context,
-//                icon: EvaIcons.questionMarkCircleOutline,
-//                title: 'FAQ / Get Help',
-//                onTap: () {
-//                  final route = SharedAxisPageRoute(
-//                      page: AboutScreen(), transitionType: _transitionType);
-//                  Navigator.of(context, rootNavigator: true).push(route);
-//                },
-//              ),
+                settingTitle(context, title: 'Others'),
+                // settingListTile(context,
+                //     icon: FontAwesomeIcons.directions,
+                //     title: 'Guided Tour',
+                //     onTap: null),
+                settingListTile(
+                  context,
+                  icon: EvaIcons.questionMarkCircleOutline,
+                  title: 'Guided Tour / FAQ',
+                  onTap: () {
+                    final route = SharedAxisPageRoute(
+                        page: AboutScreen(), transitionType: _transitionType);
+                    Navigator.of(context, rootNavigator: true).push(route);
+                  },
+                ),
 //              settingListTile(context,
 //                  icon: EvaIcons.moreHorizotnalOutline,
 //                  title: 'More ',
@@ -336,31 +338,31 @@ class MyHomeDrawer extends StatelessWidget {
 //                  title: 'iMomentum Website',
 //                  onTap: null),
 
-                settingDivider(context),
-//              Flexible(
-//                child: ListTile(
-//                  leading: Avatar(
-//                    photoUrl: user.photoUrl,
-//                    radius: 13,
-//                  ),
-//                  title: user.displayName == null
-//                      ? Text('Profile')
-//                      : Text(user.displayName),
-//                  trailing: Icon(Icons.chevron_right,
-//                      color: _darkTheme ? darkButton : lightButton),
-//                  onTap: () {
-//                    final route = SharedAxisPageRoute(
-//                        page: UserScreen(user: user),
-//                        transitionType: _transitionType);
-//                    Navigator.of(context, rootNavigator: true).push(route);
-//                  },
-//                ),
-//              ),
-//              settingDivider(context),
-                settingListTile(context,
-                    icon: EvaIcons.logOutOutline,
-                    title: 'Sign Out',
-                    onTap: () => _confirmSignOut(context)),
+                // settingDivider(context),
+                Flexible(
+                  child: ListTile(
+                    leading: Avatar(
+                      photoUrl: user.photoUrl,
+                      radius: 13,
+                    ),
+                    title: user.displayName == null
+                        ? Text('Profile')
+                        : Text(user.displayName.firstCaps),
+                    trailing: Icon(Icons.chevron_right,
+                        color: _darkTheme ? darkThemeButton : lightThemeButton),
+                    onTap: () {
+                      final route = SharedAxisPageRoute(
+                          page: UserScreen(user: user),
+                          transitionType: _transitionType);
+                      Navigator.of(context, rootNavigator: true).push(route);
+                    },
+                  ),
+                ),
+                // settingDivider(context),
+                // settingListTile(context,
+                //     icon: EvaIcons.logOutOutline,
+                //     title: 'Sign Out',
+                //     onTap: () => _confirmSignOut(context)),
               ],
             ),
           ),
@@ -529,7 +531,7 @@ class MyHomeDrawer extends StatelessWidget {
   }
 
   Future<void> _confirmSignOut(BuildContext context) async {
-    final didRequestSignOut = await PlatformAlertDialog(
+    final bool didRequestSignOut = await PlatformAlertDialog(
       title: 'Logout',
       content: 'Are you sure that you want to logout?',
       cancelActionText: 'Cancel',
@@ -543,7 +545,7 @@ class MyHomeDrawer extends StatelessWidget {
   Future<void> _signOut(BuildContext context) async {
     try {
       ///, listen: false
-      final auth = Provider.of<AuthBase>(context, listen: false);
+      final AuthService auth = Provider.of<AuthService>(context, listen: false);
       await auth.signOut();
     } on PlatformException catch (e) {
       PlatformExceptionAlertDialog(

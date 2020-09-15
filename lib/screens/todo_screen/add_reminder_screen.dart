@@ -7,7 +7,7 @@ import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/models/todo.dart';
-import 'package:iMomentum/app/services/auth.dart';
+import 'package:iMomentum/app/sign_in/auth_service.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/constants/theme.dart';

@@ -10,7 +10,7 @@ import 'package:iMomentum/app/constants/constants.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/home_drawer/unsplash/preview_file.dart';
-import 'package:iMomentum/screens/home_drawer/unsplash/search_photo.dart';
+import 'package:iMomentum/screens/home_drawer/unsplash/search_delegate_photo.dart';
 import 'package:iMomentum/screens/home_drawer/unsplash/staggered_view.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';

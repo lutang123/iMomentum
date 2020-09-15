@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:iMomentum/app/common_widgets/platform_widget.dart';
 import 'package:iMomentum/app/constants/constants.dart';
+import 'package:iMomentum/app/constants/theme.dart';
 
 class PlatformAlertDialog extends PlatformWidget {
   PlatformAlertDialog({
@@ -20,56 +21,51 @@ class PlatformAlertDialog extends PlatformWidget {
   final String defaultActionText;
 
   Future<bool> show(BuildContext context) async {
+    // return Platform.isIOS
+    //     ? await showDialog<bool>(
+    //         context: context,
+    //         builder: (BuildContext context) {
+    //           return AlertDialog(
+    //             backgroundColor: darkThemeNoPhotoColor,
+    //             shape: RoundedRectangleBorder(
+    //                 borderRadius: BorderRadius.all(Radius.circular(20.0))),
+    //             title: Text(
+    //               title,
+    //               style: KDialogTitle
+    //             ),
+    //             content: Text(
+    //               content,
+    //               style: KDialogContent
+    //             ),
+    //             actions: _buildActions(context),
+    //           );
+    //         },
+    //       )
+    //     : await showDialog<bool>(
+    //         context: context,
+    //         builder: (BuildContext context) {
+    //           return AlertDialog(
+    //             backgroundColor: darkThemeNoPhotoColor,
+    //             shape: RoundedRectangleBorder(
+    //                 borderRadius: BorderRadius.all(Radius.circular(20.0))),
+    //             title: Text(title, style: KDialogTitle),
+    //             content: Text(content, style: KDialogContent),
+    //             actions: _buildActions(context),
+    //           );
+    //         },
+    //       );
+
+    ///previous version, the two seems the same
     return Platform.isIOS
-        ? await showDialog<bool>(
+        ? await showCupertinoDialog<bool>(
             context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                backgroundColor: Color(0xf01b262c),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(20.0))),
-                title: Text(
-                  title,
-                  style: KDialogTitle,
-                ),
-                content: Text(
-                  content,
-                  style: KDialogContent,
-                ),
-                actions: _buildActions(context),
-              );
-            },
+            builder: (context) => this,
           )
         : await showDialog<bool>(
             context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                backgroundColor: Color(0xf01b262c), // //
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(20.0))),
-                title: Text(
-                  title,
-//            style: Theme.of(context).textTheme.headline6,
-                ),
-                content: Text(content),
-                actions: _buildActions(context),
-              );
-            },
+            barrierDismissible: false,
+            builder: (context) => this,
           );
-
-    ///previous version, the two seems the same
-//    return Platform.isIOS
-//        ?
-//        await showCupertinoDialog<bool>(
-//            context: context,
-//            builder: (context) => this,
-//          )
-
-//        : await showDialog<bool>(
-//            context: context,
-//            barrierDismissible: false,
-//            builder: (context) => this,
-//          );
   }
 
   @override
@@ -84,13 +80,19 @@ class PlatformAlertDialog extends PlatformWidget {
   @override
   Widget buildMaterialWidget(BuildContext context) {
     return AlertDialog(
-//      backgroundColor: Colors.purpleAccent, // //
-//      shape: RoundedRectangleBorder(
-//          borderRadius: BorderRadius.all(Radius.circular(20.0))),
-      title: Text(title),
+      // backgroundColor: darkThemeNoPhotoColor,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20.0))),
+      title: Text(
+        title,
+        // style: KDialogTitle
+      ),
       content: Padding(
         padding: const EdgeInsets.all(15.0),
-        child: Text(content),
+        child: Text(
+          content,
+          // style: KDialogContent,
+        ),
       ),
       actions: _buildActions(context),
     );
@@ -101,14 +103,20 @@ class PlatformAlertDialog extends PlatformWidget {
     if (cancelActionText != null) {
       actions.add(
         FlatButton(
-          child: Text(cancelActionText, style: KDialogButton),
+          child: Text(
+            cancelActionText,
+            // style: KDialogButton,
+          ),
           onPressed: () => Navigator.of(context).pop(false),
         ),
       );
     }
     actions.add(
       FlatButton(
-        child: Text(defaultActionText, style: KDialogButton),
+        child: Text(
+          defaultActionText,
+          // style: KDialogButton,
+        ),
         onPressed: () => Navigator.of(context).pop(true),
       ),
     );

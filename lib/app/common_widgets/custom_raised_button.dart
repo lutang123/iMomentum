@@ -1,33 +1,53 @@
 import 'package:flutter/material.dart';
 
+@immutable
 class CustomRaisedButton extends StatelessWidget {
-  CustomRaisedButton({
+  const CustomRaisedButton({
     Key key,
-    this.child,
+    @required this.child,
     this.color,
-    this.borderRadius: 2.0,
-    this.height: 50.0,
+    this.textColor,
+    this.height = 50.0,
+    this.borderRadius = 4.0,
+    this.loading = false,
     this.onPressed,
-  }) : assert(borderRadius != null), super(key: key);
+  }) : super(key: key);
   final Widget child;
   final Color color;
-  final double borderRadius;
+  final Color textColor;
   final double height;
+  final double borderRadius;
+  final bool loading;
   final VoidCallback onPressed;
+
+  Widget buildSpinner(BuildContext context) {
+    final ThemeData data = Theme.of(context);
+    return Theme(
+      data: data.copyWith(accentColor: Colors.white70),
+      child: SizedBox(
+        width: 28,
+        height: 28,
+        child: CircularProgressIndicator(
+          strokeWidth: 3.0,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: height,
       child: RaisedButton(
-        child: child,
-        color: color,
-        disabledColor: color,
+        child: loading ? buildSpinner(context) : child,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(
             Radius.circular(borderRadius),
           ),
-        ),
+        ), // height / 2
+        color: color,
+        disabledColor: color,
+        textColor: textColor,
         onPressed: onPressed,
       ),
     );

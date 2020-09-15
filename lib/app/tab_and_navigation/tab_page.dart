@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:iMomentum/app/sign_in/auth_service.dart';
 import 'package:iMomentum/screens/home_screen/home_screen.dart';
 import 'package:iMomentum/screens/notes_screen/folder_screen.dart';
 import 'package:iMomentum/screens/todo_screen/todo_screen.dart';
 import 'package:iMomentum/app/tab_and_navigation/tab_item.dart';
+import 'package:provider/provider.dart';
 import '../../screens/home_drawer/home_drawer.dart';
 import 'cupertino_home_scaffold.dart';
+import 'package:iMomentum/app/utils/cap_string.dart';
 
 class TabPage extends StatefulWidget {
   @override
@@ -12,6 +16,52 @@ class TabPage extends StatefulWidget {
 }
 
 class _TabPageState extends State<TabPage> {
+  @override
+  void initState() {
+    /// test on where to call this function
+    _showDailyAtTime();
+    super.initState();
+  }
+
+  /// for local notification
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  /// Showing a daily notification at a specific time
+  Future<void> _showDailyAtTime() async {
+    final User user = Provider.of<User>(context, listen: false);
+
+    String userName = user.displayName == null
+        ? ''
+        : user.displayName.contains(' ')
+            ? '${user.displayName.substring(0, user.displayName.indexOf(' ')).firstCaps}'
+            : '${user.displayName.firstCaps}';
+
+    // String _toTwoDigitString(int value) {
+    //   return value.toString().padLeft(2, '0');
+    // }
+
+    var time = Time(10, 0, 0);
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+        'repeatDailyAtTime channel id',
+        'repeatDailyAtTime channel name',
+        'repeatDailyAtTime description');
+    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+
+    var platformChannelSpecifics = NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.showDailyAtTime(
+        0, //id
+        'Good morning, $userName', //title
+        //body
+        "Have a nice day!",
+        //notificationTime
+        time,
+        //NotificationDetails notificationDetails
+        platformChannelSpecifics);
+  }
+
   TabItem _currentTab = TabItem.home;
 
   final Map<TabItem, GlobalKey<NavigatorState>> navigatorKeys = {

@@ -14,29 +14,21 @@ class TrackingTextInput extends StatefulWidget {
     Key key,
     this.onCaretMoved,
     this.onTextChanged,
-    this.hint,
-    this.enable,
-    this.label,
-    this.icon,
+    // this.enable,
+    this.inputDecoration,
     this.isObscured = false,
-    this.focusNode,
     this.onEditingComplete,
-    this.onChanged,
-    this.textController,
+    // this.onChanged,
+    // this.textInputAction,
   }) : super(key: key);
   final CaretMoved onCaretMoved;
   final TextChanged onTextChanged;
-  final String hint;
-  final bool enable;
-  final String label;
-  final IconData icon;
+  // final bool enable;
+  final InputDecoration inputDecoration;
   final bool isObscured;
-  final FocusNode focusNode;
   final Function onEditingComplete;
-  final Function onChanged;
-  final TextEditingController textController;
-
-//  final FormFieldValidator<String> validator;
+  // final Function onChanged;
+  // final TextInputAction textInputAction;
 
   @override
   _TrackingTextInputState createState() => _TrackingTextInputState();
@@ -44,12 +36,12 @@ class TrackingTextInput extends StatefulWidget {
 
 class _TrackingTextInputState extends State<TrackingTextInput> {
   final GlobalKey _fieldKey = GlobalKey();
-  // final TextEditingController textController = TextEditingController();
+  final TextEditingController textController = TextEditingController();
   Timer _debounceTimer;
 
   @override
   initState() {
-    widget.textController.addListener(() {
+    textController.addListener(() {
       // We debounce the listener as sometimes the caret position is updated after the listener
       // this assures us we get an accurate caret position.
       if (_debounceTimer?.isActive ?? false) _debounceTimer.cancel();
@@ -66,7 +58,7 @@ class _TrackingTextInputState extends State<TrackingTextInput> {
         }
       });
       if (widget.onTextChanged != null) {
-        widget.onTextChanged(widget.textController.text);
+        widget.onTextChanged(textController.text);
       }
     });
     super.initState();
@@ -75,22 +67,25 @@ class _TrackingTextInputState extends State<TrackingTextInput> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      // key: _fieldKey,
-      controller: widget.textController,
-      focusNode: widget.focusNode,
+      key: _fieldKey,
+      keyboardAppearance: Brightness.dark,
+      controller: textController,
+      // focusNode: widget.focusNode,
       onEditingComplete: widget.onEditingComplete,
-      onChanged: widget.onChanged,
+      // onChanged: widget.onChanged,
       style: TextStyle(fontSize: 16.0, color: Colors.white),
-      enabled: widget.enable,
+      enabled: true,
       keyboardType:
           widget.isObscured ? TextInputType.text : TextInputType.emailAddress,
-      textInputAction: TextInputAction.done,
-      decoration: InputDecoration(
-        labelText: widget.label,
-        hintText: widget.hint,
-        labelStyle: TextStyle(fontSize: 16.0, color: Colors.white70),
-        prefixIcon: Icon(widget.icon),
-      ),
+      textInputAction:
+          widget.isObscured ? TextInputAction.done : TextInputAction.next,
+      decoration: widget.inputDecoration,
+      // decoration: InputDecoration(
+      //   labelText: widget.label,
+      //   hintText: widget.hint,
+      //   labelStyle: TextStyle(fontSize: 16.0, color: Colors.white70),
+      //   prefixIcon: Icon(widget.icon),
+      // ),
       obscureText: widget.isObscured,
       // validator: (value) {},
     );

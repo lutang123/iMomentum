@@ -1,7 +1,9 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
@@ -11,6 +13,7 @@ import 'package:iMomentum/app/common_widgets/my_text_field.dart';
 import 'package:iMomentum/app/common_widgets/my_tooltip.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
+import 'package:iMomentum/app/sign_in/auth_service.dart';
 import 'package:iMomentum/app/services/network_service/weather_service.dart';
 import 'package:iMomentum/app/utils/show_up.dart';
 import 'package:iMomentum/app/utils/top_sheet.dart';
@@ -21,7 +24,6 @@ import 'package:iMomentum/app/models/data/mantras_list.dart';
 import 'package:iMomentum/app/models/mantra_model.dart';
 import 'package:iMomentum/app/models/quote_model.dart';
 import 'package:iMomentum/app/models/todo.dart';
-import 'package:iMomentum/app/services/auth.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/home_drawer/add_mantra.dart';
 import 'package:iMomentum/screens/home_drawer/add_quote.dart';
@@ -32,6 +34,7 @@ import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/screens/todo_screen/add_todo_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'quote.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -70,6 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _fetchWeather() async {
+    ///because we call fetch weather again after changing, so listen can be false
     final metricNotifier = Provider.of<MetricNotifier>(context, listen: false);
     bool _metricUnitOn = metricNotifier.getMetric();
     // If the widget was removed from the tree while the asynchronous platform
@@ -113,10 +117,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget contentFinishedDownload() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
 
-    ///because we call fetch weather again after changing.
+    ///because we call fetch weather again after changing, so listen can be false
     final metricNotifier = Provider.of<MetricNotifier>(context, listen: false);
     bool _metricUnitOn = metricNotifier.getMetric();
     return Column(
@@ -233,7 +237,38 @@ class _HomeScreenState extends State<HomeScreen> {
     _defaultMantra = DefaultMantraList().showMantra().body;
     _fetchWeather();
     super.initState();
+    // _updateUserName();
+    // initUser();
   }
+
+  // User user;
+  // void initUser() async {
+  //   final AuthService _auth = Provider.of<AuthService>(context, listen: false);
+  //
+  //   user = await _auth.currentUser();
+  //   print('user.displayName: ${user.displayName}');
+  //   setState(() {});
+  // }
+
+  // void _updateUserName() async {
+  //   final AuthService auth = Provider.of<AuthService>(context, listen: false);
+  //
+  //   final userNameNotifier =
+  //       Provider.of<UserNameNotifier>(context, listen: false);
+  //   final userName = userNameNotifier.getUserName();
+  //   print("$userName userName in home screen"); //null
+
+  // final prefs =  SharedPreferences.getInstance();
+  // String userName2 = await prefs.getString('userName') ?? null;
+  //
+  // print('userName2 in prefs: $userName2');
+  // auth.updateUserName(userName2);
+  // print('StartScreen3: ${auth.updateUserName(userName2)}');
+
+  //   final User user = Provider.of<User>(context, listen: false); //null
+  //
+  //   print('user.displayName: ${user.displayName}');
+  // }
 
   int counter = 0;
   void _onDoubleTap() {
@@ -341,7 +376,9 @@ class _HomeScreenState extends State<HomeScreen> {
             return _emptyListScreen(); // if todos is empty
           }
         } else if (snapshot.hasError) {
-          return _emptyListScreen(text: textError); //if error
+          ///Todo: onTap contact us
+          return _errorScreen(
+              text: textError, textTap: 'Or contact us'); //if error
         }
         return Center(child: CircularProgressIndicator());
       },
@@ -385,6 +422,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: MyFlatButton(
                         onPressed: () => _focusButton(database, todo),
                         text: 'Focus Mode',
+                        bkgdColor: Colors.transparent,
                       ),
                     ),
                   ],
@@ -421,7 +459,56 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   //this means if there is no data from TodoStream, then we display question.
-  Widget _emptyListScreen({String text = ''}) {
+  Widget _emptyListScreen() {
+    final focusNotifier = Provider.of<FocusNotifier>(context);
+    bool _focusModeOn = (focusNotifier.getFocus() == true);
+
+    return _focusModeOn
+        ? Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Spacer(),
+                Opacity(
+                  opacity: _mantraOpacity,
+                  child: Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: getFirstGreetings,
+                      ), //first greetings
+                      SizedBox(height: 80),
+                      Column(
+                        children: <Widget>[
+                          Text('$dayOfWeek, $formattedDate ', style: KHomeDate),
+                          SizedBox(height: 20),
+                          getQuestion(), //33
+                          HomeTextField(onSubmitted: _onSubmitted),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Spacer(),
+              ],
+            ),
+          )
+        : Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Spacer(),
+                Opacity(
+                  opacity: _mantraOpacity,
+                  child: _buildMantraStream(),
+                ),
+                Spacer(),
+              ],
+            ),
+          );
+  }
+
+  Widget _errorScreen({String text = '', textTap = '', onTap}) {
     final focusNotifier = Provider.of<FocusNotifier>(context);
     bool _focusModeOn = (focusNotifier.getFocus() == true);
 
@@ -447,8 +534,30 @@ class _HomeScreenState extends State<HomeScreen> {
                           getQuestion(), //33
                           HomeTextField(onSubmitted: _onSubmitted),
                           SizedBox(height: 10),
-                          Text(
-                              text) // default is empty, but if error, we show error message
+                          MySignInContainer(
+                              child: RichText(
+                            text: TextSpan(
+                              style: TextStyle(
+                                  color: Colors.white.withOpacity(0.85),
+                                  fontStyle: FontStyle.italic,
+                                  fontSize: 16),
+                              children: [
+                                TextSpan(
+                                  text: text,
+                                ),
+                                TextSpan(
+                                  text: textTap,
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = onTap,
+                                  style: TextStyle(
+                                      decoration: TextDecoration.underline,
+                                      color: Colors.white.withOpacity(0.85),
+                                      fontStyle: FontStyle.italic,
+                                      fontSize: 16),
+                                ),
+                              ],
+                            ),
+                          )) // default is empty, but if error, we show error message
                         ],
                       ),
                     ],
@@ -477,6 +586,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildMantraStream() {
     final database = Provider.of<Database>(context, listen: false);
     //for mantra
+    ///because we will pop back, so it will update
     final mantraNotifier = Provider.of<MantraNotifier>(context, listen: false);
     bool _useMyMantra = mantraNotifier.getMantra();
     return StreamBuilder<List<MantraModel>>(
@@ -811,8 +921,18 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget get getFirstGreetings {
+    // ///todo: update userName
+    // final userNameNotifier =
+    //     Provider.of<UserNameNotifier>(context, listen: false);
+    // final userName = userNameNotifier.getUserName();
+    // print("$userName userName in home screen"); //null
+    //this is user
     final User user = Provider.of<User>(context, listen: false);
-    print(user.displayName);
+
+    print('${user.displayName} user.displayName in home screen');
+    // if (user.displayName != userName) {
+    //   user.displayName = userName;
+    // }
     return AutoSizeText(
       user.displayName == null
           ? '${FirstGreetings().showGreetings()}'

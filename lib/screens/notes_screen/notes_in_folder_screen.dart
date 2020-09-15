@@ -199,15 +199,16 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
                         ],
                       );
                     } else {
+                      //if notes are empty
                       return Stack(
                         alignment: Alignment.bottomCenter,
                         children: [
                           Column(
                             children: [
                               _topRow(allNotesInThisFolder),
-                              Expanded(
-                                  child: EmptyContent(
-                                      text: emptyNote)), //empty content
+                              Spacer(),
+                              Center(child: EmptyOrError(text: emptyNote)),
+                              Spacer() //empty content
                             ],
                           ),
                           _bottomRow(),
@@ -221,7 +222,12 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
                       children: [
                         //this must include, it shows folder name and go back button, only not include toggle button
                         _topErrorRow(),
-                        Expanded(child: ErrorMessage()),
+                        Expanded(
+                            child: EmptyOrError(
+                                tips: textError,
+                                textTap: textErrorOnTap,
+                                //Todo contact us
+                                onTap: null)),
                       ],
                     );
                   }
@@ -338,7 +344,7 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
       child: notes.length == 0
           ? Container()
           : Padding(
-              padding: const EdgeInsets.only(left: 25.0, right: 25, top: 10),
+              padding: const EdgeInsets.only(left: 10.0, top: 10),
               child: ContainerOnlyText(text: 'PINNED'),
             ),
     );
@@ -349,7 +355,7 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
       child: notes.length == 0
           ? Container()
           : Padding(
-              padding: const EdgeInsets.only(left: 25.0, right: 25),
+              padding: const EdgeInsets.only(left: 10.0),
               child: ContainerOnlyText(text: 'OTHERS'),
             ),
     );

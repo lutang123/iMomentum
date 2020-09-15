@@ -1,11 +1,11 @@
 import 'dart:async';
-
 import 'package:flutter/foundation.dart';
-import 'package:iMomentum/app/services/auth.dart';
+import 'package:iMomentum/app/sign_in/auth_service.dart';
+import 'package:meta/meta.dart';
 
 class SignInManager {
   SignInManager({@required this.auth, @required this.isLoading});
-  final AuthBase auth;
+  final AuthService auth;
   final ValueNotifier<bool> isLoading;
 
   Future<User> _signIn(Future<User> Function() signInMethod) async {
@@ -18,10 +18,19 @@ class SignInManager {
     }
   }
 
-  Future<User> signInAnonymously() async =>
-      await _signIn(auth.signInAnonymously);
+  Future<User> signInAnonymously() async {
+    return await _signIn(auth.signInAnonymously);
+  }
 
-  Future<User> signInWithGoogle() async => await _signIn(auth.signInWithGoogle);
+  Future<void> signInWithGoogle() async {
+    return await _signIn(auth.signInWithGoogle);
+  }
 
-//  Future<User> signInWithFacebook() async => await _signIn(auth.signInWithFacebook);
+  Future<void> signInWithFacebook() async {
+    return await _signIn(auth.signInWithFacebook);
+  }
+
+  Future<void> signInWithApple() async {
+    return await _signIn(auth.signInWithApple);
+  }
 }

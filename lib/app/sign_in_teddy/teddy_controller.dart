@@ -109,7 +109,6 @@ class TeddyController extends FlareControls {
     _hasFocus = true;
   }
 
-  //
   void setPassword(String value) {
     _password = value;
   }

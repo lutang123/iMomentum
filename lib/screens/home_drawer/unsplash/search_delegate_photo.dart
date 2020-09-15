@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/screens/home_drawer/unsplash/staggered_view.dart';
 import 'package:iMomentum/screens/home_drawer/unsplash/tags_list.dart';
 import 'package:iMomentum/app/services/network_service/unsplash_image_provider.dart';
@@ -19,7 +20,9 @@ class SearchPhotos extends SearchDelegate<Container> {
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     assert(context != null);
     final ThemeData theme = Theme.of(context).copyWith(
-        cursorColor: _darkTheme ? darkThemeHint : lightThemeHint,
+        // canvasColor: _darkTheme ? darkThemeHint : lightThemeButton,
+        // cursorColor:
+        //     _darkTheme ? darkThemeHint : lightThemeHint, //seems didn't change
         hintColor: _darkTheme ? darkThemeHint : lightThemeHint,
         primaryColor: _darkTheme
             ? darkThemeNoPhotoColor
@@ -27,7 +30,7 @@ class SearchPhotos extends SearchDelegate<Container> {
         textTheme: TextTheme(
           headline6: TextStyle(
               color: _darkTheme ? darkThemeWords : lightThemeWords,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w600,
               fontSize: 20),
         ));
     assert(theme != null);
@@ -111,35 +114,35 @@ class SearchPhotos extends SearchDelegate<Container> {
               height: appHeight / 6,
               decoration: BoxDecoration(
                   border: Border(bottom: BorderSide(width: appWidth / 2000))),
-              child: Row(
+              child: Stack(
+                alignment: Alignment.topLeft,
                 children: <Widget>[
-                  Expanded(
-                      flex: 1,
-                      child: Text(suggestionsList[index],
-                          style: Theme.of(context).textTheme.subtitle2)),
-                  Expanded(
-                    flex: 5,
-                    child: FutureBuilder(
-                      future: _loadImages(keyword: suggestionsList[index]),
-                      builder: (context, snapshot) {
-                        if (snapshot.data == null) {
-                          return Container();
-                        } else {
-                          //listView to show sample images of each query
-                          return ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: snapshot.data.length,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: ImageTile(image: snapshot.data[index]),
-                              );
-                            },
-                          );
-                        }
-                      },
-                    ),
+                  FutureBuilder(
+                    future: _loadImages(keyword: suggestionsList[index]),
+                    builder: (context, snapshot) {
+                      if (snapshot.data == null) {
+                        return Container();
+                      } else {
+                        //listView to show sample images of each query
+                        return ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: snapshot.data.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ImageTile(image: snapshot.data[index]),
+                            );
+                          },
+                        );
+                      }
+                    },
                   ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ContainerOnlyTextPhotoSearch(
+                      text: suggestionsList[index],
+                    ),
+                  )
                 ],
               ),
             ),

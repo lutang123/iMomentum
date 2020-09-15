@@ -90,21 +90,21 @@ class _SignInState extends State<SignIn> {
                         onTextChanged: (String email) {
                           _email = email;
                         },
-                        label: "Email",
-                        hint: "What's your email address?",
+                        // label: "Email",
+                        // hint: "What's your email address?",
                         onCaretMoved: (Offset caret) {
                           _teddyController.lookAt(caret);
                         },
-                        icon: Icons.email,
-                        enable: !_isLoading,
+                        // icon: Icons.email,
+                        // enable: !_isLoading,
                       ),
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
                           Expanded(
                             child: TrackingTextInput(
-                              label: "Password",
-                              hint: "Try 'bears'...",
+                              // label: "Password",
+                              // hint: "Try 'bears'...",
                               isObscured: _isObscured,
                               onCaretMoved: (Offset caret) {
                                 _teddyController.coverEyes(caret != null);
@@ -117,8 +117,8 @@ class _SignInState extends State<SignIn> {
                               onTextChanged: (String password) {
                                 _password = password;
                               },
-                              icon: Icons.lock,
-                              enable: !_isLoading,
+                              // icon: Icons.lock,
+                              // enable: !_isLoading,
                             ),
                           ),
                           IconButton(

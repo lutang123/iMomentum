@@ -2,20 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HomeTextField extends StatelessWidget {
-  const HomeTextField(
-      {Key key,
-      this.onSubmitted,
-      this.icon,
-      this.onPressed,
-      this.textEditingController,
-      this.onChanged})
-      : super(key: key);
+  const HomeTextField({
+    Key key,
+    this.onSubmitted,
+    this.icon,
+    this.onPressed,
+    this.textEditingController,
+    this.onChanged,
+    this.max = 100,
+  }) : super(key: key);
 
   final Function onSubmitted;
   final IconData icon;
   final Function onPressed;
   final TextEditingController textEditingController;
   final Function onChanged;
+  final int max;
 
   @override
   Widget build(BuildContext context) {
@@ -23,13 +25,6 @@ class HomeTextField extends StatelessWidget {
       width: 320,
       child: Row(
         children: [
-//          Opacity(
-//            opacity: 0.0,
-//            child: IconButton(
-//              icon: Icon(FontAwesomeIcons.microphoneAlt),
-//              onPressed: null,
-//            ),
-//          ),
           Expanded(
             child: TextField(
               onChanged: onChanged,
@@ -39,7 +34,7 @@ class HomeTextField extends StatelessWidget {
               textAlign: TextAlign.center,
               onSubmitted: onSubmitted,
               cursorColor: Colors.white,
-              maxLength: 100,
+              maxLength: max,
 
               ///no save button, can not do multiline
 //        keyboardType: TextInputType.multiline,
@@ -52,10 +47,6 @@ class HomeTextField extends StatelessWidget {
               ),
             ),
           ),
-//          RoundSmallIconButton(
-//            icon: icon,
-//            onPressed: onPressed,
-//          )
         ],
       ),
     );

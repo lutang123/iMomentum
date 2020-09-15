@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:iMomentum/app/services/auth.dart';
-import 'package:iMomentum/app/sign_in/stateful_and_bloc/email_sign_in_model.dart';
-import 'package:iMomentum/app/sign_in/validators.dart';
+import 'package:iMomentum/app/constants/strings.dart';
+import 'package:iMomentum/app/sign_in/auth_service.dart';
+import 'package:iMomentum/app/sign_in/validator.dart';
 
 class EmailSignInChangeModel with EmailAndPasswordValidators, ChangeNotifier {
   EmailSignInChangeModel({
@@ -9,49 +9,56 @@ class EmailSignInChangeModel with EmailAndPasswordValidators, ChangeNotifier {
     this.name = '',
     this.email = '',
     this.password = '',
-    this.formType = EmailSignInFormType.signIn,
+    // this.formType = EmailSignInFormType.signIn,
     this.isLoading = false,
     this.submitted = false,
   });
-  final AuthBase auth;
+  final AuthService auth;
   String name;
   String email;
   String password;
-  EmailSignInFormType formType;
+  // EmailSignInFormType formType;
   bool isLoading;
   bool submitted;
 
-  Future<void> submit() async {
-    updateWith(submitted: true, isLoading: true);
+  Future<void> signIn() async {
     try {
-      if (formType == EmailSignInFormType.signIn) {
-        await auth.signInWithEmailAndPassword(email, password, name);
-      } else {
-        await auth.createUserWithEmailAndPassword(email, password, name);
-      }
+      if (emailSubmitValidator.isValid(email) &&
+          passwordSignInSubmitValidator.isValid(password))
+        updateWith(submitted: true, isLoading: true);
+      await auth.signInWithEmailAndPassword(email, password, name);
     } catch (e) {
       updateWith(isLoading: false);
       rethrow;
     }
   }
 
-  String get primaryButtonText {
-    return formType == EmailSignInFormType.signIn
-        ? 'Sign in'
-        : 'Create an account';
+  Future<void> register() async {
+    try {
+      if (emailSubmitValidator.isValid(email) &&
+          passwordRegisterSubmitValidator.isValid(password))
+        updateWith(submitted: true, isLoading: true);
+      await auth.createUserWithEmailAndPassword(email, password, name);
+    } catch (e) {
+      updateWith(isLoading: false);
+      rethrow;
+    }
   }
 
-  String get secondaryButtonText {
-    return formType == EmailSignInFormType.signIn
-        ? 'Need an account? Register'
-        : 'Have an account? Sign in';
+  Future<void> forgotPassword() async {
+    try {
+      // if (emailSubmitValidator.isValid(email))
+      // updateWith(submitted: true, isLoading: true);
+      await auth.sendPasswordResetEmail(email);
+    } catch (e) {
+      updateWith(isLoading: false);
+      rethrow;
+    }
   }
 
-  bool get canSubmit {
-    return emailValidator.isValid(email) &&
-        passwordValidator.isValid(password) &&
-        !isLoading;
-  }
+  String get passwordLabelTextRegister => Strings.password8CharactersLabel;
+
+  String get passwordLabelTextSignIn => Strings.passwordLabel;
 
   String get nameErrorText {
     bool showErrorText = submitted && !nameValidator.isValid(name);
@@ -59,27 +66,14 @@ class EmailSignInChangeModel with EmailAndPasswordValidators, ChangeNotifier {
   }
 
   String get emailErrorText {
-    bool showErrorText = submitted && !emailValidator.isValid(email);
+    bool showErrorText = submitted && !emailSubmitValidator.isValid(email);
     return showErrorText ? invalidEmailErrorText : null;
   }
 
   String get passwordErrorText {
-    bool showErrorText = submitted && !passwordValidator.isValid(password);
+    bool showErrorText =
+        submitted && !passwordSignInSubmitValidator.isValid(password);
     return showErrorText ? invalidPasswordErrorText : null;
-  }
-
-  void toggleFormType() {
-    final formType = this.formType == EmailSignInFormType.signIn
-        ? EmailSignInFormType.register
-        : EmailSignInFormType.signIn;
-    updateWith(
-      name: '',
-      email: '',
-      password: '',
-      formType: formType,
-      isLoading: false,
-      submitted: false,
-    );
   }
 
   void updateName(String name) => updateWith(name: name);
@@ -92,16 +86,21 @@ class EmailSignInChangeModel with EmailAndPasswordValidators, ChangeNotifier {
     String name,
     String email,
     String password,
-    EmailSignInFormType formType,
+    // EmailSignInFormType formType,
     bool isLoading,
     bool submitted,
   }) {
     this.name = name ?? this.name;
     this.email = email ?? this.email;
     this.password = password ?? this.password;
-    this.formType = formType ?? this.formType;
+    // this.formType = formType ?? this.formType;
     this.isLoading = isLoading ?? this.isLoading;
     this.submitted = submitted ?? this.submitted;
     notifyListeners();
+  }
+
+  @override
+  String toString() {
+    return 'email: $email, password: $password, isLoading: $isLoading, submitted: $submitted';
   }
 }
