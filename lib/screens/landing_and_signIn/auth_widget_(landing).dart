@@ -18,6 +18,7 @@ class AuthWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (userSnapshot.connectionState == ConnectionState.active) {
+      //final User user = snapshot.data;
       return userSnapshot.hasData ? TabPage() : StartScreen();
       // : SignInPageBuilder();
     } else {

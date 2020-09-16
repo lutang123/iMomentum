@@ -330,6 +330,8 @@ class _MyAppState extends State<MyApp> {
           create: (_) => AuthServiceAdapter(
             initialAuthServiceType: widget.initialAuthServiceType,
           ),
+
+          ///Todo: what is dispose in provider
           dispose: (_, AuthService authService) => authService.dispose(),
         ),
         Provider<EmailSecureStore>(
@@ -347,8 +349,11 @@ class _MyAppState extends State<MyApp> {
           dispose: (_, linkHandler) => linkHandler.dispose(),
         ),
       ],
-      child: AuthWidgetBuilder(
-          builder: (BuildContext context, AsyncSnapshot<User> userSnapshot) {
+      child:
+
+          /// added StreamBuilder<User> for this:
+          AuthWidgetBuilder(builder:
+              (BuildContext context, AsyncSnapshot<User> userSnapshot) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'iMomentum',

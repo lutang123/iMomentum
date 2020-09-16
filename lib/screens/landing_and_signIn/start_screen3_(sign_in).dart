@@ -47,6 +47,8 @@ class StartScreen3 extends StatelessWidget {
                 create: (_) => SignInManager(auth: auth, isLoading: isLoading),
                 child: Consumer<SignInManager>(
                     builder: (_, SignInManager manager, __) =>
+
+                        ///here is the change, basically moved email sign in and google sign in into one page.
                         ChangeNotifierProvider<EmailPasswordSignInModel>(
                             create: (_) => EmailPasswordSignInModel(
                                 auth: auth, name: name),
@@ -101,6 +103,9 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
   @override
   void initState() {
     userNameFinal = widget.userName;
+
+    ///this is wrong too.
+    // model.updateName(userNameFinal);
     _teddyController = TeddyController();
     // _updateUserName(userNameFinal);
     super.initState();
@@ -109,7 +114,7 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
   ///this is wrong too
   // void _updateUserName(String name) {
   //   final AuthService auth = Provider.of<AuthService>(context, listen: false);
-  //   //The method 'updateProfile' was called on null.
+  /// The method 'updateProfile' was called on null.
   //   auth.updateUserName(name);
   //   print('StartScreen3 init: ${auth.updateUserName(name)}');
   // }
@@ -359,6 +364,11 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
 
               ///todo, name still not update!
               model.updateName(userNameFinal);
+
+              ///no setState
+              // setState(() {
+              //
+              // });
             },
             onEditingComplete: () => _passwordEditingComplete(context),
             onCaretMoved: (Offset caret) {

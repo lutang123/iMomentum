@@ -76,7 +76,7 @@ class EmailPasswordSignInModel with EmailAndPasswordValidators, ChangeNotifier {
     bool isLoading,
     bool submitted,
   }) {
-    // this.name = name ?? this.name;
+    this.name = name ?? this.name;
     this.email = email ?? this.email;
     this.password = password ?? this.password;
     this.formType = formType ?? this.formType;

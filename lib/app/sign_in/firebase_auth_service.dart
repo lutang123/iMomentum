@@ -45,6 +45,10 @@ class FirebaseAuthService implements AuthService {
     final updateUser = UserUpdateInfo();
     updateUser.displayName = name;
     await firebaseUser.updateProfile(updateUser);
+
+    ///added this, still no change
+    await firebaseUser.reload();
+
     return _userFromFirebase(authResult.user);
   }
 
@@ -52,13 +56,54 @@ class FirebaseAuthService implements AuthService {
   Future<User> createUserWithEmailAndPassword(
       String email, String password, String name) async {
     final AuthResult authResult = await _firebaseAuth //FirebaseAuth.instance;
-        .createUserWithEmailAndPassword(email: email, password: password);
+            .createUserWithEmailAndPassword(email: email, password: password)
+
+        //     .then((result) {
+        //   dbRef.child(result.user.uid).set({
+        //     "email": emailController.text,
+        //     "age": ageController.text,
+        //     "name": nameController.text
+        //   })
+        // })
+
+        ;
 
     // TODO: Update the username
     final firebaseUser = authResult.user; //this is current user
+    //todo sendEmailVerification
+    firebaseUser.sendEmailVerification();
     final updateUser = UserUpdateInfo();
     updateUser.displayName = name;
     await firebaseUser.updateProfile(updateUser);
+
+    ///todo: this is null too, why?
+    ///todo: need to clear after change form.
+    print('firebaseUser.displayName: ${firebaseUser.displayName}'); //null
+
+    ///added this, still no change
+    await firebaseUser.reload();
+    //
+    // if (!firebaseUser.isEmailVerified) {
+    //   await firebaseUser.sendEmailVerification();
+    // }
+
+    ///
+
+// Get the code from the email:
+//     String code = 'xxxxxxx';
+    //
+    // try {
+    //   await _firebaseAuth.checkActionCode(code);
+    //   await _firebaseAuth.applyActionCode(code);
+    //
+    //   // If successful, reload the user:
+    //   // _firebaseAuth.currentUser is the same as firebaseUser
+    //   firebaseUser.reload();
+    // } on FirebaseAuthException catch (e) {
+    //   if (e.code == 'invalid-action-code') {
+    //     print('The code is invalid.');
+    //   }
+    // }
 
     return _userFromFirebase(authResult.user);
   }
@@ -73,6 +118,9 @@ class FirebaseAuthService implements AuthService {
         await _firebaseAuth.currentUser(); //this is current user
 
     await user.updateProfile(userUpdateInfo);
+
+    ///added this, still no change
+    await user.reload();
 
     return _userFromFirebase(user);
   }
