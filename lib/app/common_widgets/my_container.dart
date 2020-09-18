@@ -114,6 +114,27 @@ class MySignInContainer extends StatelessWidget {
   }
 }
 
+class MyUserInfoContainer extends StatelessWidget {
+  const MyUserInfoContainer({Key key, this.child}) : super(key: key);
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    return Container(
+      child: child,
+      margin: EdgeInsets.symmetric(horizontal: 15.0),
+      padding: EdgeInsets.all(15.0),
+      decoration: BoxDecoration(
+          color: _darkTheme ? darkThemeSurface : lightThemeSurface,
+          // border: Border.all(
+          //     width: 2, color: _darkTheme ? Colors.white38 : Colors.black12),
+          borderRadius: BorderRadius.circular(20.0)),
+    );
+  }
+}
+
 class NoteSearchBar extends StatelessWidget {
   final VoidCallback onPressed;
 

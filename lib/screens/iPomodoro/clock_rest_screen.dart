@@ -4,7 +4,7 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_round_button.dart';
-import 'package:iMomentum/app/constants/constants.dart';
+import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:iMomentum/app/models/data/rest_quote.dart';
 import 'package:iMomentum/app/models/todo.dart';
 import 'package:iMomentum/app/utils/extensions.dart';

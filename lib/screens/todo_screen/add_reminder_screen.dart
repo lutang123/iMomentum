@@ -7,7 +7,7 @@ import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/models/todo.dart';
-import 'package:iMomentum/app/sign_in/auth_service.dart';
+import 'package:iMomentum/app/sign_in/AppUser.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/constants/theme.dart';
@@ -21,7 +21,7 @@ class AddReminderScreen extends StatefulWidget {
     this.database,
   });
   final Todo todo;
-  final User user;
+  final AppUser user;
   final Database database;
 
   @override
@@ -47,7 +47,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
   // String formattedToday = DateFormat('M/d/y').format(DateTime.now());
 
   Todo get todo => widget.todo;
-  User get user => widget.user;
+  AppUser get user => widget.user;
   Database get database => widget.database;
 
   String firstName;

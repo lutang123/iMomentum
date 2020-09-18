@@ -2,11 +2,12 @@ import 'dart:async';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:iMomentum/app/constants/strings.dart';
+import 'package:iMomentum/app/constants/string_sign_in.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
-import 'auth_service.dart';
+import 'AppUser.dart';
 import 'email_secure_store.dart';
+import 'firebase_auth_service.dart';
 
 enum EmailLinkErrorType {
   linkError,
@@ -53,7 +54,7 @@ class FirebaseEmailLinkHandler {
     @required this.emailStore,
     @required this.firebaseDynamicLinks,
   });
-  final AuthService auth;
+  final FirebaseAuthService auth;
   final EmailSecureStore emailStore;
   final FirebaseDynamicLinks firebaseDynamicLinks;
 
@@ -116,7 +117,7 @@ class FirebaseEmailLinkHandler {
     try {
       isLoading.value = true;
       // check that user is not signed in
-      final User user = await auth.currentUser();
+      final AppUser user = auth.currentUser;
       if (user != null) {
         _errorController.add(EmailLinkError(
           error: EmailLinkErrorType.userAlreadySignedIn,
@@ -133,7 +134,7 @@ class FirebaseEmailLinkHandler {
       }
       // sign in
       if (await auth.isSignInWithEmailLink(link)) {
-        await auth.signInWithEmailAndLink(email: email, link: link);
+        await auth.signInWithEmailLink(email: email, link: link);
       } else {
         _errorController.add(EmailLinkError(
           error: EmailLinkErrorType.isNotSignInWithEmailLink,

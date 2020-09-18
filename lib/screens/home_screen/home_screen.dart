@@ -13,11 +13,12 @@ import 'package:iMomentum/app/common_widgets/my_text_field.dart';
 import 'package:iMomentum/app/common_widgets/my_tooltip.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
-import 'package:iMomentum/app/sign_in/auth_service.dart';
+import 'package:iMomentum/app/sign_in/AppUser.dart';
 import 'package:iMomentum/app/services/network_service/weather_service.dart';
+import 'package:iMomentum/app/sign_in/firebase_auth_service.dart';
 import 'package:iMomentum/app/utils/show_up.dart';
 import 'package:iMomentum/app/utils/top_sheet.dart';
-import 'package:iMomentum/app/constants/constants.dart';
+import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/models/data/congrats_list.dart';
 import 'package:iMomentum/app/models/data/mantras_list.dart';
@@ -34,7 +35,6 @@ import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/screens/todo_screen/add_todo_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'quote.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -920,31 +920,91 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget get getFirstGreetings {
-    // ///todo: update userName
-    // final userNameNotifier =
-    //     Provider.of<UserNameNotifier>(context, listen: false);
-    // final userName = userNameNotifier.getUserName();
-    // print("$userName userName in home screen"); //null
-    //this is user
-    final User user = Provider.of<User>(context, listen: false);
+  get getFirstGreetings {
+    final User user = FirebaseAuth.instance.currentUser;
 
-    print('${user.displayName} user.displayName in home screen');
-    // if (user.displayName != userName) {
-    //   user.displayName = userName;
-    // }
-    return AutoSizeText(
-      user.displayName == null
-          ? '${FirstGreetings().showGreetings()}'
-          : user.displayName.contains(' ')
-              ? '${FirstGreetings().showGreetings()}, ${user.displayName.substring(0, user.displayName.indexOf(' ')).firstCaps}'
-              : '${FirstGreetings().showGreetings()}, ${user.displayName.firstCaps}',
-      maxLines: 2,
-      maxFontSize: 35,
-      minFontSize: 30,
-      textAlign: TextAlign.center,
-      style: KHomeGreeting,
-    );
+    // final AppUser user = Provider.of<AppUser>(context, listen: false);
+    String userName;
+    if (user.displayName != null && user.displayName.isNotEmpty) {
+      user.displayName.contains(' ')
+          ? userName = user.displayName
+              .substring(0, user.displayName.indexOf(' '))
+              .firstCaps
+          : userName = user.displayName.firstCaps;
+      print('userName in home screen: $userName');
+      if (userName.length < 6) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('${FirstGreetings().showGreetings()}', style: KHomeGreeting),
+            Visibility(
+              visible: _nameVisible,
+              child: GestureDetector(
+                onTap: _onTapName,
+                child: Text(', $userName', style: KHomeGreeting),
+              ),
+            ),
+            Visibility(
+              visible: !_nameVisible,
+              child: HomeTextField(
+                onSubmitted: _editName,
+                width: 100,
+                max: 15,
+                autofocus: true,
+              ),
+            )
+          ],
+        );
+      } else if (userName.length > 5) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('${FirstGreetings().showGreetings()}',
+                style: KHomeGreeting, textAlign: TextAlign.center),
+            Visibility(
+              visible: _nameVisible,
+              child: GestureDetector(
+                onTap: _onTapName,
+                child: Text(userName,
+                    style: KHomeGreeting, textAlign: TextAlign.center),
+              ),
+            ),
+            Visibility(
+              visible: !_nameVisible,
+              child: HomeTextField(
+                onSubmitted: _editName,
+                width: 100,
+                max: 15,
+                autofocus: true,
+              ),
+            )
+          ],
+        );
+      }
+    }
+
+    // if (user.displayName == null || user.displayName.isEmpty)
+    else {
+      return Text('${FirstGreetings().showGreetings()}', style: KHomeGreeting);
+    }
+  }
+
+  bool _nameVisible = true;
+  void _onTapName() {
+    setState(() {
+      _nameVisible = !_nameVisible;
+    });
+  }
+
+  void _editName(String value) {
+    final AppUser user = Provider.of<AppUser>(context, listen: false);
+    user.displayName = value;
+    final FirebaseAuthService auth =
+        Provider.of<FirebaseAuthService>(context, listen: false);
+    auth.updateUserName(value);
+    setState(() {
+      _nameVisible = !_nameVisible;
+    });
   }
 
   Widget get getDefaultMantra {

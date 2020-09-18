@@ -5,9 +5,9 @@ import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
-import 'package:iMomentum/app/constants/constants.dart';
+import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:flutter/cupertino.dart';
-import '../../app/constants/constants.dart';
+import '../../app/constants/constants_style.dart';
 
 class AboutScreen extends StatelessWidget {
   final Uri _emailLaunchUri = Uri(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:iMomentum/app/constants/constants.dart';
+import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:iMomentum/app/utils/tooltip_shape_border.dart';
 
 class MyToolTip extends StatelessWidget {

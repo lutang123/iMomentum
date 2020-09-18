@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:iMomentum/app/sign_in/auth_service.dart';
+import 'package:iMomentum/app/sign_in/AppUser.dart';
 import 'package:iMomentum/screens/home_screen/home_screen.dart';
 import 'package:iMomentum/screens/notes_screen/folder_screen.dart';
 import 'package:iMomentum/screens/todo_screen/todo_screen.dart';
@@ -29,9 +29,9 @@ class _TabPageState extends State<TabPage> {
 
   /// Showing a daily notification at a specific time
   Future<void> _showDailyAtTime() async {
-    final User user = Provider.of<User>(context, listen: false);
+    final AppUser user = Provider.of<AppUser>(context, listen: false);
 
-    String userName = user.displayName == null
+    String userName = user.displayName == null || user.displayName.isEmpty
         ? ''
         : user.displayName.contains(' ')
             ? '${user.displayName.substring(0, user.displayName.indexOf(' ')).firstCaps}'

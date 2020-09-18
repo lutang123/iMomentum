@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:iMomentum/app/sign_in/auth_service.dart';
+import 'package:iMomentum/app/sign_in/AppUser.dart';
+import 'package:iMomentum/app/sign_in/firebase_auth_service.dart';
 import 'package:meta/meta.dart';
 
 class SignInManager {
   SignInManager({@required this.auth, @required this.isLoading});
-  final AuthService auth;
+  final FirebaseAuthService auth;
   final ValueNotifier<bool> isLoading;
 
-  Future<User> _signIn(Future<User> Function() signInMethod) async {
+  Future<AppUser> _signIn(Future<AppUser> Function() signInMethod) async {
     try {
       isLoading.value = true;
       return await signInMethod();
@@ -18,7 +19,7 @@ class SignInManager {
     }
   }
 
-  Future<User> signInAnonymously() async {
+  Future<AppUser> signInAnonymously() async {
     return await _signIn(auth.signInAnonymously);
   }
 

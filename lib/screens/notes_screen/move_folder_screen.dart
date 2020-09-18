@@ -4,7 +4,7 @@ import 'package:iMomentum/app/common_widgets/empty_and_error_content.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_list_tile.dart';
 import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
-import 'package:iMomentum/app/constants/constants.dart';
+import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:iMomentum/app/models/folder.dart';
 import 'package:iMomentum/app/models/note.dart';
 import 'package:iMomentum/app/services/database.dart';

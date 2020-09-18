@@ -8,10 +8,10 @@
 // import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
 // import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 // import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
-// import 'package:iMomentum/app/constants/constants.dart';
-// import 'package:iMomentum/app/constants/strings.dart';
+// import 'package:iMomentum/app/constants/constants_style.dart';
+// import 'package:iMomentum/app/constants/string_sign_in.dart';
 // import 'package:iMomentum/app/services/auth.dart';
-// import 'package:iMomentum/app/services/auth_service.dart';
+// import 'package:iMomentum/app/services/AppUser.dart';
 // import 'package:iMomentum/app/sign_in/sign_in_manager.dart';
 // import 'package:iMomentum/app/sign_in_teddy/teddy_controller.dart';
 // import 'package:iMomentum/app/sign_in_teddy/tracking_text_input.dart';

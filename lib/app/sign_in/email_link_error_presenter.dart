@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
-import 'package:iMomentum/app/constants/strings.dart';
+import 'package:iMomentum/app/constants/string_sign_in.dart';
 import 'package:iMomentum/app/sign_in/firebase_email_link_handler.dart';
 import 'package:provider/provider.dart';
 

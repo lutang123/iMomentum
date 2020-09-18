@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iMomentum/app/common_widgets/form_submit_button.dart';
-import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
-import 'package:iMomentum/app/constants/strings.dart';
-import 'package:iMomentum/app/sign_in/auth_service.dart';
+import 'package:iMomentum/app/constants/string_sign_in.dart';
 import 'package:provider/provider.dart';
+import '../firebase_auth_service.dart';
 import 'email_password_sign_in_model.dart';
 
 class EmailPasswordSignInPage extends StatefulWidget {
@@ -29,7 +28,8 @@ class EmailPasswordSignInPage extends StatefulWidget {
   }
 
   static Widget create(BuildContext context, {VoidCallback onSignedIn}) {
-    final AuthService auth = Provider.of<AuthService>(context, listen: false);
+    final FirebaseAuthService auth =
+        Provider.of<FirebaseAuthService>(context, listen: false);
     return ChangeNotifierProvider<EmailPasswordSignInModel>(
       create: (_) => EmailPasswordSignInModel(auth: auth),
       child: Consumer<EmailPasswordSignInModel>(

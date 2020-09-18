@@ -35,12 +35,15 @@ dependencies:
   url_launcher: ^5.4.11
 
   rxdart: ^0.24.1
-  firebase_auth: ^0.16.1
+  firebase_auth: ^0.18.0+1 # updated
+  firebase_core: ^0.5.0 #updated
   google_sign_in: ^4.0.7
   flutter_facebook_login: ^3.0.0
   apple_sign_in: ^0.1.0
-  cloud_firestore: ^0.13.7
-  firebase_core: ^0.4.5
+#  cloud_firestore: ^0.13.7
+  cloud_firestore: ^0.14.0+2
+  logger: ^0.9.2
+
   random_string: ^2.0.0
   firebase_dynamic_links:
     git:
@@ -56,7 +59,8 @@ dependencies:
 
   cached_network_image: ^2.2.0+1 #image gallery
   photo_view: ^0.9.2 # zoom images
-  firebase_storage: ^3.1.6 #for uploading photo
+#  firebase_storage: ^3.1.6 #for uploading photo
+  firebase_storage: ^4.0.0
   image_picker: ^0.6.7+4 #for uploading photo
 
   tinycolor: ^1.0.2 #for count-down-cirlce

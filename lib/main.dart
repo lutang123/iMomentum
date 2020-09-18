@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -5,20 +6,30 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:iMomentum/app/constants/constants.dart';
+import 'package:iMomentum/app/constants/constants_style.dart';
+import 'package:iMomentum/app/tab_and_navigation/tab_page.dart';
 import 'package:iMomentum/screens/landing_and_signIn/auth_widget_(landing).dart';
+import 'package:iMomentum/screens/landing_and_signIn/start_screen.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'app/services/database.dart';
+import 'app/sign_in/firebase_auth_service.dart';
 import 'screens/landing_and_signIn/auth_widget_builder.dart';
 import 'app/sign_in/apple_sign_in_available.dart';
-import 'app/sign_in/auth_service.dart';
-import 'app/sign_in/auth_service_adapter.dart';
+import 'app/sign_in/AppUser.dart';
 import 'app/sign_in/email_secure_store.dart';
 import 'app/sign_in/firebase_email_link_handler.dart';
 import 'app/sign_in/email_link_error_presenter.dart';
 import 'app/constants/theme.dart';
 import 'app/services/multi_notifier.dart';
 import 'package:rxdart/subjects.dart';
+
+///https://github.com/bizz84/starter_architecture_flutter_firebase
+
+///Todo: update storage rules
+///TODO: Replace this with your firebase project URL, what is firebase project URL
+///Todo: Android app "debug signing certificate SHA-1" is optional, however, it is required for Dynamic Links & Phone Authentication. To generate a certificate run cd android && ./gradlew signingReport and copy the SHA1 from the debug key. This generates two variant keys. You can copy the 'SHA1' that belongs to the debugAndroidTest variant key option.
 
 ///Todo in notification: Replace android/app/src/main/res/drawable  app icon.
 //done all configuration, for the following, added 'raw' file from example app
@@ -57,6 +68,9 @@ void main() async {
   // needed if you intend to initialize in the `main` function
   // Ensure services are loaded before the widgets get loaded
   WidgetsFlutterBinding.ensureInitialized();
+
+  //added on Sep.16:
+  await Firebase.initializeApp();
 
   // Restrict device orientiation to portraitUp
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -174,7 +188,7 @@ void main() async {
   // This behaviour can be changed by setting the optional parameter named
   // androidAllowWhileIdle to true when calling the schedule method.
 
-  ///Todo, what is this?
+  ///Todo, what is SystemChrome.setEnabledSystemUIOverlays?
   SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom])
       .then((_) async {
     ///this is for setting
@@ -188,42 +202,48 @@ void main() async {
       bool useYourMantras = prefs.getBool('useMyMantras') ?? true;
       int index = prefs.getInt('indexMantra') ?? 0;
       bool useMyQuote = prefs.getBool('useMyQuote') ?? true;
-      String userName = prefs.getString('userName') ?? null;
+      // String userName = prefs.getString('userName') ?? null;
 
       final appleSignInAvailable = await AppleSignInAvailable.check();
 
       ///then runApp
-      runApp(MultiProvider(providers: [
-        ///for theme
-        ChangeNotifierProvider<ThemeNotifier>(
-            create: (_) => ThemeNotifier(darkModeOn ? darkTheme : lightTheme)),
+      runApp(MultiProvider(
+          providers: [
+            ///for theme
+            ChangeNotifierProvider<ThemeNotifier>(
+                create: (_) =>
+                    ThemeNotifier(darkModeOn ? darkTheme : lightTheme)),
 
-        ///for focus
-        ChangeNotifierProvider<FocusNotifier>(
-            create: (_) => FocusNotifier(focusModeOn)),
+            ///for focus
+            ChangeNotifierProvider<FocusNotifier>(
+                create: (_) => FocusNotifier(focusModeOn)),
 
-        ///for image
-        ChangeNotifierProvider<RandomNotifier>(
-            create: (_) => RandomNotifier(randomOn)),
-        ChangeNotifierProvider<ImageNotifier>(
-            create: (_) => ImageNotifier(backgroundImage)),
+            ///for image
+            ChangeNotifierProvider<RandomNotifier>(
+                create: (_) => RandomNotifier(randomOn)),
+            ChangeNotifierProvider<ImageNotifier>(
+                create: (_) => ImageNotifier(backgroundImage)),
 
-        ///for metric
-        ChangeNotifierProvider<MetricNotifier>(
-            create: (_) => MetricNotifier(metricUnitOn)),
+            ///for metric
+            ChangeNotifierProvider<MetricNotifier>(
+                create: (_) => MetricNotifier(metricUnitOn)),
 
-        ///for mantra
-        ChangeNotifierProvider<MantraNotifier>(
-            create: (_) => MantraNotifier(useYourMantras, index)),
+            ///for mantra
+            ChangeNotifierProvider<MantraNotifier>(
+                create: (_) => MantraNotifier(useYourMantras, index)),
 
-        ///for quote
-        ChangeNotifierProvider<QuoteNotifier>(
-            create: (_) => QuoteNotifier(useMyQuote)),
+            ///for quote
+            ChangeNotifierProvider<QuoteNotifier>(
+                create: (_) => QuoteNotifier(useMyQuote)),
 
-        ///for userName
-        ChangeNotifierProvider<UserNameNotifier>(
-            create: (_) => UserNameNotifier(userName)),
-      ], child: MyApp(appleSignInAvailable: appleSignInAvailable)));
+            // ///for userName
+            // ChangeNotifierProvider<UserNameNotifier>(
+            //     create: (_) => UserNameNotifier(userName)),
+          ],
+          child: MyApp(
+              authServiceBuilder: (_) => FirebaseAuthService(),
+              databaseBuilder: (_, uid) => FirestoreDatabase(uid: uid),
+              appleSignInAvailable: appleSignInAvailable)));
     });
   });
 }
@@ -231,11 +251,15 @@ void main() async {
 /// https://github.com/bizz84/firebase_auth_demo_flutter
 class MyApp extends StatefulWidget {
   const MyApp({
-    // [initialAuthServiceType] is made configurable for testing
-    this.initialAuthServiceType = AuthServiceType.firebase,
+    Key key,
+    this.authServiceBuilder,
+    this.databaseBuilder,
     this.appleSignInAvailable,
-  });
-  final AuthServiceType initialAuthServiceType;
+  }) : super(key: key);
+
+  final FirebaseAuthService Function(BuildContext context) authServiceBuilder;
+  final FirestoreDatabase Function(BuildContext context, String uid)
+      databaseBuilder;
   final AppleSignInAvailable appleSignInAvailable;
 
   @override
@@ -326,21 +350,37 @@ class _MyAppState extends State<MyApp> {
       providers: [
         Provider<AppleSignInAvailable>.value(
             value: widget.appleSignInAvailable),
-        Provider<AuthService>(
-          create: (_) => AuthServiceAdapter(
-            initialAuthServiceType: widget.initialAuthServiceType,
-          ),
 
-          ///Todo: what is dispose in provider
-          dispose: (_, AuthService authService) => authService.dispose(),
+        ///Sep.16
+        Provider<FirebaseAuthService>(
+          create: widget.authServiceBuilder,
         ),
+
+        // Provider<AuthService>(
+        //   create: (_) => AuthServiceAdapter(
+        //     initialAuthServiceType: widget.initialAuthServiceType,
+        //   ),
+        //   ///Todo: what is dispose in provider
+        //   dispose: (_, AuthService authService) => authService.dispose(),
+        // ),
+
+        // Provider<Logger>(
+        //   create: (_) => Logger(
+        //     printer: PrettyPrinter(
+        //       methodCount: 1,
+        //       printEmojis: false,
+        //     ),
+        //   ),
+        // ),
         Provider<EmailSecureStore>(
           create: (_) => EmailSecureStore(
             flutterSecureStorage: FlutterSecureStorage(),
           ),
         ),
-        ProxyProvider2<AuthService, EmailSecureStore, FirebaseEmailLinkHandler>(
-          update: (_, AuthService authService, EmailSecureStore storage, __) =>
+        ProxyProvider2<FirebaseAuthService, EmailSecureStore,
+            FirebaseEmailLinkHandler>(
+          update: (_, FirebaseAuthService authService, EmailSecureStore storage,
+                  __) =>
               FirebaseEmailLinkHandler(
             auth: authService,
             emailStore: storage,
@@ -349,41 +389,52 @@ class _MyAppState extends State<MyApp> {
           dispose: (_, linkHandler) => linkHandler.dispose(),
         ),
       ],
-      child:
+      child: AuthWidgetBuilder(
+          userProvidersBuilder: (_, user) => [
+                Provider<AppUser>.value(value: user),
+                Provider<Database>(
+                  create: (_) => FirestoreDatabase(uid: user.uid),
+                ),
+              ],
+          builder: (context, userSnapshot) {
+            //previous version:
+            // AuthWidgetBuilder(builder: /// this includes StreamBuilder<User> for this:
+            //     (BuildContext context, AsyncSnapshot<User> userSnapshot) {
+            return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              title: 'iMomentum',
+              theme: themeNotifier.getTheme(),
 
-          /// added StreamBuilder<User> for this:
-          AuthWidgetBuilder(builder:
-              (BuildContext context, AsyncSnapshot<User> userSnapshot) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'iMomentum',
-          theme: themeNotifier.getTheme(),
+              ///it seems does not matter here
+              // darkTheme:
+              //     darkTheme, //add this so that the app will follow phone setting
+              // themeMode: ThemeMode.system,
 
-          ///it seems does not matter here
-          // darkTheme:
-          //     darkTheme, //add this so that the app will follow phone setting
-          // themeMode: ThemeMode.system,
+              /// todo: local
+              /// from plugin: flutter_localizations
+              localizationsDelegates: [
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                DefaultCupertinoLocalizations.delegate,
+                GlobalCupertinoLocalizations
+                    .delegate, // Add global cupertino localiztions.
+              ],
 
-          /// todo: local
-          /// from plugin: flutter_localizations
-          localizationsDelegates: [
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            DefaultCupertinoLocalizations.delegate,
-            GlobalCupertinoLocalizations
-                .delegate, // Add global cupertino localiztions.
-          ],
+              locale: Locale('en', 'US'), // Current locale
+              supportedLocales: [
+                const Locale('en', 'US'), // English
+                const Locale('zh', 'ZH'), // Chinese??
+              ],
 
-          locale: Locale('en', 'US'), // Current locale
-          supportedLocales: [
-            const Locale('en', 'US'), // English
-            const Locale('zh', 'ZH'), // Chinese??
-          ],
-
-          home: EmailLinkErrorPresenter.create(context,
-              child: AuthWidget(userSnapshot: userSnapshot)),
-        );
-      }),
+              ///Todo: why EmailLinkErrorPresenter here?
+              home: EmailLinkErrorPresenter.create(context,
+                  child: AuthWidget(
+                    userSnapshot: userSnapshot,
+                    nonSignedInBuilder: (_) => StartScreen(),
+                    signedInBuilder: (_) => TabPage(),
+                  )),
+            );
+          }),
     );
   }
 }

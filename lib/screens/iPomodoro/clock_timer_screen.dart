@@ -6,7 +6,7 @@ import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_round_button.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
-import 'package:iMomentum/app/constants/constants.dart';
+import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:iMomentum/app/models/duration_model.dart';
 import 'package:iMomentum/app/models/todo.dart';
 import 'package:iMomentum/app/utils/extensions.dart';

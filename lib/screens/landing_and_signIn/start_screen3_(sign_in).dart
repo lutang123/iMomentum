@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:apple_sign_in/apple_sign_in_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,11 +10,11 @@ import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
 import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
-import 'package:iMomentum/app/constants/constants.dart';
-import 'package:iMomentum/app/constants/strings.dart';
-import 'package:iMomentum/app/services/multi_notifier.dart';
+import 'package:iMomentum/app/constants/constants_style.dart';
+import 'package:iMomentum/app/constants/string_sign_in.dart';
+import 'package:iMomentum/app/sign_in/AppUser.dart';
 import 'package:iMomentum/app/sign_in/apple_sign_in_available.dart';
-import 'package:iMomentum/app/sign_in/auth_service.dart';
+import 'package:iMomentum/app/sign_in/firebase_auth_service.dart';
 import 'package:iMomentum/app/sign_in/sign_in_manager.dart';
 import 'package:iMomentum/app/sign_in_teddy/teddy_controller.dart';
 import 'package:iMomentum/app/sign_in_teddy/tracking_text_input.dart';
@@ -24,7 +24,6 @@ import 'package:iMomentum/app/utils/top_sheet.dart';
 import 'package:iMomentum/screens/landing_and_signIn/start_screen2.dart';
 import 'package:iMomentum/screens/landing_and_signIn/top_sheet_info_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../app/sign_in/email_password/email_password_sign_in_model.dart';
 import 'package:iMomentum/app/utils/cap_string.dart';
 
@@ -37,7 +36,8 @@ class StartScreen3 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AuthService auth = Provider.of<AuthService>(context, listen: false);
+    final FirebaseAuthService auth =
+        Provider.of<FirebaseAuthService>(context, listen: false);
 
     return ChangeNotifierProvider<ValueNotifier<bool>>(
         create: (_) => ValueNotifier<bool>(false),
@@ -363,7 +363,7 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
               model.updatePassword(password);
 
               ///todo, name still not update!
-              model.updateName(userNameFinal);
+              // model.updateName(userNameFinal);
 
               ///no setState
               // setState(() {
@@ -437,7 +437,17 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
       if (success) {
         ///todo, name not update! do not add here
         // model.updateName(userNameFinal);
-        print('$userNameFinal in startScreen3');
+
+        // final FirebaseAuthService auth =
+        // Provider.of<FirebaseAuthService>(context, listen: false);
+
+        // final User user =
+        //     FirebaseAuth.instance.currentUser; //this is current user
+        //
+        // await user.updateProfile(displayName: userNameFinal);
+        // await user.reload();
+        //
+        // print('user.displayName in startScreen3 _submit: ${user.displayName}');
 
         ///this got error too
         // final userNameNotifier =
@@ -447,8 +457,9 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
         // prefs.setString('userName', userNameFinal);
 
         ///this is all wrong; no access to User
-        // final User user = Provider.of<User>(context, listen: false);
-        // widget.user.displayName = userNameFinal;
+        // final AppUser user = Provider.of<AppUser>(context,
+        //     listen: false); //
+        // user.displayName = userNameFinal;
 
         _teddyController.play('success');
 

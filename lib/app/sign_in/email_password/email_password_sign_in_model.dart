@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:iMomentum/app/constants/strings.dart';
-import 'package:iMomentum/app/sign_in/auth_service.dart';
+import 'package:iMomentum/app/constants/string_sign_in.dart';
+import 'package:iMomentum/app/sign_in/firebase_auth_service.dart';
 
 import '../validator.dart';
 
@@ -17,7 +17,7 @@ class EmailPasswordSignInModel with EmailAndPasswordValidators, ChangeNotifier {
     this.submitted = false,
   });
 
-  final AuthService auth;
+  final FirebaseAuthService auth;
   String name;
   String email;
   String password;

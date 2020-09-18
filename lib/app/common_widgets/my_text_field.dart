@@ -1,53 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:iMomentum/app/constants/constants_style.dart';
 
 class HomeTextField extends StatelessWidget {
   const HomeTextField({
     Key key,
     this.onSubmitted,
-    this.icon,
-    this.onPressed,
-    this.textEditingController,
+    // this.icon,
+    // this.textEditingController,
     this.onChanged,
     this.max = 100,
+    this.width = 320,
+    this.autofocus = false,
   }) : super(key: key);
 
   final Function onSubmitted;
-  final IconData icon;
-  final Function onPressed;
-  final TextEditingController textEditingController;
+  // final IconData icon;
+  // final TextEditingController textEditingController;
   final Function onChanged;
   final int max;
+  final double width;
+  final bool autofocus;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 320,
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              onChanged: onChanged,
-              controller: textEditingController,
-              style:
-                  GoogleFonts.varelaRound(fontSize: 25.0, color: Colors.white),
-              textAlign: TextAlign.center,
-              onSubmitted: onSubmitted,
-              cursorColor: Colors.white,
-              maxLength: max,
+    return SizedBox(
+      width: width,
+      child: TextFormField(
+        onChanged: onChanged,
+        autofocus: autofocus,
+        // controller: textEditingController,
+        style: GoogleFonts.varelaRound(fontSize: 25.0, color: Colors.white),
+        textAlign: TextAlign.center,
+        onFieldSubmitted: onSubmitted,
+        validator: (value) =>
+            value.isNotEmpty ? null : 'Content can\'t be empty',
+        cursorColor: Colors.white,
+        maxLength: max, //default 100
+        inputFormatters: [LengthLimitingTextInputFormatter(max)],
 
-              ///no save button, can not do multiline
+        ///no save button, can not do multiline
 //        keyboardType: TextInputType.multiline,
 //        maxLines: null,
-              decoration: InputDecoration(
-                focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white)),
-                enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.white)),
-              ),
-            ),
-          ),
-        ],
+        decoration: KTextFieldInputDecoration,
       ),
     );
   }

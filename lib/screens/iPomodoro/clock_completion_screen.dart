@@ -7,7 +7,7 @@ import 'package:iMomentum/app/common_widgets/my_tooltip.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/utils/format.dart';
 import 'package:iMomentum/app/common_widgets/my_round_button.dart';
-import 'package:iMomentum/app/constants/constants.dart';
+import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:iMomentum/app/models/data/congrats_list.dart';
 import 'package:iMomentum/app/models/todo.dart';
 import 'package:iMomentum/app/utils/extensions.dart';

@@ -63,7 +63,8 @@ abstract class Database {
 String documentIdFromCurrentDate() => DateTime.now().toIso8601String();
 
 class FirestoreDatabase implements Database {
-  FirestoreDatabase({@required this.uid}) : assert(uid != null);
+  FirestoreDatabase({@required this.uid})
+      : assert(uid != null, 'Cannot create FirestoreDatabase with null uid');
   final String uid;
 
   //ensure only one object of FirestoreService is create
@@ -72,7 +73,7 @@ class FirestoreDatabase implements Database {
   /// job
   @override //create or update job
   Future<void> setTodo(Todo todo) async => await _service.setData(
-        path: APIPath.todo(uid, todo.id),
+        path: FireStorePath.todo(uid, todo.id),
         data: todo.toMap(),
       );
 
@@ -85,49 +86,51 @@ class FirestoreDatabase implements Database {
         await deleteDuration(entry);
       }
     }
-    await _service.deleteData(path: APIPath.todo(uid, todo.id));
+    await _service.deleteData(path: FireStorePath.todo(uid, todo.id));
   }
 
   @override //read a job
   Stream<Todo> todoStream({@required String todoId}) => _service.documentStream(
-        path: APIPath.todo(uid, todoId),
+        path: FireStorePath.todo(uid, todoId),
         builder: (data, documentId) => Todo.fromMap(data, documentId),
       );
   @override //read jobs
   Stream<List<Todo>> todosStream() => _service.collectionStream(
-      path: APIPath.todos(uid),
-      builder: (data, documentId) => Todo.fromMap(data, documentId),
+        path: FireStorePath.todos(uid),
+        builder: (data, documentId) => Todo.fromMap(data, documentId),
 //        queryBuilder: (query) => query.orderBy('category'),
-      //to make the most recently edited one show first
-      //e.g. messageList.sort((m, m2) => int.parse(m.id).compareTo(int.parse(m2.id)));
-      //this will not work well because when we update, we use the same id, or use date
-      sort: (lhs, rhs) => rhs.id.compareTo(lhs.id),
-      sortIsDone: (lhs, rhs) => (rhs.isDone.toString().length)
-          .compareTo(lhs.isDone.toString().length),
-      sortCategory: (lhs, rhs) {
-        //add this because previous todo item does not have category
-        if ((lhs.category != null) && (rhs.category != null)) {
-          return lhs.category.compareTo(rhs.category); //this way is from 0 to 4
-        } else
-          return null;
-      });
+        //to make the most recently edited one show first
+        //e.g. messageList.sort((m, m2) => int.parse(m.id).compareTo(int.parse(m2.id)));
+        //this will not work well because when we update, we use the same id, or use date
+        sort: (lhs, rhs) => rhs.id.compareTo(lhs.id),
+        sortIsDone: (lhs, rhs) => (rhs.isDone.toString().length)
+            .compareTo(lhs.isDone.toString().length),
+        sortCategory: (lhs, rhs) {
+          //add this because previous todo item does not have category
+          if ((lhs.category != null) && (rhs.category != null)) {
+            return lhs.category
+                .compareTo(rhs.category); //this way is from 0 to 4
+          } else
+            return null;
+        },
+      );
 
   /// duration
   @override
   Future<void> setDuration(DurationModel duration) async =>
       await _service.setData(
-        path: APIPath.duration(uid, duration.id),
+        path: FireStorePath.duration(uid, duration.id),
         data: duration.toMap(),
       );
 
   @override
   Future<void> deleteDuration(DurationModel duration) async =>
-      await _service.deleteData(path: APIPath.duration(uid, duration.id));
+      await _service.deleteData(path: FireStorePath.duration(uid, duration.id));
 
   @override
   Stream<List<DurationModel>> durationsStream({Todo todo}) =>
       _service.collectionStream<DurationModel>(
-        path: APIPath.durations(uid),
+        path: FireStorePath.durations(uid),
         queryBuilder: todo != null
             ? (query) => query.where('todoId', isEqualTo: todo.id)
             : null,
@@ -138,7 +141,7 @@ class FirestoreDatabase implements Database {
   /// folder
   @override //create or update job
   Future<void> setFolder(Folder folder) async => await _service.setData(
-        path: APIPath.folder(uid, folder.id),
+        path: FireStorePath.folder(uid, folder.id),
         data: folder.toMap(),
       );
 
@@ -151,18 +154,18 @@ class FirestoreDatabase implements Database {
         await deleteNote(note);
       }
     }
-    await _service.deleteData(path: APIPath.folder(uid, folder.id));
+    await _service.deleteData(path: FireStorePath.folder(uid, folder.id));
   }
 
   @override //read a job
   Stream<Folder> folderStream({@required String folderId}) =>
       _service.documentStream(
-        path: APIPath.folder(uid, folderId),
+        path: FireStorePath.folder(uid, folderId),
         builder: (data, documentId) => Folder.fromMap(data, documentId),
       );
   @override //read jobs
   Stream<List<Folder>> foldersStream() => _service.collectionStream(
-        path: APIPath.folders(uid),
+        path: FireStorePath.folders(uid),
         builder: (data, documentId) => Folder.fromMap(data, documentId),
         //to make the most recently edited one show first
         sort: (lhs, rhs) => rhs.id.compareTo(lhs.id),
@@ -171,7 +174,7 @@ class FirestoreDatabase implements Database {
   /// note
   @override //create or update job
   Future<void> setNote(Note note) async => await _service.setData(
-        path: APIPath.note(uid, note.id),
+        path: FireStorePath.note(uid, note.id),
         data: note.toMap(),
       );
 
@@ -185,19 +188,19 @@ class FirestoreDatabase implements Database {
   @override // delete job
   Future<void> deleteNote(Note note) async {
     await _service.deleteData(
-      path: APIPath.note(uid, note.id),
+      path: FireStorePath.note(uid, note.id),
     );
   }
 
   @override //read a job
   Stream<Note> noteStream({@required String noteId}) => _service.documentStream(
-        path: APIPath.note(uid, noteId),
+        path: FireStorePath.note(uid, noteId),
         builder: (data, documentId) => Note.fromMap(data, documentId),
       );
   @override //read jobs
   Stream<List<Note>> notesStream({Folder folder}) =>
       _service.collectionStream<Note>(
-        path: APIPath.notes(uid),
+        path: FireStorePath.notes(uid),
         queryBuilder: folder != null
             ? (query) => query.where('folderId', isEqualTo: folder.id)
             : null,
@@ -236,26 +239,26 @@ class FirestoreDatabase implements Database {
   ///for mantras
   //create or update job
   Future<void> setMantra(MantraModel mantra) async => await _service.setData(
-        path: APIPath.mantra(uid, mantra.id),
+        path: FireStorePath.mantra(uid, mantra.id),
         data: mantra.toMap(),
       );
 
   @override // delete job
   Future<void> deleteMantra(MantraModel mantra) async {
     await _service.deleteData(
-      path: APIPath.mantra(uid, mantra.id),
+      path: FireStorePath.mantra(uid, mantra.id),
     );
   }
 
   @override //read a job
   Stream<MantraModel> mantraStream({@required String mantraId}) =>
       _service.documentStream(
-        path: APIPath.mantra(uid, mantraId),
+        path: FireStorePath.mantra(uid, mantraId),
         builder: (data, documentId) => MantraModel.fromMap(data, documentId),
       );
   @override //read jobs
   Stream<List<MantraModel>> mantrasStream() => _service.collectionStream(
-        path: APIPath.mantras(uid),
+        path: FireStorePath.mantras(uid),
         builder: (data, documentId) => MantraModel.fromMap(data, documentId),
         //to make the most recently edited one show first
         sort: (lhs, rhs) => rhs.date.compareTo(lhs.date),
@@ -264,26 +267,26 @@ class FirestoreDatabase implements Database {
   ///for quotes
   //create or update job
   Future<void> setQuote(QuoteModel quote) async => await _service.setData(
-        path: APIPath.quote(uid, quote.id),
+        path: FireStorePath.quote(uid, quote.id),
         data: quote.toMap(),
       );
 
   @override // delete job
   Future<void> deleteQuote(QuoteModel quote) async {
     await _service.deleteData(
-      path: APIPath.quote(uid, quote.id),
+      path: FireStorePath.quote(uid, quote.id),
     );
   }
 
   @override //read a job
   Stream<QuoteModel> quoteStream({@required String quoteId}) =>
       _service.documentStream(
-        path: APIPath.quote(uid, quoteId),
+        path: FireStorePath.quote(uid, quoteId),
         builder: (data, documentId) => QuoteModel.fromMap(data, documentId),
       );
   @override //read jobs
   Stream<List<QuoteModel>> quotesStream() => _service.collectionStream(
-        path: APIPath.quotes(uid),
+        path: FireStorePath.quotes(uid),
         builder: (data, documentId) => QuoteModel.fromMap(data, documentId),
         //to make the most recently edited one show last
         sort: (lhs, rhs) => rhs.date.compareTo(lhs.date),

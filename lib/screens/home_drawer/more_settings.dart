@@ -15,9 +15,9 @@
 // import 'package:provider/provider.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:url_launcher/url_launcher.dart';
-// import 'package:iMomentum/app/constants/constants.dart';
+// import 'package:iMomentum/app/constants/constants_style.dart';
 // import 'package:flutter/cupertino.dart';
-// import '../../app/constants/constants.dart';
+// import '../../app/constants/constants_style.dart';
 //
 // class MoreSettingScreen extends StatefulWidget {
 //   final Database database;

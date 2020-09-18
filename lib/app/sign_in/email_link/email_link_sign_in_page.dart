@@ -5,12 +5,13 @@ import 'package:iMomentum/app/common_widgets/form_submit_button.dart';
 import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/constants/keys_sign_in.dart';
-import 'package:iMomentum/app/constants/strings.dart';
-import 'package:iMomentum/app/sign_in/auth_service.dart';
+import 'package:iMomentum/app/constants/string_sign_in.dart';
+import 'package:iMomentum/app/sign_in/AppUser.dart';
 import 'package:iMomentum/app/sign_in/firebase_email_link_handler.dart';
 import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 
+import '../firebase_auth_service.dart';
 import '../validator.dart';
 
 class EmailLinkSignInPage extends StatefulWidget {
@@ -21,13 +22,13 @@ class EmailLinkSignInPage extends StatefulWidget {
     this.onSignedIn,
   }) : super(key: key);
   final FirebaseEmailLinkHandler linkHandler;
-  final AuthService authService;
+  final FirebaseAuthService authService;
   final VoidCallback onSignedIn;
 
   static Future<void> show(BuildContext context,
       {VoidCallback onSignedIn}) async {
-    final AuthService authService =
-        Provider.of<AuthService>(context, listen: false);
+    final FirebaseAuthService authService =
+        Provider.of<FirebaseAuthService>(context, listen: false);
     final FirebaseEmailLinkHandler linkHandler =
         Provider.of<FirebaseEmailLinkHandler>(context, listen: false);
     await Navigator.of(context).push(
@@ -54,7 +55,7 @@ class _EmailLinkSignInPageState extends State<EmailLinkSignInPage> {
 
   final TextEditingController _emailController = TextEditingController();
 
-  StreamSubscription<User> _onAuthStateChangedSubscription;
+  StreamSubscription<AppUser> _onAuthStateChangedSubscription;
   @override
   void initState() {
     super.initState();
@@ -65,7 +66,7 @@ class _EmailLinkSignInPageState extends State<EmailLinkSignInPage> {
     });
     // Invoke onSignedIn callback if a non-null user is detected
     _onAuthStateChangedSubscription =
-        widget.authService.onAuthStateChanged.listen((User user) {
+        widget.authService.authStateChanges().listen((AppUser user) {
       if (user != null) {
         if (widget.onSignedIn != null && mounted) {
           widget.onSignedIn();

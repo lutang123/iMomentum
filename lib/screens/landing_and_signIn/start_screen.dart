@@ -1,7 +1,7 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/my_text_field.dart';
-import 'package:iMomentum/app/constants/constants.dart';
+import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:iMomentum/screens/landing_and_signIn/start_screen2.dart';
 import 'package:iMomentum/app/utils/pages_routes.dart';
 

@@ -6,7 +6,7 @@ import 'package:iMomentum/screens/landing_and_signIn/start_screen.dart';
 import 'package:iMomentum/screens/landing_and_signIn/start_screen3_(sign_in).dart';
 import 'dart:math';
 import 'package:liquid_swipe/liquid_swipe.dart';
-import 'package:iMomentum/app/constants/constants.dart';
+import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:iMomentum/app/utils/cap_string.dart';
 
 const imageURL1 = 'assets/images/landscape.jpg';

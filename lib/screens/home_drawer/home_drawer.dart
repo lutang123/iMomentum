@@ -1,17 +1,16 @@
 import 'dart:math' as math;
 import 'package:animations/animations.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iMomentum/app/common_widgets/avatar.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/my_tooltip.dart';
-import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/setting_switch.dart';
-import 'package:iMomentum/app/sign_in/auth_service.dart';
+import 'package:iMomentum/app/sign_in/AppUser.dart';
 import 'package:iMomentum/app/utils/shared_axis.dart';
 import 'package:iMomentum/app/services/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
@@ -22,8 +21,7 @@ import 'package:iMomentum/screens/home_drawer/user_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../app/common_widgets/container_linear_gradient.dart';
-import '../../app/common_widgets/platform_alert_dialog.dart';
-import '../../app/constants/constants.dart';
+import '../../app/constants/constants_style.dart';
 import '../../app/constants/theme.dart';
 import 'about_screen.dart';
 import 'package:iMomentum/app/utils/cap_string.dart';
@@ -192,7 +190,10 @@ class MyHomeDrawer extends StatelessWidget {
     final database = Provider.of<Database>(context, listen: false);
 
     ///error if no user name
-    final User user = Provider.of<User>(context, listen: false);
+    /// AppUser won't update user name
+    // final AppUser user = Provider.of<AppUser>(context, listen: false);
+    final User user = FirebaseAuth.instance.currentUser;
+
 //    final String firstName =
 //        user.displayName.substring(0, user.displayName.indexOf(' '));
 
@@ -342,18 +343,17 @@ class MyHomeDrawer extends StatelessWidget {
                 Flexible(
                   child: ListTile(
                     leading: Avatar(
-                      photoUrl: user.photoUrl,
+                      photoUrl: user.photoURL,
                       radius: 13,
                     ),
-                    title: user.displayName == null
+                    title: user.displayName == null || user.displayName.isEmpty
                         ? Text('Profile')
                         : Text(user.displayName.firstCaps),
                     trailing: Icon(Icons.chevron_right,
                         color: _darkTheme ? darkThemeButton : lightThemeButton),
                     onTap: () {
                       final route = SharedAxisPageRoute(
-                          page: UserScreen(user: user),
-                          transitionType: _transitionType);
+                          page: UserScreen(), transitionType: _transitionType);
                       Navigator.of(context, rootNavigator: true).push(route);
                     },
                   ),
@@ -528,30 +528,5 @@ class MyHomeDrawer extends StatelessWidget {
                   style: KFlushBarMessage),
             ),
           ).show(context);
-  }
-
-  Future<void> _confirmSignOut(BuildContext context) async {
-    final bool didRequestSignOut = await PlatformAlertDialog(
-      title: 'Logout',
-      content: 'Are you sure that you want to logout?',
-      cancelActionText: 'Cancel',
-      defaultActionText: 'Logout',
-    ).show(context);
-    if (didRequestSignOut == true) {
-      _signOut(context);
-    }
-  }
-
-  Future<void> _signOut(BuildContext context) async {
-    try {
-      ///, listen: false
-      final AuthService auth = Provider.of<AuthService>(context, listen: false);
-      await auth.signOut();
-    } on PlatformException catch (e) {
-      PlatformExceptionAlertDialog(
-        title: 'Operation failed',
-        exception: e,
-      ).show(context);
-    }
   }
 }
