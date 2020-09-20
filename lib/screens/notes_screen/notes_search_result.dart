@@ -8,8 +8,9 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
+import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/models/folder.dart';
-import 'package:iMomentum/app/services/database.dart';
+import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/models/note.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/notes_screen/note_container.dart';
@@ -123,7 +124,9 @@ class NotesSearchResultState extends State<NotesSearchResult> {
             } else if (snapshot.hasError) {
               //Todo contact us
               return EmptyOrError(
-                  tips: textError, textTap: textErrorOnTap, onTap: null);
+                  tips: Strings.textError,
+                  textTap: Strings.textErrorOnTap,
+                  onTap: null);
             }
             return Center(child: CircularProgressIndicator());
           },

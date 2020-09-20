@@ -1,6 +1,6 @@
 // import 'package:flutter/material.dart';
 // import 'package:iMomentum/app/common_widgets/segmented_control.dart';
-// import 'package:iMomentum/app/constants/string_sign_in.dart';
+// import 'package:iMomentum/app/constants/strings_sign_in.dart';
 // import 'package:iMomentum/app/sign_in/auth_service_adapter.dart';
 // import 'package:provider/provider.dart';
 //

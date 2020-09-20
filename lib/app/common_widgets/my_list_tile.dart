@@ -125,7 +125,7 @@ class TodoListTile extends StatelessWidget {
                 minFontSize: 15,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  color: _darkTheme ? Colors.white : Colors.black87,
+                  color: _darkTheme ? darkThemeWords : lightThemeWords,
                   fontSize: 18.0,
                   //1 means is done
                   decoration: todo.isDone ? TextDecoration.lineThrough : null,
@@ -137,8 +137,9 @@ class TodoListTile extends StatelessWidget {
               ? Container()
               : todo.reminderDate.difference(DateTime.now()).inSeconds > 0
                   ? Icon(Icons.alarm,
-                      color:
-                          _darkTheme ? Colors.yellowAccent : Colors.yellow[500],
+                      color: _darkTheme
+                          ? Colors.yellowAccent
+                          : Colors.yellow[700].withOpacity(0.8),
                       size: 22)
                   : Icon(Icons.alarm_off,
                       color: _darkTheme
@@ -166,9 +167,7 @@ class TodoListTile extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: _darkTheme
-                              ? Color(0xfff3f9fb)
-                              : Color(0xF01b262c),
+                          color: _darkTheme ? darkThemeHint : lightThemeHint,
                           decoration:
                               todo.isDone ? TextDecoration.lineThrough : null,
                         )),
@@ -323,7 +322,7 @@ class MantraListTile extends StatelessWidget {
           minFontSize: 20,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
-            color: _darkTheme ? Colors.white : Color(0xF01b262c),
+            color: _darkTheme ? darkThemeWords : lightThemeWords,
             fontSize: 20.0,
           )),
       onTap: onTap,
@@ -356,7 +355,7 @@ class QuoteListTile extends StatelessWidget {
           minFontSize: 18,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
-              color: _darkTheme ? Colors.white : Color(0xF01b262c),
+              color: _darkTheme ? darkThemeWords : lightThemeWords,
               fontSize: 18.0,
               fontStyle: FontStyle.italic)),
       onTap: onTap,

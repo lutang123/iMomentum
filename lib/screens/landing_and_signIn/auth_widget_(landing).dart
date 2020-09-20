@@ -1,11 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
-import 'package:iMomentum/app/sign_in/AppUser.dart';
-import 'package:iMomentum/app/tab_and_navigation/tab_page.dart';
-import 'package:iMomentum/screens/landing_and_signIn/not_in_use/sign_in_page_old.dart';
-import 'package:iMomentum/screens/landing_and_signIn/start_screen.dart';
-import 'package:iMomentum/screens/landing_and_signIn/start_screen2.dart';
 
 /// Builds the signed-in or non signed-in UI, depending on the user snapshot.
 /// This widget should be below the [MaterialApp].
@@ -18,7 +15,8 @@ class AuthWidget extends StatelessWidget {
     @required this.signedInBuilder,
     @required this.nonSignedInBuilder,
   }) : super(key: key);
-  final AsyncSnapshot<AppUser> userSnapshot;
+  // final AsyncSnapshot<AppUser> userSnapshot;
+  final AsyncSnapshot<User> userSnapshot;
   final WidgetBuilder nonSignedInBuilder;
   final WidgetBuilder signedInBuilder;
   @override
@@ -29,12 +27,32 @@ class AuthWidget extends StatelessWidget {
           // ? TabPage() : StartScreen();
           ? signedInBuilder(context)
           : nonSignedInBuilder(context);
+    } // log error to console                                            ⇐ NEW
+    if (userSnapshot.error != null) {
+      print("error in userSnapshot.error: ${userSnapshot.error.toString()}");
+      return Scaffold(
+        body: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(ImageUrl.startImage1),
+              fit: BoxFit.cover,
+            ),
+          ),
+          constraints: BoxConstraints.expand(),
+          child: Center(
+              child: MySignInContainer(
+                  child: Text(
+            'Operation failed, please try again.',
+            style: TextStyle(color: Colors.white),
+          ))),
+        ),
+      );
     } else {
       return Scaffold(
         body: Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage(ImageUrl.startImage),
+              image: AssetImage(ImageUrl.startImage1),
               fit: BoxFit.cover,
             ),
           ),

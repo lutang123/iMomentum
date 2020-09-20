@@ -22,10 +22,10 @@ List<String> fontList = [
   //handwriting:
   'Crafty Girls',
   'Indie Flower',
-  'Dancing Script'
+  'Dancing Script',
 
 //  'Dancing Script',
-      'The Girl Next Door',
+  'The Girl Next Door',
 
   'Handlee',
 

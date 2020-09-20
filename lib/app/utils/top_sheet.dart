@@ -2,8 +2,11 @@ library top_sheet;
 
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:iMomentum/app/services/multi_notifier.dart';
+import 'package:provider/provider.dart';
 
-import 'bubble.dart';
+import 'package/bubble.dart';
+import 'package:iMomentum/app/constants/theme.dart';
 
 @immutable
 class TopSheet extends StatefulWidget {
@@ -24,9 +27,9 @@ class TopSheet extends StatefulWidget {
     direction = TopSheetDirection.TOP,
     backgroundColor = Colors
         .transparent, //this is the background color to cover the part that are not in top sheet
-
-//    backgroundColor = const Color(0xb3212121), //this is the background color to cover the part that are not in top sheet
   }) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Navigator.push<T>(
         context,
         PageRouteBuilder(
@@ -42,7 +45,7 @@ class TopSheet extends StatefulWidget {
 //                    stick: true,
                     margin: BubbleEdges.only(top: 10),
                     nip: BubbleNip.rightTop,
-                    color: Colors.black38,
+                    color: _darkTheme ? darkThemeSurface : lightThemeSurface,
                     child: child,
                   ),
 

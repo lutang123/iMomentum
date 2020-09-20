@@ -6,7 +6,7 @@ import 'package:iMomentum/app/utils/format.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/services/network_service/weather_service.dart';
 import 'package:provider/provider.dart';
-import 'package:iMomentum/app/utils/cap_string.dart';
+import 'package:iMomentum/app/utils/extension_firstCaps.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class WeatherScreen extends StatefulWidget {
@@ -96,7 +96,6 @@ class _WeatherScreenState extends State<WeatherScreen> {
       sunset = Format.timeAMPM(DateTime.fromMillisecondsSinceEpoch(
           current['sunset'] * 1000)); //current.sunrise
       uvi = current['uvi'].toDouble(); //current.uvi
-//Unhandled Exception: type 'int' is not a subtype of type 'double'
       speed = current['wind_speed'].toDouble(); //current.wind_speed
       //extract the last three zero
       var x = current['visibility'].toString();
@@ -107,7 +106,6 @@ class _WeatherScreenState extends State<WeatherScreen> {
     setState(() {
       _state = AppState.FINISHED_DOWNLOADING;
     });
-    // }
   }
 
   Widget getWeatherIconImage(String weatherIcon, {double size = 20}) {
@@ -124,14 +122,19 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
   bool _switchVisible = false;
   Widget _getSettingButton(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         InkWell(
           onTap: _toggleSwitchVisible,
           child: _switchVisible == true
-              ? Icon(EvaIcons.closeCircleOutline, size: 25, color: Colors.white)
-              : Icon(EvaIcons.moreHorizotnalOutline, color: Colors.white),
+              ? Icon(EvaIcons.closeCircleOutline,
+                  size: 25,
+                  color: _darkTheme ? darkThemeButton : lightThemeButton)
+              : Icon(EvaIcons.moreHorizotnalOutline,
+                  color: _darkTheme ? darkThemeButton : lightThemeButton),
         ),
       ],
     );
@@ -156,12 +159,17 @@ class _WeatherScreenState extends State<WeatherScreen> {
   Widget contentFinishedDownload() {
     final metricNotifier = Provider.of<MetricNotifier>(context, listen: false);
     bool _metricUnitOn = metricNotifier.getMetric();
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Column(
       children: [
         _getSettingButton(context),
         Row(
           children: [
-            Text(cityName, style: TextStyle(fontSize: 23, color: Colors.white)),
+            Text(cityName,
+                style: TextStyle(
+                    fontSize: 23,
+                    color: _darkTheme ? darkThemeWords : lightThemeWords)),
           ],
         ),
         Row(
@@ -176,7 +184,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
               SizedBox(width: 3.0),
               Text(
                 _metricUnitOn ? '$temperature°C' : '$temperature°F',
-                style: TextStyle(color: Colors.white, fontSize: 26.0),
+                style: TextStyle(
+                    color: _darkTheme ? darkThemeWords : lightThemeWords,
+                    fontSize: 26.0),
               ),
             ]),
             Column(
@@ -185,7 +195,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                 Text(
                   '${description.firstCaps}',
                   style: TextStyle(
-                      color: Colors.white70,
+                      color: _darkTheme ? darkThemeHint2 : lightThemeHint2,
                       fontStyle: FontStyle.italic,
                       fontSize: 17),
                 ),
@@ -195,31 +205,35 @@ class _WeatherScreenState extends State<WeatherScreen> {
                         ? 'Feels like $feelLike°C'
                         : 'Feels like $feelLike°F',
                     style: TextStyle(
-                        color: Colors.white70,
+                        color: _darkTheme ? darkThemeHint2 : lightThemeHint2,
                         fontStyle: FontStyle.italic,
                         fontSize: 17))
               ],
             )
           ],
         ),
-        Divider(color: Colors.white70),
+        Divider(color: _darkTheme ? darkThemeHint2 : lightThemeHint2),
         hourlyListView(),
-        Divider(color: Colors.white70),
+        Divider(color: _darkTheme ? darkThemeHint2 : lightThemeHint2),
         otherCurrentWeatherInfo(),
-        Divider(color: Colors.white70),
+        Divider(color: _darkTheme ? darkThemeHint2 : lightThemeHint2),
         forecastListView(),
         Visibility(
           visible: _switchVisible,
           child: Column(
             children: [
-              Divider(color: Colors.white70),
+              Divider(color: _darkTheme ? darkThemeHint2 : lightThemeHint2),
               ListTile(
                 title: Text('Metric Units',
-                    style: TextStyle(fontSize: 15, color: Colors.white)),
+                    style: TextStyle(
+                        fontSize: 15,
+                        color: _darkTheme ? darkThemeWords : lightThemeWords)),
                 trailing: Transform.scale(
                   scale: 0.9,
                   child: CupertinoSwitch(
-                    activeColor: switchActiveColor,
+                    activeColor: _darkTheme
+                        ? switchActiveColorUseInDark
+                        : switchActiveColorLight,
                     trackColor: Colors.grey,
                     value: _metricUnitOn,
                     onChanged: (val) {
@@ -232,16 +246,6 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   ),
                 ),
               ),
-              // Padding(
-              //   padding: const EdgeInsets.symmetric(horizontal: 15),
-              //   child: Text(
-              //     "Tips: Swipe horizontally to view more days on weather forecast. Double tap on the weather information on Home screen to update weather at anytime. ",
-              //     style: TextStyle(
-              //         fontSize: 13,
-              //         color: Colors.white70,
-              //         fontStyle: FontStyle.italic),
-              //   ),
-              // )
             ],
           ),
         )
@@ -252,6 +256,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
   Widget hourlyListView() {
     final metricNotifier = Provider.of<MetricNotifier>(context, listen: false);
     bool _metricUnitOn = metricNotifier.getMetric();
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return SizedBox(
       height: 65,
       child: ListView.builder(
@@ -271,7 +277,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
                 Text(
                   Format.timeHour(
                       DateTime.now().add(Duration(hours: index + 1))),
-                  style: TextStyle(color: Colors.white60, fontSize: 13),
+                  style: TextStyle(
+                      color: _darkTheme ? darkThemeHint : lightThemeHint,
+                      fontSize: 13),
                 ),
                 Container(
                     height: 28,
@@ -279,7 +287,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     child: getWeatherIconImage(hourlyIcon)),
                 Text(
                   _metricUnitOn ? '$hourlyTemp°C' : '$hourlyTemp°F',
-                  style: TextStyle(color: Colors.white, fontSize: 14),
+                  style: TextStyle(
+                      color: _darkTheme ? darkThemeWords : lightThemeWords,
+                      fontSize: 14),
                 ),
               ],
             ),
@@ -290,6 +300,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
   }
 
   Widget otherCurrentWeatherInfo() {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 5.0),
       child: Row(
@@ -300,12 +312,14 @@ class _WeatherScreenState extends State<WeatherScreen> {
             children: [
               RichText(
                 text: TextSpan(
-                  style: TextStyle(color: Colors.white60),
+                  style: TextStyle(
+                      color: _darkTheme ? darkThemeHint : lightThemeHint),
                   children: <TextSpan>[
                     TextSpan(text: 'Sunrise '),
                     TextSpan(
                       text: '$sunrise',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                          color: _darkTheme ? darkThemeWords : lightThemeWords),
                     ),
                   ],
                 ),
@@ -313,12 +327,14 @@ class _WeatherScreenState extends State<WeatherScreen> {
               SizedBox(height: 3),
               RichText(
                 text: TextSpan(
-                  style: TextStyle(color: Colors.white60),
+                  style: TextStyle(
+                      color: _darkTheme ? darkThemeHint : lightThemeHint),
                   children: <TextSpan>[
                     TextSpan(text: 'Sunset  '),
                     TextSpan(
                       text: '$sunset',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                          color: _darkTheme ? darkThemeWords : lightThemeWords),
                     ),
                   ],
                 ),
@@ -326,12 +342,14 @@ class _WeatherScreenState extends State<WeatherScreen> {
               SizedBox(height: 3),
               RichText(
                 text: TextSpan(
-                  style: TextStyle(color: Colors.white60),
+                  style: TextStyle(
+                      color: _darkTheme ? darkThemeHint : lightThemeHint),
                   children: <TextSpan>[
                     TextSpan(text: 'UV Index '),
                     TextSpan(
                       text: '$uvi',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                          color: _darkTheme ? darkThemeWords : lightThemeWords),
                     ),
                   ],
                 ),
@@ -343,12 +361,14 @@ class _WeatherScreenState extends State<WeatherScreen> {
             children: [
               RichText(
                 text: TextSpan(
-                  style: TextStyle(color: Colors.white60),
+                  style: TextStyle(
+                      color: _darkTheme ? darkThemeHint : lightThemeHint),
                   children: <TextSpan>[
                     TextSpan(text: 'Wind '),
                     TextSpan(
                       text: '$speed km/h',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                          color: _darkTheme ? darkThemeWords : lightThemeWords),
                     ),
                   ],
                 ),
@@ -356,12 +376,14 @@ class _WeatherScreenState extends State<WeatherScreen> {
               SizedBox(height: 3),
               RichText(
                 text: TextSpan(
-                  style: TextStyle(color: Colors.white60),
+                  style: TextStyle(
+                      color: _darkTheme ? darkThemeHint : lightThemeHint),
                   children: <TextSpan>[
                     TextSpan(text: 'Humidity '),
                     TextSpan(
                       text: '$humidity %',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                          color: _darkTheme ? darkThemeWords : lightThemeWords),
                     ),
                   ],
                 ),
@@ -369,12 +391,14 @@ class _WeatherScreenState extends State<WeatherScreen> {
               SizedBox(height: 3),
               RichText(
                 text: TextSpan(
-                  style: TextStyle(color: Colors.white60),
+                  style: TextStyle(
+                      color: _darkTheme ? darkThemeHint : lightThemeHint),
                   children: <TextSpan>[
                     TextSpan(text: 'Visibility '),
                     TextSpan(
                       text: '$visibility km',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                          color: _darkTheme ? darkThemeWords : lightThemeWords),
                     ),
                   ],
                 ),
@@ -389,6 +413,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
   Widget forecastListView() {
     final metricNotifier = Provider.of<MetricNotifier>(context, listen: false);
     bool _metricUnitOn = metricNotifier.getMetric();
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return SizedBox(
       height: 50,
       child: ListView.builder(
@@ -408,7 +434,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   Text(
                     Format.dayOfWeek(
                         DateTime.now().add(Duration(days: index + 1))),
-                    style: TextStyle(color: Colors.white60, fontSize: 13),
+                    style: TextStyle(
+                        color: _darkTheme ? darkThemeHint : lightThemeHint,
+                        fontSize: 13),
                   ),
                   Row(
                     children: [
@@ -418,11 +446,16 @@ class _WeatherScreenState extends State<WeatherScreen> {
                           child: getWeatherIconImage(dailyIcon)),
                       SizedBox(width: 2),
                       Text(_metricUnitOn ? '$maxTemp°C' : '$maxTemp°F',
-                          style: TextStyle(color: Colors.white, fontSize: 14)),
+                          style: TextStyle(
+                              color:
+                                  _darkTheme ? darkThemeWords : lightThemeWords,
+                              fontSize: 14)),
                       SizedBox(width: 3),
                       Text(
                         _metricUnitOn ? '$minTemp°C' : '$minTemp°F',
-                        style: TextStyle(color: Colors.white60, fontSize: 14),
+                        style: TextStyle(
+                            color: _darkTheme ? darkThemeHint : lightThemeHint,
+                            fontSize: 14),
                       ),
                       SizedBox(width: 1),
                     ],
@@ -431,7 +464,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
               ),
               SizedBox(width: 3),
               VerticalDivider(
-                color: Colors.white54,
+                color: _darkTheme ? darkThemeDivider : lightThemeDivider,
                 width: 1,
               ),
             ],
@@ -442,13 +475,17 @@ class _WeatherScreenState extends State<WeatherScreen> {
   }
 
   Widget contentDownloading() {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Container(
         margin: EdgeInsets.all(25),
         child: Column(children: [
           Center(
             child: Text(
               'Fetching Weather...',
-              style: TextStyle(fontSize: 20, color: Colors.white),
+              style: TextStyle(
+                  fontSize: 20,
+                  color: _darkTheme ? darkThemeWords : lightThemeWords),
             ),
           ),
           Container(
@@ -458,6 +495,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
   }
 
   Widget contentNotDownloaded() {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Column(
       children: <Widget>[
         _getSettingButton(context),
@@ -466,7 +505,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
             'Failed to load weather data',
             style: TextStyle(
                 fontSize: 18,
-                color: Colors.white70,
+                color: _darkTheme ? darkThemeHint2 : lightThemeHint2, //70
                 fontStyle: FontStyle.italic),
           ),
         ),

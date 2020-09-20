@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/models/folder.dart';
 import 'package:iMomentum/app/models/note.dart';
-import 'package:iMomentum/app/services/database.dart';
+import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/notes_screen/notes_search_result.dart';
 import 'package:provider/provider.dart';

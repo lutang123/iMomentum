@@ -7,15 +7,15 @@ import 'package:iMomentum/app/common_widgets/my_round_button.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:iMomentum/app/models/data/rest_quote.dart';
 import 'package:iMomentum/app/models/todo.dart';
-import 'package:iMomentum/app/utils/extensions.dart';
-import 'package:iMomentum/app/services/database.dart';
+import 'package:iMomentum/app/utils/extension_clockFmt.dart';
+import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/utils/pages_routes.dart';
 import 'package:iMomentum/screens/home_screen/quote.dart';
 import 'package:provider/provider.dart';
 import 'clock_begin_screen.dart';
 import 'clock_timer.dart';
-import 'clock_title.dart';
+import 'clock_mantra_quote_title.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 

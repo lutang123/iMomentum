@@ -9,16 +9,16 @@ import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dar
 import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:iMomentum/app/models/duration_model.dart';
 import 'package:iMomentum/app/models/todo.dart';
-import 'package:iMomentum/app/utils/extensions.dart';
+import 'package:iMomentum/app/utils/extension_clockFmt.dart';
 import 'package:iMomentum/app/services/calendar_bloc.dart';
-import 'package:iMomentum/app/services/database.dart';
+import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/utils/pages_routes.dart';
 import 'package:provider/provider.dart';
 import 'clock_bottom.dart';
 import 'clock_completion_screen.dart';
 import 'clock_timer.dart';
-import 'clock_title.dart';
+import 'clock_mantra_quote_title.dart';
 
 class ClockTimerScreen extends StatefulWidget {
   const ClockTimerScreen({

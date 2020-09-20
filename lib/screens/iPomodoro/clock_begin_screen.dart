@@ -6,16 +6,18 @@ import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/models/todo.dart';
-import 'package:iMomentum/app/utils/extensions.dart';
-import 'package:iMomentum/app/services/database.dart';
+import 'package:iMomentum/app/utils/extension_clockFmt.dart';
+import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/utils/pages_routes.dart';
+import 'package:iMomentum/app/utils/top_sheet.dart';
+import 'package:iMomentum/screens/iPomodoro/top_sheet_pomodoro_info.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'clock_bottom.dart';
 import 'clock_start.dart';
 import 'clock_timer_screen.dart';
-import 'clock_title.dart';
+import 'clock_mantra_quote_title.dart';
 
 //https://momentumdash.com/blog/pomodoro-timer
 
@@ -88,7 +90,7 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                             IconButton(
                               /// go back to HomeScreen
                               onPressed: () => Navigator.of(context).pop(),
-                              icon: Icon(Icons.clear, size: 32),
+                              icon: Icon(Icons.clear, size: 30),
                               color: Colors.white,
                             ),
                             IconButton(
@@ -163,9 +165,9 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
   bool _playSound = true;
   bool _isDifferentLength = false; //this is for changing duration.
   void showEditDialog() async {
-    setState(() {
-      _topOpacity = 0.0;
-    });
+    // setState(() {
+    //   _topOpacity = 0.0;
+    // });
     await showDialog(
       context: context,
       builder: (BuildContext _) {
@@ -285,7 +287,7 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                           child: Transform.scale(
                             scale: 0.9,
                             child: CupertinoSwitch(
-                              activeColor: switchActiveColor,
+                              activeColor: switchActiveColorUseInDark,
                               trackColor: Colors.grey,
                               value: _playSound,
                               onChanged: (val) {
@@ -316,9 +318,9 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                                       side: BorderSide(
                                           color: Colors.white70, width: 2.0)),
                               onPressed: () {
-                                setState(() {
-                                  _topOpacity = 1.0;
-                                });
+                                // setState(() {
+                                //   _topOpacity = 1.0;
+                                // });
                                 Navigator.of(context).pop();
                               }),
                           FlatButton(
@@ -348,12 +350,15 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
           );
         });
       },
-    ).then((val) {
-      //https://stackoverflow.com/questions/49706046/how-run-code-after-showdialog-is-dismissed-in-flutter
-      setState(() {
-        _topOpacity = 1.0;
-      });
-    });
+    )
+        //     .then((val) {
+        //   //https://stackoverflow.com/questions/49706046/how-run-code-after-showdialog-is-dismissed-in-flutter
+        //   setState(() {
+        //     _topOpacity = 1.0;
+        //   });
+        // })
+
+        ;
   }
 
   bool _validateAndSaveForm() {
@@ -379,10 +384,19 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
   }
 
   double _topOpacity = 1.0;
+
   void _showFlushBar() {
     setState(() {
       _topOpacity = 0.0;
     });
+
+    TopSheet.show(
+      context: context,
+      child: TopSheetPomodoroInfo(),
+      direction: TopSheetDirection.TOP,
+    ).then((value) => setState(() {
+          _topOpacity = 1.0;
+        }));
 
     Flushbar(
       margin: const EdgeInsets.all(20),

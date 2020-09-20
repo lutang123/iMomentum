@@ -44,7 +44,8 @@ class SettingSwitch extends StatelessWidget {
       trailing: Transform.scale(
         scale: 0.9,
         child: CupertinoSwitch(
-          activeColor: switchActiveColor,
+          activeColor:
+              _darkTheme ? switchActiveColorUseInDark : switchActiveColorLight,
           trackColor: Colors.grey,
           value: value,
           onChanged: onChanged,
@@ -75,7 +76,8 @@ class SettingSwitchNoIcon extends StatelessWidget {
       trailing: Transform.scale(
         scale: 0.9,
         child: CupertinoSwitch(
-          activeColor: switchActiveColor,
+          activeColor:
+              _darkTheme ? switchActiveColorUseInDark : switchActiveColorLight,
           trackColor: Colors.grey,
           value: value,
           onChanged: onChanged,

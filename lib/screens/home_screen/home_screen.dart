@@ -1,5 +1,4 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,9 +12,9 @@ import 'package:iMomentum/app/common_widgets/my_text_field.dart';
 import 'package:iMomentum/app/common_widgets/my_tooltip.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
-import 'package:iMomentum/app/sign_in/AppUser.dart';
+import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/services/network_service/weather_service.dart';
-import 'package:iMomentum/app/sign_in/firebase_auth_service.dart';
+import 'package:iMomentum/app/sign_in/new_firebase_auth_service.dart';
 import 'package:iMomentum/app/utils/show_up.dart';
 import 'package:iMomentum/app/utils/top_sheet.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
@@ -31,14 +30,15 @@ import 'package:iMomentum/screens/home_drawer/add_quote.dart';
 import 'package:iMomentum/app/common_widgets/my_list_tile.dart';
 import 'package:iMomentum/screens/home_screen/weather_screen.dart';
 import 'package:iMomentum/screens/iPomodoro/clock_begin_screen.dart';
-import 'package:iMomentum/app/services/database.dart';
+import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/screens/todo_screen/add_todo_screen.dart';
 import 'package:intl/intl.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'quote.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:iMomentum/app/utils/cap_string.dart';
+import 'package:iMomentum/app/utils/extension_firstCaps.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -80,13 +80,13 @@ class _HomeScreenState extends State<HomeScreen> {
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
     if (!mounted) return;
-    // if (mounted) {
     setState(() {
       _state = CurrentWeatherState.DOWNLOADING;
     });
 
     var weatherData = await WeatherService.getCurrentWeather(
         _metricUnitOn ? 'metric' : 'imperial');
+
     setState(() {
       if (weatherData == null) {
         return;
@@ -101,7 +101,6 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _state = CurrentWeatherState.FINISHED_DOWNLOADING;
     });
-    // }
   }
 
   Widget _getWeatherIconImage(String weatherIcon, {double size = 20}) {
@@ -147,7 +146,6 @@ class _HomeScreenState extends State<HomeScreen> {
         Text(
           '$cityName',
           style: TextStyle(
-              // color: Colors.white,
               color: _darkTheme ? darkThemeWords : lightThemeWords,
               fontSize: 15.0),
         ),
@@ -158,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _resultView() => _state == CurrentWeatherState.FINISHED_DOWNLOADING
       ? contentFinishedDownload()
       : _state == CurrentWeatherState.DOWNLOADING
-          ? Center(child: CircularProgressIndicator(strokeWidth: 10))
+          ? Center(child: CircularProgressIndicator(strokeWidth: 5))
           : Container();
 
   Widget _topBar() {
@@ -237,37 +235,25 @@ class _HomeScreenState extends State<HomeScreen> {
     _defaultMantra = DefaultMantraList().showMantra().body;
     _fetchWeather();
     super.initState();
-    // _updateUserName();
-    // initUser();
+    // getUserName();
   }
 
-  // User user;
-  // void initUser() async {
-  //   final AuthService _auth = Provider.of<AuthService>(context, listen: false);
+  ///this code will not sun when coming to home screen from sign in
+  // String userName;
+  // void getUserName() {
+  //   final User user = FirebaseAuth.instance.currentUser;
+  //   String userName;
+  //   if (user.displayName != null && user.displayName.isNotEmpty) {
+  //     // user.displayName.contains(' ')
+  //     //     ? userName = user.displayName
+  //     //         .substring(0, user.displayName.indexOf(' '))
+  //     //         .firstCaps
+  //     //     :
   //
-  //   user = await _auth.currentUser();
-  //   print('user.displayName: ${user.displayName}');
-  //   setState(() {});
-  // }
-
-  // void _updateUserName() async {
-  //   final AuthService auth = Provider.of<AuthService>(context, listen: false);
+  //     userName = user.displayName.firstCaps;
   //
-  //   final userNameNotifier =
-  //       Provider.of<UserNameNotifier>(context, listen: false);
-  //   final userName = userNameNotifier.getUserName();
-  //   print("$userName userName in home screen"); //null
-
-  // final prefs =  SharedPreferences.getInstance();
-  // String userName2 = await prefs.getString('userName') ?? null;
-  //
-  // print('userName2 in prefs: $userName2');
-  // auth.updateUserName(userName2);
-  // print('StartScreen3: ${auth.updateUserName(userName2)}');
-
-  //   final User user = Provider.of<User>(context, listen: false); //null
-  //
-  //   print('user.displayName: ${user.displayName}');
+  //     print('userName in home screen initState: $userName');
+  //   }
   // }
 
   int counter = 0;
@@ -378,7 +364,7 @@ class _HomeScreenState extends State<HomeScreen> {
         } else if (snapshot.hasError) {
           ///Todo: onTap contact us
           return _errorScreen(
-              text: textError, textTap: 'Or contact us'); //if error
+              text: Strings.textError, textTap: 'Or contact us'); //if error
         }
         return Center(child: CircularProgressIndicator());
       },
@@ -922,16 +908,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   get getFirstGreetings {
     final User user = FirebaseAuth.instance.currentUser;
-
-    // final AppUser user = Provider.of<AppUser>(context, listen: false);
+    user.reload();
     String userName;
     if (user.displayName != null && user.displayName.isNotEmpty) {
-      user.displayName.contains(' ')
-          ? userName = user.displayName
-              .substring(0, user.displayName.indexOf(' '))
-              .firstCaps
-          : userName = user.displayName.firstCaps;
+      // user.displayName.contains(' ')
+      //     ? userName = user.displayName
+      //         .substring(0, user.displayName.indexOf(' '))
+      //         .firstCaps
+      //     :
+
+      userName = user.displayName.firstCaps;
+
       print('userName in home screen: $userName');
+
       if (userName.length < 6) {
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -996,12 +985,39 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _editName(String value) {
-    final AppUser user = Provider.of<AppUser>(context, listen: false);
-    user.displayName = value;
+  // bool updatingName = false;
+  void _editName(String value) async {
+    //from ProgressDialog plugin
+    final ProgressDialog pr = ProgressDialog(
+      context,
+      type: ProgressDialogType.Normal,
+      // textDirection: TextDirection.rtl,
+      isDismissible: true,
+    );
+    pr.style(
+      message: 'Please wait',
+      borderRadius: 20.0,
+      backgroundColor: darkThemeNoPhotoColor,
+      elevation: 10.0,
+      insetAnimCurve: Curves.easeInOut,
+      progress: 0.0,
+      progressWidgetAlignment: Alignment.center,
+      maxProgress: 100.0,
+      progressTextStyle: TextStyle(
+          color: Colors.white, fontSize: 13.0, fontWeight: FontWeight.w400),
+      messageTextStyle: TextStyle(
+          color: Colors.white, fontSize: 19.0, fontWeight: FontWeight.w600),
+    );
+
+    await pr.show();
+
     final FirebaseAuthService auth =
         Provider.of<FirebaseAuthService>(context, listen: false);
-    auth.updateUserName(value);
+    await auth.updateUserName(value);
+
+    ///because it takes a while to update name
+    await pr.hide();
+
     setState(() {
       _nameVisible = !_nameVisible;
     });

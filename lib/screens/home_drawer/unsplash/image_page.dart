@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/screens/home_drawer/unsplash/widget/info_sheet.dart';
-import 'package:iMomentum/app/services/database.dart';
+import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/services/network_service/unsplash_image_provider.dart';
 import 'package:photo_view/photo_view.dart';

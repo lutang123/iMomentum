@@ -1,5 +1,5 @@
 // import 'package:flutter/foundation.dart';
-// import 'package:iMomentum/app/constants/string_sign_in.dart';
+// import 'package:iMomentum/app/constants/strings_sign_in.dart';
 // import 'package:iMomentum/app/sign_in/AppUser.dart';
 // import 'package:iMomentum/app/sign_in/validator.dart';
 //

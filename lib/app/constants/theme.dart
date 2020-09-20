@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-const Color switchActiveColor = Color(0xFF006a71); //Color(0xFF206a5d);
+const Color switchActiveColorLight = Color(0xFF006a71); //Color(0xFF206a5d);
+const Color switchActiveColorUseInDark = Color(0xf0ffcb74); //Color(0xFF206a5d);
 
 //f6f5f5
 //Drawer Icon and other Icons
-const Color darkThemeButton = Colors.white;
+const Color darkThemeButton = Color(0xf0ffcb74);
+const Color darkThemeButton2 = Color(0xf0ffcb74);
+const Color darkThemeButton3 = Color(0xf0cffffe);
+const Color darkThemeButton4 = Color(0xf040a8c4);
 const Color lightThemeButton = Color(0xf0086972); //button. icon
 
 const Color darkThemeHint = Colors.white60;
 const Color lightThemeHint = Colors.black54;
+
+const Color darkThemeHint2 = Colors.white70;
+const Color lightThemeHint2 = Colors.black54;
 
 const Color darkThemeWords = Colors.white;
 const Color lightThemeWords = Colors.black87;
@@ -27,12 +34,11 @@ final Color lightThemeDrawer = Colors.white.withOpacity(0.7);
 
 //calendar, todoList and pie chart,
 const Color darkThemeSurface = Colors.black38;
-
-///used in TodoScreen for calendar and list, MyMantra and MyQuote
-final Color lightThemeSurface = Colors.white.withOpacity(0.8);
+//used in TodoScreen for calendar and list, MyMantra and MyQuote
+final Color lightThemeSurface = Colors.white.withOpacity(0.75);
 
 const Color darkThemeDivider = Colors.white38;
-const Color lightThemeDivider = Colors.black26;
+const Color lightThemeDivider = Colors.black45;
 
 ///use in all modal bottom
 const Color darkThemeAdd = Colors.black38; //Color(0xf01b262c) : Colors.grey[50]
@@ -92,13 +98,16 @@ final ThemeData lightTheme = ThemeData.light().copyWith(
 
     ///Empty message
     subtitle2: TextStyle(
+        fontWeight: FontWeight.w400,
         color: Colors.black.withOpacity(0.7),
         fontStyle: FontStyle.italic,
         fontSize: 17),
 
     ///calendar date
     bodyText1: TextStyle(color: Colors.black54, fontSize: 16), //16
-    bodyText2: TextStyle(color: Colors.black87, fontSize: 17), //14
+
+    ///  Used in mantra empty message
+    bodyText2: TextStyle(color: Colors.black87, fontSize: 18), //14
   ),
   dialogBackgroundColor: lightThemeNoPhotoColor,
   dialogTheme: DialogTheme(
@@ -144,23 +153,16 @@ final ThemeData darkTheme = ThemeData.dark().copyWith(
 
     ///Empty message
     subtitle2: TextStyle(
+        fontWeight: FontWeight.w400,
         color: Colors.white.withOpacity(0.8),
         fontStyle: FontStyle.italic,
         fontSize: 17),
 
     ///calendar date
-    bodyText1: TextStyle(
-      //16
-      color: Colors.white,
-    ),
+    bodyText1: TextStyle(fontSize: 16, color: Colors.white), //16
 
-    // ///used in tap inline text
-    bodyText2: TextStyle(
-      color: Colors.white70,
-      // fontStyle: FontStyle.italic,
-      fontSize: 17,
-      // decoration: TextDecoration.underline,
-    ), //14
+    /// empty message
+    bodyText2: TextStyle(fontSize: 18, color: Colors.white70), //14
   ),
   dialogBackgroundColor: darkThemeNoPhotoColor,
   dialogTheme: DialogTheme(

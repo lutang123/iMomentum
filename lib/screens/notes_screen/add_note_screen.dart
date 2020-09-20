@@ -6,17 +6,17 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iMomentum/app/utils/format.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/models/folder.dart';
-import 'package:iMomentum/app/utils/popup_menu/popup_menu.dart';
-import 'package:iMomentum/app/services/database.dart';
+import 'package:iMomentum/app/utils/package/popup_menu/popup_menu.dart';
+import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/models/note.dart';
 import 'package:iMomentum/app/constants/theme.dart';
-import 'package:iMomentum/app/services/global_key.dart';
+import 'package:iMomentum/app/services/my_global_keys.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/notes_screen/color_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
-import 'package:iMomentum/app/utils/cap_string.dart';
+import 'package:iMomentum/app/utils/extension_firstCaps.dart';
 import 'package:flutter/widgets.dart';
 import 'font_picker.dart';
 import 'my_flutter_app_icon.dart';
@@ -305,7 +305,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
           color: _darkTheme ? colorsDark[color] : colorsLight[color],
           boxShadow: [
             BoxShadow(
-              color: Colors.black12,
+              color: _darkTheme ? darkThemeDrawer : lightThemeDrawer,
               offset: Offset(0.0, 1.0), //(x,y)
               blurRadius: 4.0,
             ),
@@ -391,7 +391,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
                                       ? darkThemeHint
                                       : lightThemeHint)),
                   IconButton(
-                    key: RIKeys.riKey1,
+                    key: MyGlobalKeys.addNoteKey,
                     iconSize: 28,
                     color: _darkTheme ? darkThemeButton : lightThemeButton,
                     icon: Icon(EvaIcons.moreVerticalOutline),
@@ -508,7 +508,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
       onClickMenu: onClickMenu,
     );
     menu.show(
-      widgetKey: RIKeys.riKey1,
+      widgetKey: MyGlobalKeys.addNoteKey,
     );
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iMomentum/app/constants/theme.dart';
 
 // https://source.unsplash.com/daily?nature
 //'https://source.unsplash.com/random?nature'
@@ -13,64 +14,27 @@ class ImageUrl {
 
   // static String fixedImageUrl =
   //     'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2706&q=80';
-  static String fixedImageUrl = 'assets/images/landscape.jpg';
-  static String startImage = 'assets/images/landscape.jpg';
+  static String fixedImageUrl = 'assets/images/boat.jpg';
+  static String startImage = 'assets/images/boat.jpg';
+  static String startImage1 = 'assets/images/boat.jpg';
+  static String startImage2 = 'assets/images/forest.jpg';
+  static String startImage3 = 'assets/images/waterfall.jpg';
+  static String startImage4 = 'assets/images/landscape2.jpg';
+  static String signInImage = 'assets/images/mountain_new.jpg';
 }
 
-const String textTodoList1 = "Do you have any tasks to complete today? "
-    "\n"
-    "\n"
-    "We have 5 categories "
-    "(Focus, Work, Home, Shopping and Others) "
-    "to help you organize your daily tasks. Tasks in Focus category will show "
-    "on Home screen to enable Focus Mode to for these tasks. "
-    "\n"
-    "\n"
-    "Tap the plus button to enter your first task today!";
+const KBackgroundGradient = LinearGradient(
+  colors: [
+    Colors.transparent, //we can not add with opacity
+    Colors.black12,
+  ],
+  stops: [0.5, 1.0],
+  begin: Alignment.topCenter,
+  end: Alignment.bottomCenter,
+  tileMode: TileMode.repeated,
+);
 
-const String textTodoList2 = 'Tips: '
-    'You can also tap on any date on calendar and long press on the date to add a task on a specific day.'
-    ' After entering a task, you can add a reminder by swiping right on the task item.';
-
-const String textPieChart1 = 'You have not done any focused task on this day.'
-    '\n'
-    '\n'
-    'Enter a task from Home screen (or from Todo screen and choose task category as Focus), then you will see Focus Mode button on Home screen.'
-    '\n'
-    '\n'
-    'When you complete a focus session, you will see a pie chart showing your daily focus summary on this screen.';
-
-const String textPieTip =
-    'Our Focus Mode uses Pomodoro Technique to help you focus. ';
-
-const String textPieTap = 'Learn more.';
-
-///Todo: add contact us
-const String textError = 'Oops, something went wrong, please try again later. ';
-const String textErrorOnTap = 'Or contact us';
-
-const textMantra1 =
-    'Center yourself with friendly reminders, reinforce new thought patterns, and bring attention to the values or principles that are most important to you. \n'
-    '\n'
-    'By default, every time when you enter or complete a task, a new Mantra from our curated feed will appear on Home screen.';
-const textMantra2 =
-    'You can add your own mantras to personalize your experience.';
-// 'Get inspired by adding your personal mantras. '
-
-const textQuote1 =
-    'By default, a daily quote will show on the bottom of Home screen.';
-const textQuote2 =
-    'You can add your own quotes to personalize your experience.';
-
-const emptyNoteAndFolder =
-    'Any thoughts or new ideas you want to write? Click the plus button to add a new note.'
-    '\n'
-    '\n'
-    'By default, all notes are added to Notes folder. You can also create new folders and add notes in a specific folder to help you organize your notes. You can change the folder anytime. ';
-const emptyNote =
-    'No notes in this folder yet. Click the plus button to add a new note.';
-
-/// Home and Pomodoro Screen
+// Home and Pomodoro Screen
 const KHomeToday =
     TextStyle(color: Colors.white, fontSize: 25.0, fontWeight: FontWeight.bold);
 // HomeTodoListTile used GoogleFonts.varelaRound, 25, bold
@@ -160,40 +124,97 @@ const KLandingTitle = TextStyle(
   fontWeight: FontWeight.w600,
 );
 
-const KLandingSubtitle = TextStyle(
-  fontSize: 22,
-  color: Colors.white,
-  fontWeight: FontWeight.w400,
-);
-
-const KAppBarTitle = TextStyle(
+///in landing swipe
+const KLandingSubtitleD = TextStyle(
   fontSize: 25,
-  color: Colors.white,
+  color: darkThemeWords,
   fontWeight: FontWeight.w600,
 );
 
-const KErrorMessage = TextStyle(
-    fontSize: 16,
+const KLandingSubtitleL = TextStyle(
+  fontSize: 25,
+  color: lightThemeWords,
+  fontWeight: FontWeight.w600,
+);
+
+const KLandingSubtitle2D =
+    TextStyle(fontSize: 20, color: darkThemeWords, fontStyle: FontStyle.italic
+        // fontWeight: FontWeight.w600,
+        );
+
+const KLandingSubtitle2L =
+    TextStyle(fontSize: 20, color: lightThemeWords, fontStyle: FontStyle.italic
+        // fontWeight: FontWeight.w600,
+        );
+
+// const KTeddyD = TextStyle(
+//   fontSize: 18,
+//   color: darkThemeWords,
+//   fontWeight: FontWeight.w400,
+//   fontFamily: 'Architects Daughter',
+// );
+//
+// const KTeddyL = TextStyle(
+//   fontSize: 18,
+//   color: lightThemeWords,
+//   fontWeight: FontWeight.w400,
+//   fontFamily: 'Architects Daughter',
+// );
+
+const KSignInButtonTextD = TextStyle(
+  fontSize: 18,
+  color: darkThemeWords,
+  fontWeight: FontWeight.w500,
+);
+
+const KSignInButtonTextL = TextStyle(
+  fontSize: 18,
+  color: lightThemeWords,
+  fontWeight: FontWeight.w500,
+);
+
+const KSignInSecondButtonD = TextStyle(
+    fontSize: 18,
     color: Color(0xf0fafafa),
     fontWeight: FontWeight.w400,
     fontStyle: FontStyle.italic,
     decoration: TextDecoration.underline);
 
-const KSignInButtonText = TextStyle(
-  fontSize: 18,
-  color: Colors.white,
-  fontWeight: FontWeight.w400,
-);
-
-const KTeddy = TextStyle(
-  fontSize: 18,
-  color: Colors.white,
-  fontWeight: FontWeight.w400,
-  fontFamily: 'Architects Daughter',
-);
-
-const KSignInButtonOr = TextStyle(
+const KSignInSecondButtonL = TextStyle(
     fontSize: 18,
-    color: Colors.white,
+    color: Color(0xf01a1a2e),
+    fontWeight: FontWeight.w400,
+    fontStyle: FontStyle.italic,
+    decoration: TextDecoration.underline);
+
+const KSignInButtonOrD = TextStyle(
+    fontSize: 18,
+    color: darkThemeHint2,
     fontWeight: FontWeight.w400,
     fontStyle: FontStyle.italic);
+
+const KSignInButtonOrL = TextStyle(
+    fontSize: 18,
+    color: lightThemeHint2,
+    fontWeight: FontWeight.w400,
+    fontStyle: FontStyle.italic);
+
+const KPrivacyD = TextStyle(
+    color: Color(0xf0fafafa), fontSize: 15, fontStyle: FontStyle.italic);
+
+const KPrivacyL = TextStyle(
+    color: Color(0xf01a1a2e), fontSize: 15, fontStyle: FontStyle.italic);
+
+const KPrivacyTapD = TextStyle(
+  color: Color(0xf0fafafa),
+  fontSize: 15,
+  fontStyle: FontStyle.italic,
+  decoration: TextDecoration.underline,
+);
+
+const KPrivacyTapL = TextStyle(
+  color: Color(0xf01a1a2e),
+  fontSize: 15,
+  fontStyle: FontStyle.italic,
+  decoration: TextDecoration.underline,
+);

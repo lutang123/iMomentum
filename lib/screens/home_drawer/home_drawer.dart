@@ -10,9 +10,8 @@ import 'package:iMomentum/app/common_widgets/avatar.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/my_tooltip.dart';
 import 'package:iMomentum/app/common_widgets/setting_switch.dart';
-import 'package:iMomentum/app/sign_in/AppUser.dart';
 import 'package:iMomentum/app/utils/shared_axis.dart';
-import 'package:iMomentum/app/services/database.dart';
+import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/home_drawer/my_mantras_screen.dart';
 import 'package:iMomentum/screens/home_drawer/my_quote_screen.dart';
@@ -24,7 +23,7 @@ import '../../app/common_widgets/container_linear_gradient.dart';
 import '../../app/constants/constants_style.dart';
 import '../../app/constants/theme.dart';
 import 'about_screen.dart';
-import 'package:iMomentum/app/utils/cap_string.dart';
+import 'package:iMomentum/app/utils/extension_firstCaps.dart';
 
 class MyDrawer extends StatefulWidget {
   final Widget child;
@@ -120,7 +119,7 @@ class MyDrawerState extends State<MyDrawer>
                       ),
                     ),
                     Positioned(
-                      top: MediaQuery.of(context).padding.top - 9,
+                      top: MediaQuery.of(context).padding.top - 10,
                       left: 5 + animationController.value * maxSlide,
                       child: IconButton(
                           iconSize: 25,
@@ -229,6 +228,7 @@ class MyHomeDrawer extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
+                SizedBox(height: 20),
                 settingTitle(context, title: 'Settings'),
                 MyToolTip(
                   message:
@@ -315,13 +315,9 @@ class MyHomeDrawer extends StatelessWidget {
                 ),
                 settingDivider(context),
                 settingTitle(context, title: 'Others'),
-                // settingListTile(context,
-                //     icon: FontAwesomeIcons.directions,
-                //     title: 'Guided Tour',
-                //     onTap: null),
                 settingListTile(
                   context,
-                  icon: EvaIcons.questionMarkCircleOutline,
+                  icon: FontAwesomeIcons.directions,
                   title: 'Guided Tour / FAQ',
                   onTap: () {
                     final route = SharedAxisPageRoute(
@@ -329,34 +325,31 @@ class MyHomeDrawer extends StatelessWidget {
                     Navigator.of(context, rootNavigator: true).push(route);
                   },
                 ),
-//              settingListTile(context,
-//                  icon: EvaIcons.moreHorizotnalOutline,
-//                  title: 'More ',
-//                  onTap: null),
-
-//              settingListTile(context,
-//                  icon: FontAwesomeIcons.link,
-//                  title: 'iMomentum Website',
-//                  onTap: null),
-
-                // settingDivider(context),
-                Flexible(
-                  child: ListTile(
-                    leading: Avatar(
-                      photoUrl: user.photoURL,
-                      radius: 13,
-                    ),
-                    title: user.displayName == null || user.displayName.isEmpty
-                        ? Text('Profile')
-                        : Text(user.displayName.firstCaps),
-                    trailing: Icon(Icons.chevron_right,
-                        color: _darkTheme ? darkThemeButton : lightThemeButton),
-                    onTap: () {
-                      final route = SharedAxisPageRoute(
-                          page: UserScreen(), transitionType: _transitionType);
-                      Navigator.of(context, rootNavigator: true).push(route);
-                    },
+                ListTile(
+                  leading: Avatar(
+                    photoUrl: user.photoURL,
+                    radius: 13,
                   ),
+                  title: user.displayName == null || user.displayName.isEmpty
+                      ? Text('Profile',
+                          style: TextStyle(
+                              fontSize: 15,
+                              color: _darkTheme
+                                  ? darkThemeWords
+                                  : lightThemeWords))
+                      : Text(user.displayName.firstCaps,
+                          style: TextStyle(
+                              fontSize: 15,
+                              color: _darkTheme
+                                  ? darkThemeWords
+                                  : lightThemeWords)),
+                  trailing: Icon(Icons.chevron_right,
+                      color: _darkTheme ? darkThemeButton : lightThemeButton),
+                  onTap: () {
+                    final route = SharedAxisPageRoute(
+                        page: UserScreen(), transitionType: _transitionType);
+                    Navigator.of(context, rootNavigator: true).push(route);
+                  },
                 ),
                 // settingDivider(context),
                 // settingListTile(context,

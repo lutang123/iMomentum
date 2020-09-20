@@ -1,26 +1,18 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
-import 'package:iMomentum/app/tab_and_navigation/tab_page.dart';
+import 'package:iMomentum/screens/tab_and_navigation/tab_page.dart';
 import 'package:iMomentum/screens/landing_and_signIn/auth_widget_(landing).dart';
-import 'package:iMomentum/screens/landing_and_signIn/start_screen.dart';
-import 'package:logger/logger.dart';
+import 'package:iMomentum/screens/landing_and_signIn/start_screen1.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'app/services/database.dart';
-import 'app/sign_in/firebase_auth_service.dart';
+import 'app/services/firestore_service/database.dart';
+import 'app/sign_in/new_firebase_auth_service.dart';
 import 'screens/landing_and_signIn/auth_widget_builder.dart';
 import 'app/sign_in/apple_sign_in_available.dart';
-import 'app/sign_in/AppUser.dart';
-import 'app/sign_in/email_secure_store.dart';
-import 'app/sign_in/firebase_email_link_handler.dart';
-import 'app/sign_in/email_link_error_presenter.dart';
 import 'app/constants/theme.dart';
 import 'app/services/multi_notifier.dart';
 import 'package:rxdart/subjects.dart';
@@ -69,10 +61,10 @@ void main() async {
   // Ensure services are loaded before the widgets get loaded
   WidgetsFlutterBinding.ensureInitialized();
 
-  //added on Sep.16:
+  ///added on Sep.16 with new firebase:
   await Firebase.initializeApp();
 
-  // Restrict device orientiation to portraitUp
+  // Restrict device orientation to portraitUp
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   /// for local notification code:
@@ -187,9 +179,19 @@ void main() async {
   // delivered at the specified time when the device in a low-power idle mode.
   // This behaviour can be changed by setting the optional parameter named
   // androidAllowWhileIdle to true when calling the schedule method.
-
-  ///Todo, what is SystemChrome.setEnabledSystemUIOverlays?
-  SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom])
+  ///https://stackoverflow.com/questions/52489458/how-to-change-status-bar-color-in-flutter
+//import 'package:flutter/services.dart';
+// 1. Hide Statusbar
+// SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom])
+//
+// 2. Transparant Statusbar
+//  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+//     statusBarColor: Colors.transparent,
+//  ));
+// enter image description here
+//
+// 3. Show Statusbar
+  SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values)
       .then((_) async {
     ///this is for setting
     SharedPreferences.getInstance().then((prefs) async {
@@ -202,7 +204,6 @@ void main() async {
       bool useYourMantras = prefs.getBool('useMyMantras') ?? true;
       int index = prefs.getInt('indexMantra') ?? 0;
       bool useMyQuote = prefs.getBool('useMyQuote') ?? true;
-      // String userName = prefs.getString('userName') ?? null;
 
       final appleSignInAvailable = await AppleSignInAvailable.check();
 
@@ -235,14 +236,12 @@ void main() async {
             ///for quote
             ChangeNotifierProvider<QuoteNotifier>(
                 create: (_) => QuoteNotifier(useMyQuote)),
-
-            // ///for userName
-            // ChangeNotifierProvider<UserNameNotifier>(
-            //     create: (_) => UserNameNotifier(userName)),
           ],
           child: MyApp(
-              authServiceBuilder: (_) => FirebaseAuthService(),
-              databaseBuilder: (_, uid) => FirestoreDatabase(uid: uid),
+              // authServiceBuilder: (_) =>
+              //     FirebaseAuthService(), //change back to this
+              // // authServiceBuilder: (_) => FirebaseAuth.instance,
+              // databaseBuilder: (_, uid) => FirestoreDatabase(uid: uid),
               appleSignInAvailable: appleSignInAvailable)));
     });
   });
@@ -252,14 +251,14 @@ void main() async {
 class MyApp extends StatefulWidget {
   const MyApp({
     Key key,
-    this.authServiceBuilder,
-    this.databaseBuilder,
+    // this.authServiceBuilder,
+    // this.databaseBuilder,
     this.appleSignInAvailable,
   }) : super(key: key);
 
-  final FirebaseAuthService Function(BuildContext context) authServiceBuilder;
-  final FirestoreDatabase Function(BuildContext context, String uid)
-      databaseBuilder;
+  // final FirebaseAuthService Function(BuildContext context) authServiceBuilder;
+  // final FirestoreDatabase Function(BuildContext context, String uid)
+  //     databaseBuilder;
   final AppleSignInAvailable appleSignInAvailable;
 
   @override
@@ -352,18 +351,16 @@ class _MyAppState extends State<MyApp> {
             value: widget.appleSignInAvailable),
 
         ///Sep.16
+        ///changed again and removed FirebaseAuthService
+        // Provider<FirebaseAuth>(
+        //   create: widget.authServiceBuilder,
+        // ),
         Provider<FirebaseAuthService>(
-          create: widget.authServiceBuilder,
+          // create: widget.authServiceBuilder,
+          create: (_) => FirebaseAuthService(),
         ),
 
-        // Provider<AuthService>(
-        //   create: (_) => AuthServiceAdapter(
-        //     initialAuthServiceType: widget.initialAuthServiceType,
-        //   ),
-        //   ///Todo: what is dispose in provider
-        //   dispose: (_, AuthService authService) => authService.dispose(),
-        // ),
-
+        ///todo: how to use Logger
         // Provider<Logger>(
         //   create: (_) => Logger(
         //     printer: PrettyPrinter(
@@ -372,67 +369,95 @@ class _MyAppState extends State<MyApp> {
         //     ),
         //   ),
         // ),
-        Provider<EmailSecureStore>(
-          create: (_) => EmailSecureStore(
-            flutterSecureStorage: FlutterSecureStorage(),
-          ),
-        ),
-        ProxyProvider2<FirebaseAuthService, EmailSecureStore,
-            FirebaseEmailLinkHandler>(
-          update: (_, FirebaseAuthService authService, EmailSecureStore storage,
-                  __) =>
-              FirebaseEmailLinkHandler(
-            auth: authService,
-            emailStore: storage,
-            firebaseDynamicLinks: FirebaseDynamicLinks.instance,
-          )..init(),
-          dispose: (_, linkHandler) => linkHandler.dispose(),
-        ),
+        /// didn't use this either
+        // Provider<EmailSecureStore>(
+        //   create: (_) => EmailSecureStore(
+        //     flutterSecureStorage: FlutterSecureStorage(),
+        //   ),
+        // ),
+        // ProxyProvider2<FirebaseAuthService, EmailSecureStore,
+        //     FirebaseEmailLinkHandler>(
+        //   update: (_, FirebaseAuthService authService, EmailSecureStore storage,
+        //           __) =>
+        //       FirebaseEmailLinkHandler(
+        //     auth: authService,
+        //     emailStore: storage,
+        //     firebaseDynamicLinks: FirebaseDynamicLinks.instance,
+        //   )..init(),
+        //   dispose: (_, linkHandler) => linkHandler.dispose(),
+        // ),
       ],
+
+      ///this is directly to Landing page but not worl
+      // child: MaterialApp(
+      //   debugShowCheckedModeBanner: false,
+      //   title: 'iMomentum',
+      //   theme: themeNotifier.getTheme(),
+      //
+      //   ///it seems does not matter here
+      //   // darkTheme:
+      //   //     darkTheme, //add this so that the app will follow phone setting
+      //   // themeMode: ThemeMode.system,
+      //
+      //   /// todo: localizations
+      //   /// from plugin: flutter_localizations
+      //   localizationsDelegates: [
+      //     GlobalMaterialLocalizations.delegate,
+      //     GlobalWidgetsLocalizations.delegate,
+      //     DefaultCupertinoLocalizations.delegate,
+      //     GlobalCupertinoLocalizations
+      //         .delegate, // Add global cupertino localiztions.
+      //   ],
+      //
+      //   locale: Locale('en', 'US'), // Current locale
+      //   supportedLocales: [
+      //     const Locale('en', 'US'), // English
+      //     const Locale('zh', 'ZH'), // Chinese??
+      //   ],
+      //
+      //   home: LandingPage(),
+      // ),
+
+      ///this is the code that used AuthWidgetBuilder and AuthWidget
       child: AuthWidgetBuilder(
+          // final List<SingleChildWidget> Function(BuildContext, User)
           userProvidersBuilder: (_, user) => [
-                Provider<AppUser>.value(value: user),
                 Provider<Database>(
                   create: (_) => FirestoreDatabase(uid: user.uid),
                 ),
               ],
+          // final Widget Function(BuildContext, AsyncSnapshot<User>)
           builder: (context, userSnapshot) {
-            //previous version:
-            // AuthWidgetBuilder(builder: /// this includes StreamBuilder<User> for this:
-            //     (BuildContext context, AsyncSnapshot<User> userSnapshot) {
             return MaterialApp(
               debugShowCheckedModeBanner: false,
               title: 'iMomentum',
               theme: themeNotifier.getTheme(),
-
-              ///it seems does not matter here
-              // darkTheme:
-              //     darkTheme, //add this so that the app will follow phone setting
-              // themeMode: ThemeMode.system,
-
-              /// todo: local
-              /// from plugin: flutter_localizations
-              localizationsDelegates: [
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                DefaultCupertinoLocalizations.delegate,
-                GlobalCupertinoLocalizations
-                    .delegate, // Add global cupertino localiztions.
-              ],
-
-              locale: Locale('en', 'US'), // Current locale
-              supportedLocales: [
-                const Locale('en', 'US'), // English
-                const Locale('zh', 'ZH'), // Chinese??
-              ],
-
-              ///Todo: why EmailLinkErrorPresenter here?
-              home: EmailLinkErrorPresenter.create(context,
-                  child: AuthWidget(
-                    userSnapshot: userSnapshot,
-                    nonSignedInBuilder: (_) => StartScreen(),
-                    signedInBuilder: (_) => TabPage(),
-                  )),
+              //   ///it seems does not matter here
+              //   // darkTheme:
+              //   //     darkTheme, //add this so that the app will follow phone setting
+              //   // themeMode: ThemeMode.system,
+              //
+              //   /// todo: localizations
+              //   /// from plugin: flutter_localizations
+              //   localizationsDelegates: [
+              //     GlobalMaterialLocalizations.delegate,
+              //     GlobalWidgetsLocalizations.delegate,
+              //     DefaultCupertinoLocalizations.delegate,
+              //     GlobalCupertinoLocalizations
+              //         .delegate, // Add global cupertino localiztions.
+              //   ],
+              //
+              //   locale: Locale('en', 'US'), // Current locale
+              //   supportedLocales: [
+              //     const Locale('en', 'US'), // English
+              //     const Locale('zh', 'ZH'), // Chinese??
+              //   ],
+              home: AuthWidget(
+                userSnapshot: userSnapshot,
+                nonSignedInBuilder: (_) => StartScreen(),
+                signedInBuilder: (_) => TabPage(),
+              ),
+              // onGenerateRoute: AppRouter.onGenerateRoute, ///in Andrea's code
             );
           }),
     );

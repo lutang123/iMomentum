@@ -1,36 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
+import 'package:iMomentum/app/constants/my_strings.dart';
+import 'package:iMomentum/app/constants/theme.dart';
+import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/utils/pages_routes.dart';
-import 'package:iMomentum/screens/landing_and_signIn/start_screen.dart';
-import 'package:iMomentum/screens/landing_and_signIn/start_screen3_(sign_in).dart';
+import 'package:iMomentum/screens/landing_and_signIn/start_screen1.dart';
+import 'package:iMomentum/screens/landing_and_signIn/start_screen3_(signIn).dart';
 import 'dart:math';
 import 'package:liquid_swipe/liquid_swipe.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
-import 'package:iMomentum/app/utils/cap_string.dart';
-
-const imageURL1 = 'assets/images/landscape.jpg';
-const text1 =
-    'iMomentum is a special application that keeps you focused on what is the most important with peacefulness and positivity.';
-
-const imageURL2 = 'assets/images/landscape.jpg';
-const text2 = 'Inspiration: breathe life into your Mobile App'
-    '\n'
-    'Photos: Inspiring photography; Quotes: Timeless wisdom; Mantras: positive concepts.';
-
-const imageURL3 = 'assets/images/landscape.jpg';
-const text3 = 'Focus: Approach each day with intent.'
-    '\n'
-    'Daily focus: set a daily focus reminder; Todo: organize your daily tasks';
-
-const imageURL4 = 'assets/images/landscape.jpg';
-const text4 = 'Customization: design your own app'
-    '\n'
-    'Personalize with your own photos, mantras and quotes';
-
-const imageURL5 = 'assets/images/landscape.jpg';
-const text5 =
-    'iMomentum is a special application that keeps you focused on what is the most important with peacefulness and positivity.';
+import 'package:iMomentum/app/utils/extension_firstCaps.dart';
+import 'package:provider/provider.dart';
 
 class StartScreen2 extends StatefulWidget {
   final String name;
@@ -43,73 +25,15 @@ class StartScreen2 extends StatefulWidget {
 
 class _StartScreen2State extends State<StartScreen2> {
   String userName;
-
+  LiquidController liquidController;
   @override
   void initState() {
     userName = widget.name;
+    liquidController = LiquidController();
     super.initState();
   }
 
-  ///try sign in to another page
-  // Future<void> _showSignInError(
-  //     BuildContext context, PlatformException exception) async {
-  //   await PlatformExceptionAlertDialog(
-  //     title: Strings.signInFailed,
-  //     exception: exception,
-  //   ).show(context);
-  // }
-  //
-  // Future<void> _signInAnonymously(BuildContext context) async {
-  //   try {
-  //     await widget.manager.signInAnonymously();
-  //   } on PlatformException catch (e) {
-  //     _showSignInError(context, e);
-  //   }
-  // }
-  //
-  // Future<void> _signInWithGoogle(BuildContext context) async {
-  //   try {
-  //     await widget.manager.signInWithGoogle();
-  //   } on PlatformException catch (e) {
-  //     if (e.code != 'ERROR_ABORTED_BY_USER') {
-  //       _showSignInError(context, e);
-  //     }
-  //   }
-  // }
-
-  /// TODO: Facebook and Apple
-  // Future<void> _signInWithFacebook(BuildContext context) async {
-  //   try {
-  //     await manager.signInWithFacebook();
-  //   } on PlatformException catch (e) {
-  //     if (e.code != 'ERROR_ABORTED_BY_USER') {
-  //       _showSignInError(context, e);
-  //     }
-  //   }
-  // }
-
-  // Future<void> _signInWithApple(BuildContext context) async {
-  //   try {
-  //     await manager.signInWithApple();
-  //   } on PlatformException catch (e) {
-  //     if (e.code != 'ERROR_ABORTED_BY_USER') {
-  //       _showSignInError(context, e);
-  //     }
-  //   }
-  // }
-
-  // Future<void> _signInWithEmailAndPassword(BuildContext context) async {
-  //   final navigator = Navigator.of(context);
-  //   await EmailPasswordSignInPage.show(
-  //     context,
-  //     onSignedIn: navigator.pop,
-  //   );
-  // }
-
-  // widget.isLoading ? null : () => _signInWithGoogle(context),
-
   int page = 0;
-
   pageChangeCallback(int lpage) {
     setState(() {
       page = lpage;
@@ -117,11 +41,10 @@ class _StartScreen2State extends State<StartScreen2> {
   }
 
   final List<Widget> pages = [
-    MyPageContainer(imageURL: ImageUrl.startImage, text: text1),
-    MyPageContainer(imageURL: ImageUrl.startImage, text: text2),
-    MyPageContainer(imageURL: ImageUrl.startImage, text: text3),
-    MyPageContainer(imageURL: ImageUrl.startImage, text: text4),
-    MyPageContainer(imageURL: ImageUrl.startImage, text: text5),
+    MyPageContainer1(imageURL: ImageUrl.startImage1, text: Strings.text1),
+    MyPageContainer2(imageURL: ImageUrl.startImage2, title: Strings.text2),
+    MyPageContainer3(imageURL: ImageUrl.startImage3, text: Strings.text3),
+    MyPageContainer4(imageURL: ImageUrl.startImage4, text: Strings.text4),
   ];
 
   Widget _buildDot(int index) {
@@ -150,15 +73,42 @@ class _StartScreen2State extends State<StartScreen2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: darkThemeNoPhotoColor,
       body: Stack(
         children: <Widget>[
           LiquidSwipe(
             pages: pages,
-            fullTransitionValue: 200,
-            enableSlideIcon: false,
+            enableSlideIcon: true,
+            positionSlideIcon: 0.5,
+            fullTransitionValue: 600,
+            slideIconWidget: page == pages.length - 1
+                ? null
+                : Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: darkThemeAppBar,
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(20.0))),
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Icon(Icons.arrow_back_ios,
+                                size: 30, color: Colors.white),
+                            Text('Swipe to Next', style: KSignInButtonTextD)
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
             enableLoop: true,
             onPageChangeCallback: pageChangeCallback,
             waveType: WaveType.liquidReveal,
+            ignoreUserGestureWhileAnimating:
+                page == pages.length - 1 ? false : true,
+            liquidController: liquidController,
           ),
           Positioned(
             left: 30,
@@ -188,28 +138,29 @@ class _StartScreen2State extends State<StartScreen2> {
             child: Text('Hi, ${userName.firstCaps}, welcome to iMomentum.',
                 style: KLandingTitle),
           ),
-          Positioned(
-            left: 30,
-            right: 30,
-            bottom: 80,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: MyFlatButton(
-                        text: 'Start Now',
-                        onPressed: () => Navigator.of(context).pushReplacement(
-                                // PageRoutes.fade(() => SignInScreenBuilder())),
-                                PageRoutes.fade(
-                              () => StartScreen3(name: userName),
-                            ))))
-              ],
-            ),
-          ),
+          page == pages.length - 1
+              ? Positioned(
+                  left: 30,
+                  right: 30,
+                  bottom: 140,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                          padding: const EdgeInsets.all(15.0),
+                          child: MyFlatButton(
+                              text: 'Start Now',
+                              onPressed: () => Navigator.of(context)
+                                      .pushReplacement(PageRoutes.fade(
+                                    () => StartScreen3(name: userName),
+                                  ))))
+                    ],
+                  ),
+                )
+              : Container(),
           Padding(
-            padding: EdgeInsets.all(30),
+            padding: EdgeInsets.all(20),
             child: Column(
               children: <Widget>[
                 Expanded(child: SizedBox()),
@@ -220,14 +171,76 @@ class _StartScreen2State extends State<StartScreen2> {
               ],
             ),
           ),
+          page == pages.length - 1
+              ? Container()
+              : Align(
+                  alignment: Alignment.bottomRight,
+                  child: Padding(
+                    padding: const EdgeInsets.all(25.0),
+                    child: FlatButton(
+                      onPressed: () {
+                        liquidController.animateToPage(
+                            page: pages.length - 1, duration: 500);
+                      },
+                      child: Container(
+                        child: Padding(
+                          padding: const EdgeInsets.all(3.0),
+                          child: Text("Skip to End",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white,
+                              )),
+                        ),
+                        decoration: BoxDecoration(
+                            color: darkThemeAppBar,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10.0))),
+                      ),
+                      color: Colors.black.withOpacity(0.01),
+                    ),
+                  ),
+                ),
+          page == 0
+              ? Container()
+              : Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.all(25.0),
+                    child: FlatButton(
+                      onPressed: () {
+                        liquidController.jumpToPage(
+                            page: liquidController.currentPage - 1);
+                      },
+                      child: Container(
+                        child: Padding(
+                          padding: const EdgeInsets.all(3.0),
+                          child: Text(
+                            "Previous Page",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        decoration: BoxDecoration(
+                            color: darkThemeAppBar,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10.0))),
+                      ),
+                      color: Colors.black.withOpacity(0.01),
+                    ),
+                  ),
+                )
         ],
       ),
     );
   }
 }
 
-class MyPageContainer extends StatelessWidget {
-  const MyPageContainer({
+const double heightNum = 0.4;
+
+class MyPageContainer1 extends StatelessWidget {
+  const MyPageContainer1({
     Key key,
     @required this.imageURL,
     @required this.text,
@@ -238,20 +251,282 @@ class MyPageContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Container(
       decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage(imageURL),
-          fit: BoxFit.cover,
-        ),
-      ),
+          image: DecorationImage(
+            image: AssetImage(imageURL),
+            fit: BoxFit.cover,
+          ),
+          gradient: KBackgroundGradient),
       constraints: BoxConstraints.expand(),
       child: SafeArea(
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(15.0),
-            child:
-                MySignInContainer(child: Text(text, style: KLandingSubtitle)),
+            child: MySignInContainer(
+                height: height * heightNum,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(text,
+                        style:
+                            _darkTheme ? KLandingSubtitleD : KLandingSubtitleL,
+                        textAlign: TextAlign.center),
+                  ],
+                )),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class MyPageContainer2 extends StatelessWidget {
+  const MyPageContainer2({
+    Key key,
+    @required this.imageURL,
+    @required this.title,
+  }) : super(key: key);
+
+  final String imageURL;
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    return Container(
+      decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(imageURL),
+            fit: BoxFit.cover,
+          ),
+          gradient: KBackgroundGradient),
+      constraints: BoxConstraints.expand(),
+      child: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: MySignInContainer(
+                height: height * heightNum,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      style: _darkTheme ? KLandingSubtitleD : KLandingSubtitleL,
+                    ),
+                    SizedBox(height: 15),
+                    Text('Breathe life into your device',
+                        style: _darkTheme
+                            ? KLandingSubtitle2D
+                            : KLandingSubtitle2L,
+                        textAlign: TextAlign.center),
+                    SizedBox(height: 20),
+                    ListTile(
+                      leading: Icon(FontAwesomeIcons.images,
+                          color:
+                              _darkTheme ? darkThemeButton : lightThemeButton),
+                      title: Text('Inspiring photography with dynamic display.',
+                          style: TextStyle(
+                              color: _darkTheme
+                                  ? darkThemeWords
+                                  : lightThemeWords)),
+                    ),
+                    ListTile(
+                      leading: Icon(FontAwesomeIcons.quoteLeft,
+                          color:
+                              _darkTheme ? darkThemeButton : lightThemeButton),
+                      title: Text('Timeless wisdom with daily quote.',
+                          style: TextStyle(
+                              color: _darkTheme
+                                  ? darkThemeWords
+                                  : lightThemeWords)),
+                    ),
+                    ListTile(
+                      leading: Icon(FontAwesomeIcons.solidHeart,
+                          color:
+                              _darkTheme ? darkThemeButton : lightThemeButton),
+                      title: Text('Positive concept with mantras',
+                          style: TextStyle(
+                              color: _darkTheme
+                                  ? darkThemeWords
+                                  : lightThemeWords)),
+                    )
+                  ],
+                )),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class MyPageContainer3 extends StatelessWidget {
+  const MyPageContainer3({
+    Key key,
+    @required this.imageURL,
+    @required this.text,
+  }) : super(key: key);
+
+  final String imageURL;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    return Container(
+      decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(imageURL),
+            fit: BoxFit.cover,
+          ),
+          gradient: KBackgroundGradient),
+      constraints: BoxConstraints.expand(),
+      child: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: MySignInContainer(
+                height: height * heightNum,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      text,
+                      style: _darkTheme ? KLandingSubtitleD : KLandingSubtitleL,
+                    ),
+                    SizedBox(height: 15),
+                    Text(
+                      'Approach each day with intent.',
+                      style:
+                          _darkTheme ? KLandingSubtitle2D : KLandingSubtitle2L,
+                    ),
+                    SizedBox(height: 20),
+                    ListTile(
+                      leading: Icon(FontAwesomeIcons.check,
+                          color:
+                              _darkTheme ? darkThemeButton : lightThemeButton),
+                      title: Text('Pomodoro Timer with daily focus report',
+                          style: TextStyle(
+                              color: _darkTheme
+                                  ? darkThemeWords
+                                  : lightThemeWords)),
+                    ),
+                    ListTile(
+                      leading: Icon(FontAwesomeIcons.check,
+                          color:
+                              _darkTheme ? darkThemeButton : lightThemeButton),
+                      title: Text('Calendar with Task list and Reminder',
+                          style: TextStyle(
+                              color: _darkTheme
+                                  ? darkThemeWords
+                                  : lightThemeWords)),
+                    ),
+                    ListTile(
+                      leading: Icon(FontAwesomeIcons.check,
+                          color:
+                              _darkTheme ? darkThemeButton : lightThemeButton),
+                      title: Text('Notes with different colors and font styles',
+                          style: TextStyle(
+                              color: _darkTheme
+                                  ? darkThemeWords
+                                  : lightThemeWords)),
+                    ),
+                  ],
+                )),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class MyPageContainer4 extends StatelessWidget {
+  const MyPageContainer4({
+    Key key,
+    @required this.imageURL,
+    @required this.text,
+  }) : super(key: key);
+
+  final String imageURL;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    return Container(
+      decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(imageURL),
+            fit: BoxFit.cover,
+          ),
+          gradient: KBackgroundGradient),
+      constraints: BoxConstraints.expand(),
+      child: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: MySignInContainer(
+                height: height * heightNum,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      text,
+                      style: _darkTheme ? KLandingSubtitleD : KLandingSubtitleL,
+                    ),
+                    SizedBox(height: 15),
+                    Text(
+                      'Make it your own App.',
+                      style:
+                          _darkTheme ? KLandingSubtitle2D : KLandingSubtitle2L,
+                    ),
+                    SizedBox(height: 20),
+                    ListTile(
+                      leading: Icon(FontAwesomeIcons.cloudUploadAlt,
+                          color:
+                              _darkTheme ? darkThemeButton : lightThemeButton),
+                      title: Text('Add your own photo.',
+                          style: TextStyle(
+                              color: _darkTheme
+                                  ? darkThemeWords
+                                  : lightThemeWords)),
+                    ),
+                    ListTile(
+                      leading: Icon(FontAwesomeIcons.edit,
+                          color:
+                              _darkTheme ? darkThemeButton : lightThemeButton),
+                      title: Text('Add your own quote.',
+                          style: TextStyle(
+                              color: _darkTheme
+                                  ? darkThemeWords
+                                  : lightThemeWords)),
+                    ),
+                    ListTile(
+                      leading: Icon(FontAwesomeIcons.edit,
+                          color:
+                              _darkTheme ? darkThemeButton : lightThemeButton),
+                      title: Text('Add your own mantra.',
+                          style: TextStyle(
+                              color: _darkTheme
+                                  ? darkThemeWords
+                                  : lightThemeWords)),
+                    ),
+                  ],
+                )),
           ),
         ),
       ),

@@ -59,13 +59,20 @@ class MyCalendar extends StatelessWidget {
             markersColor: _darkTheme ? Colors.white70 : Colors.black54,
             outsideDaysVisible: true,
             weekdayStyle: Theme.of(context).textTheme.bodyText1, //16
+            weekendStyle: TextStyle(
+                fontSize: 16,
+                color:
+                    _darkTheme ? Colors.deepOrangeAccent : Colors.deepOrange),
             unavailableStyle: Theme.of(context).textTheme.bodyText1,
             outsideHolidayStyle: Theme.of(context).textTheme.bodyText1,
           ),
 
           daysOfWeekStyle: DaysOfWeekStyle(
             weekdayStyle: Theme.of(context).textTheme.bodyText1, //16
-            // weekendStyle: Theme.of(context).textTheme.bodyText1,
+            // weekendStyle: TextStyle(
+            //     fontSize: 16,
+            //     color:
+            //         _darkTheme ? Colors.deepOrangeAccent : Colors.deepOrange),
           ),
           headerStyle: HeaderStyle(
             titleTextStyle: Theme.of(context).textTheme.subtitle1, //18.0,

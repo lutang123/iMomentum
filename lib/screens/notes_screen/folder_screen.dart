@@ -13,9 +13,10 @@ import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
+import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/models/folder.dart';
 import 'package:iMomentum/app/models/note.dart';
-import 'package:iMomentum/app/services/database.dart';
+import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/notes_screen/notes_in_folder_screen.dart';
 import 'package:iMomentum/screens/notes_screen/search_delegate_note.dart';
@@ -25,7 +26,7 @@ import 'package:iMomentum/app/constants/theme.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import '../../app/common_widgets/empty_and_error_content.dart';
 import 'folder_container.dart';
-import 'package:iMomentum/app/utils/cap_string.dart';
+import 'package:iMomentum/app/utils/extension_firstCaps.dart';
 
 class FolderScreen extends StatefulWidget {
   @override
@@ -168,7 +169,7 @@ class FolderScreenState extends State<FolderScreen> {
                                         allNotes,
                                         // if notes.isNotEmpty ? return Container()
                                         // only if no added folder and no notes, we show the message
-                                        emptyNoteAndFolder, //text
+                                        Strings.emptyNoteAndFolder, //text
                                         '', //tips
                                         '', //textTap
                                         null //onTap
@@ -182,7 +183,7 @@ class FolderScreenState extends State<FolderScreen> {
                                       database,
                                       allNotes,
                                       '', //text
-                                      textError, //tips
+                                      Strings.textError, //tips
                                       'Or contact us.', //textTap
                                       ///TODO contact us.
                                       null //onTap
@@ -199,7 +200,7 @@ class FolderScreenState extends State<FolderScreen> {
                             return _noAddedFolderContent(
                               database,
                               allNotes,
-                              emptyNoteAndFolder, //text
+                              Strings.emptyNoteAndFolder, //text
                               '', //tips
                               '', //textTap
                               null, //onTap
@@ -214,7 +215,7 @@ class FolderScreenState extends State<FolderScreen> {
                               Spacer(),
                               EmptyOrError(
                                   text: '',
-                                  tips: textError,
+                                  tips: Strings.textError,
                                   textTap: 'Or contact us.',
                                   onTap: null),
                               Spacer(),
@@ -253,7 +254,7 @@ class FolderScreenState extends State<FolderScreen> {
               children: [
                 Text('Folders',
                     style: TextStyle(
-                        color: _darkTheme ? darkThemeButton : lightThemeButton,
+                        color: _darkTheme ? darkThemeWords : lightThemeWords,
                         fontSize: 34,
                         fontWeight: FontWeight.w600)),
               ],
@@ -509,6 +510,7 @@ class FolderScreenState extends State<FolderScreen> {
     );
   }
 
+  ///todo: change
   void _showDeleteDialog(Database database, Folder folder) async {
     await showDialog(
       context: context,

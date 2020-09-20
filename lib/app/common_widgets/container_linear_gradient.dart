@@ -12,7 +12,7 @@ class ContainerLinearGradient extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             Colors.transparent, //we can not add with opacity
-            Colors.black12,
+            Colors.black26,
           ],
           stops: [0.5, 1.0],
           begin: Alignment.topCenter,

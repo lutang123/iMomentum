@@ -71,14 +71,14 @@ class AboutScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(15.0),
                 child: Text(
                   "xxxxxx",
-                  style: KLandingSubtitle,
+                  style: KLandingSubtitleD,
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: Text(
                   "xxxxxx",
-                  style: KLandingSubtitle,
+                  style: KLandingSubtitleD,
                 ),
               ),
               SizedBox(height: 10),

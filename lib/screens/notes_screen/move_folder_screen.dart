@@ -4,16 +4,16 @@ import 'package:iMomentum/app/common_widgets/empty_and_error_content.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_list_tile.dart';
 import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
-import 'package:iMomentum/app/constants/constants_style.dart';
+import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/models/folder.dart';
 import 'package:iMomentum/app/models/note.dart';
-import 'package:iMomentum/app/services/database.dart';
+import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:flutter/services.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:provider/provider.dart';
-import 'package:iMomentum/app/utils/cap_string.dart';
+import 'package:iMomentum/app/utils/extension_firstCaps.dart';
 
 class MoveFolderScreen extends StatefulWidget {
   const MoveFolderScreen({
@@ -108,8 +108,8 @@ class _MoveFolderScreenState extends State<MoveFolderScreen> {
                 return Expanded(
                     child: EmptyOrError(
                         text: '',
-                        tips: textError,
-                        textTap: textErrorOnTap,
+                        tips: Strings.textError,
+                        textTap: Strings.textErrorOnTap,
                         //Todo contact us
                         onTap: null));
               }

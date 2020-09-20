@@ -3,6 +3,7 @@ import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:provider/provider.dart';
 
+// in home screen
 class MyDotContainer extends StatelessWidget {
   final Color color;
 
@@ -40,7 +41,7 @@ class FlushBarButtonChild extends StatelessWidget {
   }
 }
 
-// for PINNED/OTHERS
+// for PINNED/OTHERS No theme
 class ContainerOnlyText extends StatelessWidget {
   final String text;
 
@@ -96,41 +97,22 @@ class ContainerOnlyTextPhotoSearch extends StatelessWidget {
 }
 
 class MySignInContainer extends StatelessWidget {
-  const MySignInContainer({Key key, this.child}) : super(key: key);
+  const MySignInContainer({Key key, this.child, this.height}) : super(key: key);
   final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: child,
-      margin: EdgeInsets.symmetric(horizontal: 15.0),
-      padding: EdgeInsets.all(15.0),
-      decoration: BoxDecoration(
-          color: darkThemeSurface,
-          // border: Border.all(
-          //     width: 2, color: _darkTheme ? Colors.white38 : Colors.black12),
-          borderRadius: BorderRadius.circular(20.0)),
-    );
-  }
-}
-
-class MyUserInfoContainer extends StatelessWidget {
-  const MyUserInfoContainer({Key key, this.child}) : super(key: key);
-  final Widget child;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Container(
-      child: child,
       margin: EdgeInsets.symmetric(horizontal: 15.0),
       padding: EdgeInsets.all(15.0),
       decoration: BoxDecoration(
           color: _darkTheme ? darkThemeSurface : lightThemeSurface,
-          // border: Border.all(
-          //     width: 2, color: _darkTheme ? Colors.white38 : Colors.black12),
           borderRadius: BorderRadius.circular(20.0)),
+      height: height,
+      child: child,
     );
   }
 }
@@ -157,7 +139,7 @@ class NoteSearchBar extends StatelessWidget {
                 onPressed: onPressed,
                 icon: Icon(Icons.search,
                     color: _darkTheme
-                        ? Colors.white70
+                        ? darkThemeButton.withOpacity(0.7)
                         : lightThemeButton.withOpacity(0.7)),
                 label: Text(
                   'Search your notes',
@@ -184,10 +166,6 @@ class CustomizedContainerNew extends StatelessWidget {
       margin: EdgeInsets.only(left: 8.0, right: 8),
       decoration: BoxDecoration(
         color: color,
-        // borderRadius: BorderRadius.only(
-//           topLeft: Radius.circular(20.0),
-//           topRight: Radius.circular(20.0),
-//         ),
         borderRadius: BorderRadius.all(Radius.circular(20.0)),
       ),
       child: child,
@@ -196,8 +174,8 @@ class CustomizedContainerNew extends StatelessWidget {
 }
 
 //used in NoteContainer for folder name
-class SmallContainer extends StatelessWidget {
-  SmallContainer({this.text});
+class SmallContainerFolderName extends StatelessWidget {
+  SmallContainerFolderName({this.text});
   final String text;
 
   ////                              Container(
@@ -235,37 +213,38 @@ class SmallContainer extends StatelessWidget {
 }
 
 ///not used yet
-class SmallContainerForReminder extends StatelessWidget {
-  SmallContainerForReminder({this.text = '', this.bkgdColor = Colors.black38});
-  final String text;
-  final Color bkgdColor;
+// class SmallContainerForReminder extends StatelessWidget {
+//   SmallContainerForReminder({this.text = '', this.bkgdColor = Colors.black38});
+//   final String text;
+//   final Color bkgdColor;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       padding: EdgeInsets.symmetric(horizontal: 3),
+//       decoration: BoxDecoration(
+//         color: bkgdColor,
+//         borderRadius: BorderRadius.all(Radius.circular(20.0)),
+//         border: Border.all(color: Colors.white54, width: 1),
+//       ),
+//       child: Padding(
+//         padding: const EdgeInsets.all(3.0),
+//         child: Row(
+//           mainAxisSize: MainAxisSize.min,
+//           children: [
+//             Icon(Icons.alarm, color: Colors.yellow, size: 18),
+//             SizedBox(width: 3),
+//             Flexible(
+//                 child: Text(text,
+//                     style: TextStyle(color: Colors.white70, fontSize: 10))),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 3),
-      decoration: BoxDecoration(
-        color: bkgdColor,
-        borderRadius: BorderRadius.all(Radius.circular(20.0)),
-        border: Border.all(color: Colors.white54, width: 1),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(3.0),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.alarm, color: Colors.yellow, size: 18),
-            SizedBox(width: 3),
-            Flexible(
-                child: Text(text,
-                    style: TextStyle(color: Colors.white70, fontSize: 10))),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
+///all add screen
 class CustomizedBottomSheet extends StatelessWidget {
   CustomizedBottomSheet({this.child, this.color});
   final Widget child;

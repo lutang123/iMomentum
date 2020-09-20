@@ -13,11 +13,12 @@ import 'package:iMomentum/app/common_widgets/my_list_tile.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/setting_switch.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
+import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/models/quote_model.dart';
-import 'package:iMomentum/app/services/database.dart';
+import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
-import 'package:iMomentum/screens/iPomodoro/clock_title.dart';
+import 'package:iMomentum/screens/iPomodoro/clock_mantra_quote_title.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'add_quote.dart';
@@ -123,15 +124,15 @@ class _MyQuotesState extends State<MyQuotes> {
                               } else {
                                 return EmptyOrErrorMantra(
                                   hideEmptyMessage: _hideEmptyMessage,
-                                  text1: textQuote1,
-                                  text2: textQuote2,
+                                  text1: Strings.textQuote1,
+                                  text2: Strings.textQuote2,
                                 );
                               }
                             } else if (snapshot.hasError) {
                               return EmptyOrErrorMantra(
                                 hideEmptyMessage: _hideEmptyMessage,
-                                text1: textQuote1,
-                                text2: textError,
+                                text1: Strings.textQuote1,
+                                text2: Strings.textError,
                               );
                             }
                             return Center(child: CircularProgressIndicator());

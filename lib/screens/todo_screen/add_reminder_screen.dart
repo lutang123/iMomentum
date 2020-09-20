@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -7,8 +8,7 @@ import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/models/todo.dart';
-import 'package:iMomentum/app/sign_in/AppUser.dart';
-import 'package:iMomentum/app/services/database.dart';
+import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:intl/intl.dart';
@@ -17,11 +17,11 @@ import 'package:provider/provider.dart';
 class AddReminderScreen extends StatefulWidget {
   const AddReminderScreen({
     this.todo,
-    this.user,
+    // this.user,
     this.database,
   });
   final Todo todo;
-  final AppUser user;
+  // final AppUser user;
   final Database database;
 
   @override
@@ -47,7 +47,9 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
   // String formattedToday = DateFormat('M/d/y').format(DateTime.now());
 
   Todo get todo => widget.todo;
-  AppUser get user => widget.user;
+  // AppUser get user => widget.user;
+  final User user = FirebaseAuth.instance.currentUser;
+
   Database get database => widget.database;
 
   String firstName;

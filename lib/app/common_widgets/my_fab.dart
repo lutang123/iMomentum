@@ -21,9 +21,10 @@ class MyFAB extends StatelessWidget {
       onPressed: onPressed,
       shape: CircleBorder(
           side: BorderSide(
-              color: _darkTheme ? Colors.white : lightThemeButton, width: 2.0)),
+              color: _darkTheme ? darkThemeButton : lightThemeButton,
+              width: 2.0)),
       child: Icon(Icons.add,
-          size: 30, color: _darkTheme ? Colors.white : lightThemeButton),
+          size: 30, color: _darkTheme ? darkThemeButton : lightThemeButton),
       // child: child,
       backgroundColor: _darkTheme ? Colors.transparent : Colors.white24,
     );

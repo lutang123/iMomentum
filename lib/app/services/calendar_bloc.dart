@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:iMomentum/app/models/duration_model.dart';
 import 'package:iMomentum/app/models/todo.dart';
-import 'package:iMomentum/app/services/database.dart';
+import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:rxdart/rxdart.dart';
 
 class TodoDuration {

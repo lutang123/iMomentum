@@ -10,8 +10,9 @@ import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
+import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/models/folder.dart';
-import 'package:iMomentum/app/services/database.dart';
+import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/models/note.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/notes_screen/note_container.dart';
@@ -207,7 +208,8 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
                             children: [
                               _topRow(allNotesInThisFolder),
                               Spacer(),
-                              Center(child: EmptyOrError(text: emptyNote)),
+                              Center(
+                                  child: EmptyOrError(text: Strings.emptyNote)),
                               Spacer() //empty content
                             ],
                           ),
@@ -224,8 +226,8 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
                         _topErrorRow(),
                         Expanded(
                             child: EmptyOrError(
-                                tips: textError,
-                                textTap: textErrorOnTap,
+                                tips: Strings.textError,
+                                textTap: Strings.textErrorOnTap,
                                 //Todo contact us
                                 onTap: null)),
                       ],

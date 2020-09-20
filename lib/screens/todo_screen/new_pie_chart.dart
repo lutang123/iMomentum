@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:iMomentum/app/constants/piechart_color.dart';
+import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/todo_screen/todo_empty_or_error.dart';
 import 'package:pie_chart/pie_chart.dart';
@@ -50,9 +50,9 @@ class NewPieChart extends StatelessWidget {
       );
     } else {
       return TodoScreenEmptyOrError(
-        text1: textPieChart1,
-        tips: textPieTip,
-        textTap: textPieTap,
+        text1: Strings.textPieChart1,
+        tips: Strings.textPieTip,
+        textTap: Strings.textPieTap,
         onTap: () async {
           const url = 'https://en.wikipedia.org/wiki/Pomodoro_Technique';
           if (await canLaunch(url)) {

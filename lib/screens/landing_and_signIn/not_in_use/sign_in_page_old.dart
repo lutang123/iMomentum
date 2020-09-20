@@ -5,7 +5,7 @@
 // import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 // import 'package:iMomentum/app/common_widgets/social_sign_in_button.dart';
 // import 'package:iMomentum/app/constants/keys_sign_in.dart';
-// import 'package:iMomentum/app/constants/string_sign_in.dart';
+// import 'package:iMomentum/app/constants/strings_sign_in.dart';
 // // import 'package:iMomentum/app/services/apple_sign_in_available.dart';
 // import 'package:iMomentum/app/sign_in/AppUser.dart';
 // import 'package:iMomentum/app/sign_in/developer_menu.dart';

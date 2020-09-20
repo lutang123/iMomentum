@@ -4,7 +4,7 @@ import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/models/folder.dart';
 import 'package:iMomentum/app/models/note.dart';
-import 'package:iMomentum/app/services/database.dart';
+import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/notes_screen/color_picker.dart';
 import 'package:provider/provider.dart';
@@ -97,7 +97,7 @@ class NoteContainer extends StatelessWidget {
                       children: <Widget>[
                         //this is the folder we passed, if the folder is All notes,
                         // how do we display folder
-                        SmallContainer(text: _getFolderTitle(folders))
+                        SmallContainerFolderName(text: _getFolderTitle(folders))
                       ],
                     ),
                   )

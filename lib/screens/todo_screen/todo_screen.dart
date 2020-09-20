@@ -14,9 +14,9 @@ import 'package:iMomentum/app/common_widgets/my_fab.dart';
 import 'package:iMomentum/app/common_widgets/my_list_tile.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
+import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/models/todo.dart';
-import 'package:iMomentum/app/sign_in/AppUser.dart';
-import 'package:iMomentum/app/services/database.dart';
+import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/services/calendar_bloc.dart';
 import 'package:iMomentum/app/services/daily_todos_details.dart';
@@ -318,8 +318,12 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                             } else {
                               return TabBarView(
                                 children: <Widget>[
-                                  firstTabNoDataContent(database, _eventNoData,
-                                      textTodoList1, textTodoList2, ''),
+                                  firstTabNoDataContent(
+                                      database,
+                                      _eventNoData,
+                                      Strings.textTodoList1,
+                                      Strings.textTodoList2,
+                                      ''),
                                   secondTabNoDataContent(
                                       database, _eventNoData),
                                 ],
@@ -336,7 +340,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                               children: <Widget>[
                                 ///Todo, contact us
                                 firstTabNoDataContent(database, _eventNoData,
-                                    '', textError, 'Or contact us'),
+                                    '', Strings.textError, 'Or contact us'),
                                 secondTabNoDataContent(database, _eventNoData),
                               ],
                             );
@@ -427,7 +431,8 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                     (_todayList.isEmpty) && (_selectedList.isEmpty)
                         ? SliverToBoxAdapter(
                             child: TodoScreenEmptyOrError(
-                                text1: textTodoList1, tips: textTodoList2),
+                                text1: Strings.textTodoList1,
+                                tips: Strings.textTodoList2),
                           )
                         : _selectedList.isEmpty
 
@@ -555,7 +560,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
       Database database, List<Todo> todos, List<Todo> anyList, int index) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    final AppUser user = Provider.of<AppUser>(context, listen: false);
+
     final Todo todo = anyList[index - 1];
     // this is to make sure only today or after today can add reminder
     final difference = todo.date.difference(DateTime.now());
@@ -579,7 +584,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                 icon: todo.hasReminder == null || todo.hasReminder == false
                     ? FontAwesomeIcons.bell
                     : FontAwesomeIcons.solidBell,
-                onTap: () => _showAddReminderScreen(todo, user, database))
+                onTap: () => _showAddReminderScreen(todo, database))
             : null
       ],
       secondaryActions: <Widget>[
@@ -763,8 +768,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
     );
   }
 
-  void _showAddReminderScreen(
-      Todo todo, AppUser user, Database database) async {
+  void _showAddReminderScreen(Todo todo, Database database) async {
     setState(() {
       _listVisible = false;
     });
@@ -774,7 +778,6 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
         isScrollControlled: true,
         builder: (context) => AddReminderScreen(
               todo: todo,
-              user: user,
               database: database,
             ));
     setState(() {

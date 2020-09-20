@@ -4,11 +4,11 @@ import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/models/quote_model.dart';
-import 'package:iMomentum/app/services/database.dart';
+import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:provider/provider.dart';
-import 'package:iMomentum/app/utils/cap_string.dart';
+import 'package:iMomentum/app/utils/extension_firstCaps.dart';
 
 class AddQuoteScreen extends StatefulWidget {
   const AddQuoteScreen({this.database, this.quote});
@@ -67,11 +67,12 @@ class _AddQuoteScreenState extends State<AddQuoteScreen> {
                         value.isNotEmpty ? null : 'Mantra can\'t be empty',
                     onSaved: (value) => title = value.firstCaps,
                     style: TextStyle(
-                        color: _darkTheme ? Colors.white : Color(0xF01b262c),
+                        color: _darkTheme ? darkThemeWords : lightThemeWords,
                         fontSize: 20.0),
                     autofocus: true,
 //                    textAlign: TextAlign.center,
-                    cursorColor: _darkTheme ? Colors.white : lightThemeButton,
+                    cursorColor:
+                        _darkTheme ? darkThemeButton : lightThemeButton,
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
                     maxLength: 120,
@@ -96,11 +97,12 @@ class _AddQuoteScreenState extends State<AddQuoteScreen> {
                     initialValue: author,
                     onSaved: (value) => author = value,
                     style: TextStyle(
-                        color: _darkTheme ? Colors.white : Color(0xF01b262c),
+                        color: _darkTheme ? darkThemeWords : lightThemeWords,
                         fontSize: 20.0),
                     autofocus: true,
 //                    textAlign: TextAlign.center,
-                    cursorColor: _darkTheme ? Colors.white : lightThemeButton,
+                    cursorColor:
+                        _darkTheme ? darkThemeButton : lightThemeButton,
 //                    keyboardType: TextInputType.multiline,
                     maxLines: 1,
                     maxLength: 20,
@@ -126,7 +128,7 @@ class _AddQuoteScreenState extends State<AddQuoteScreen> {
                   onPressed: _save,
                   text: 'SAVE',
                   bkgdColor: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
-                  color: _darkTheme ? Colors.white : lightThemeButton),
+                  color: _darkTheme ? darkThemeButton : lightThemeButton),
               SizedBox(height: 20)
             ],
           ),

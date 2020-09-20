@@ -4,10 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
-import 'package:iMomentum/app/constants/theme_color_not_use.dart';
 import 'package:iMomentum/app/utils/shared_axis.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
-import 'package:iMomentum/app/services/database.dart';
+import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/home_drawer/unsplash/preview_file.dart';
 import 'package:iMomentum/screens/home_drawer/unsplash/search_delegate_photo.dart';
@@ -88,7 +87,7 @@ class _ImageGalleryState extends State<ImageGallery> {
             leading: IconButton(
               icon: Icon(
                 Icons.arrow_back_ios,
-                color: _darkTheme ? Colors.white : lightThemeButton,
+                color: _darkTheme ? darkThemeButton : lightThemeButton,
                 size: 30,
               ),
               onPressed: () {
@@ -108,7 +107,7 @@ class _ImageGalleryState extends State<ImageGallery> {
                 icon: Icon(
                   Icons.search,
                   size: 30,
-                  color: _darkTheme ? Colors.white : lightThemeButton,
+                  color: _darkTheme ? darkThemeButton : lightThemeButton,
                 ),
               )
             ],
@@ -209,9 +208,16 @@ class _ImageGalleryState extends State<ImageGallery> {
                                         ? Colors.black38
                                         : lightThemeButton.withOpacity(0.5),
                                     child: FlatButton.icon(
-                                      icon: Icon(Icons.clear),
+                                      icon: Icon(Icons.clear,
+                                          color: _darkTheme
+                                              ? darkThemeButton
+                                              : lightThemeButton),
                                       onPressed: _deleteApplied,
-                                      label: Text('Change'),
+                                      label: Text('Change',
+                                          style: TextStyle(
+                                              color: _darkTheme
+                                                  ? darkThemeWords
+                                                  : lightThemeWords)),
                                     ),
                                   ),
                                 ),
@@ -225,10 +231,17 @@ class _ImageGalleryState extends State<ImageGallery> {
                                         ? Colors.black38
                                         : lightThemeButton.withOpacity(0.5),
                                     child: FlatButton.icon(
-                                      icon: Icon(Icons.check),
+                                      icon: Icon(Icons.check,
+                                          color: _darkTheme
+                                              ? darkThemeButton
+                                              : lightThemeButton),
                                       onPressed: () =>
                                           _applyAgain(_appliedImageUrl),
-                                      label: Text('Apply'),
+                                      label: Text('Apply',
+                                          style: TextStyle(
+                                              color: _darkTheme
+                                                  ? darkThemeWords
+                                                  : lightThemeWords)),
                                     ),
                                   ),
                                 ),
@@ -328,9 +341,18 @@ class _ImageGalleryState extends State<ImageGallery> {
                                         ? Colors.black38
                                         : lightThemeButton.withOpacity(0.5),
                                     child: FlatButton.icon(
-                                      icon: Icon(Icons.crop),
+                                      icon: Icon(Icons.crop,
+                                          color: _darkTheme
+                                              ? darkThemeButton
+                                              : lightThemeButton),
                                       onPressed: _cropImage,
-                                      label: Text('Crop'),
+                                      label: Text(
+                                        'Crop',
+                                        style: TextStyle(
+                                            color: _darkTheme
+                                                ? darkThemeWords
+                                                : lightThemeWords),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -344,9 +366,16 @@ class _ImageGalleryState extends State<ImageGallery> {
                                         ? Colors.black38
                                         : lightThemeButton.withOpacity(0.5),
                                     child: FlatButton.icon(
-                                      icon: Icon(Icons.remove_red_eye),
+                                      icon: Icon(Icons.remove_red_eye,
+                                          color: _darkTheme
+                                              ? darkThemeButton
+                                              : lightThemeButton),
                                       onPressed: _preview,
-                                      label: Text('Preview'),
+                                      label: Text('Preview',
+                                          style: TextStyle(
+                                              color: _darkTheme
+                                                  ? darkThemeWords
+                                                  : lightThemeWords)),
                                     ),
                                   ),
                                 ),
@@ -360,9 +389,16 @@ class _ImageGalleryState extends State<ImageGallery> {
                                         ? Colors.black38
                                         : lightThemeButton.withOpacity(0.5),
                                     child: FlatButton.icon(
-                                      icon: Icon(Icons.clear),
+                                      icon: Icon(Icons.clear,
+                                          color: _darkTheme
+                                              ? darkThemeButton
+                                              : lightThemeButton),
                                       onPressed: _cancel,
-                                      label: Text('Cancel'),
+                                      label: Text('Cancel',
+                                          style: TextStyle(
+                                              color: _darkTheme
+                                                  ? darkThemeWords
+                                                  : lightThemeWords)),
                                     ),
                                   ),
                                 ),
@@ -376,7 +412,7 @@ class _ImageGalleryState extends State<ImageGallery> {
                                   padding: const EdgeInsets.only(
                                       left: 15, right: 15, top: 10),
                                   child: Text(
-                                      'Tips: Photo on full-screen may look different as the original one. Preview first and crop the photo as needed, or click Cancel and choose another one.',
+                                      'Tips: Photo on full-screen may look different as the original one. Preview first and crop the photo as needed, or click Cancel to choose another one.',
                                       style: Theme.of(context)
                                           .textTheme
                                           .subtitle2),

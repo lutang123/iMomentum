@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/models/data/quote_list.dart';
-import 'package:iMomentum/app/services/global_key.dart';
+import 'package:iMomentum/app/services/my_global_keys.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'package:iMomentum/app/utils/show_more_text_pop_up.dart';
+import 'package:iMomentum/app/utils/package/show_more_text_pop_up.dart';
 
 //if want to show more.
 ///https://stackoverflow.com/questions/49572747/flutter-how-to-hide-or-show-more-text-within-certain-length
@@ -150,7 +150,8 @@ class DailyQuote extends StatelessWidget {
     );
   }
 
-  final GlobalKey key = RIKeys.riKey3;
+  ///we can not put this inside the function.
+  final GlobalKey key = MyGlobalKeys.dailyQuoteKey;
   void _showMoreText(String text, BuildContext context) {
     ShowMoreTextPopup popup = ShowMoreTextPopup(context,
         text: text,
@@ -219,8 +220,7 @@ class RestQuoteClass extends StatelessWidget {
   }
 
   ///notes on show more text
-
-  final GlobalKey key = RIKeys.riKey2;
+  final GlobalKey key = MyGlobalKeys.restQuoteKey;
   void _showMoreText(String text, BuildContext context) {
     ShowMoreTextPopup popup = ShowMoreTextPopup(context,
         text: text,

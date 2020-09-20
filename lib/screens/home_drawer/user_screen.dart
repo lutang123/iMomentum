@@ -1,15 +1,15 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iMomentum/app/common_widgets/avatar.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
-import 'package:iMomentum/app/common_widgets/my_text_field.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
-import 'package:iMomentum/app/sign_in/AppUser.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
-import 'package:iMomentum/app/sign_in/firebase_auth_service.dart';
+import 'package:iMomentum/app/sign_in/new_firebase_auth_service.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/cupertino.dart';
 import '../../app/common_widgets/avatar.dart';
@@ -28,10 +28,11 @@ class _UserScreenState extends State<UserScreen> {
     final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
     bool _randomOn = (randomNotifier.getRandom() == true);
     final imageNotifier = Provider.of<ImageNotifier>(context, listen: false);
+
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
 
-    final AppUser user = Provider.of<AppUser>(context, listen: false);
+    final User user = FirebaseAuth.instance.currentUser;
 
     return Stack(
       fit: StackFit.expand,
@@ -54,138 +55,157 @@ class _UserScreenState extends State<UserScreen> {
                 color: _darkTheme ? darkThemeButton : lightThemeButton,
               ),
             ),
-            actions: <Widget>[
-              FlatButton(
-                child: Text(
-                  'Logout',
-                  style: TextStyle(
-                      color: _darkTheme ? darkThemeButton : lightThemeButton,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600),
-                ),
-                onPressed: () => _confirmSignOut(context),
-              ),
-            ],
           ),
           body: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Spacer(),
-              MyUserInfoContainer(
-                child: Column(
-                  children: [
-                    Avatar(
-                      photoUrl: user.photoURL,
-                      radius: 30,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Expanded(
-                          child: Row(
-                            children: [
-                              Text('Name:',
-                                  style: TextStyle(
-                                      color: _darkTheme
-                                          ? darkThemeWords
-                                          : lightThemeWords,
-                                      fontSize: 18.0)),
-                              SizedBox(width: 20),
-                              Expanded(
-                                child: Visibility(
-                                  visible: _nameVisible,
-                                  child: Text(
-                                      user.displayName == null ||
-                                              user.displayName.isEmpty
-                                          ? 'Not add name yet.'
-                                          : user.displayName,
-                                      style: TextStyle(
-                                          color: _darkTheme
-                                              ? darkThemeWords
-                                              : lightThemeWords,
-                                          fontSize: 20.0,
-                                          fontWeight: FontWeight.bold)),
-                                ),
-                              ),
-                              Visibility(
-                                visible: !_nameVisible,
-                                child: SizedBox(
-                                  width: 150,
-                                  child: TextField(
-                                    onSubmitted: _onSubmitted,
-                                    cursorColor: _darkTheme
-                                        ? darkThemeWords
-                                        : lightThemeWords,
-                                    maxLength: 20,
-                                    inputFormatters: [
-                                      LengthLimitingTextInputFormatter(20)
-                                    ],
-                                    decoration: InputDecoration(
-                                      // hintText:
-                                      //     'Edit your display name. (Your name will show on Home screen greetings)',
-                                      // hintStyle: TextStyle(
-                                      //     fontSize: 16.0,
-                                      //     color: _darkTheme
-                                      //         ? darkThemeHint
-                                      //         : lightThemeHint),
-                                      focusedBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: _darkTheme
-                                              ? darkThemeDivider
-                                              : lightThemeDivider,
-                                        ),
-                                      ),
-                                      enabledBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide(
-                                        color: _darkTheme
-                                            ? darkThemeDivider
-                                            : lightThemeDivider,
-                                      )),
-                                    ),
+              MySignInContainer(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Avatar(
+                        photoUrl: user.photoURL,
+                        radius: 30,
+                      ),
+                      SizedBox(height: 30),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Text('Name:',
                                     style: TextStyle(
                                         color: _darkTheme
                                             ? darkThemeWords
                                             : lightThemeWords,
-                                        fontSize: 20.0,
-                                        fontWeight: FontWeight.bold),
+                                        fontSize: 18.0)),
+                                SizedBox(width: 20),
+                                Expanded(
+                                  child: Visibility(
+                                    visible: _nameVisible,
+                                    child: Text(
+                                        user.displayName == null ||
+                                                user.displayName.isEmpty
+                                            ? 'No added name yet.'
+                                            : user.displayName,
+                                        style: TextStyle(
+                                            color: _darkTheme
+                                                ? darkThemeWords
+                                                : lightThemeWords,
+                                            fontSize: 20.0,
+                                            fontWeight: FontWeight.bold)),
                                   ),
                                 ),
-                              ),
-                            ],
+                                Expanded(
+                                  child: Visibility(
+                                    visible: !_nameVisible,
+                                    child: SizedBox(
+                                      width: 150,
+                                      child: TextField(
+                                        autofocus: true,
+                                        onSubmitted: _onSubmitted,
+                                        cursorColor: _darkTheme
+                                            ? darkThemeWords
+                                            : lightThemeWords,
+                                        maxLength: 15,
+                                        inputFormatters: [
+                                          LengthLimitingTextInputFormatter(20)
+                                        ],
+                                        decoration: InputDecoration(
+                                          focusedBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: _darkTheme
+                                                  ? darkThemeDivider
+                                                  : lightThemeDivider,
+                                            ),
+                                          ),
+                                          enabledBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(
+                                            color: _darkTheme
+                                                ? darkThemeDivider
+                                                : lightThemeDivider,
+                                          )),
+                                        ),
+                                        style: TextStyle(
+                                            color: _darkTheme
+                                                ? darkThemeWords
+                                                : lightThemeWords,
+                                            fontSize: 20.0,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            EvaIcons.edit2Outline,
-                            size: 26,
-                            color:
-                                _darkTheme ? darkThemeButton : lightThemeButton,
+                          IconButton(
+                            icon: Icon(
+                              EvaIcons.edit2Outline,
+                              size: 26,
+                              color: _darkTheme
+                                  ? darkThemeButton
+                                  : lightThemeButton,
+                            ),
+                            onPressed: _editName,
+                          )
+                        ],
+                      ),
+                      SizedBox(height: 20.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Text('Email:',
+                              style: TextStyle(
+                                  color: _darkTheme
+                                      ? darkThemeWords
+                                      : lightThemeWords,
+                                  fontSize: 18.0)),
+                          SizedBox(width: 20.0),
+                          Text(
+                              user.email == null || user.email.isEmpty
+                                  ? 'No registered email.'
+                                  : user.email,
+                              style: TextStyle(
+                                  color: _darkTheme
+                                      ? darkThemeWords
+                                      : lightThemeWords,
+                                  fontSize: 20.0,
+                                  fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                      SizedBox(height: 20.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          FlatButton(
+                            onPressed: () => _confirmDelete(context),
+                            child: Text('Delete account',
+                                style: TextStyle(
+                                    color: _darkTheme
+                                        ? darkThemeHint
+                                        : lightThemeHint,
+                                    fontSize: 18.0)),
                           ),
-                          onPressed: _editName,
-                        )
-                      ],
-                    ),
-                    SizedBox(height: 20.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Text('Email:',
-                            style: TextStyle(
-                                color: _darkTheme
-                                    ? darkThemeWords
-                                    : lightThemeWords,
-                                fontSize: 18.0)),
-                        SizedBox(width: 20.0),
-                        Text(user.email,
-                            style: TextStyle(
-                                color: _darkTheme
-                                    ? darkThemeWords
-                                    : lightThemeWords,
-                                fontSize: 20.0,
-                                fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                  ],
+                          SizedBox(width: 20.0),
+                          FlatButton(
+                            child: Text(
+                              'Logout',
+                              style: TextStyle(
+                                  color: _darkTheme
+                                      ? darkThemeButton
+                                      : lightThemeButton,
+                                  fontSize: 18),
+                            ),
+                            onPressed: () => _confirmSignOut(context),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
               Spacer(flex: 2),
@@ -197,19 +217,46 @@ class _UserScreenState extends State<UserScreen> {
   }
 
   bool _nameVisible = true;
+
   void _editName() {
     setState(() {
       _nameVisible = !_nameVisible;
     });
   }
 
-  void _onSubmitted(String value) {
+  void _onSubmitted(String value) async {
     if (value.isNotEmpty) {
-      final AppUser user = Provider.of<AppUser>(context, listen: false);
-      user.displayName = value;
+      //from ProgressDialog plugin
+      final ProgressDialog pr = ProgressDialog(
+        context,
+        type: ProgressDialogType.Normal,
+        // textDirection: TextDirection.rtl,
+        isDismissible: true,
+      );
+      pr.style(
+        message: 'Please wait',
+        borderRadius: 20.0,
+        backgroundColor: darkThemeNoPhotoColor,
+        elevation: 10.0,
+        insetAnimCurve: Curves.easeInOut,
+        progress: 0.0,
+        progressWidgetAlignment: Alignment.center,
+        maxProgress: 100.0,
+        progressTextStyle: TextStyle(
+            color: Colors.white, fontSize: 13.0, fontWeight: FontWeight.w400),
+        messageTextStyle: TextStyle(
+            color: Colors.white, fontSize: 19.0, fontWeight: FontWeight.w600),
+      );
+
+      await pr.show();
+
       final FirebaseAuthService auth =
           Provider.of<FirebaseAuthService>(context, listen: false);
-      auth.updateUserName(value);
+      await auth.updateUserName(value);
+
+      ///because it takes a while to update name
+      await pr.hide();
+
       setState(() {
         _nameVisible = !_nameVisible;
       });
@@ -236,6 +283,29 @@ class _UserScreenState extends State<UserScreen> {
     ).show(context);
     if (didRequestSignOut == true) {
       _signOut(context);
+    }
+  }
+
+  Future<void> _deleteAccount(BuildContext context) async {
+    try {
+      final FirebaseAuthService auth =
+          Provider.of<FirebaseAuthService>(context, listen: false);
+      await auth.delete();
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  Future<void> _confirmDelete(BuildContext context) async {
+    final didRequestSignOut = await PlatformAlertDialog(
+      title: 'Delete you iMomentum account',
+      content:
+          'Warning: Your account and all of its data will be permanently deleted.',
+      cancelActionText: 'Cancel',
+      defaultActionText: 'Delete',
+    ).show(context);
+    if (didRequestSignOut == true) {
+      _deleteAccount(context);
     }
   }
 

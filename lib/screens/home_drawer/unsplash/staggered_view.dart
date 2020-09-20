@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:iMomentum/app/common_widgets/empty_and_error_content.dart';
-import 'package:iMomentum/app/constants/constants_style.dart';
+import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/screens/home_drawer/unsplash/widget/image_tile.dart';
-import 'package:iMomentum/app/services/database.dart';
+import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/network_service/unsplash_image_provider.dart';
 import 'package:iMomentum/screens/home_drawer/unsplash/widget/loading_indicator.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
@@ -210,8 +210,8 @@ class _StaggeredViewState extends State<StaggeredView> {
 
             ///TODO contact us
             return EmptyOrError(
-              tips: textError,
-              textTap: textErrorOnTap,
+              tips: Strings.textError,
+              textTap: Strings.textErrorOnTap,
               onTap: null,
             );
           }

@@ -8,9 +8,9 @@ class Keys {
   static const String accountTab = 'accountTab';
 }
 
-class Constants {
-  ///TODO: Replace this with your firebase project URL
-  ///this is wrong, can't find it
-  static const String firebaseProjectURL =
-      'https://imomentum-5969c.firebaseapp.com/';
-}
+// class Constants {
+//   ///TODO: Replace this with your firebase project URL
+//   ///this is wrong, can't find it
+//   static const String firebaseProjectURL =
+//       'https://imomentum-5969c.firebaseapp.com/';
+// }

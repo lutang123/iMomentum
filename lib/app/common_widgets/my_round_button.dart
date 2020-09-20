@@ -80,14 +80,14 @@ class RoundTextButton extends StatelessWidget {
       elevation: 0.0,
       child: Text(
         text,
-        style: TextStyle(color: textColor),
+        style: TextStyle(color: textColor, fontSize: 13),
       ),
       onPressed: onPressed,
       constraints: BoxConstraints.tightFor(
-        width: 57.0,
-        height: 57.0,
+        width: 60.0,
+        height: 60.0,
       ),
-      shape: CircleBorder(side: BorderSide(color: circleColor, width: 2.0)),
+      shape: CircleBorder(side: BorderSide(color: circleColor, width: 1.0)),
 //      fillColor: Color(0xFF4C4F5E),
     );
   }

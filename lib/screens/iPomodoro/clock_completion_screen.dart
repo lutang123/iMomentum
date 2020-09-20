@@ -10,10 +10,10 @@ import 'package:iMomentum/app/common_widgets/my_round_button.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:iMomentum/app/models/data/congrats_list.dart';
 import 'package:iMomentum/app/models/todo.dart';
-import 'package:iMomentum/app/utils/extensions.dart';
+import 'package:iMomentum/app/utils/extension_clockFmt.dart';
 import 'package:iMomentum/app/services/calendar_bloc.dart';
 import 'package:iMomentum/app/services/daily_todos_details.dart';
-import 'package:iMomentum/app/services/database.dart';
+import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:provider/provider.dart';
 import '../../app/utils/pages_routes.dart';
@@ -21,7 +21,7 @@ import 'clock_bottom.dart';
 import 'clock_rest_screen.dart';
 import 'clock_begin_screen.dart';
 import 'clock_start.dart';
-import 'clock_title.dart';
+import 'clock_mantra_quote_title.dart';
 
 class CompletionScreen extends StatefulWidget {
   CompletionScreen(

@@ -1,6 +1,6 @@
 // import 'package:flutter/cupertino.dart';
 // import 'package:flutter/material.dart';
-// import 'package:iMomentum/app/constants/string_sign_in.dart';
+// import 'package:iMomentum/app/constants/strings_sign_in.dart';
 //
 //
 // class DeveloperMenu extends StatelessWidget {

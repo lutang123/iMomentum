@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
 import 'package:iMomentum/app/models/todo.dart';
-import 'package:iMomentum/app/services/database.dart';
+import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:intl/intl.dart';
 import 'package:iMomentum/app/constants/theme.dart';
@@ -201,11 +201,12 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    width: 100,
+                  SizedBox(
+                    width: 70,
                     child: Padding(
-                      padding: const EdgeInsets.only(left: 15.0),
+                      padding: const EdgeInsets.only(left: 0.0),
                       child: TextFormField(
+                        scrollPadding: const EdgeInsets.all(3.0),
                         controller:
                             _dateController, //this is TextEditingController
                         focusNode: _dateFocusNode,
@@ -214,7 +215,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                         style: TextStyle(
                           fontSize: 20,
                           fontStyle: FontStyle.italic,
-                          decoration: TextDecoration.underline,
+                          // decoration: TextDecoration.underline,
                           color: _darkTheme ? Colors.white : lightThemeWords,
                           fontWeight: FontWeight.w600,
                         ),
@@ -232,6 +233,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                     ),
                   ),
                   IconButton(
+                      padding: const EdgeInsets.all(0.0),
                       icon: Icon(EvaIcons.calendarOutline,
                           color:
                               _darkTheme ? darkThemeButton : lightThemeButton),
@@ -252,11 +254,12 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                     //if submit successfully, we pop this page and go to home page
 //                    onEditingComplete: _submit,
                     style: TextStyle(
-                        color: _darkTheme ? Colors.white : lightThemeWords,
+                        color: _darkTheme ? darkThemeWords : lightThemeWords,
                         fontSize: 16.0),
                     autofocus: true,
 //                    textAlign: TextAlign.center,
-                    cursorColor: _darkTheme ? Colors.white : lightThemeButton,
+                    cursorColor:
+                        _darkTheme ? darkThemeButton : lightThemeButton,
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
                     maxLength: 100,
@@ -291,8 +294,8 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                     onSaved: (value) => comment = value,
                     style: TextStyle(
                         color: _darkTheme
-                            ? Colors.white70
-                            : lightThemeWords.withOpacity(0.9),
+                            ? darkThemeWords.withOpacity(0.8)
+                            : lightThemeWords.withOpacity(0.8),
                         fontSize: 14.0),
                     cursorColor:
                         _darkTheme ? darkThemeButton : lightThemeButton,
@@ -356,7 +359,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                   onPressed: _save,
                   text: 'SAVE',
                   bkgdColor: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
-                  color: _darkTheme ? Colors.white : lightThemeButton),
+                  color: _darkTheme ? darkThemeButton : lightThemeButton),
               SizedBox(height: 30)
             ],
           ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:iMomentum/app/constants/theme_color_not_use.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:provider/provider.dart';
@@ -45,19 +44,19 @@ List<Color> colorsDark = [
   darkThemeNoPhotoColor,
   Color(0xFFbb596b),
   Color(0xFF87556f),
-  Color(0xffe79c2a),
   Color(0xffcdb30c),
-  Color(0xFF799351),
-  Color(0xff24a19c),
+  Color(0xffe79c2a),
   Color(0xff158467),
-  Color(0xFF086972),
-  Color(0xFF0f4c75),
-  Colors.purple,
+  Color(0xFF799351),
+  Colors.deepPurple,
   Color(0xFF6f4a8e),
   Color(0xff6a2c70),
+  Color(0xff24a19c),
+  Color(0xFF086972),
+  Color(0xFF0f4c75),
   Colors.brown,
-  Color(0xFF557571),
-  Color(0xffb55400),
+  // Colors.pink,
+  // Colors.deepOrange
 ];
 
 final colorsLight = [

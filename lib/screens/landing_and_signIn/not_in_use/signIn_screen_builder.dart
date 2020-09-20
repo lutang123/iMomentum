@@ -9,7 +9,7 @@
 // import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 // import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 // import 'package:iMomentum/app/constants/constants_style.dart';
-// import 'package:iMomentum/app/constants/string_sign_in.dart';
+// import 'package:iMomentum/app/constants/strings_sign_in.dart';
 // import 'package:iMomentum/app/services/auth.dart';
 // import 'package:iMomentum/app/services/AppUser.dart';
 // import 'package:iMomentum/app/sign_in/sign_in_manager.dart';
