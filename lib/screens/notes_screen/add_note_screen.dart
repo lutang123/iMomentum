@@ -205,6 +205,8 @@ class AddNoteScreenState extends State<AddNoteScreen> {
             child: TextFormField(
               initialValue: title,
               keyboardType: TextInputType.multiline,
+              keyboardAppearance:
+                  _darkTheme ? Brightness.dark : Brightness.light,
               maxLines: null,
               style: GoogleFonts.getFont(
                 fontFamily,
@@ -251,6 +253,8 @@ class AddNoteScreenState extends State<AddNoteScreen> {
               autofocus: note == null ? true : false,
               cursorColor: _darkTheme ? darkThemeButton : lightThemeButton,
               keyboardType: TextInputType.multiline,
+              keyboardAppearance:
+                  _darkTheme ? Brightness.dark : Brightness.light,
               maxLines: null,
               style: GoogleFonts.getFont(
                 fontFamily,

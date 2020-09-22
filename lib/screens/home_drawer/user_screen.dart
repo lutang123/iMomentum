@@ -107,9 +107,13 @@ class _UserScreenState extends State<UserScreen> {
                                       child: TextField(
                                         autofocus: true,
                                         onSubmitted: _onSubmitted,
+                                        keyboardAppearance: _darkTheme
+                                            ? Brightness.dark
+                                            : Brightness.light,
                                         cursorColor: _darkTheme
                                             ? darkThemeWords
                                             : lightThemeWords,
+                                        maxLines: 1,
                                         maxLength: 15,
                                         inputFormatters: [
                                           LengthLimitingTextInputFormatter(20)

@@ -25,8 +25,8 @@ import 'package:iMomentum/app/models/mantra_model.dart';
 import 'package:iMomentum/app/models/quote_model.dart';
 import 'package:iMomentum/app/models/todo.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
-import 'package:iMomentum/screens/home_drawer/add_mantra.dart';
-import 'package:iMomentum/screens/home_drawer/add_quote.dart';
+import 'package:iMomentum/screens/home_drawer/add_mantra_screen.dart';
+import 'package:iMomentum/screens/home_drawer/add_quote_screen.dart';
 import 'package:iMomentum/app/common_widgets/my_list_tile.dart';
 import 'package:iMomentum/screens/home_screen/weather_screen.dart';
 import 'package:iMomentum/screens/iPomodoro/clock_begin_screen.dart';
@@ -498,6 +498,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final focusNotifier = Provider.of<FocusNotifier>(context);
     bool _focusModeOn = (focusNotifier.getFocus() == true);
 
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return _focusModeOn
         ? Expanded(
             child: Column(
@@ -524,7 +526,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: RichText(
                             text: TextSpan(
                               style: TextStyle(
-                                  color: Colors.white.withOpacity(0.85),
+                                  color: _darkTheme
+                                      ? darkThemeWords.withOpacity(0.85)
+                                      : lightThemeWords.withOpacity(0.85),
                                   fontStyle: FontStyle.italic,
                                   fontSize: 16),
                               children: [
@@ -537,7 +541,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ..onTap = onTap,
                                   style: TextStyle(
                                       decoration: TextDecoration.underline,
-                                      color: Colors.white.withOpacity(0.85),
+                                      color: _darkTheme
+                                          ? darkThemeWords.withOpacity(0.85)
+                                          : lightThemeWords.withOpacity(0.85),
                                       fontStyle: FontStyle.italic,
                                       fontSize: 16),
                                 ),

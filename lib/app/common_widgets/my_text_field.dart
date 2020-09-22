@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
+import 'package:iMomentum/app/constants/theme.dart';
+import 'package:iMomentum/app/services/multi_notifier.dart';
+import 'package:provider/provider.dart';
 
 class HomeTextField extends StatelessWidget {
   const HomeTextField({
@@ -25,6 +28,8 @@ class HomeTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return SizedBox(
       width: width,
       child: TextFormField(
@@ -39,6 +44,7 @@ class HomeTextField extends StatelessWidget {
         cursorColor: Colors.white,
         maxLength: max, //default 100
         inputFormatters: [LengthLimitingTextInputFormatter(max)],
+        keyboardAppearance: _darkTheme ? Brightness.dark : Brightness.light,
 
         ///no save button, can not do multiline
 //        keyboardType: TextInputType.multiline,

@@ -273,8 +273,13 @@ class MyPageContainer1 extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(text,
-                        style:
-                            _darkTheme ? KLandingSubtitleD : KLandingSubtitleL,
+                        style: _darkTheme
+                            ? KLandingSubtitleD
+                            : TextStyle(
+                                fontSize: 25,
+                                color: lightThemeWords.withOpacity(0.6),
+                                fontWeight: FontWeight.w600,
+                              ),
                         textAlign: TextAlign.center),
                   ],
                 )),

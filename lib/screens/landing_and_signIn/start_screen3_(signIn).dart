@@ -359,7 +359,7 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
         MySignInContainer(
           child: Column(
             children: [
-              Text('Or ',
+              Text('Or Stay signed out',
                   style: _darkTheme ? KSignInButtonOrD : KSignInButtonOrL),
               FlatButton(
                   onPressed: model.isLoading ? null : _showAlert,

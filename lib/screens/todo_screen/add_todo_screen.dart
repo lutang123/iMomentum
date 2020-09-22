@@ -300,6 +300,8 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                     cursorColor:
                         _darkTheme ? darkThemeButton : lightThemeButton,
                     keyboardType: TextInputType.multiline,
+                    keyboardAppearance:
+                        _darkTheme ? Brightness.dark : Brightness.light,
                     maxLines: null,
                     decoration: InputDecoration(
                       hintText: 'Comment (optional)',

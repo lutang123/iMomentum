@@ -13,6 +13,7 @@ import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:iMomentum/app/utils/extension_firstCaps.dart';
 
 class AddReminderScreen extends StatefulWidget {
   const AddReminderScreen({
@@ -72,9 +73,13 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
         ? TimeOfDay.fromDateTime(now)
         : TimeOfDay.fromDateTime(todo.reminderDate);
 
-    firstName = user.displayName == null
+    firstName = user.displayName == null || user.displayName.isEmpty
         ? ''
-        : user.displayName.substring(0, user.displayName.indexOf(' '));
+        : user.displayName.contains(' ')
+            ? user.displayName
+                .substring(0, user.displayName.indexOf(' '))
+                .firstCaps
+            : user.displayName.firstCaps;
 
     super.initState();
   }

@@ -14,9 +14,9 @@ class ImageUrl {
 
   // static String fixedImageUrl =
   //     'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2706&q=80';
-  static String fixedImageUrl = 'assets/images/boat.jpg';
-  static String startImage = 'assets/images/boat.jpg';
-  static String startImage1 = 'assets/images/boat.jpg';
+  static String fixedImageUrl = 'assets/images/ocean1.jpg';
+  static String startImage = 'assets/images/ocean1.jpg';
+  static String startImage1 = 'assets/images/ocean1.jpg';
   static String startImage2 = 'assets/images/forest.jpg';
   static String startImage3 = 'assets/images/waterfall.jpg';
   static String startImage4 = 'assets/images/landscape2.jpg';
