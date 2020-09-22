@@ -55,6 +55,8 @@ class _AddMantraScreenState extends State<AddMantraScreen> {
               SizedBox(
                 height: 10,
               ),
+
+              /// todo, keyboard done
               Container(
                 width: 350,
                 child: Padding(
@@ -71,10 +73,10 @@ class _AddMantraScreenState extends State<AddMantraScreen> {
                     textAlign: TextAlign.center,
                     cursorColor:
                         _darkTheme ? darkThemeButton : lightThemeButton,
-                    keyboardType: TextInputType.multiline,
+                    // keyboardType: TextInputType.multiline,
                     keyboardAppearance:
                         _darkTheme ? Brightness.dark : Brightness.light,
-                    maxLines: null,
+                    maxLines: 1,
                     maxLength: 60,
                     decoration: InputDecoration(
                       focusedBorder: UnderlineInputBorder(
