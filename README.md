@@ -24,7 +24,7 @@ This app uses firebase cloudstore and firebase authentication.
   <img src="/screenshots/home_screen/home1.png" width="100" />
   <img src="/screenshots/home_screen/home2.png" width="100" />
   <img src="/screenshots/home_screen/home_weather_light.png" width="100" />
-  <img src="/screenshots/home_screen/home_weather_dark.png" width="100" />
+  <img src="/screenshots/home_screen/home_Weather_dark.png" width="100" />
   <img src="/screenshots/home_screen/home3.png" width="100" />
   <img src="/screenshots/home_screen/home4.png" width="100" />
 </p>
