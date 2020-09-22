@@ -131,8 +131,8 @@ void main() async {
     }
     selectNotificationSubject.add(payload);
   });
-  //
-  // //another example for onSelectNotification
+
+  ///another example for onSelectNotification
   // Future onSelectNotification(BuildContext context, String payload) async {
   //   if (payload != null) {
   //     debugPrint('notification payload: ' + payload);
@@ -179,6 +179,7 @@ void main() async {
   // delivered at the specified time when the device in a low-power idle mode.
   // This behaviour can be changed by setting the optional parameter named
   // androidAllowWhileIdle to true when calling the schedule method.
+  ///Show Statusbar
   ///https://stackoverflow.com/questions/52489458/how-to-change-status-bar-color-in-flutter
 //import 'package:flutter/services.dart';
 // 1. Hide Statusbar
