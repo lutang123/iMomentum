@@ -46,8 +46,8 @@ iMomentum is a beautiful mobile application built with Flutter. It combines Cale
   <img src="/screenshots/notes_screen/add_note_light1.png" width="100" />
   <img src="/screenshots/notes_screen/add_note_light2.png" width="100" />
   <img src="/screenshots/notes_screen/folder_dark.png" width="100" />
-  <img src="/screenshots/notes_screenn/note_dark1.png" width="100" />
-  <img src="/screenshots/notes_screen/add_note_dark1.png" width="100" />
+  <img src="/screenshots/notes_screenn/notes_dark1.png" width="100" />
+  <img src="/screenshots/notes_screen/add_note_dark.png" width="100" />
 </p>
 
 ### Settings and Customization
