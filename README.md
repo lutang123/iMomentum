@@ -24,7 +24,7 @@ This app uses firebase cloudstore and firebase authentication.
   <img src="/screenshots/home_screen/home1.png" width="100" />
   <img src="/screenshots/home_screen/home2.png" width="100" />
   <img src="/screenshots/home_screen/home_weather_light.png" width="100" />
-  <img src="/screenshots/home_screen/home_Weather_dark.png" width="100" />
+<!--   <img src="/screenshots/home_screen/home_Weather_dark.png" width="100" /> -->
   <img src="/screenshots/home_screen/home3.png" width="100" />
   <img src="/screenshots/home_screen/home4.png" width="100" />
 </p>
@@ -35,8 +35,8 @@ This app uses firebase cloudstore and firebase authentication.
   <img src="/screenshots/todo_screen/todo_light1.png" width="100" />
   <img src="/screenshots/todo_screen/todo_light2.png" width="100" />
   <img src="/screenshots/todo_screen/add_reminder.png" width="100" />
-  <img src="/screenshots/todo_screen/todo_dark1.png" width="100" />
-  <img src="/screenshots/todo_screen/todo_dark2.png" width="100" />
+<!--   <img src="/screenshots/todo_screen/todo_dark1.png" width="100" /> -->
+<!--   <img src="/screenshots/todo_screen/todo_dark2.png" width="100" /> -->
 </p>
 
 ### Notes screen
@@ -48,17 +48,17 @@ This app uses firebase cloudstore and firebase authentication.
   <img src="/screenshots/notes_screen/add_note_light1.png" width="100" />
   <img src="/screenshots/notes_screen/add_note_light2.png" width="100" />
   <img src="/screenshots/notes_screen/folder_dark.png" width="100" />
-  <img src="/screenshots/notes_screenn/notes_dark1.png" width="100" />
+<!--   <img src="/screenshots/notes_screenn/notes_dark1.png" width="100" /> -->
   <img src="/screenshots/notes_screen/add_note_dark.png" width="100" />
 </p>
 
 ### Settings and Customization
 
 <p float="left">
-  <img src="/screenshots/settings_light/setting1.png" width="100" />
-   <img src="/screenshots/settings_light/setting2.png" width="100" />
-   <img src="/screenshots/settings_light/setting3.png" width="100" />
+  <img src="/screenshots/settings_light/setting2.png" width="100" />
+   <img src="/screenshots/settings_light/setting1.png" width="100" />
+<!--    <img src="/screenshots/settings_light/setting3.png" width="100" />
    <img src="/screenshots/settings_light/setting4.png" width="100" />
    <img src="/screenshots/settings_light/setting5.png" width="100" /> 
-  <img src="/screenshots/settings_light/setting6.png" width="100" />
+  <img src="/screenshots/settings_light/setting6.png" width="100" /> -->
 </p>
