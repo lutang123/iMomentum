@@ -2,7 +2,9 @@
 
 iMomentum is a beautiful mobile application built with Flutter. It combines Calendar, Task list, Pomodoro Timer and Notes, all in one, plus customizable features! This App is designed to provide inspiration, positivity and to help boost productivity and organize your daily tasks.
 
-## Some screen shots, (video or GIF will be added when complete).
+This app uses firebase cloudstore and firebase authentication. 
+
+## Some screen shots, (video or GIF will be added when the app is complete).
 
 ### Sign In
 
@@ -22,7 +24,7 @@ iMomentum is a beautiful mobile application built with Flutter. It combines Cale
   <img src="/screenshots/home_screen/home1.png" width="100" />
   <img src="/screenshots/home_screen/home2.png" width="100" />
   <img src="/screenshots/home_screen/home_weather_light.png" width="100" />
-  <img src="/screenshots/home_screen/home_weather_dark.png" width="100" />
+  <img src="/screenshots/home_screen/home_Weather_dark.png" width="100" />
   <img src="/screenshots/home_screen/home3.png" width="100" />
   <img src="/screenshots/home_screen/home4.png" width="100" />
 </p>
@@ -53,10 +55,10 @@ iMomentum is a beautiful mobile application built with Flutter. It combines Cale
 ### Settings and Customization
 
 <p float="left">
-  <img src="/screenshots/settings/settings_light/setting1.png" width="100" />
-   <img src="/screenshots/settings/settings_light/setting2.png" width="100" />
-   <img src="/screenshots/settings/settings_light/setting3.png" width="100" />
-   <img src="/screenshots/settings/settings_light/setting4.png" width="100" />
-   <img src="/screenshots/settings/settings_light/setting5.png" width="100" /> 
-  <img src="/screenshots/settings/settings_light/setting6.png" width="100" />
+  <img src="/screenshots/settings_light/setting1.png" width="100" />
+   <img src="/screenshots/settings_light/setting2.png" width="100" />
+   <img src="/screenshots/settings_light/setting3.png" width="100" />
+   <img src="/screenshots/settings_light/setting4.png" width="100" />
+   <img src="/screenshots/settings_light/setting5.png" width="100" /> 
+  <img src="/screenshots/settings_light/setting6.png" width="100" />
 </p>
