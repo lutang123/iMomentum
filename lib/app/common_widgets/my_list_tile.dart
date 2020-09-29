@@ -62,13 +62,12 @@ class HomeTodoListTile extends StatelessWidget {
 }
 
 class FolderListTile extends StatelessWidget {
-  const FolderListTile({
-    Key key,
-    @required this.folder,
-    this.onTap,
-  }) : super(key: key);
+  const FolderListTile(
+      {Key key, @required this.folder, this.onTap, this.onPressed})
+      : super(key: key);
   final Folder folder;
   final VoidCallback onTap;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +88,10 @@ class FolderListTile extends StatelessWidget {
         ),
       ),
       onTap: onTap,
+      // trailing: IconButton(
+      // icon: Icon(EvaIcons.edit2Outline,
+      // color: _darkTheme ? darkThemeButton : lightThemeButton),
+      // onPressed: onPressed),
     );
   }
 }

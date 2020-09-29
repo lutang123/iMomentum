@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:iMomentum/app/common_widgets/platform_widget.dart';
+import 'package:iMomentum/app/constants/constants_style.dart';
+import 'package:iMomentum/app/constants/theme.dart';
 
 class PlatformAlertDialog extends PlatformWidget {
   PlatformAlertDialog({
@@ -19,41 +21,6 @@ class PlatformAlertDialog extends PlatformWidget {
   final String defaultActionText;
 
   Future<bool> show(BuildContext context) async {
-    // return Platform.isIOS
-    //     ? await showDialog<bool>(
-    //         context: context,
-    //         builder: (BuildContext context) {
-    //           return AlertDialog(
-    //             backgroundColor: darkThemeNoPhotoColor,
-    //             shape: RoundedRectangleBorder(
-    //                 borderRadius: BorderRadius.all(Radius.circular(20.0))),
-    //             title: Text(
-    //               title,
-    //               style: KDialogTitle
-    //             ),
-    //             content: Text(
-    //               content,
-    //               style: KDialogContent
-    //             ),
-    //             actions: _buildActions(context),
-    //           );
-    //         },
-    //       )
-    //     : await showDialog<bool>(
-    //         context: context,
-    //         builder: (BuildContext context) {
-    //           return AlertDialog(
-    //             backgroundColor: darkThemeNoPhotoColor,
-    //             shape: RoundedRectangleBorder(
-    //                 borderRadius: BorderRadius.all(Radius.circular(20.0))),
-    //             title: Text(title, style: KDialogTitle),
-    //             content: Text(content, style: KDialogContent),
-    //             actions: _buildActions(context),
-    //           );
-    //         },
-    //       );
-
-    ///previous version, the two seems the same
     return Platform.isIOS
         ? await showCupertinoDialog<bool>(
             context: context,
@@ -69,8 +36,17 @@ class PlatformAlertDialog extends PlatformWidget {
   @override
   Widget buildCupertinoWidget(BuildContext context) {
     return CupertinoAlertDialog(
-      title: Text(title),
-      content: Text(content),
+      title: Text(
+        title,
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+      ),
+      content: Padding(
+        padding: const EdgeInsets.only(top: 8.0),
+        child: Text(
+          content,
+          style: TextStyle(fontSize: 16),
+        ),
+      ),
       actions: _buildActions(context),
     );
   }
@@ -78,19 +54,13 @@ class PlatformAlertDialog extends PlatformWidget {
   @override
   Widget buildMaterialWidget(BuildContext context) {
     return AlertDialog(
-      // backgroundColor: darkThemeNoPhotoColor,
+      backgroundColor: lightThemeNoPhotoColor,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(20.0))),
-      title: Text(
-        title,
-        // style: KDialogTitle
-      ),
-      content: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Text(
-          content,
-          // style: KDialogContent,
-        ),
+      title: Text(title, style: KDialogTitleLight),
+      content: Text(
+        content,
+        style: KDialogContentLight,
       ),
       actions: _buildActions(context),
     );
@@ -103,7 +73,12 @@ class PlatformAlertDialog extends PlatformWidget {
         FlatButton(
           child: Text(
             cancelActionText,
-            // style: KDialogButton,
+            style: Platform.isIOS
+                ? TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 18,
+                    color: Colors.blue)
+                : KDialogButtonLight, //we can not have this
           ),
           onPressed: () => Navigator.of(context).pop(false),
         ),
@@ -113,7 +88,10 @@ class PlatformAlertDialog extends PlatformWidget {
       FlatButton(
         child: Text(
           defaultActionText,
-          // style: KDialogButton,
+          style: Platform.isIOS
+              ? TextStyle(
+                  fontWeight: FontWeight.w600, fontSize: 18, color: Colors.blue)
+              : KDialogButtonLight,
         ),
         onPressed: () => Navigator.of(context).pop(true),
       ),
@@ -121,25 +99,3 @@ class PlatformAlertDialog extends PlatformWidget {
     return actions;
   }
 }
-
-//class PlatformAlertDialogAction extends PlatformWidget {
-//  PlatformAlertDialogAction({this.child, this.onPressed});
-//  final Widget child;
-//  final VoidCallback onPressed;
-//
-//  @override
-//  Widget buildCupertinoWidget(BuildContext context) {
-//    return CupertinoDialogAction(
-//      child: child,
-//      onPressed: onPressed,
-//    );
-//  }
-//
-//  @override
-//  Widget buildMaterialWidget(BuildContext context) {
-//    return FlatButton(
-//      child: child,
-//      onPressed: onPressed,
-//    );
-//  }
-//}

@@ -4,7 +4,6 @@ import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
 import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/constants/theme.dart';
-import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/utils/pages_routes.dart';
 import 'package:iMomentum/screens/landing_and_signIn/start_screen1.dart';
 import 'package:iMomentum/screens/landing_and_signIn/start_screen3_(signIn).dart';
@@ -12,7 +11,6 @@ import 'dart:math';
 import 'package:liquid_swipe/liquid_swipe.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:iMomentum/app/utils/extension_firstCaps.dart';
-import 'package:provider/provider.dart';
 
 class StartScreen2 extends StatefulWidget {
   final String name;
@@ -79,7 +77,7 @@ class _StartScreen2State extends State<StartScreen2> {
           LiquidSwipe(
             pages: pages,
             enableSlideIcon: true,
-            positionSlideIcon: 0.5,
+            positionSlideIcon: 0.6,
             fullTransitionValue: 600,
             slideIconWidget: page == pages.length - 1
                 ? null
@@ -142,7 +140,7 @@ class _StartScreen2State extends State<StartScreen2> {
               ? Positioned(
                   left: 30,
                   right: 30,
-                  bottom: 140,
+                  bottom: 100,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -171,66 +169,67 @@ class _StartScreen2State extends State<StartScreen2> {
               ],
             ),
           ),
-          page == pages.length - 1
-              ? Container()
-              : Align(
-                  alignment: Alignment.bottomRight,
-                  child: Padding(
-                    padding: const EdgeInsets.all(25.0),
-                    child: FlatButton(
-                      onPressed: () {
-                        liquidController.animateToPage(
-                            page: pages.length - 1, duration: 500);
-                      },
-                      child: Container(
-                        child: Padding(
-                          padding: const EdgeInsets.all(3.0),
-                          child: Text("Skip to End",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.white,
-                              )),
-                        ),
-                        decoration: BoxDecoration(
-                            color: darkThemeAppBar,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10.0))),
-                      ),
-                      color: Colors.black.withOpacity(0.01),
-                    ),
-                  ),
-                ),
-          page == 0
-              ? Container()
-              : Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.all(25.0),
-                    child: FlatButton(
-                      onPressed: () {
-                        liquidController.jumpToPage(
-                            page: liquidController.currentPage - 1);
-                      },
-                      child: Container(
-                        child: Padding(
-                          padding: const EdgeInsets.all(3.0),
-                          child: Text(
-                            "Previous Page",
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        decoration: BoxDecoration(
-                            color: darkThemeAppBar,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10.0))),
-                      ),
-                      color: Colors.black.withOpacity(0.01),
-                    ),
-                  ),
-                )
+          // page == pages.length - 1
+          //     ? Container()
+          //     : Align(
+          //         alignment: Alignment.bottomRight,
+          //         child: Padding(
+          //           padding: const EdgeInsets.all(25.0),
+          //           child: FlatButton(
+          //             onPressed: () {
+          //               liquidController.animateToPage(
+          //                   page: pages.length - 1, duration: 500);
+          //             },
+          //             child: Container(
+          //               child: Padding(
+          //                 padding: const EdgeInsets.all(8.0),
+          //                 child: Text("Skip to End",
+          //                     style: TextStyle(
+          //                       fontSize: 14,
+          //                       color: Colors.white,
+          //                     )),
+          //               ),
+          //               decoration: BoxDecoration(
+          //                   color: darkThemeAppBar,
+          //                   borderRadius:
+          //                       BorderRadius.all(Radius.circular(10.0))),
+          //             ),
+          //             color: Colors.black.withOpacity(0.01),
+          //           ),
+          //         ),
+          //       ),
+          //
+          // page == 0
+          //     ? Container()
+          //     : Align(
+          //         alignment: Alignment.bottomLeft,
+          //         child: Padding(
+          //           padding: const EdgeInsets.all(25.0),
+          //           child: FlatButton(
+          //             onPressed: () {
+          //               liquidController.jumpToPage(
+          //                   page: liquidController.currentPage - 1);
+          //             },
+          //             child: Container(
+          //               child: Padding(
+          //                 padding: const EdgeInsets.all(8.0),
+          //                 child: Text(
+          //                   "Previous Page",
+          //                   style: TextStyle(
+          //                     fontSize: 14,
+          //                     color: Colors.white,
+          //                   ),
+          //                 ),
+          //               ),
+          //               decoration: BoxDecoration(
+          //                   color: darkThemeAppBar,
+          //                   borderRadius:
+          //                       BorderRadius.all(Radius.circular(10.0))),
+          //             ),
+          //             color: Colors.black.withOpacity(0.01),
+          //           ),
+          //         ),
+          //       )
         ],
       ),
     );
@@ -252,8 +251,8 @@ class MyPageContainer1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    // final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    // bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Container(
       decoration: BoxDecoration(
           image: DecorationImage(
@@ -273,13 +272,15 @@ class MyPageContainer1 extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(text,
-                        style: _darkTheme
-                            ? KLandingSubtitleD
-                            : TextStyle(
-                                fontSize: 25,
-                                color: lightThemeWords.withOpacity(0.6),
-                                fontWeight: FontWeight.w600,
-                              ),
+                        style:
+                            // _darkTheme
+                            //     ? KLandingSubtitleD
+                            //     :
+                            TextStyle(
+                          fontSize: 25,
+                          color: lightThemeWords.withOpacity(0.6),
+                          fontWeight: FontWeight.w600,
+                        ),
                         textAlign: TextAlign.center),
                   ],
                 )),
@@ -302,9 +303,9 @@ class MyPageContainer2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    // double height = MediaQuery.of(context).size.height;
+    // final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    // bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Container(
       decoration: BoxDecoration(
           image: DecorationImage(
@@ -318,54 +319,59 @@ class MyPageContainer2 extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(15.0),
             child: MySignInContainer(
-                height: height * heightNum,
+                // height: height * heightNum,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      title,
-                      style: _darkTheme ? KLandingSubtitleD : KLandingSubtitleL,
-                    ),
-                    SizedBox(height: 15),
-                    Text('Breathe life into your device',
-                        style: _darkTheme
-                            ? KLandingSubtitle2D
-                            : KLandingSubtitle2L,
-                        textAlign: TextAlign.center),
-                    SizedBox(height: 20),
-                    ListTile(
-                      leading: Icon(FontAwesomeIcons.images,
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title,
+                  style:
+                      // _darkTheme ? KLandingSubtitleD :
+                      KLandingSubtitleL,
+                ),
+                SizedBox(height: 15),
+                Text('Breathe life into your device',
+                    style:
+                        // _darkTheme ? KLandingSubtitle2D :
+                        KLandingSubtitle2L,
+                    textAlign: TextAlign.center),
+                SizedBox(height: 20),
+                ListTile(
+                  leading: Icon(FontAwesomeIcons.images,
+                      color:
+                          // _darkTheme ? darkThemeButton :
+                          lightThemeButton),
+                  title: Text('Inspiring photography with dynamic display.',
+                      style: TextStyle(
                           color:
-                              _darkTheme ? darkThemeButton : lightThemeButton),
-                      title: Text('Inspiring photography with dynamic display.',
-                          style: TextStyle(
-                              color: _darkTheme
-                                  ? darkThemeWords
-                                  : lightThemeWords)),
-                    ),
-                    ListTile(
-                      leading: Icon(FontAwesomeIcons.quoteLeft,
+                              // _darkTheme ? darkThemeWords :
+                              lightThemeWords)),
+                ),
+                ListTile(
+                  leading: Icon(FontAwesomeIcons.quoteLeft,
+                      color:
+                          // _darkTheme ? darkThemeButton :
+                          lightThemeButton),
+                  title: Text('Timeless wisdom with daily quote.',
+                      style: TextStyle(
                           color:
-                              _darkTheme ? darkThemeButton : lightThemeButton),
-                      title: Text('Timeless wisdom with daily quote.',
-                          style: TextStyle(
-                              color: _darkTheme
-                                  ? darkThemeWords
-                                  : lightThemeWords)),
-                    ),
-                    ListTile(
-                      leading: Icon(FontAwesomeIcons.solidHeart,
+                              // _darkTheme ? darkThemeWords :
+                              lightThemeWords)),
+                ),
+                ListTile(
+                  leading: Icon(FontAwesomeIcons.solidHeart,
+                      color:
+                          // _darkTheme ? darkThemeButton :
+                          lightThemeButton),
+                  title: Text('Positive concept with mantras',
+                      style: TextStyle(
                           color:
-                              _darkTheme ? darkThemeButton : lightThemeButton),
-                      title: Text('Positive concept with mantras',
-                          style: TextStyle(
-                              color: _darkTheme
-                                  ? darkThemeWords
-                                  : lightThemeWords)),
-                    )
-                  ],
-                )),
+                              // _darkTheme ? darkThemeWords :
+                              lightThemeWords)),
+                )
+              ],
+            )),
           ),
         ),
       ),
@@ -385,9 +391,9 @@ class MyPageContainer3 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    // double height = MediaQuery.of(context).size.height;
+    // final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    // bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Container(
       decoration: BoxDecoration(
           image: DecorationImage(
@@ -401,54 +407,60 @@ class MyPageContainer3 extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(15.0),
             child: MySignInContainer(
-                height: height * heightNum,
+                // height: height * heightNum,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      text,
-                      style: _darkTheme ? KLandingSubtitleD : KLandingSubtitleL,
-                    ),
-                    SizedBox(height: 15),
-                    Text(
-                      'Approach each day with intent.',
-                      style:
-                          _darkTheme ? KLandingSubtitle2D : KLandingSubtitle2L,
-                    ),
-                    SizedBox(height: 20),
-                    ListTile(
-                      leading: Icon(FontAwesomeIcons.check,
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  text,
+                  style:
+                      // _darkTheme ? KLandingSubtitleD :
+                      KLandingSubtitleL,
+                ),
+                SizedBox(height: 15),
+                Text(
+                  'Approach each day with intent.',
+                  style:
+                      // _darkTheme ? KLandingSubtitle2D :
+                      KLandingSubtitle2L,
+                ),
+                SizedBox(height: 20),
+                ListTile(
+                  leading: Icon(FontAwesomeIcons.check,
+                      color:
+                          // _darkTheme ? darkThemeButton :
+                          lightThemeButton),
+                  title: Text('Pomodoro Timer with daily focus report',
+                      style: TextStyle(
                           color:
-                              _darkTheme ? darkThemeButton : lightThemeButton),
-                      title: Text('Pomodoro Timer with daily focus report',
-                          style: TextStyle(
-                              color: _darkTheme
-                                  ? darkThemeWords
-                                  : lightThemeWords)),
-                    ),
-                    ListTile(
-                      leading: Icon(FontAwesomeIcons.check,
+                              // _darkTheme ? darkThemeWords :
+                              lightThemeWords)),
+                ),
+                ListTile(
+                  leading: Icon(FontAwesomeIcons.check,
+                      color:
+                          // _darkTheme ? darkThemeButton :
+                          lightThemeButton),
+                  title: Text('Calendar with Task list and Reminder',
+                      style: TextStyle(
                           color:
-                              _darkTheme ? darkThemeButton : lightThemeButton),
-                      title: Text('Calendar with Task list and Reminder',
-                          style: TextStyle(
-                              color: _darkTheme
-                                  ? darkThemeWords
-                                  : lightThemeWords)),
-                    ),
-                    ListTile(
-                      leading: Icon(FontAwesomeIcons.check,
+                              // _darkTheme ? darkThemeWords :
+                              lightThemeWords)),
+                ),
+                ListTile(
+                  leading: Icon(FontAwesomeIcons.check,
+                      color:
+                          // _darkTheme ? darkThemeButton :
+                          lightThemeButton),
+                  title: Text('Notes with different colors and font styles',
+                      style: TextStyle(
                           color:
-                              _darkTheme ? darkThemeButton : lightThemeButton),
-                      title: Text('Notes with different colors and font styles',
-                          style: TextStyle(
-                              color: _darkTheme
-                                  ? darkThemeWords
-                                  : lightThemeWords)),
-                    ),
-                  ],
-                )),
+                              // _darkTheme ? darkThemeWords :
+                              lightThemeWords)),
+                ),
+              ],
+            )),
           ),
         ),
       ),
@@ -468,9 +480,9 @@ class MyPageContainer4 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    // double height = MediaQuery.of(context).size.height;
+    // final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    // bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Container(
       decoration: BoxDecoration(
           image: DecorationImage(
@@ -484,54 +496,60 @@ class MyPageContainer4 extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(15.0),
             child: MySignInContainer(
-                height: height * heightNum,
+                // height: height * heightNum,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      text,
-                      style: _darkTheme ? KLandingSubtitleD : KLandingSubtitleL,
-                    ),
-                    SizedBox(height: 15),
-                    Text(
-                      'Make it your own App.',
-                      style:
-                          _darkTheme ? KLandingSubtitle2D : KLandingSubtitle2L,
-                    ),
-                    SizedBox(height: 20),
-                    ListTile(
-                      leading: Icon(FontAwesomeIcons.cloudUploadAlt,
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  text,
+                  style:
+                      // _darkTheme ? KLandingSubtitleD :
+                      KLandingSubtitleL,
+                ),
+                SizedBox(height: 15),
+                Text(
+                  'Make it your own App.',
+                  style:
+                      // _darkTheme ? KLandingSubtitle2D :
+                      KLandingSubtitle2L,
+                ),
+                SizedBox(height: 20),
+                ListTile(
+                  leading: Icon(FontAwesomeIcons.cloudUploadAlt,
+                      color:
+                          // _darkTheme ? darkThemeButton :
+                          lightThemeButton),
+                  title: Text('Add your own photo.',
+                      style: TextStyle(
                           color:
-                              _darkTheme ? darkThemeButton : lightThemeButton),
-                      title: Text('Add your own photo.',
-                          style: TextStyle(
-                              color: _darkTheme
-                                  ? darkThemeWords
-                                  : lightThemeWords)),
-                    ),
-                    ListTile(
-                      leading: Icon(FontAwesomeIcons.edit,
+                              // _darkTheme ? darkThemeWords :
+                              lightThemeWords)),
+                ),
+                ListTile(
+                  leading: Icon(FontAwesomeIcons.edit,
+                      color:
+                          // _darkTheme ? darkThemeButton :
+                          lightThemeButton),
+                  title: Text('Add your own quote.',
+                      style: TextStyle(
                           color:
-                              _darkTheme ? darkThemeButton : lightThemeButton),
-                      title: Text('Add your own quote.',
-                          style: TextStyle(
-                              color: _darkTheme
-                                  ? darkThemeWords
-                                  : lightThemeWords)),
-                    ),
-                    ListTile(
-                      leading: Icon(FontAwesomeIcons.edit,
+                              // _darkTheme ? darkThemeWords :
+                              lightThemeWords)),
+                ),
+                ListTile(
+                  leading: Icon(FontAwesomeIcons.edit,
+                      color:
+                          // _darkTheme ? darkThemeButton :
+                          lightThemeButton),
+                  title: Text('Add your own mantra.',
+                      style: TextStyle(
                           color:
-                              _darkTheme ? darkThemeButton : lightThemeButton),
-                      title: Text('Add your own mantra.',
-                          style: TextStyle(
-                              color: _darkTheme
-                                  ? darkThemeWords
-                                  : lightThemeWords)),
-                    ),
-                  ],
-                )),
+                              // _darkTheme ? darkThemeWords :
+                              lightThemeWords)),
+                ),
+              ],
+            )),
           ),
         ),
       ),

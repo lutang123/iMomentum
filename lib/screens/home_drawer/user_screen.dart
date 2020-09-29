@@ -1,3 +1,4 @@
+import 'package:alert_dialogs/alert_dialogs.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,7 @@ import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
-import 'package:iMomentum/app/sign_in/new_firebase_auth_service.dart';
+import 'package:iMomentum/app/sign_in/firebase_auth_service_new.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/cupertino.dart';
@@ -28,12 +29,10 @@ class _UserScreenState extends State<UserScreen> {
     final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
     bool _randomOn = (randomNotifier.getRandom() == true);
     final imageNotifier = Provider.of<ImageNotifier>(context, listen: false);
-
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
 
     final User user = FirebaseAuth.instance.currentUser;
-
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
@@ -55,159 +54,48 @@ class _UserScreenState extends State<UserScreen> {
                 color: _darkTheme ? darkThemeButton : lightThemeButton,
               ),
             ),
+            actions: [
+              _popup(),
+            ],
           ),
           body: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Spacer(),
-              MySignInContainer(
+              MyContainerWithDarkMode(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
                     children: [
+                      /// todo: let user add their photo
                       Avatar(
                         photoUrl: user.photoURL,
                         radius: 30,
                       ),
                       SizedBox(height: 30),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Text('Name:',
-                                    style: TextStyle(
-                                        color: _darkTheme
-                                            ? darkThemeWords
-                                            : lightThemeWords,
-                                        fontSize: 18.0)),
-                                SizedBox(width: 20),
-                                Expanded(
-                                  child: Visibility(
-                                    visible: _nameVisible,
-                                    child: Text(
-                                        user.displayName == null ||
-                                                user.displayName.isEmpty
-                                            ? 'No added name yet.'
-                                            : user.displayName,
-                                        style: TextStyle(
-                                            color: _darkTheme
-                                                ? darkThemeWords
-                                                : lightThemeWords,
-                                            fontSize: 20.0,
-                                            fontWeight: FontWeight.bold)),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Visibility(
-                                    visible: !_nameVisible,
-                                    child: SizedBox(
-                                      width: 150,
-                                      child: TextField(
-                                        autofocus: true,
-                                        onSubmitted: _onSubmitted,
-                                        keyboardAppearance: _darkTheme
-                                            ? Brightness.dark
-                                            : Brightness.light,
-                                        cursorColor: _darkTheme
-                                            ? darkThemeWords
-                                            : lightThemeWords,
-                                        maxLines: 1,
-                                        maxLength: 15,
-                                        inputFormatters: [
-                                          LengthLimitingTextInputFormatter(20)
-                                        ],
-                                        decoration: InputDecoration(
-                                          focusedBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: _darkTheme
-                                                  ? darkThemeDivider
-                                                  : lightThemeDivider,
-                                            ),
-                                          ),
-                                          enabledBorder: UnderlineInputBorder(
-                                              borderSide: BorderSide(
-                                            color: _darkTheme
-                                                ? darkThemeDivider
-                                                : lightThemeDivider,
-                                          )),
-                                        ),
-                                        style: TextStyle(
-                                            color: _darkTheme
-                                                ? darkThemeWords
-                                                : lightThemeWords,
-                                            fontSize: 20.0,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          IconButton(
-                            icon: Icon(
-                              EvaIcons.edit2Outline,
-                              size: 26,
-                              color: _darkTheme
-                                  ? darkThemeButton
-                                  : lightThemeButton,
-                            ),
-                            onPressed: _editName,
-                          )
-                        ],
-                      ),
+                      _buildNameRow(),
                       SizedBox(height: 20.0),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Text('Email:',
-                              style: TextStyle(
-                                  color: _darkTheme
-                                      ? darkThemeWords
-                                      : lightThemeWords,
-                                  fontSize: 18.0)),
-                          SizedBox(width: 20.0),
-                          Text(
-                              user.email == null || user.email.isEmpty
-                                  ? 'No registered email.'
-                                  : user.email,
-                              style: TextStyle(
-                                  color: _darkTheme
-                                      ? darkThemeWords
-                                      : lightThemeWords,
-                                  fontSize: 20.0,
-                                  fontWeight: FontWeight.bold)),
-                        ],
-                      ),
+                      _buildEmailRow(),
                       SizedBox(height: 20.0),
+                      _buildEmailVerifyRow(),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          FlatButton(
-                            onPressed: () => _confirmDelete(context),
-                            child: Text('Delete account',
-                                style: TextStyle(
-                                    color: _darkTheme
-                                        ? darkThemeHint
-                                        : lightThemeHint,
-                                    fontSize: 18.0)),
-                          ),
-                          SizedBox(width: 20.0),
-                          FlatButton(
-                            child: Text(
-                              'Logout',
-                              style: TextStyle(
-                                  color: _darkTheme
-                                      ? darkThemeButton
-                                      : lightThemeButton,
-                                  fontSize: 18),
+                        children: [
+                          Visibility(
+                            visible: _confirmVerifiedVisible,
+                            child: FlatButton(
+                              onPressed: _confirmVerified,
+                              child: Text('I have verified my email address.',
+                                  style: TextStyle(
+                                      color: _darkTheme
+                                          ? darkThemeButton
+                                          : lightThemeButton,
+                                      fontSize: 18)),
                             ),
-                            onPressed: () => _confirmSignOut(context),
                           ),
                         ],
                       ),
+                      // SizedBox(height: 20.0),
+                      // _buildLastRow(),
                     ],
                   ),
                 ),
@@ -220,62 +108,284 @@ class _UserScreenState extends State<UserScreen> {
     );
   }
 
-  bool _nameVisible = true;
+  Widget _buildNameRow() {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    final User user = FirebaseAuth.instance.currentUser;
 
-  void _editName() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Expanded(
+          child: Row(
+            children: [
+              Text('Name:',
+                  style: TextStyle(
+                      color: _darkTheme ? darkThemeWords : lightThemeWords,
+                      fontSize: 18.0)),
+              SizedBox(width: 20),
+              Expanded(
+                child: Visibility(
+                  visible: _nameVisible,
+                  child: Text(
+                      user.displayName == null || user.displayName.isEmpty
+                          ? 'No added name yet.'
+                          : user.displayName,
+                      style: TextStyle(
+                          color: _darkTheme ? darkThemeWords : lightThemeWords,
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold)),
+                ),
+              ),
+              Expanded(
+                child: Visibility(
+                  visible: !_nameVisible,
+                  child: SizedBox(
+                    width: 150,
+                    child: TextFormField(
+                      autofocus: true,
+                      validator: (value) =>
+                          value.isNotEmpty ? null : 'Content can\'t be empty',
+                      onFieldSubmitted: _onSubmittedName,
+                      keyboardAppearance:
+                          _darkTheme ? Brightness.dark : Brightness.light,
+                      cursorColor:
+                          _darkTheme ? darkThemeWords : lightThemeWords,
+                      maxLines: 1, //default
+                      maxLength: 20,
+                      inputFormatters: [LengthLimitingTextInputFormatter(15)],
+                      decoration: InputDecoration(
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: _darkTheme
+                                ? darkThemeDivider
+                                : lightThemeDivider,
+                          ),
+                        ),
+                        enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                          color:
+                              _darkTheme ? darkThemeDivider : lightThemeDivider,
+                        )),
+                      ),
+                      style: TextStyle(
+                          color: _darkTheme ? darkThemeWords : lightThemeWords,
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        IconButton(
+          icon: Icon(
+            EvaIcons.edit2Outline,
+            size: 26,
+            color: _darkTheme ? darkThemeButton : lightThemeButton,
+          ),
+          onPressed: _updateName,
+        )
+      ],
+    );
+  }
+
+  Widget _buildEmailRow() {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    final User user = FirebaseAuth.instance.currentUser;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Text('Email:',
+            style: TextStyle(
+                color: _darkTheme ? darkThemeWords : lightThemeWords,
+                fontSize: 18.0)),
+        SizedBox(width: 20.0),
+        Text(
+            user.email == null || user.email.isEmpty
+                ? 'No registered email.'
+                : user.email,
+            style: TextStyle(
+                color: _darkTheme ? darkThemeWords : lightThemeWords,
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold)),
+      ],
+    );
+  }
+
+  Widget _buildEmailVerifyRow() {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    final User user = FirebaseAuth.instance.currentUser;
+    return user.isAnonymous
+        ? Container()
+        : user.emailVerified
+            ? Row(
+                children: [
+                  Text('✔︎  Email verified',
+                      style: TextStyle(
+                          color: _darkTheme ? darkThemeWords : lightThemeWords,
+                          fontSize: 16,
+                          fontStyle: FontStyle.italic)),
+                ],
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Email not verified',
+                      style: TextStyle(
+                          color: _darkTheme ? darkThemeWords : lightThemeWords,
+                          fontSize: 16,
+                          fontStyle: FontStyle.italic)),
+                  FlatButton(
+                    onPressed: _verifyEmail,
+                    child: Text('Verify email address',
+                        style: TextStyle(
+                            color:
+                                _darkTheme ? darkThemeButton : lightThemeButton,
+                            fontSize: 18)),
+                  )
+                ],
+              );
+  }
+
+  ///notes for pop up to choose from gallery or camera
+  Widget _popup() {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    return PopupMenuButton<int>(
+        color: _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
+        icon: Icon(
+          EvaIcons.moreHorizotnalOutline,
+          color: _darkTheme ? darkThemeButton : lightThemeButton,
+        ),
+        offset: Offset(0, 50),
+        itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 1,
+                child: Text("Logout"),
+              ),
+              PopupMenuItem(
+                value: 2,
+                child: Text("Delete account"),
+              ),
+            ],
+        onSelected: (int) {
+          if (int == 1) {
+            _confirmSignOut(context);
+          }
+          if (int == 2) {
+            _confirmDelete(context);
+          }
+        });
+  }
+
+  // Widget _buildLastRow() {
+  //   final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+  //   bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+  //   return Row(
+  //     // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //     // mainAxisAlignment: MainAxisAlignment.start,
+  //     children: <Widget>[
+  //       FlatButton(
+  //         onPressed: () => _confirmDelete(context),
+  //         child: Text('Delete account',
+  //             style: TextStyle(
+  //                 color: _darkTheme ? darkThemeHint : lightThemeHint,
+  //                 fontSize: 18.0)),
+  //       ),
+  //       FlatButton(
+  //         child: Text(
+  //           'Logout',
+  //           style: TextStyle(
+  //               color: _darkTheme ? darkThemeButton : lightThemeButton,
+  //               fontSize: 18),
+  //         ),
+  //         onPressed: () => _confirmSignOut(context),
+  //       ),
+  //     ],
+  //   );
+  // }
+
+  bool _nameVisible = true;
+  void _updateName() {
     setState(() {
       _nameVisible = !_nameVisible;
     });
   }
 
-  void _onSubmitted(String value) async {
-    if (value.isNotEmpty) {
-      //from ProgressDialog plugin
-      final ProgressDialog pr = ProgressDialog(
-        context,
-        type: ProgressDialogType.Normal,
-        // textDirection: TextDirection.rtl,
-        isDismissible: true,
-      );
-      pr.style(
-        message: 'Please wait',
-        borderRadius: 20.0,
-        backgroundColor: darkThemeNoPhotoColor,
-        elevation: 10.0,
-        insetAnimCurve: Curves.easeInOut,
-        progress: 0.0,
-        progressWidgetAlignment: Alignment.center,
-        maxProgress: 100.0,
-        progressTextStyle: TextStyle(
-            color: Colors.white, fontSize: 13.0, fontWeight: FontWeight.w400),
-        messageTextStyle: TextStyle(
-            color: Colors.white, fontSize: 19.0, fontWeight: FontWeight.w600),
-      );
-
-      await pr.show();
-
-      final FirebaseAuthService auth =
-          Provider.of<FirebaseAuthService>(context, listen: false);
-      await auth.updateUserName(value);
-
-      ///because it takes a while to update name
-      await pr.hide();
-
-      setState(() {
-        _nameVisible = !_nameVisible;
-      });
-    }
-    // Navigator.pop(context);
-  }
-
-  Future<void> _signOut(BuildContext context) async {
+  void _onSubmittedName(String value) async {
     try {
-      final FirebaseAuthService auth =
-          Provider.of<FirebaseAuthService>(context, listen: false);
-      await auth.signOut();
+      if (value.isNotEmpty) {
+        /// from ProgressDialog plugin
+        final ProgressDialog pr = ProgressDialog(
+          context,
+          type: ProgressDialogType.Normal,
+          // textDirection: TextDirection.rtl,
+          isDismissible: true,
+        );
+        pr.style(
+          message: 'Please wait',
+          borderRadius: 20.0,
+          backgroundColor: darkThemeNoPhotoColor,
+          elevation: 10.0,
+          insetAnimCurve: Curves.easeInOut,
+          progress: 0.0,
+          progressWidgetAlignment: Alignment.center,
+          maxProgress: 100.0,
+          progressTextStyle: TextStyle(
+              color: Colors.white, fontSize: 13.0, fontWeight: FontWeight.w400),
+          messageTextStyle: TextStyle(
+              color: Colors.white, fontSize: 19.0, fontWeight: FontWeight.w600),
+        );
+
+        await pr.show();
+
+        final FirebaseAuthService auth =
+            Provider.of<FirebaseAuthService>(context, listen: false);
+        await auth.updateUserName(value);
+
+        ///because it takes a while to update name
+        await pr.hide();
+
+        setState(() {
+          _nameVisible = !_nameVisible;
+        });
+      }
     } catch (e) {
       print(e.toString());
+      _showSignInError(context, e);
     }
+  }
+
+  bool _confirmVerifiedVisible = false;
+  Future<void> _verifyEmail() async {
+    final User user = FirebaseAuth.instance.currentUser;
+
+    try {
+      await user.sendEmailVerification();
+      await PlatformAlertDialog(
+        title: 'Verification link sent',
+        content: 'Please check your email to verify your account.',
+        defaultActionText: 'OK',
+      ).show(context);
+      setState(() {
+        _confirmVerifiedVisible = !_confirmVerifiedVisible;
+      });
+    } catch (e) {
+      print(e.toString());
+      _showSignInError(context, e);
+    }
+  }
+
+  void _confirmVerified() {
+    final User user = FirebaseAuth.instance.currentUser;
+    user.reload();
+    setState(() {
+      _confirmVerifiedVisible = !_confirmVerifiedVisible;
+    });
   }
 
   Future<void> _confirmSignOut(BuildContext context) async {
@@ -290,6 +400,17 @@ class _UserScreenState extends State<UserScreen> {
     }
   }
 
+  Future<void> _signOut(BuildContext context) async {
+    try {
+      final FirebaseAuthService auth =
+          Provider.of<FirebaseAuthService>(context, listen: false);
+      await auth.signOut();
+    } catch (e) {
+      print(e.toString());
+      _showSignInError(context, e);
+    }
+  }
+
   Future<void> _deleteAccount(BuildContext context) async {
     try {
       final FirebaseAuthService auth =
@@ -297,6 +418,7 @@ class _UserScreenState extends State<UserScreen> {
       await auth.delete();
     } catch (e) {
       print(e.toString());
+      _showSignInError(context, e);
     }
   }
 
@@ -313,26 +435,11 @@ class _UserScreenState extends State<UserScreen> {
     }
   }
 
-  ///notes for pop up to choose from gallery or camera
-  // Widget _popup() => PopupMenuButton<int>(
-  //     icon: FaIcon(FontAwesomeIcons.pencilAlt),
-  //     offset: Offset(0, 50),
-  //     itemBuilder: (context) => [
-  //           PopupMenuItem(
-  //             value: 1,
-  //             child: Text("Choose from gallery"),
-  //           ),
-  //           PopupMenuItem(
-  //             value: 2,
-  //             child: Text("Take a new photo"),
-  //           ),
-  //         ],
-  //     onSelected: (int) {
-  //       if (int == 1) {
-  //         _pickImage(ImageSource.gallery);
-  //       }
-  //       if (int == 2) {
-  //         _pickImage(ImageSource.camera);
-  //       }
-  //     });
+  Future<void> _showSignInError(BuildContext context, dynamic exception) async {
+    await showExceptionAlertDialog(
+      context: context,
+      title: 'Operation failed',
+      exception: exception,
+    );
+  }
 }

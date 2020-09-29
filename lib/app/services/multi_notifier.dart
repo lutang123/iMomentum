@@ -61,22 +61,15 @@ class MetricNotifier with ChangeNotifier {
 
 class ImageNotifier with ChangeNotifier {
   String _imageUrl;
-//  bool _randomOn;
 
   ImageNotifier(this._imageUrl);
 
   getImage() => _imageUrl;
-//  getRandom() => _randomOn;
 
   setImage(String imageUrl) async {
     _imageUrl = imageUrl;
     notifyListeners();
   }
-
-//  setRandom(bool randomOn) async {
-//    _randomOn = randomOn;
-//    notifyListeners();
-//  }
 }
 
 class MantraNotifier with ChangeNotifier {

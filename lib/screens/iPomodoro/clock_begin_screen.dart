@@ -117,7 +117,7 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                       onPressed: () => _play(),
                       onPressedEdit: () => showEditDialog(),
                     ),
-                    SizedBox(height: 60),
+                    SizedBox(height: 30),
                     ClockBottomToday(text: '${widget.todo.title}'),
                   ],
                 ),
@@ -165,6 +165,8 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
   bool _playSound = true;
   bool _isDifferentLength = false; //this is for changing duration.
   void showEditDialog() async {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     // setState(() {
     //   _topOpacity = 0.0;
     // });
@@ -179,7 +181,8 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20.0))),
             title: Text("Change Focus Setting",
-                textAlign: TextAlign.center, style: KDialogTitle),
+                textAlign: TextAlign.center,
+                style: _darkTheme ? KDialogTitle : KDialogTitleLight),
             content: Form(
               key: _formKey,
               child: Padding(
@@ -193,7 +196,8 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                       children: <Widget>[
                         Text(
                           'Focus length',
-                          style: KDialogContent,
+                          style:
+                              _darkTheme ? KDialogContent : KDialogContentLight,
                         ),
                         Row(
                           children: <Widget>[
@@ -229,13 +233,22 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                                     onSaved: (value) =>
                                         _durationInMin = int.tryParse(value),
                                     keyboardType: TextInputType.number,
-                                    style: KDialogContent,
+                                    style: _darkTheme
+                                        ? KDialogContent
+                                        : KDialogContentLight,
                                     autofocus: true,
-                                    cursorColor: Colors.white,
-                                    decoration: KTextFieldInputDecoration),
+                                    cursorColor: _darkTheme
+                                        ? darkThemeWords
+                                        : lightThemeWords,
+                                    decoration: _darkTheme
+                                        ? KTextFieldInputDecoration
+                                        : KTextFieldInputDecorationLight),
                               ),
                             ),
-                            Text('min', style: KDialogContent),
+                            Text('min',
+                                style: _darkTheme
+                                    ? KDialogContent
+                                    : KDialogContentLight),
                           ],
                         ),
                       ],
@@ -243,7 +256,10 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text('Rest length', style: KDialogContent),
+                        Text('Rest length',
+                            style: _darkTheme
+                                ? KDialogContent
+                                : KDialogContentLight),
                         Row(
                           children: <Widget>[
                             Container(
@@ -269,10 +285,15 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                                     keyboardType: TextInputType.number,
                                     style: KDialogContent,
                                     cursorColor: Colors.white,
-                                    decoration: KTextFieldInputDecoration),
+                                    decoration: _darkTheme
+                                        ? KTextFieldInputDecoration
+                                        : KTextFieldInputDecorationLight),
                               ),
                             ),
-                            Text('min', style: KDialogContent),
+                            Text('min',
+                                style: _darkTheme
+                                    ? KDialogContent
+                                    : KDialogContentLight),
                           ],
                         ),
                       ],
@@ -281,13 +302,18 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text('Play sounds', style: KDialogContent),
+                        Text('Play sounds',
+                            style: _darkTheme
+                                ? KDialogContent
+                                : KDialogContentLight),
                         SizedBox(
                           width: 50,
                           child: Transform.scale(
                             scale: 0.9,
                             child: CupertinoSwitch(
-                              activeColor: switchActiveColorUseInDark,
+                              activeColor: _darkTheme
+                                  ? switchActiveColorDark
+                                  : switchActiveColorLight,
                               trackColor: Colors.grey,
                               value: _playSound,
                               onChanged: (val) {
@@ -309,14 +335,19 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                           FlatButton(
                               child: Text(
                                 'Cancel',
-                                style: KDialogButton,
+                                style: _darkTheme
+                                    ? KDialogButton
+                                    : KDialogButtonLight,
                               ),
                               shape: _isDifferentLength || _playSound == false
                                   ? null
                                   : RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(68.0),
                                       side: BorderSide(
-                                          color: Colors.white70, width: 2.0)),
+                                          color: _darkTheme
+                                              ? darkThemeHint
+                                              : lightThemeHint,
+                                          width: 1.0)),
                               onPressed: () {
                                 // setState(() {
                                 //   _topOpacity = 1.0;
@@ -326,13 +357,18 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                           FlatButton(
                               child: Text(
                                 'Done',
-                                style: KDialogButton,
+                                style: _darkTheme
+                                    ? KDialogButton
+                                    : KDialogButtonLight,
                               ),
                               shape: _isDifferentLength || _playSound == false
                                   ? RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(68.0),
                                       side: BorderSide(
-                                          color: Colors.white70, width: 2.0))
+                                          color: _darkTheme
+                                              ? darkThemeHint
+                                              : lightThemeHint,
+                                          width: 1.0))
                                   : null,
 
                               ///_done must have a BuildContext, so that it will

@@ -11,7 +11,6 @@ class Note {
     this.fontFamily,
     this.isPinned,
   });
-  //add final or not?
   String id;
   String folderId;
   String title;

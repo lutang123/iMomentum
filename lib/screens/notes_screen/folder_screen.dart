@@ -130,85 +130,18 @@ class FolderScreenState extends State<FolderScreen> {
                         if (snapshot.hasData) {
                           final List<Note> allNotes = snapshot.data;
                           if (allNotes.isNotEmpty) {
-                            return StreamBuilder<List<Folder>>(
-                              stream: database
-                                  .foldersStream(), // print(database.todosStream());//Instance of '_MapStream<QuerySnapshot, List<TodoModel>>'
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  //this is a list of folder use has added.
-                                  final List<Folder> folders = snapshot.data;
-                                  // print('folders.length: ${folders.length}');
-                                  if (folders.isNotEmpty) {
-                                    ///when move this list outside of StreamBuilder as a constant, it keeps showing repeated folders on screen.
-                                    final List<Folder> defaultFolders = [
-                                      Folder(
-                                          id: 0.toString(), title: 'All Notes'),
-                                      Folder(id: 1.toString(), title: 'Notes'),
-                                    ];
-                                    // we always have two default folders on the screen.
-                                    final List<Folder> finalFolders =
-                                        defaultFolders..addAll(folders);
-                                    return Expanded(
-                                      child: CustomScrollView(
-                                        shrinkWrap: true,
-                                        controller: _hideButtonController,
-                                        slivers: <Widget>[
-                                          _buildBoxAdaptorForSearch(
-                                              database, allNotes, finalFolders),
-                                          _buildFolderGrid(
-                                              database, allNotes, finalFolders),
-                                          //filter null views
-                                        ],
-                                      ),
-                                    );
-                                  }
-                                  //this is for if no added folder, but may have notes
-                                  else {
-                                    return _noAddedFolderContent(
-                                        database,
-                                        allNotes,
-                                        // if notes.isNotEmpty ? return Container()
-                                        // only if no added folder and no notes, we show the message
-                                        Strings.emptyNoteAndFolder, //text
-                                        '', //tips
-                                        '', //textTap
-                                        null //onTap
-                                        );
-                                  }
-                                } else if (snapshot.hasError) {
-                                  print(
-                                      'snapshot.hasError in folder stream: ${snapshot.error.toString()}');
-                                  //this is for if folder StreamBuilder has error
-                                  return _noAddedFolderContent(
-                                      database,
-                                      allNotes,
-                                      '', //text
-                                      Strings.textError, //tips
-                                      'Or contact us.', //textTap
-                                      ///TODO contact us.
-                                      null //onTap
-                                      );
-                                }
-                                return Center(
-                                    child: CircularProgressIndicator());
-                              },
-                            );
+                            return _folderStream(database, allNotes);
                           } else {
                             //this is for the very beginning, and when no notes,
                             // we do not have folder stream too, it's all empty,
                             // and once we add folder or add notes, we no longer use this one.
-                            return _noAddedFolderContent(
-                              database,
-                              allNotes,
-                              Strings.emptyNoteAndFolder, //text
-                              '', //tips
-                              '', //textTap
-                              null, //onTap
-                            );
+                            ///but if notes are empty, we want to show folders too
+                            return _folderStream(database, allNotes);
                           }
                         } else if (snapshot.hasError) {
                           print(
                               'snapshot.hasError in note stream: ${snapshot.error.toString()}');
+                          //no access on  allNotes, so we can not use _noAddedFolderContent
                           return Expanded(
                               child: Column(
                             children: [
@@ -234,6 +167,67 @@ class FolderScreenState extends State<FolderScreen> {
     );
   }
 
+  Widget _folderStream(Database database, List<Note> allNotes) {
+    return StreamBuilder<List<Folder>>(
+      stream: database
+          .foldersStream(), // print(database.todosStream());//Instance of '_MapStream<QuerySnapshot, List<TodoModel>>'
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          //this is a list of folder use has added.
+          final List<Folder> folders = snapshot.data;
+          // print('folders.length: ${folders.length}');
+          if (folders.isNotEmpty) {
+            ///when move this list outside of StreamBuilder as a constant, it keeps showing repeated folders on screen.
+            final List<Folder> defaultFolders = [
+              Folder(id: 0.toString(), title: 'All Notes'),
+              Folder(id: 1.toString(), title: 'Notes'),
+            ];
+            // we always have two default folders on the screen.
+            final List<Folder> finalFolders = defaultFolders..addAll(folders);
+            return Expanded(
+              child: CustomScrollView(
+                shrinkWrap: true,
+                controller: _hideButtonController,
+                slivers: <Widget>[
+                  _buildBoxAdaptorForSearch(database, allNotes, finalFolders),
+                  _buildFolderGrid(database, allNotes, finalFolders),
+                  //filter null views
+                ],
+              ),
+            );
+          }
+          //this is for if no added folder, but may have notes
+          else {
+            return _noAddedFolderContent(
+                database,
+                allNotes,
+                // if notes.isNotEmpty ? return Container()
+                // only if no added folder and no notes, we show the message
+                Strings.emptyNoteAndFolder,
+                '', //text
+                '', //textTap
+                null //onTap
+                );
+          }
+        } else if (snapshot.hasError) {
+          print(
+              'snapshot.hasError in folder stream: ${snapshot.error.toString()}');
+          //this is for if folder StreamBuilder has error
+          return _noAddedFolderContent(
+              database,
+              allNotes,
+              '', //text
+              Strings.textError, //tips
+              'Or contact us.', //textTap
+              /// TODO contact us.
+              null //onTap
+              );
+        }
+        return Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+
   Widget _topRow() {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
@@ -251,18 +245,38 @@ class FolderScreenState extends State<FolderScreen> {
           child: Padding(
             padding: const EdgeInsets.only(left: 40.0),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Folders',
                     style: TextStyle(
                         color: _darkTheme ? darkThemeWords : lightThemeWords,
                         fontSize: 34,
                         fontWeight: FontWeight.w600)),
+                FlatButton(
+                  child: Text(
+                    'Show Tips',
+                    style: TextStyle(
+                        fontSize: 15,
+                        color: _darkTheme
+                            ? darkThemeButton.withOpacity(0.7)
+                            : lightThemeButton.withOpacity(0.7)),
+                  ),
+                  onPressed: _showTipDialog,
+                ),
               ],
             ),
           ),
         ),
       ],
     );
+  }
+
+  Future<void> _showTipDialog() async {
+    await PlatformAlertDialog(
+      title: 'Tips',
+      content: Strings.folderScreenTips,
+      defaultActionText: 'OK.',
+    ).show(context);
   }
 
   Widget _bottomRow(Database database) {
@@ -341,7 +355,7 @@ class FolderScreenState extends State<FolderScreen> {
   }
 
   Widget _noAddedFolderContent(Database database, List<Note> notes,
-      String text1, String text2, String text3, Function onTap) {
+      String text1, String tips, String textTap, Function onTap) {
     final List<Folder> defaultFolders = [
       Folder(id: 0.toString(), title: 'All Notes'),
       Folder(id: 1.toString(), title: 'Notes'),
@@ -356,8 +370,14 @@ class FolderScreenState extends State<FolderScreen> {
           SliverToBoxAdapter(
               child: notes.isNotEmpty
                   ? Container()
-                  : EmptyOrError(
-                      text: text1, tips: text2, textTap: text3, onTap: onTap)),
+                  : Container(
+                      margin: const EdgeInsets.only(left: 30.0, right: 30),
+                      child: EmptyOrError(
+                          text: text1,
+                          tips: tips,
+                          textTap: textTap,
+                          onTap: onTap),
+                    )),
         ],
       ),
     );
@@ -441,8 +461,9 @@ class FolderScreenState extends State<FolderScreen> {
           (folder.id != 0.toString()) && (folder.id != 1.toString())
               ? IconSlideAction(
                   caption: 'Edit',
-                  foregroundColor: Colors.lightBlue,
-                  color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
+                  foregroundColor:
+                      _darkTheme ? Colors.lightBlueAccent : Colors.blue,
+                  color: _darkTheme ? darkThemeDrawer : lightThemeDrawer,
                   icon: EvaIcons.edit2Outline,
                   onTap: () => _showEditDialog(database, folder),
                 )
@@ -452,8 +473,8 @@ class FolderScreenState extends State<FolderScreen> {
           (folder.id != 0.toString()) && (folder.id != 1.toString())
               ? IconSlideAction(
                   caption: 'Delete',
-                  foregroundColor: Colors.red,
-                  color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
+                  foregroundColor: _darkTheme ? Colors.redAccent : Colors.red,
+                  color: _darkTheme ? darkThemeDrawer : lightThemeDrawer,
                   icon: EvaIcons.trash2Outline,
 
                   ///add a flush bar and prevent edit on default one
@@ -512,13 +533,16 @@ class FolderScreenState extends State<FolderScreen> {
 
   ///todo: change
   void _showDeleteDialog(Database database, Folder folder) async {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     await showDialog(
       context: context,
       builder: (BuildContext context) {
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
             contentPadding: EdgeInsets.only(top: 10.0),
-            backgroundColor: Color(0xf01b262c),
+            backgroundColor:
+                _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20.0))),
             title: Column(
@@ -526,14 +550,14 @@ class FolderScreenState extends State<FolderScreen> {
                 Text("Delete Folder",
                     style: TextStyle(
                       fontSize: 20,
-                      color: Colors.white,
+                      color: _darkTheme ? darkThemeWords : lightThemeWords,
                     )),
                 SizedBox(height: 15),
                 Text(
                   'All Notes in this folder will be deleted.',
                   style: TextStyle(
                       fontSize: 16,
-                      color: Colors.white,
+                      color: _darkTheme ? darkThemeHint : lightThemeHint,
                       fontStyle: FontStyle.italic),
                 )
               ],
@@ -608,6 +632,8 @@ class FolderScreenState extends State<FolderScreen> {
   // so I make add and edit separate, lots of repeated code
   //https://stackoverflow.com/questions/50964365/alert-dialog-with-rounded-corners-in-flutter/50966702#50966702
   void _showAddDialog(Database database) async {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     setState(() {
       _addButtonVisible = false;
     });
@@ -619,7 +645,8 @@ class FolderScreenState extends State<FolderScreen> {
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
             contentPadding: EdgeInsets.only(top: 10.0),
-            backgroundColor: Color(0xf01b262c),
+            backgroundColor:
+                _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20.0))),
             title: Column(
@@ -627,14 +654,14 @@ class FolderScreenState extends State<FolderScreen> {
                 Text("New Folder",
                     style: TextStyle(
                       fontSize: 20,
-                      color: Colors.white,
+                      color: _darkTheme ? darkThemeWords : lightThemeWords,
                     )),
                 SizedBox(height: 15),
                 Text(
                   'Enter a name for this folder.',
                   style: TextStyle(
                       fontSize: 16,
-                      color: Colors.white60,
+                      color: _darkTheme ? darkThemeHint : lightThemeHint,
                       fontStyle: FontStyle.italic),
 //                  style: Theme.of(context).textTheme.subtitle2,
                 )
@@ -651,6 +678,8 @@ class FolderScreenState extends State<FolderScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 15),
                       child: TextFormField(
+                        keyboardAppearance:
+                            _darkTheme ? Brightness.dark : Brightness.light,
                         onChanged: (value) {
                           setState(() {
                             value.length == 0
@@ -667,16 +696,23 @@ class FolderScreenState extends State<FolderScreen> {
                         onSaved: (value) {
                           _newFolderName = value.firstCaps;
                         },
-                        style: TextStyle(fontSize: 20.0, color: Colors.white70),
+                        style: TextStyle(
+                            fontSize: 20.0,
+                            color:
+                                _darkTheme ? darkThemeWords : lightThemeWords),
                         autofocus: true,
-                        cursorColor: Colors.white70,
+                        cursorColor:
+                            _darkTheme ? darkThemeHint2 : lightThemeHint2,
                         decoration: InputDecoration(
                           focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: darkThemeHint),
+                            borderSide: BorderSide(
+                                color: _darkTheme
+                                    ? darkThemeHint
+                                    : lightThemeHint),
                           ),
                           enabledBorder: UnderlineInputBorder(
                               borderSide: BorderSide(
-                            color: darkThemeHint,
+                            color: _darkTheme ? darkThemeHint : lightThemeHint,
                           )),
                         ),
                       ),
@@ -691,7 +727,9 @@ class FolderScreenState extends State<FolderScreen> {
                                 'Cancel',
                                 style: GoogleFonts.varelaRound(
                                   fontSize: 18,
-                                  color: Colors.white,
+                                  color: _darkTheme
+                                      ? darkThemeWords
+                                      : lightThemeWords,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -699,7 +737,10 @@ class FolderScreenState extends State<FolderScreen> {
                                   ? RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(68.0),
                                       side: BorderSide(
-                                          color: Colors.white70, width: 2.0))
+                                          color: _darkTheme
+                                              ? darkThemeHint
+                                              : lightThemeHint,
+                                          width: 1.0))
                                   : null,
                               onPressed: () {
                                 setState(() {
@@ -712,7 +753,9 @@ class FolderScreenState extends State<FolderScreen> {
                                 'Save',
                                 style: GoogleFonts.varelaRound(
                                   fontSize: 18,
-                                  color: Colors.white,
+                                  color: _darkTheme
+                                      ? darkThemeWords
+                                      : lightThemeWords,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -721,7 +764,10 @@ class FolderScreenState extends State<FolderScreen> {
                                   : RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(68.0),
                                       side: BorderSide(
-                                          color: Colors.white70, width: 2.0)),
+                                          color: _darkTheme
+                                              ? darkThemeHint
+                                              : lightThemeHint,
+                                          width: 1.0)),
                               onPressed: () => _addFolder(context, database)),
                         ],
                       ),
@@ -793,6 +839,8 @@ class FolderScreenState extends State<FolderScreen> {
 
   //The reason not to put the add and edit together is because in add button, no access to folder.
   void _showEditDialog(Database database, Folder folder) async {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     setState(() {
       _addButtonVisible = false;
     });
@@ -804,7 +852,8 @@ class FolderScreenState extends State<FolderScreen> {
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
             contentPadding: EdgeInsets.only(top: 10.0),
-            backgroundColor: Color(0xf01b262c),
+            backgroundColor:
+                _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20.0))),
             title: Column(
@@ -812,9 +861,8 @@ class FolderScreenState extends State<FolderScreen> {
                 Text(
                   "Rename Folder",
                   style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.white,
-                  ),
+                      fontSize: 20,
+                      color: _darkTheme ? darkThemeWords : lightThemeWords),
                 ),
               ],
             ),
@@ -829,6 +877,8 @@ class FolderScreenState extends State<FolderScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 15),
                       child: TextFormField(
+                        keyboardAppearance:
+                            _darkTheme ? Brightness.dark : Brightness.light,
                         onChanged: (value) {
                           setState(() {
                             value.length == 0
@@ -843,15 +893,25 @@ class FolderScreenState extends State<FolderScreen> {
                             ? null
                             : 'Folder name can not be empty',
                         onSaved: (value) => _newFolderName = value.firstCaps,
-                        style: TextStyle(fontSize: 20.0, color: Colors.white70),
+                        style: TextStyle(
+                            fontSize: 20.0,
+                            color:
+                                _darkTheme ? darkThemeWords : lightThemeWords),
                         autofocus: true,
-                        cursorColor: Colors.white70,
+                        cursorColor:
+                            _darkTheme ? darkThemeHint2 : lightThemeHint2,
                         decoration: InputDecoration(
                           focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: darkThemeHint),
+                            borderSide: BorderSide(
+                                color: _darkTheme
+                                    ? darkThemeHint
+                                    : lightThemeHint),
                           ),
                           enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: darkThemeHint)),
+                              borderSide: BorderSide(
+                                  color: _darkTheme
+                                      ? darkThemeHint
+                                      : lightThemeHint)),
                         ),
                       ),
                     ),
@@ -865,7 +925,9 @@ class FolderScreenState extends State<FolderScreen> {
                                 'Cancel',
                                 style: GoogleFonts.varelaRound(
                                   fontSize: 18,
-                                  color: Colors.white,
+                                  color: _darkTheme
+                                      ? darkThemeWords
+                                      : lightThemeWords,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -873,7 +935,10 @@ class FolderScreenState extends State<FolderScreen> {
                                   ? RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(68.0),
                                       side: BorderSide(
-                                          color: Colors.white70, width: 2.0))
+                                          color: _darkTheme
+                                              ? darkThemeHint2
+                                              : lightThemeHint2,
+                                          width: 2.0))
                                   : null,
                               onPressed: () {
                                 setState(() {
@@ -886,7 +951,9 @@ class FolderScreenState extends State<FolderScreen> {
                                 'Save',
                                 style: GoogleFonts.varelaRound(
                                   fontSize: 18,
-                                  color: Colors.white,
+                                  color: _darkTheme
+                                      ? darkThemeWords
+                                      : lightThemeWords,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -895,7 +962,10 @@ class FolderScreenState extends State<FolderScreen> {
                                   : RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(68.0),
                                       side: BorderSide(
-                                          color: Colors.white70, width: 2.0)),
+                                          color: _darkTheme
+                                              ? darkThemeHint2
+                                              : lightThemeHint2,
+                                          width: 1.0)),
                               onPressed: () =>
                                   _editFolder(context, database, folder)),
                         ],

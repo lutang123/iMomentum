@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
+import 'package:iMomentum/app/constants/theme.dart';
 
 /// Builds the signed-in or non signed-in UI, depending on the user snapshot.
 /// This widget should be below the [MaterialApp].
@@ -22,7 +23,7 @@ class AuthWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (userSnapshot.connectionState == ConnectionState.active) {
-      //final User user = snapshot.data;
+      /// previous version: final User user = snapshot.data;
       return userSnapshot.hasData
           // ? TabPage() : StartScreen();
           ? signedInBuilder(context)
@@ -42,29 +43,30 @@ class AuthWidget extends StatelessWidget {
           child: Center(
               child: MySignInContainer(
                   child: Text(
-            'Operation failed, please try again.',
-            style: TextStyle(color: Colors.white),
+            'Operation failed, please try again later.',
+            style: TextStyle(color: lightThemeWords),
           ))),
         ),
       );
-    } else {
-      return Scaffold(
-        body: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(ImageUrl.startImage1),
-              fit: BoxFit.cover,
-            ),
-          ),
-          constraints: BoxConstraints.expand(),
-          child: Center(
-            child: SpinKitDoubleBounce(
-              color: Colors.white,
-              size: 100.0,
-            ),
+    }
+    // else {
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(ImageUrl.startImage1),
+            fit: BoxFit.cover,
           ),
         ),
-      );
-    }
+        constraints: BoxConstraints.expand(),
+        child: Center(
+          child: SpinKitDoubleBounce(
+            color: Colors.white,
+            size: 100.0,
+          ),
+        ),
+      ),
+    );
+    // }
   }
 }

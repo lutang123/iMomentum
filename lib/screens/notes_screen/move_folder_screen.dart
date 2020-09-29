@@ -17,12 +17,10 @@ import 'package:iMomentum/app/utils/extension_firstCaps.dart';
 
 class MoveFolderScreen extends StatefulWidget {
   const MoveFolderScreen({
-    this.database,
-    // this.folders,
-    this.note,
+    @required this.database,
+    @required this.note,
   });
   final Database database;
-  // final List<Folder> folders;
   final Note note;
 
   @override
@@ -45,79 +43,103 @@ class _MoveFolderScreenState extends State<MoveFolderScreen> {
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    return CustomizedBottomSheet(
-      color: _darkTheme ? darkThemeAdd : lightThemeAdd,
-      child: Column(
-        // mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          SizedBox(height: 20),
-          Text('Select a folder', style: Theme.of(context).textTheme.headline5),
-
-          ///why after adding new folder the list showing multi times??
-          ///because default folder must inside StreamBuilder.
-          SizedBox(height: 10),
-          Padding(
-            padding: const EdgeInsets.only(left: 10.0),
-            child: Row(
+    return Scaffold(
+      body: CustomizedBottomSheet(
+        color: _darkTheme ? darkThemeAdd : lightThemeAdd,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            SizedBox(height: 20),
+            Row(
               children: [
-                FlatButton(
-                    child: Text(
-                      'Add New',
-                      style: TextStyle(
-                          fontSize: 16,
-                          color: _darkTheme
-                              ? Colors.lightBlueAccent
-                              : lightThemeButton,
-                          decoration: TextDecoration.underline,
-                          fontStyle: FontStyle.italic),
-                    ),
-                    onPressed: () => _showAddDialog(database)),
+                Opacity(
+                  opacity: 0.0,
+                  child: IconButton(onPressed: null, icon: Icon(Icons.clear)),
+                ),
+                Spacer(),
+                Text('Select a folder',
+                    style: TextStyle(
+                      fontSize: 23,
+                      color: _darkTheme ? darkThemeWords : lightThemeWords,
+                      fontWeight: FontWeight.w600,
+                    )),
+                Spacer(),
+                Padding(
+                  padding: const EdgeInsets.only(right: 15.0),
+                  child: IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: Icon(Icons.clear),
+                      color: _darkTheme ? darkThemeHint : lightThemeHint),
+                ),
               ],
             ),
-          ),
-          StreamBuilder<List<Folder>>(
-            stream: database
-                .foldersStream(), // print(database.todosStream());//Instance of '_MapStream<QuerySnapshot, List<TodoModel>>'
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                final List<Folder> folders = snapshot.data;
-                final List<Folder> defaultFolders = [
-                  Folder(id: 1.toString(), title: 'Notes'),
-                ];
-                if (folders.isNotEmpty) {
-                  final List<Folder> finalFolders = defaultFolders
-                    ..addAll(folders);
-                  //this StreamBuilder is only to find out how many notes in a folder
+
+            ///why after adding new folder the list showing multi times??
+            ///because default folder must inside StreamBuilder.
+            SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.only(left: 20.0),
+              child: Row(
+                children: [
+                  FlatButton(
+                      child: Text(
+                        'Add New',
+                        style: TextStyle(
+                            fontSize: 16,
+                            color: _darkTheme
+                                ? Colors.lightBlueAccent
+                                : lightThemeButton,
+                            decoration: TextDecoration.underline,
+                            fontStyle: FontStyle.italic),
+                      ),
+                      onPressed: () => _showAddDialog(database)),
+                ],
+              ),
+            ),
+            StreamBuilder<List<Folder>>(
+              stream: database
+                  .foldersStream(), // print(database.todosStream());//Instance of '_MapStream<QuerySnapshot, List<TodoModel>>'
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final List<Folder> folders = snapshot.data;
+                  final List<Folder> defaultFolders = [
+                    Folder(id: 1.toString(), title: 'Notes'),
+                  ];
+                  if (folders.isNotEmpty) {
+                    final List<Folder> finalFolders = defaultFolders
+                      ..addAll(folders);
+                    //this StreamBuilder is only to find out how many notes in a folder
+                    return Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                        child: _buildFolderListView(note, finalFolders),
+                      ),
+                    );
+                  } else {
+                    return Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: _buildFolderListView(note, defaultFolders),
+                      ),
+                    );
+                  }
+                } else if (snapshot.hasError) {
+                  print(
+                      'snapshot.hasError in folder stream: ${snapshot.error.toString()}');
                   return Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: _buildFolderListView(note, finalFolders),
-                    ),
-                  );
-                } else {
-                  return Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: _buildFolderListView(note, defaultFolders),
-                    ),
-                  );
+                      child: EmptyOrError(
+                          text: '',
+                          tips: Strings.textError,
+                          textTap: Strings.textErrorOnTap,
+                          //Todo contact us
+                          onTap: null));
                 }
-              } else if (snapshot.hasError) {
-                print(
-                    'snapshot.hasError in folder stream: ${snapshot.error.toString()}');
-                return Expanded(
-                    child: EmptyOrError(
-                        text: '',
-                        tips: Strings.textError,
-                        textTap: Strings.textErrorOnTap,
-                        //Todo contact us
-                        onTap: null));
-              }
-              return Center(child: CircularProgressIndicator());
-            },
-          ),
-          SizedBox(height: 20)
-        ],
+                return Center(child: CircularProgressIndicator());
+              },
+            ),
+            SizedBox(height: 50)
+          ],
+        ),
       ),
     );
   }
@@ -137,12 +159,16 @@ class _MoveFolderScreenState extends State<MoveFolderScreen> {
           return FolderListTile(
             folder: folders[index],
             onTap: () => _move(database, note, folders[index]),
+            // onPressed: () => _showEditDialog(database, folders[index]),
           );
         });
   }
 
   ///move
   Future<void> _move(Database database, Note note, Folder folder) async {
+    //
+    print('folder.id: ${folder.id}');
+    print('note.folderId: ${note.folderId}');
     try {
       note.folderId = folder.id;
       await database.setNote(note);
@@ -158,13 +184,19 @@ class _MoveFolderScreenState extends State<MoveFolderScreen> {
   String _newFolderName = '';
   bool _isFolderNameEmpty = true;
   void _showAddDialog(Database database) async {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+
     await showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext _) {
+        ///this StatefulBuilder has a context that can be used in addFolder and cancel
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
             contentPadding: EdgeInsets.only(top: 10.0),
-            backgroundColor: Color(0xf01b262c),
+            backgroundColor:
+                _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20.0))),
             title: Column(
@@ -172,19 +204,16 @@ class _MoveFolderScreenState extends State<MoveFolderScreen> {
                 Text("New Folder",
                     style: TextStyle(
                       fontSize: 20,
-                      color: Colors.white,
+                      color: _darkTheme ? darkThemeWords : lightThemeWords,
                     )),
                 SizedBox(height: 15),
-                Row(
-                  children: [
-                    Text(
-                      'Enter a name for this folder.',
-                      style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.white60,
-                          fontStyle: FontStyle.italic),
-                    ),
-                  ],
+                Text(
+                  'Enter a name for this folder.',
+                  style: TextStyle(
+                      fontSize: 16,
+                      color: _darkTheme ? darkThemeHint : lightThemeHint,
+                      fontStyle: FontStyle.italic),
+//                  style: Theme.of(context).textTheme.subtitle2,
                 )
               ],
             ),
@@ -199,6 +228,8 @@ class _MoveFolderScreenState extends State<MoveFolderScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 15),
                       child: TextFormField(
+                        keyboardAppearance:
+                            _darkTheme ? Brightness.dark : Brightness.light,
                         onChanged: (value) {
                           setState(() {
                             value.length == 0
@@ -212,23 +243,32 @@ class _MoveFolderScreenState extends State<MoveFolderScreen> {
                         validator: (value) => (value.isNotEmpty)
                             ? null
                             : 'Folder name can not be empty',
-                        onSaved: (value) => _newFolderName = value,
-                        style: TextStyle(fontSize: 20.0, color: Colors.white70),
+                        onSaved: (value) {
+                          _newFolderName = value.firstCaps;
+                        },
+                        style: TextStyle(
+                            fontSize: 20.0,
+                            color:
+                                _darkTheme ? darkThemeWords : lightThemeWords),
                         autofocus: true,
-                        cursorColor: Colors.white70,
+                        cursorColor:
+                            _darkTheme ? darkThemeHint2 : lightThemeHint2,
                         decoration: InputDecoration(
                           focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: darkThemeHint),
+                            borderSide: BorderSide(
+                                color: _darkTheme
+                                    ? darkThemeHint
+                                    : lightThemeHint),
                           ),
                           enabledBorder: UnderlineInputBorder(
                               borderSide: BorderSide(
-                            color: darkThemeHint,
+                            color: _darkTheme ? darkThemeHint : lightThemeHint,
                           )),
                         ),
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(10.0),
+                      padding: const EdgeInsets.all(8.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -237,7 +277,9 @@ class _MoveFolderScreenState extends State<MoveFolderScreen> {
                                 'Cancel',
                                 style: GoogleFonts.varelaRound(
                                   fontSize: 18,
-                                  color: Colors.white,
+                                  color: _darkTheme
+                                      ? darkThemeWords
+                                      : lightThemeWords,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -245,15 +287,22 @@ class _MoveFolderScreenState extends State<MoveFolderScreen> {
                                   ? RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(68.0),
                                       side: BorderSide(
-                                          color: Colors.white70, width: 2.0))
+                                          color: _darkTheme
+                                              ? darkThemeHint
+                                              : lightThemeHint,
+                                          width: 1.0))
                                   : null,
-                              onPressed: () => Navigator.of(context).pop()),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              }),
                           FlatButton(
                               child: Text(
                                 'Save',
                                 style: GoogleFonts.varelaRound(
                                   fontSize: 18,
-                                  color: Colors.white,
+                                  color: _darkTheme
+                                      ? darkThemeWords
+                                      : lightThemeWords,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -262,7 +311,10 @@ class _MoveFolderScreenState extends State<MoveFolderScreen> {
                                   : RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(68.0),
                                       side: BorderSide(
-                                          color: Colors.white70, width: 2.0)),
+                                          color: _darkTheme
+                                              ? darkThemeHint
+                                              : lightThemeHint,
+                                          width: 1.0)),
                               onPressed: () => _addFolder(context, database)),
                         ],
                       ),
@@ -271,6 +323,7 @@ class _MoveFolderScreenState extends State<MoveFolderScreen> {
                 ),
               ),
             ),
+//            actions: <Widget>[],
           );
         });
       },

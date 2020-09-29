@@ -34,6 +34,7 @@ class StringsSignIn {
   static const String resetLinkSentTitle = 'Reset link sent';
   static const String resetLinkSentMessage =
       'Check your email to reset your password';
+
   static const String emailLabel = 'Email';
   static const String emailHint = "What's your email address?";
   static const String password8CharactersLabel = 'Password (8+ characters)';

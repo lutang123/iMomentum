@@ -9,17 +9,17 @@ class EmptyOrError extends StatelessWidget {
   final String text;
   final String tips;
   final String textTap;
-  final String text2;
+  // final String text2;
   final Function onTap;
 
   const EmptyOrError({
     Key key,
-    this.text = '',
-    this.tips = '', //textError,
-    this.textTap = '', //textErrorOnTap 'Or contact us'
+    this.text,
+    this.tips, //textError,
+    this.textTap, //textErrorOnTap 'Or contact us'
     /// //Todo contact us
     this.onTap,
-    this.text2 = '',
+    // this.text2,
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -34,23 +34,23 @@ class EmptyOrError extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             //main message
-            text.isEmpty
-                ? Container()
-                : Text(
+            text.isNotEmpty
+                ? Text(
                     text,
-                    style: Theme.of(context).textTheme.subtitle2,
-                  ),
-            (text.isEmpty || tips.isEmpty) ? Container() : SizedBox(height: 20),
-            tips.isEmpty
-                ? Container()
+                    style: Theme.of(context).textTheme.bodyText2,
+                  )
+                //tips only used for error now
+                // tips.isEmpty
+                //     ? Container()
                 : Padding(
                     padding: const EdgeInsets.only(left: 15.0),
                     child: RichText(
                       text: TextSpan(
                         style: TextStyle(
-                            color: _darkTheme ? Colors.white60 : Colors.black45,
+                            color: _darkTheme ? Colors.white70 : Colors.black45,
                             fontStyle: FontStyle.italic,
                             fontSize: 16),
                         children: [
@@ -60,17 +60,17 @@ class EmptyOrError extends StatelessWidget {
                           ),
                           //this is for tap
                           TextSpan(
-                            text: textTap,
+                            text: textTap, // contact us
                             recognizer: TapGestureRecognizer()..onTap = onTap,
                             style: TextStyle(
                                 decoration: TextDecoration.underline,
                                 color: _darkTheme
-                                    ? Colors.white60
+                                    ? Colors.white70
                                     : Colors.black45,
                                 fontStyle: FontStyle.italic,
                                 fontSize: 16),
                           ),
-                          TextSpan(text: text2),
+                          // TextSpan(text: text2),
                         ],
                       ),
                     ),

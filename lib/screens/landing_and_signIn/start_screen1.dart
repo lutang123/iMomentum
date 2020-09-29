@@ -22,27 +22,31 @@ class _StartScreenState extends State<StartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(ImageUrl.startImage),
-            fit: BoxFit.cover,
-          ),
-        ),
-        constraints: BoxConstraints.expand(),
-        child: Center(
-            child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Padding(padding: const EdgeInsets.all(15.0), child: getQuestion()),
-            Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: HomeTextField(onSubmitted: _onSubmitted, max: 15),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        body: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(ImageUrl.startImage),
+              fit: BoxFit.cover,
             ),
-          ],
-        )),
+          ),
+          constraints: BoxConstraints.expand(),
+          child: Center(
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                  padding: const EdgeInsets.all(15.0), child: getQuestion()),
+              Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: HomeTextField(onSubmitted: _onSubmitted, max: 20),
+              ),
+            ],
+          )),
+        ),
       ),
     );
   }

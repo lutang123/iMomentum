@@ -103,7 +103,6 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
   ];
 
   void changedDropDownItem(String selectedCity) {
-//    print("Selected city $selectedCity, we are going to refresh the UI");
     setState(() {
       _currentCategory = selectedCity;
     });
@@ -116,13 +115,11 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
   // here we are creating the list needed for the DropDownButton
   List<DropdownMenuItem<String>> getDropDownMenuItems() {
     List<DropdownMenuItem<String>> items = List();
-    for (String city in _categories) {
-      // here we are creating the drop down menu items, you can customize the item right here
-      // but I'll just use a simple text for this
+    for (String category in _categories) {
       items.add(DropdownMenuItem(
-          value: city,
+          value: category,
           child: Text(
-            city,
+            category,
             // style: TextStyle(color: darkThemeWords),
           )));
     }
@@ -183,40 +180,56 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    // double height = MediaQuery.of(context).size.height;
+    // print('height: $height'); //height: 683.4285714285714; height: 896
+    // double width = MediaQuery.of(context).size.width;
+    // print('width: $width'); //width: 411.42857142857144; width: 414
     return SingleChildScrollView(
       child: CustomizedBottomSheet(
-        color: _darkTheme ? darkThemeAdd : lightThemeAdd,
+        color: _darkTheme ? darkThemeAdd : lightThemeNoPhotoColor,
         child: Form(
           key: _formKey,
           child: Column(
             children: <Widget>[
-              SizedBox(height: 20),
-              Text(todo != null ? 'Edit Task' : 'Add Task',
-                  style: TextStyle(
-                    fontSize: 24,
-                    color: _darkTheme ? Colors.white : lightThemeWords,
-                    fontWeight: FontWeight.w600,
-                  )),
               SizedBox(height: 10),
+              Row(
+                children: [
+                  Opacity(
+                    opacity: 0.0,
+                    child: IconButton(onPressed: null, icon: Icon(Icons.clear)),
+                  ),
+                  Spacer(),
+                  Text(todo != null ? 'Edit Task' : 'Add Task',
+                      style: TextStyle(
+                        fontSize: 23,
+                        color: _darkTheme ? darkThemeWords : lightThemeWords,
+                        fontWeight: FontWeight.w600,
+                      )),
+                  Spacer(),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 15.0),
+                    child: IconButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        icon: Icon(Icons.clear),
+                        color: _darkTheme ? darkThemeHint : lightThemeHint),
+                  ),
+                ],
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
-                    width: 70,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 0.0),
+                    width: 65, //width / 6,
+                    child: Center(
                       child: TextFormField(
-                        scrollPadding: const EdgeInsets.all(3.0),
                         controller:
                             _dateController, //this is TextEditingController
                         focusNode: _dateFocusNode,
-                        textAlign: TextAlign.center,
                         readOnly: true,
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                           fontStyle: FontStyle.italic,
-                          // decoration: TextDecoration.underline,
-                          color: _darkTheme ? Colors.white : lightThemeWords,
+                          color: _darkTheme ? darkThemeWords : lightThemeWords,
                           fontWeight: FontWeight.w600,
                         ),
                         decoration: InputDecoration(
@@ -227,43 +240,50 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                               borderSide:
                                   BorderSide(color: Colors.transparent)),
                         ),
-
                         onTap: _handleDatePicker,
                       ),
                     ),
                   ),
-                  IconButton(
-                      padding: const EdgeInsets.all(0.0),
-                      icon: Icon(EvaIcons.calendarOutline,
-                          color:
-                              _darkTheme ? darkThemeButton : lightThemeButton),
-                      onPressed: _handleDatePicker),
+                  SizedBox(width: 3),
+                  InkWell(
+                    onTap: _handleDatePicker,
+                    child: Icon(EvaIcons.calendarOutline,
+                        color: _darkTheme ? darkThemeButton : lightThemeButton),
+                  ),
+                  // IconButton(
+                  //     padding: const EdgeInsets.all(0.0),
+                  //     icon:
+                  //     onPressed: _handleDatePicker),
                 ],
               ),
-              Container(
-                width: 350,
+              SizedBox(
+                width: 350, //width * 0.85,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: TextFormField(
+                    keyboardAppearance:
+                        _darkTheme ? Brightness.dark : Brightness.light,
                     initialValue: title,
                     focusNode: _textFocusNode,
-//                    textInputAction: TextInputAction.done,
+//                    textInputAction: TextInputAction.done, //we can not have this
                     validator: (value) =>
                         value.isNotEmpty ? null : 'Task title can\'t be empty',
                     onSaved: (value) => title = value,
                     //if submit successfully, we pop this page and go to home page
-//                    onEditingComplete: _submit,
+                    // onEditingComplete: () => _textFocusNode.nextFocus(), //no use
                     style: TextStyle(
                         color: _darkTheme ? darkThemeWords : lightThemeWords,
                         fontSize: 16.0),
                     autofocus: true,
-//                    textAlign: TextAlign.center,
                     cursorColor:
                         _darkTheme ? darkThemeButton : lightThemeButton,
+                    // can not remove this
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
                     maxLength: 100,
                     decoration: InputDecoration(
+                      ///https://stackoverflow.com/questions/51893926/how-can-i-hide-letter-counter-from-bottom-of-textfield-in-flutter#:~:text=To%20hide%20counter%20value%20from,InputDecoration%20property%20with%20empty%20value.
+                      counterText: "",
                       hintText: 'Title',
                       hintStyle: TextStyle(
                           fontSize: 15,
@@ -282,11 +302,13 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                   ),
                 ),
               ),
-              Container(
+              SizedBox(
                 width: 350,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: TextFormField(
+                    keyboardAppearance:
+                        _darkTheme ? Brightness.dark : Brightness.light,
                     initialValue: comment,
 //                    focusNode: _textFocusNode, //no need
                     ///we need to keep keyboard open, can not have .done
@@ -300,8 +322,6 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                     cursorColor:
                         _darkTheme ? darkThemeButton : lightThemeButton,
                     keyboardType: TextInputType.multiline,
-                    keyboardAppearance:
-                        _darkTheme ? Brightness.dark : Brightness.light,
                     maxLines: null,
                     decoration: InputDecoration(
                       hintText: 'Comment (optional)',
@@ -322,10 +342,11 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                   ),
                 ),
               ),
-              Container(
+              SizedBox(height: 8),
+              SizedBox(
                 width: 350,
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                  padding: EdgeInsets.symmetric(horizontal: 15),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
@@ -342,7 +363,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                                 canvasColor: darkThemeAdd,
                               )
                             : Theme.of(context).copyWith(
-                                canvasColor: lightThemeAdd,
+                                canvasColor: lightThemeNoPhotoColor,
                               ),
                         child: DropdownButton(
                           value: _currentCategory,
@@ -356,13 +377,13 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 15),
+              // SizedBox(height: 15),
               MyFlatButton(
                   onPressed: _save,
                   text: 'SAVE',
                   bkgdColor: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
                   color: _darkTheme ? darkThemeButton : lightThemeButton),
-              SizedBox(height: 30)
+              SizedBox(height: 20)
             ],
           ),
         ),

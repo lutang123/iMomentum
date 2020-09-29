@@ -2,9 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:iMomentum/app/services/multi_notifier.dart';
-import 'package:provider/provider.dart';
-
 import 'input_helper.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 
@@ -21,6 +18,7 @@ class TrackingTextInput extends StatefulWidget {
     this.inputDecoration,
     this.isObscured = false,
     this.onEditingComplete,
+    this.textController,
     // this.onChanged,
     // this.textInputAction,
   }) : super(key: key);
@@ -30,6 +28,7 @@ class TrackingTextInput extends StatefulWidget {
   final InputDecoration inputDecoration;
   final bool isObscured;
   final Function onEditingComplete;
+  final TextEditingController textController;
   // final Function onChanged;
   // final TextInputAction textInputAction;
 
@@ -39,7 +38,8 @@ class TrackingTextInput extends StatefulWidget {
 
 class _TrackingTextInputState extends State<TrackingTextInput> {
   final GlobalKey _fieldKey = GlobalKey();
-  final TextEditingController textController = TextEditingController();
+  // final TextEditingController c
+  TextEditingController get textController => widget.textController;
   Timer _debounceTimer;
 
   @override
@@ -69,17 +69,22 @@ class _TrackingTextInputState extends State<TrackingTextInput> {
 
   @override
   Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    // final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    // bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return TextFormField(
       key: _fieldKey,
-      keyboardAppearance: _darkTheme ? Brightness.dark : Brightness.light,
+      keyboardAppearance:
+          // _darkTheme ? Brightness.dark :
+          Brightness.light,
       controller: textController,
       // focusNode: widget.focusNode,
       onEditingComplete: widget.onEditingComplete,
       // onChanged: widget.onChanged,
       style: TextStyle(
-          fontSize: 16.0, color: _darkTheme ? darkThemeWords : lightThemeWords),
+          fontSize: 16.0,
+          color:
+              // _darkTheme ? darkThemeWords :
+              lightThemeWords),
       enabled: true,
       keyboardType:
           widget.isObscured ? TextInputType.text : TextInputType.emailAddress,

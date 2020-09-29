@@ -1,10 +1,12 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
@@ -14,7 +16,7 @@ import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dar
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
 import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/services/network_service/weather_service.dart';
-import 'package:iMomentum/app/sign_in/new_firebase_auth_service.dart';
+import 'package:iMomentum/app/sign_in/firebase_auth_service_new.dart';
 import 'package:iMomentum/app/utils/show_up.dart';
 import 'package:iMomentum/app/utils/top_sheet.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
@@ -35,12 +37,17 @@ import 'package:iMomentum/screens/todo_screen/add_todo_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
-import 'quote.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:showcaseview/showcase_widget.dart';
+import 'daily_quote.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:iMomentum/app/utils/extension_firstCaps.dart';
+import 'dart:io' show Platform;
 
 class HomeScreen extends StatefulWidget {
+  static const PREFERENCES_IS_FIRST_LAUNCH_STRING =
+      "HOME_IS_FIRST_LAUNCH_STRING";
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -103,6 +110,194 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void _focusButton(Database database, Todo todo) {
+    ///if using this one, it works fine but when click play button on Clock Begin
+    ///Screen, it always shows a black screen first, and then start timer.
+    ///adding BuildContext context has no difference, it still showing black screen when start to play.
+    // // default is 400 milliseconds
+    // SharedAxisTransitionType _transitionType = SharedAxisTransitionType.scaled;
+    // final route = SharedAxisPageRoute(
+    //     page: ClockBeginScreen(database: database, todo: todo),
+    //     transitionType: _transitionType,
+    //     milliseconds: 800);
+    // Navigator.of(context, rootNavigator: true).push(route);
+
+    ///use this will work properly
+    Navigator.of(context, rootNavigator: true).push(CupertinoPageRoute(
+      builder: (context) => ClockBeginScreen(database: database, todo: todo),
+      fullscreenDialog: true,
+    ));
+
+    /// the problem of using this is that if we cancel in ClockBeginScreen, it pop
+    /// to a black screen instead of HomeScreen.
+    /// Notes:
+    //https://stackoverflow.com/questions/53723294/flutter-navigator-popcontext-returning-a-black-screen#:~:text=As%20the%20history%20of%20your,MaterialApp%20in%20all%20nested%20screens.
+    //https://medium.com/flutter-community/flutter-push-pop-push-1bb718b13c31
+    //https://www.freecodecamp.org/news/how-to-handle-navigation-in-your-flutter-apps-ceaf2f411dcd/
+    ///
+    // Navigator.of(context).pushReplacement(
+    //   PageRoutes.fade(() => ClockBeginScreen(database: database, todo: todo)),
+    // );
+  }
+
+  final String dayOfWeek = DateFormat.E().format(DateTime.now());
+  final String formattedDate = DateFormat.MMMd().format(DateTime.now());
+  final String _congrats = CongratsList().getCongrats().body;
+  String _defaultMantra;
+
+  bool _middleColumnVisible = true;
+
+  /// change visible to opacity, otherwise, quote always updates.
+  double _quoteOpacity = 1.0;
+
+  DateTime _date = DateTime.now();
+
+  @override
+  void initState() {
+    _defaultMantra = DefaultMantraList().showMantra().body;
+    _fetchWeather();
+    super.initState();
+  }
+
+  ///this code will not sun when coming to home screen from sign in
+  // String userName;
+  // void getUserName() {
+  //   final User user = FirebaseAuth.instance.currentUser;
+  //   String userName;
+  //   if (user.displayName != null && user.displayName.isNotEmpty) {
+  //     // user.displayName.contains(' ')
+  //     //     ? userName = user.displayName
+  //     //         .substring(0, user.displayName.indexOf(' '))
+  //     //         .firstCaps
+  //     //     :
+  //
+  //     userName = user.displayName.firstCaps;
+  //
+  //     print('userName in home screen initState: $userName');
+  //   }
+  // }
+
+  int counter = 0;
+  void _onDoubleTap() {
+    setState(() {
+      ImageUrl.randomImageUrl = '${ImageUrl.randomImageUrlFirstPart}$counter';
+      counter++;
+    });
+  }
+
+  ///notes on showcase view
+  GlobalKey _oneShowcase = GlobalKey();
+  GlobalKey _twoShowcase = GlobalKey();
+  GlobalKey _threeShowcase = GlobalKey();
+
+  Future<bool> _isFirstLaunch() async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+
+    bool isFirstLaunch = sharedPreferences
+            .getBool(HomeScreen.PREFERENCES_IS_FIRST_LAUNCH_STRING) ??
+        true;
+
+    if (isFirstLaunch)
+      sharedPreferences.setBool(
+          HomeScreen.PREFERENCES_IS_FIRST_LAUNCH_STRING, false);
+
+    print('$isFirstLaunch');
+    return isFirstLaunch;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    /// add showcase only if first launch
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _isFirstLaunch().then((result) {
+        print('First Launch: $result');
+        if (result)
+          ShowCaseWidget.of(context)
+              .startShowCase([_oneShowcase, _twoShowcase, _threeShowcase]);
+      });
+    });
+
+    /// in homepage this can not have listen to false (same as HomeDrawer) otherwise the screen photo
+    /// not immediately updates, but in other screen it can have listen to false
+    /// because it only need to get the value when we fist come to the page.
+    final randomNotifier = Provider.of<RandomNotifier>(context);
+    bool _randomOn = (randomNotifier.getRandom() == true);
+    final imageNotifier = Provider.of<ImageNotifier>(context);
+    final bool isKeyboardVisible =
+        KeyboardVisibilityProvider.isKeyboardVisible(context);
+    return Stack(
+      fit: StackFit.expand,
+      children: <Widget>[
+        BuildPhotoView(
+          imageUrl:
+              _randomOn ? ImageUrl.randomImageUrl : imageNotifier.getImage(),
+        ),
+        ContainerLinearGradient(),
+        GestureDetector(
+          onDoubleTap: _onDoubleTap,
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: SafeArea(
+                top: false,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Opacity(
+                        opacity: _topBarOpacity,
+                        child: _topBar()), //for weather
+                    Visibility(
+                        visible: _middleColumnVisible,
+                        child: _middleContent()), //Expanded
+                    isKeyboardVisible
+                        ? Container()
+                        : Opacity(
+                            opacity: _quoteOpacity,
+                            child: _buildQuoteStream(),
+                          ),
+                  ],
+                )),
+          ),
+        )
+      ],
+    );
+  }
+
+  /// top bar
+  Widget _topBar() {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    return Container(
+      color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
+      child: Column(
+        children: <Widget>[
+          SizedBox(height: 30),
+          SizedBox(
+              height: 50,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  InkWell(
+                    onTap: _showTopSheet,
+                    onDoubleTap: _fetchWeather,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 15, left: 5),
+                      child: _resultView(),
+                    ),
+                  ),
+                ],
+              )),
+        ],
+      ),
+    );
+  }
+
+  Widget _resultView() => _state == CurrentWeatherState.FINISHED_DOWNLOADING
+      ? contentFinishedDownload()
+      : _state == CurrentWeatherState.DOWNLOADING
+          ? Center(child: CircularProgressIndicator(strokeWidth: 5))
+          : Container();
   Widget _getWeatherIconImage(String weatherIcon, {double size = 20}) {
     if (weatherIcon == '01n') {
       return Icon(EvaIcons.moonOutline, color: Colors.white, size: size);
@@ -153,162 +348,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _resultView() => _state == CurrentWeatherState.FINISHED_DOWNLOADING
-      ? contentFinishedDownload()
-      : _state == CurrentWeatherState.DOWNLOADING
-          ? Center(child: CircularProgressIndicator(strokeWidth: 5))
-          : Container();
-
-  Widget _topBar() {
-    /// TODO: why this one can set listen: false but not others ??
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    return Container(
-      color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
-      child: Column(
-        children: <Widget>[
-          SizedBox(height: 30),
-          SizedBox(
-              height: 50,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  InkWell(
-                    onTap: _showTopSheet,
-                    onDoubleTap: _fetchWeather,
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 15, left: 5),
-                      child: _resultView(),
-                    ),
-                  ),
-                ],
-              )),
-        ],
-      ),
-    );
-  }
-
-  void _focusButton(Database database, Todo todo) {
-    ///if using this one, it works fine but when click play button on Clock Begin
-    ///Screen, it always shows a black screen first, and then start timer.
-    ///adding BuildContext context has no difference, it still showing black screen when start to play.
-    // // default is 400 milliseconds
-    // SharedAxisTransitionType _transitionType = SharedAxisTransitionType.scaled;
-    // final route = SharedAxisPageRoute(
-    //     page: ClockBeginScreen(database: database, todo: todo),
-    //     transitionType: _transitionType,
-    //     milliseconds: 800);
-    // Navigator.of(context, rootNavigator: true).push(route);
-
-    ///use this will work properly
-    Navigator.of(context, rootNavigator: true).push(CupertinoPageRoute(
-      builder: (context) => ClockBeginScreen(database: database, todo: todo),
-      fullscreenDialog: true,
-    ));
-
-    /// the problem of using this is that if we cancel in ClockBeginScreen, it pop
-    /// to a black screen instead of HomeScreen.
-    /// Notes:
-    //https://stackoverflow.com/questions/53723294/flutter-navigator-popcontext-returning-a-black-screen#:~:text=As%20the%20history%20of%20your,MaterialApp%20in%20all%20nested%20screens.
-    //https://medium.com/flutter-community/flutter-push-pop-push-1bb718b13c31
-    //https://www.freecodecamp.org/news/how-to-handle-navigation-in-your-flutter-apps-ceaf2f411dcd/
-    ///
-    // Navigator.of(context).pushReplacement(
-    //   PageRoutes.fade(() => ClockBeginScreen(database: database, todo: todo)),
-    // );
-  }
-
-  final String dayOfWeek = DateFormat.E().format(DateTime.now());
-  final String formattedDate = DateFormat.MMMd().format(DateTime.now());
-  final String _congrats = CongratsList().getCongrats().body;
-  String _defaultMantra;
-
-  bool _middleColumnVisible = true;
-
-  /// change visible to opacity, otherwise, quote always updates.
-  double _quoteOpacity = 1.0;
-
-  DateTime _date = DateTime.now();
-
-  @override
-  void initState() {
-    _defaultMantra = DefaultMantraList().showMantra().body;
-    _fetchWeather();
-    super.initState();
-    // getUserName();
-  }
-
-  ///this code will not sun when coming to home screen from sign in
-  // String userName;
-  // void getUserName() {
-  //   final User user = FirebaseAuth.instance.currentUser;
-  //   String userName;
-  //   if (user.displayName != null && user.displayName.isNotEmpty) {
-  //     // user.displayName.contains(' ')
-  //     //     ? userName = user.displayName
-  //     //         .substring(0, user.displayName.indexOf(' '))
-  //     //         .firstCaps
-  //     //     :
-  //
-  //     userName = user.displayName.firstCaps;
-  //
-  //     print('userName in home screen initState: $userName');
-  //   }
-  // }
-
-  int counter = 0;
-  void _onDoubleTap() {
-    setState(() {
-      ImageUrl.randomImageUrl = '${ImageUrl.randomImageUrlFirstPart}$counter';
-      counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    /// in homepage this can not have listen to false (same as HomeDrawer) otherwise the screen photo
-    /// not immediately updates, but in other screen it can have listen to false
-    /// because it only need to get the value when we fist come to the page.
-    final randomNotifier = Provider.of<RandomNotifier>(context);
-    bool _randomOn = (randomNotifier.getRandom() == true);
-    final imageNotifier = Provider.of<ImageNotifier>(context);
-    return Stack(
-      fit: StackFit.expand,
-      children: <Widget>[
-        BuildPhotoView(
-          imageUrl:
-              _randomOn ? ImageUrl.randomImageUrl : imageNotifier.getImage(),
-        ),
-        ContainerLinearGradient(),
-        GestureDetector(
-          onDoubleTap: _onDoubleTap,
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: SafeArea(
-              top: false,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Opacity(
-                      opacity: _topBarOpacity, child: _topBar()), //for weather
-                  Visibility(
-                      visible: _middleColumnVisible,
-                      child: _middleContent()), //Expanded
-                  Opacity(
-                    opacity: _quoteOpacity,
-                    child: _buildQuoteStream(),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
+  /// middle content
   int _current = 0; // for the dot
   Widget _middleContent() {
     final database = Provider.of<Database>(context, listen: false);
@@ -369,6 +409,19 @@ class _HomeScreenState extends State<HomeScreen> {
         return Center(child: CircularProgressIndicator());
       },
     );
+  }
+
+  List<Todo> _getTodayNotDone(List<Todo> todos) {
+    List<Todo> todayTodos = [];
+    todos.forEach((todo) {
+      DateTime today = DateTime(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day);
+      DateTime date = DateTime(todo.date.year, todo.date.month, todo.date.day);
+      if ((date == today) && (todo.isDone == false) && (todo.category == 0)) {
+        todayTodos.add(todo);
+      }
+    });
+    return todayTodos;
   }
 
   Widget _buildTaskCarouselSlider(
@@ -444,11 +497,13 @@ class _HomeScreenState extends State<HomeScreen> {
               }).toList());
   }
 
-  //this means if there is no data from TodoStream, then we display question.
+  /// middle content Question, this means if there is no data from TodoStream, then we display question.
   Widget _emptyListScreen() {
     final focusNotifier = Provider.of<FocusNotifier>(context);
     bool _focusModeOn = (focusNotifier.getFocus() == true);
 
+    final bool isKeyboardVisible =
+        KeyboardVisibilityProvider.isKeyboardVisible(context);
     return _focusModeOn
         ? Expanded(
             child: Column(
@@ -463,13 +518,139 @@ class _HomeScreenState extends State<HomeScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: getFirstGreetings,
                       ), //first greetings
-                      SizedBox(height: 80),
+                      isKeyboardVisible
+                          ? SizedBox(height: 20)
+                          : SizedBox(height: Platform.isIOS ? 70 : 50),
+                      Visibility(
+                          visible: _nameVisible, child: questionColumn()),
+                    ],
+                  ),
+                ),
+                Spacer(),
+              ],
+            ),
+          )
+        : Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Spacer(),
+                Opacity(
+                  opacity: _mantraOpacity,
+                  child: _buildMantraStream(),
+                ),
+                Spacer(),
+              ],
+            ),
+          );
+  }
+
+  bool _questionVisible = true;
+  Column questionColumn() {
+    return Column(
+      children: <Widget>[
+        Text('$dayOfWeek, $formattedDate ', style: KHomeDate),
+        SizedBox(height: 15),
+        Column(
+          children: [
+            buildQuestion(), //33
+            buildHomeTextField(),
+          ],
+        ),
+        Visibility(
+          visible: !_questionVisible,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: ShowUp(
+              child: Text('Have a good night sleep.', style: KHomeQuestion2),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget buildQuestion() {
+    final int hour = int.parse(DateFormat('kk').format(DateTime.now()));
+    print(hour);
+
+    if ((hour >= 6) & (hour < 21)) {
+      return TypewriterAnimatedTextKit(
+        isRepeatingAnimation: false,
+        text: ['What is your main focus today?'],
+        textAlign: TextAlign.center,
+        textStyle: KHomeQuestion,
+      );
+    } //8pm
+    else if ((hour >= 21) & (hour < 23)) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: TypewriterAnimatedTextKit(
+          isRepeatingAnimation: false,
+          text: ['What is your plan tomorrow?'],
+          textAlign: TextAlign.center,
+          textStyle: KHomeQuestion,
+        ),
+      );
+    } else
+      return Visibility(
+        visible:
+            _questionVisible, //after submit, this becomes false, and we have question that already shows good night
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: ShowUp(
+            child: Text('Have a good night sleep.', style: KHomeQuestion2),
+          ),
+        ),
+      );
+  }
+
+  Widget buildHomeTextField() {
+    final int hour = int.parse(DateFormat('kk').format(DateTime.now()));
+
+    if ((hour >= 6) & (hour < 21)) {
+      return HomeTextField(onSubmitted: _onSubmitted);
+    } //8pm
+    else if ((hour >= 21) & (hour < 23)) {
+      return Visibility(
+          visible: _questionVisible,
+          child: HomeTextField(onSubmitted: _onSubmittedTomorrow));
+    } else
+      return Container();
+  }
+
+  Widget _errorScreen({String text = '', textTap = '', onTap}) {
+    final focusNotifier = Provider.of<FocusNotifier>(context);
+    bool _focusModeOn = (focusNotifier.getFocus() == true);
+
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+
+    final bool isKeyboardVisible =
+        KeyboardVisibilityProvider.isKeyboardVisible(context);
+    return _focusModeOn
+        ? Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Spacer(),
+                Opacity(
+                  opacity: _mantraOpacity,
+                  child: Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: getFirstGreetings,
+                      ), //first greetings
+                      isKeyboardVisible
+                          ? SizedBox(height: 20)
+                          : SizedBox(height: Platform.isIOS ? 70 : 50),
                       Column(
                         children: <Widget>[
-                          Text('$dayOfWeek, $formattedDate ', style: KHomeDate),
-                          SizedBox(height: 20),
-                          getQuestion(), //33
-                          HomeTextField(onSubmitted: _onSubmitted),
+                          questionColumn(),
+                          SizedBox(height: 10),
+                          errorMessage(_darkTheme, text, textTap,
+                              onTap) // default is empty, but if error, we show error message
                         ],
                       ),
                     ],
@@ -494,84 +675,35 @@ class _HomeScreenState extends State<HomeScreen> {
           );
   }
 
-  Widget _errorScreen({String text = '', textTap = '', onTap}) {
-    final focusNotifier = Provider.of<FocusNotifier>(context);
-    bool _focusModeOn = (focusNotifier.getFocus() == true);
-
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    return _focusModeOn
-        ? Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Spacer(),
-                Opacity(
-                  opacity: _mantraOpacity,
-                  child: Column(
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: getFirstGreetings,
-                      ), //first greetings
-                      SizedBox(height: 80),
-                      Column(
-                        children: <Widget>[
-                          Text('$dayOfWeek, $formattedDate ', style: KHomeDate),
-                          SizedBox(height: 20),
-                          getQuestion(), //33
-                          HomeTextField(onSubmitted: _onSubmitted),
-                          SizedBox(height: 10),
-                          MySignInContainer(
-                              child: RichText(
-                            text: TextSpan(
-                              style: TextStyle(
-                                  color: _darkTheme
-                                      ? darkThemeWords.withOpacity(0.85)
-                                      : lightThemeWords.withOpacity(0.85),
-                                  fontStyle: FontStyle.italic,
-                                  fontSize: 16),
-                              children: [
-                                TextSpan(
-                                  text: text,
-                                ),
-                                TextSpan(
-                                  text: textTap,
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = onTap,
-                                  style: TextStyle(
-                                      decoration: TextDecoration.underline,
-                                      color: _darkTheme
-                                          ? darkThemeWords.withOpacity(0.85)
-                                          : lightThemeWords.withOpacity(0.85),
-                                      fontStyle: FontStyle.italic,
-                                      fontSize: 16),
-                                ),
-                              ],
-                            ),
-                          )) // default is empty, but if error, we show error message
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Spacer(),
-              ],
-            ),
-          )
-        : Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Spacer(),
-                Opacity(
-                  opacity: _mantraOpacity,
-                  child: _buildMantraStream(),
-                ),
-                Spacer(),
-              ],
-            ),
-          );
+  MyContainerWithDarkMode errorMessage(
+      bool _darkTheme, String text, textTap, onTap) {
+    return MyContainerWithDarkMode(
+        child: RichText(
+      text: TextSpan(
+        style: TextStyle(
+            color: _darkTheme
+                ? darkThemeWords.withOpacity(0.85)
+                : lightThemeWords.withOpacity(0.85),
+            fontStyle: FontStyle.italic,
+            fontSize: 16),
+        children: [
+          TextSpan(
+            text: text,
+          ),
+          TextSpan(
+            text: textTap,
+            recognizer: TapGestureRecognizer()..onTap = onTap,
+            style: TextStyle(
+                decoration: TextDecoration.underline,
+                color: _darkTheme
+                    ? darkThemeWords.withOpacity(0.85)
+                    : lightThemeWords.withOpacity(0.85),
+                fontStyle: FontStyle.italic,
+                fontSize: 16),
+          ),
+        ],
+      ),
+    ));
   }
 
   ///mantra stream
@@ -682,19 +814,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  List<Todo> _getTodayNotDone(List<Todo> todos) {
-    List<Todo> todayTodos = [];
-    todos.forEach((todo) {
-      DateTime today = DateTime(
-          DateTime.now().year, DateTime.now().month, DateTime.now().day);
-      DateTime date = DateTime(todo.date.year, todo.date.month, todo.date.day);
-      if ((date == today) && (todo.isDone == false) && (todo.category == 0)) {
-        todayTodos.add(todo);
-      }
-    });
-    return todayTodos;
-  }
-
   ///all function on task:
   void _onSubmitted(newText) async {
     final database = Provider.of<Database>(context, listen: false);
@@ -717,6 +836,60 @@ class _HomeScreenState extends State<HomeScreen> {
         ).show(context);
       }
     }
+  }
+
+  void _onSubmittedTomorrow(newText) async {
+    final now = DateTime.now();
+    final tomorrow = DateTime(now.year, now.month, now.day + 1);
+
+    final database = Provider.of<Database>(context, listen: false);
+    if (newText.isNotEmpty) {
+      FocusScope.of(context).unfocus();
+      try {
+        final todo = Todo(
+          id: documentIdFromCurrentDate(),
+          title: newText,
+          date: tomorrow,
+          isDone: false,
+          category: 0,
+          hasReminder: false,
+        );
+        await database.setTodo(todo);
+
+        setState(() {
+          _questionVisible = false;
+        });
+        _showGoodNightFlushBar();
+      } on PlatformException catch (e) {
+        PlatformExceptionAlertDialog(
+          title: 'Operation failed',
+          exception: e,
+        ).show(context);
+      }
+    }
+  }
+
+  void _showGoodNightFlushBar() {
+    Flushbar(
+      isDismissible: true,
+      margin: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(8),
+      borderRadius: 15,
+      flushbarPosition: FlushbarPosition.BOTTOM,
+      flushbarStyle: FlushbarStyle.FLOATING,
+      backgroundGradient: KFlushBarGradient,
+      duration: Duration(seconds: 3),
+      icon: Icon(
+        EvaIcons.moon,
+        color: Colors.white,
+      ),
+      titleText:
+          Text('Task has been added to calendar.', style: KFlushBarTitle),
+      messageText: Text('Have a good evening.',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: KFlushBarMessage),
+    )..show(context);
   }
 
   Future<void> _delete(Database database, Todo todo) async {
@@ -903,19 +1076,13 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Widget getQuestion() {
-    return TypewriterAnimatedTextKit(
-      isRepeatingAnimation: false,
-      text: ['What is your main focus today?'],
-      textAlign: TextAlign.center,
-      textStyle: KHomeQuestion,
-    );
-  }
+  /// first Greetings
+  bool _nameVisible = true;
 
   get getFirstGreetings {
     final User user = FirebaseAuth.instance.currentUser;
-    user.reload();
-    String userName;
+    // user.reload();
+    // String userName;
     if (user.displayName != null && user.displayName.isNotEmpty) {
       // user.displayName.contains(' ')
       //     ? userName = user.displayName
@@ -923,34 +1090,26 @@ class _HomeScreenState extends State<HomeScreen> {
       //         .firstCaps
       //     :
 
-      userName = user.displayName.firstCaps;
+      final userName = user.displayName.firstCaps;
 
       print('userName in home screen: $userName');
 
       if (userName.length < 6) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        return Column(
           children: [
-            Text('${FirstGreetings().showGreetings()}', style: KHomeGreeting),
-            Visibility(
-              visible: _nameVisible,
-              child: GestureDetector(
-                onTap: _onTapName,
-                child: Text(', $userName', style: KHomeGreeting),
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ///AutoSizeText not useful here
+                Text('${FirstGreetings().showGreetings()}',
+                    style: KHomeGreeting),
+                name(userName),
+              ],
             ),
-            Visibility(
-              visible: !_nameVisible,
-              child: HomeTextField(
-                onSubmitted: _editName,
-                width: 100,
-                max: 15,
-                autofocus: true,
-              ),
-            )
+            nameTextField()
           ],
         );
-      } else if (userName.length > 5) {
+      } else if (userName.length > 6) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -960,19 +1119,14 @@ class _HomeScreenState extends State<HomeScreen> {
               visible: _nameVisible,
               child: GestureDetector(
                 onTap: _onTapName,
-                child: Text(userName,
-                    style: KHomeGreeting, textAlign: TextAlign.center),
+                child: AutoSizeText(
+                  '$userName',
+                  style: KHomeGreeting,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ),
-            Visibility(
-              visible: !_nameVisible,
-              child: HomeTextField(
-                onSubmitted: _editName,
-                width: 100,
-                max: 15,
-                autofocus: true,
-              ),
-            )
+            nameTextField()
           ],
         );
       }
@@ -984,15 +1138,49 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  bool _nameVisible = true;
+  Visibility name(String userName) {
+    return Visibility(
+      visible: _nameVisible,
+      child: GestureDetector(
+        onTap: _onTapName,
+        child: AutoSizeText(
+          ', $userName',
+          style: KHomeGreeting,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+    );
+  }
+
+  Visibility nameTextField() {
+    return Visibility(
+      visible: !_nameVisible,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          HomeTextField(
+            onSubmitted: _editName,
+            width: 200,
+            max: 20,
+            autofocus: true,
+          ),
+          InkWell(
+              onTap: _onTapName,
+              child: Icon(Icons.clear, color: darkThemeHint2))
+        ],
+      ),
+    );
+  }
+
   void _onTapName() {
     setState(() {
       _nameVisible = !_nameVisible;
     });
   }
 
-  // bool updatingName = false;
   void _editName(String value) async {
+    final FirebaseAuthService auth =
+        Provider.of<FirebaseAuthService>(context, listen: false);
     //from ProgressDialog plugin
     final ProgressDialog pr = ProgressDialog(
       context,
@@ -1017,8 +1205,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     await pr.show();
 
-    final FirebaseAuthService auth =
-        Provider.of<FirebaseAuthService>(context, listen: false);
     await auth.updateUserName(value);
 
     ///because it takes a while to update name

@@ -199,6 +199,8 @@ class _CompletionScreenState extends State<CompletionScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isDifferentLength = false;
   void showEditDialog() async {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     await showDialog(
       context: context,
       builder: (BuildContext _) {
@@ -211,7 +213,7 @@ class _CompletionScreenState extends State<CompletionScreen> {
             title: Text(
               "Change Focus Setting",
               textAlign: TextAlign.center,
-              style: KDialogTitle,
+              style: _darkTheme ? KDialogTitle : KDialogTitleLight,
             ),
             content: Form(
               key: _formKey,
@@ -222,7 +224,10 @@ class _CompletionScreenState extends State<CompletionScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Text('Rest length', style: KDialogContent),
+                      Text('Rest length',
+                          style: _darkTheme
+                              ? KDialogContent
+                              : KDialogContentLight),
                       Row(
                         children: <Widget>[
                           Container(
@@ -246,14 +251,23 @@ class _CompletionScreenState extends State<CompletionScreen> {
                                 },
                                 onSaved: (value) =>
                                     _restDurationInMin = int.parse(value),
-                                style: KDialogContent,
+                                style: _darkTheme
+                                    ? KDialogContent
+                                    : KDialogContentLight,
                                 autofocus: true,
-                                cursorColor: Colors.white,
-                                decoration: KTextFieldInputDecoration,
+                                cursorColor: _darkTheme
+                                    ? darkThemeWords
+                                    : lightThemeWords,
+                                decoration: _darkTheme
+                                    ? KTextFieldInputDecoration
+                                    : KTextFieldInputDecorationLight,
                               ),
                             ),
                           ),
-                          Text('min', style: KDialogContent),
+                          Text('min',
+                              style: _darkTheme
+                                  ? KDialogContent
+                                  : KDialogContentLight),
                         ],
                       ),
                     ],
@@ -266,14 +280,19 @@ class _CompletionScreenState extends State<CompletionScreen> {
                         FlatButton(
                             child: Text(
                               'Cancel',
-                              style: KDialogButton,
+                              style: _darkTheme
+                                  ? KDialogButton
+                                  : KDialogButtonLight,
                             ),
                             shape: _isDifferentLength
                                 ? null
                                 : RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(68.0),
                                     side: BorderSide(
-                                        color: Colors.white70, width: 2.0)),
+                                        color: _darkTheme
+                                            ? darkThemeHint
+                                            : lightThemeHint,
+                                        width: 1.0)),
                             onPressed: () {
                               setState(() {
                                 _topOpacity = 1.0;
@@ -283,13 +302,18 @@ class _CompletionScreenState extends State<CompletionScreen> {
                         FlatButton(
                             child: Text(
                               'Done',
-                              style: KDialogButton,
+                              style: _darkTheme
+                                  ? KDialogButton
+                                  : KDialogButtonLight,
                             ),
                             shape: _isDifferentLength
                                 ? RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(68.0),
                                     side: BorderSide(
-                                        color: Colors.white70, width: 2.0))
+                                        color: _darkTheme
+                                            ? darkThemeHint
+                                            : lightThemeHint,
+                                        width: 1.0))
                                 : null,
 
                             ///_done must have a BuildContext, so that it will

@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
-import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
@@ -16,6 +14,7 @@ import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/models/note.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/notes_screen/note_container.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 import 'add_note_screen.dart';
 import 'package:iMomentum/app/constants/theme.dart';
@@ -126,22 +125,25 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
-    bool _randomOn = (randomNotifier.getRandom() == true);
-    final imageNotifier = Provider.of<ImageNotifier>(context, listen: false);
-
+    // final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
+    // bool _randomOn = (randomNotifier.getRandom() == true);
+    // final imageNotifier = Provider.of<ImageNotifier>(context, listen: false);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
-        BuildPhotoView(
-          imageUrl:
-              _randomOn ? ImageUrl.randomImageUrl : imageNotifier.getImage(),
-        ),
-        ContainerLinearGradient(),
+        // BuildPhotoView(
+        //   imageUrl:
+        //       _randomOn ? ImageUrl.randomImageUrl : imageNotifier.getImage(),
+        // ),
+        // ContainerLinearGradient(),
         GestureDetector(
           onDoubleTap: _onDoubleTap,
           child: Scaffold(
-            backgroundColor: Colors.transparent,
+            // backgroundColor: Colors.transparent,
+            backgroundColor:
+                _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
             body: SafeArea(
               top: false,
               child: StreamBuilder<List<Note>>(
@@ -246,49 +248,66 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
   Widget _topRow(List<Note> notes) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    return Column(
-      children: <Widget>[
-        //this is to make top bar color cover all
-        SizedBox(
-          height: 35,
-          child: Container(
-            color: _darkTheme ? darkThemeDrawer : lightThemeAppBar,
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(5.0),
+        color: _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
+        boxShadow: [
+          BoxShadow(
+            color: _darkTheme ? Colors.black45 : darkThemeDrawer,
+            offset: Offset(0.0, 1.0), //(x,y)
+            blurRadius: 5.0,
           ),
-        ),
-        Container(
-          height: 50,
-          color: _darkTheme ? darkThemeDrawer : lightThemeAppBar,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              IconButton(
-                  icon: Icon(Icons.arrow_back_ios),
-                  onPressed: () => Navigator.pop(context)),
-              Text(folder.title, style: Theme.of(context).textTheme.headline6),
-              Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: Opacity(
-                  opacity: notes.length > 1 ? 1 : 0,
-                  child: IconButton(
-                    icon: Icon(
-                      axisCount == 2
-                          ? MyFlutterAppIcon.menu_outline
-                          : MyFlutterAppIcon.th_large_outline,
-                      size: 20,
-                      color: _darkTheme ? Colors.white : lightThemeButton,
+        ],
+      ),
+      child: Column(
+        children: <Widget>[
+          //this is to make top bar color cover all
+          SizedBox(
+            height: 35,
+            child: Container(
+              // color: _darkTheme ? darkThemeDrawer : lightThemeAppBar,
+              color:
+                  _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
+            ),
+          ),
+          Container(
+            height: 50,
+            // color: _darkTheme ? darkThemeDrawer : lightThemeAppBar,
+            color: _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                IconButton(
+                    icon: Icon(Icons.arrow_back_ios),
+                    onPressed: () => Navigator.pop(context)),
+                Text(folder.title,
+                    style: Theme.of(context).textTheme.headline6),
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: Opacity(
+                    opacity: notes.length > 1 ? 1 : 0,
+                    child: IconButton(
+                      icon: Icon(
+                        axisCount == 2
+                            ? MyFlutterAppIcon.menu_outline
+                            : MyFlutterAppIcon.th_large_outline,
+                        size: 20,
+                        color: _darkTheme ? Colors.white : lightThemeButton,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          axisCount = axisCount == 2 ? 4 : 2;
+                        });
+                      },
                     ),
-                    onPressed: () {
-                      setState(() {
-                        axisCount = axisCount == 2 ? 4 : 2;
-                      });
-                    },
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -411,18 +430,18 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
       ),
       actions: <Widget>[
         IconSlideAction(
-          foregroundColor: Colors.blue,
+          foregroundColor: _darkTheme ? Colors.lightBlueAccent : Colors.blue,
           caption: 'Move',
-          color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
+          color: _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
           icon: EvaIcons.folderOutline,
-          onTap: () => _move(note),
+          onTap: () => _move(note, context),
         ),
       ],
       secondaryActions: <Widget>[
         IconSlideAction(
-          foregroundColor: Colors.red,
+          foregroundColor: _darkTheme ? Colors.redAccent : Colors.red,
           caption: 'Delete',
-          color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
+          color: _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
           icon: EvaIcons.trash2Outline,
           onTap: () => _delete(database, note),
         ),
@@ -490,21 +509,17 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
 
   double _notesOpacity = 1.0;
 
-  void _move(Note note) async {
+  void _move(Note note, BuildContext context) async {
     setState(() {
       _notesOpacity = 0.0;
       _addButtonVisible = false;
     });
-    await showModalBottomSheet(
+    await showCupertinoModalBottomSheet(
+        expand: true,
         context: context,
-
-        ///must not have this line in this case, otherwise it expands
-        // isScrollControlled: true,
-        builder: (context) => MoveFolderScreen(
+        // backgroundColor: _darkTheme?
+        builder: (context, scrollController) => MoveFolderScreen(
               database: database,
-
-              ///changed to get folder from stream builder, in this way we can add new and see updates immediately
-              // folders: folders,
               note: note,
             ));
 

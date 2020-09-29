@@ -25,6 +25,7 @@ abstract class Database {
   //duration
   Future<void> setDuration(DurationModel duration);
   Future<void> deleteDuration(DurationModel duration);
+  Stream<DurationModel> durationStream({@required String durationId});
   Stream<List<DurationModel>> durationsStream({Todo todo});
 
   //folder
@@ -98,16 +99,19 @@ class FirestoreDatabase implements Database {
   Stream<List<Todo>> todosStream() => _service.collectionStream(
         path: FireStorePath.todos(uid),
         builder: (data, documentId) => Todo.fromMap(data, documentId),
-//        queryBuilder: (query) => query.orderBy('category'),
-        //to make the most recently edited one show first
+
+        ///not sure how this works
+        // queryBuilder: (query) => query.orderBy('category'),
+        ///to make the most recently edited one show first
         //e.g. messageList.sort((m, m2) => int.parse(m.id).compareTo(int.parse(m2.id)));
-        //this will not work well because when we update, we use the same id, or use date
+        //this will not work well because when we update, we use the same id, but if use date, it's not good either because dates is in different format
         sort: (lhs, rhs) => rhs.id.compareTo(lhs.id),
-        sortIsDone: (lhs, rhs) => (rhs.isDone.toString().length)
-            .compareTo(lhs.isDone.toString().length),
+        sortIsDone: (lhs, rhs) => (rhs.isDone.toString().length) //false 5
+            .compareTo(lhs.isDone.toString().length), //true 4
         sortCategory: (lhs, rhs) {
-          //add this because previous todo item does not have category
+          //add this because previous task item does not have category
           if ((lhs.category != null) && (rhs.category != null)) {
+            /// category is int
             return lhs.category
                 .compareTo(rhs.category); //this way is from 0 to 4
           } else
@@ -127,7 +131,14 @@ class FirestoreDatabase implements Database {
   Future<void> deleteDuration(DurationModel duration) async =>
       await _service.deleteData(path: FireStorePath.duration(uid, duration.id));
 
-  @override
+  @override //read one
+  Stream<DurationModel> durationStream({@required String durationId}) =>
+      _service.documentStream(
+        path: FireStorePath.duration(uid, durationId),
+        builder: (data, documentId) => DurationModel.fromMap(data, documentId),
+      );
+
+  @override //read all
   Stream<List<DurationModel>> durationsStream({Todo todo}) =>
       _service.collectionStream<DurationModel>(
         path: FireStorePath.durations(uid),
@@ -139,13 +150,13 @@ class FirestoreDatabase implements Database {
       );
 
   /// folder
-  @override //create or update job
+  @override //create or update
   Future<void> setFolder(Folder folder) async => await _service.setData(
         path: FireStorePath.folder(uid, folder.id),
         data: folder.toMap(),
       );
 
-  @override // delete job
+  @override // delete all
   Future<void> deleteFolder(Folder folder) async {
     // delete where entry.jobId == job.jobId
     final allNotes = await notesStream(folder: folder).first;
@@ -157,13 +168,14 @@ class FirestoreDatabase implements Database {
     await _service.deleteData(path: FireStorePath.folder(uid, folder.id));
   }
 
-  @override //read a job
+  @override //read one
   Stream<Folder> folderStream({@required String folderId}) =>
       _service.documentStream(
         path: FireStorePath.folder(uid, folderId),
         builder: (data, documentId) => Folder.fromMap(data, documentId),
       );
-  @override //read jobs
+
+  @override //read all
   Stream<List<Folder>> foldersStream() => _service.collectionStream(
         path: FireStorePath.folders(uid),
         builder: (data, documentId) => Folder.fromMap(data, documentId),
@@ -172,32 +184,25 @@ class FirestoreDatabase implements Database {
       );
 
   /// note
-  @override //create or update job
+  @override //create or update
   Future<void> setNote(Note note) async => await _service.setData(
         path: FireStorePath.note(uid, note.id),
         data: note.toMap(),
       );
 
-  // @override //create or update job
-  // Future<void> updateNote(Note note) async => await _service.updateData(
-  //       path: APIPath.note(uid, note.id),
-  //       data: note.toMap(),
-  //     );
-
-  //TODO delete all entries for a particular job??
-  @override // delete job
+  @override // delete
   Future<void> deleteNote(Note note) async {
     await _service.deleteData(
       path: FireStorePath.note(uid, note.id),
     );
   }
 
-  @override //read a job
+  @override //read one
   Stream<Note> noteStream({@required String noteId}) => _service.documentStream(
         path: FireStorePath.note(uid, noteId),
         builder: (data, documentId) => Note.fromMap(data, documentId),
       );
-  @override //read jobs
+  @override //read all
   Stream<List<Note>> notesStream({Folder folder}) =>
       _service.collectionStream<Note>(
         path: FireStorePath.notes(uid),
@@ -216,7 +221,6 @@ class FirestoreDatabase implements Database {
   //       data: image.toMap(),
   //     );
   //
-  // //TODO delete all entries for a particular job??
   // @override // delete job
   // Future<void> deleteImage(ImageModel image) async {
   //   await _service.deleteData(
@@ -237,26 +241,26 @@ class FirestoreDatabase implements Database {
   //     );
 
   ///for mantras
-  //create or update job
+  @override //create or update
   Future<void> setMantra(MantraModel mantra) async => await _service.setData(
         path: FireStorePath.mantra(uid, mantra.id),
         data: mantra.toMap(),
       );
 
-  @override // delete job
+  @override // delete
   Future<void> deleteMantra(MantraModel mantra) async {
     await _service.deleteData(
       path: FireStorePath.mantra(uid, mantra.id),
     );
   }
 
-  @override //read a job
+  @override //read one
   Stream<MantraModel> mantraStream({@required String mantraId}) =>
       _service.documentStream(
         path: FireStorePath.mantra(uid, mantraId),
         builder: (data, documentId) => MantraModel.fromMap(data, documentId),
       );
-  @override //read jobs
+  @override //read all
   Stream<List<MantraModel>> mantrasStream() => _service.collectionStream(
         path: FireStorePath.mantras(uid),
         builder: (data, documentId) => MantraModel.fromMap(data, documentId),
@@ -265,26 +269,26 @@ class FirestoreDatabase implements Database {
       );
 
   ///for quotes
-  //create or update job
+  @override //create or update
   Future<void> setQuote(QuoteModel quote) async => await _service.setData(
         path: FireStorePath.quote(uid, quote.id),
         data: quote.toMap(),
       );
 
-  @override // delete job
+  @override // delete
   Future<void> deleteQuote(QuoteModel quote) async {
     await _service.deleteData(
       path: FireStorePath.quote(uid, quote.id),
     );
   }
 
-  @override //read a job
+  @override //read one
   Stream<QuoteModel> quoteStream({@required String quoteId}) =>
       _service.documentStream(
         path: FireStorePath.quote(uid, quoteId),
         builder: (data, documentId) => QuoteModel.fromMap(data, documentId),
       );
-  @override //read jobs
+  @override //read all
   Stream<List<QuoteModel>> quotesStream() => _service.collectionStream(
         path: FireStorePath.quotes(uid),
         builder: (data, documentId) => QuoteModel.fromMap(data, documentId),

@@ -68,17 +68,3 @@ class MinLengthStringValidator extends StringValidator {
     return value.length >= minLength;
   }
 }
-
-class EmailAndPasswordValidators {
-  final TextInputFormatter emailInputFormatter =
-      ValidatorInputFormatter(editingValidator: EmailEditingRegexValidator());
-  final StringValidator emailSubmitValidator = EmailSubmitRegexValidator();
-  final StringValidator passwordRegisterSubmitValidator =
-      MinLengthStringValidator(8);
-  final StringValidator passwordSignInSubmitValidator =
-      NonEmptyStringValidator();
-  final StringValidator nameValidator = NonEmptyStringValidator();
-  final String invalidNameErrorText = 'Name can\'t be empty';
-  final String invalidEmailErrorText = 'Email is not valid';
-  final String invalidPasswordErrorText = 'Password is not valid';
-}

@@ -4,6 +4,7 @@ import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:iMomentum/app/constants/theme.dart';
+import 'dart:io' show Platform;
 
 class MyCalendar extends StatelessWidget {
   const MyCalendar({
@@ -45,7 +46,9 @@ class MyCalendar extends StatelessWidget {
           events: events,
           holidays: holidays,
           initialSelectedDay: DateTime.now(), //default
-          initialCalendarFormat: CalendarFormat.twoWeeks, //default
+          initialCalendarFormat: Platform.isIOS
+              ? CalendarFormat.twoWeeks
+              : CalendarFormat.week, //default
           formatAnimation: FormatAnimation.slide,
 
           ///todo, give user choice
@@ -56,19 +59,24 @@ class MyCalendar extends StatelessWidget {
                 .textTheme
                 .bodyText1, //this is for the day with not-done task
             outsideStyle: Theme.of(context).textTheme.bodyText1,
-            markersColor: _darkTheme ? Colors.white70 : Colors.black54,
-            outsideDaysVisible: true,
+            // markersColor: _darkTheme ? Colors.white70 : Colors.black54,
+            // outsideDaysVisible: true, //default
             weekdayStyle: Theme.of(context).textTheme.bodyText1, //16
-            weekendStyle: TextStyle(
-                fontSize: 16,
-                color:
-                    _darkTheme ? Colors.deepOrangeAccent : Colors.deepOrange),
+            weekendStyle: Theme.of(context).textTheme.bodyText1,
+            outsideWeekendStyle: Theme.of(context).textTheme.bodyText1,
+            // outsideHolidayStyle: const TextStyle(color: const Color(0xFFEF9A9A)),
+
+            // weekendStyle: TextStyle(
+            //     fontSize: 16,
+            //     color:
+            //         _darkTheme ? Colors.deepOrangeAccent : Colors.deepOrange),
             unavailableStyle: Theme.of(context).textTheme.bodyText1,
             outsideHolidayStyle: Theme.of(context).textTheme.bodyText1,
           ),
 
           daysOfWeekStyle: DaysOfWeekStyle(
             weekdayStyle: Theme.of(context).textTheme.bodyText1, //16
+            weekendStyle: Theme.of(context).textTheme.bodyText1,
             // weekendStyle: TextStyle(
             //     fontSize: 16,
             //     color:
@@ -155,8 +163,8 @@ class MyCalendar extends StatelessWidget {
                       style: TextStyle(
                           fontSize: 16,
                           color: _darkTheme
-                              ? darkThemeCalendarSelectedDay.withOpacity(0.6)
-                              : lightThemeCalendarSelectedDay.withOpacity(0.6)),
+                              ? darkThemeCalendarSelectedDay
+                              : lightThemeCalendarSelectedDay),
                     ),
                   ));
             },
@@ -219,13 +227,15 @@ class MyCalendar extends StatelessWidget {
 
   Widget _buildDefaultNotDoneMarker(DateTime date, List events,
       CalendarController calendarController, BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Container(
       width: 8.0,
       height: 8.0,
       margin: const EdgeInsets.symmetric(horizontal: 0.3),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.deepOrange[300],
+        color: _darkTheme ? darkThemeButton : lightThemeButton,
       ),
     );
   }

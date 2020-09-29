@@ -33,22 +33,24 @@ class TodoListTile extends StatelessWidget {
   Color getColor() {
     if (todo.category == 0 || todo.category == null) {
       return todo.isDone
-          ? Colors.white.withOpacity(0.5)
+          ? darkThemeWords.withOpacity(0.5)
           : Colors.orangeAccent; //;
     } else if (todo.category == 1) {
-      return todo.isDone ? Colors.white.withOpacity(0.5) : Colors.cyanAccent;
+      return todo.isDone
+          ? darkThemeWords.withOpacity(0.5)
+          : Colors.lightBlueAccent;
     } else if (todo.category == 2) {
       return todo.isDone
-          ? Colors.white.withOpacity(0.5)
-          : Colors.deepPurpleAccent;
+          ? darkThemeWords.withOpacity(0.5)
+          : Colors.purpleAccent;
     } else if (todo.category == 3) {
       return todo.isDone
-          ? Colors.white.withOpacity(0.5)
+          ? darkThemeWords.withOpacity(0.5)
           : Colors.lightGreenAccent;
     } else if (todo.category == 4) {
-      return todo.isDone ? Colors.white.withOpacity(0.5) : Colors.pinkAccent;
+      return todo.isDone ? darkThemeWords.withOpacity(0.5) : Colors.pinkAccent;
     } else {
-      return todo.isDone ? Colors.white.withOpacity(0.5) : Colors.brown;
+      return todo.isDone ? darkThemeWords.withOpacity(0.5) : Colors.brown;
     }
   }
 
@@ -56,11 +58,11 @@ class TodoListTile extends StatelessWidget {
     if (todo.category == 0 || todo.category == null) {
       return todo.isDone ? lightThemeWords.withOpacity(0.5) : Colors.orange;
     } else if (todo.category == 1) {
-      return todo.isDone ? lightThemeWords.withOpacity(0.5) : Colors.cyan;
+      return todo.isDone ? lightThemeWords.withOpacity(0.5) : Colors.blue;
     } else if (todo.category == 2) {
       return todo.isDone ? lightThemeWords.withOpacity(0.5) : Colors.deepPurple;
     } else if (todo.category == 3) {
-      return todo.isDone ? lightThemeWords.withOpacity(0.5) : Colors.lightGreen;
+      return todo.isDone ? lightThemeWords.withOpacity(0.5) : Colors.green;
     } else if (todo.category == 4) {
       return todo.isDone ? lightThemeWords.withOpacity(0.5) : Colors.pink;
     } else {
@@ -107,12 +109,12 @@ class TodoListTile extends StatelessWidget {
             child: AutoSizeText(todo.title,
                 maxLines: 3,
                 maxFontSize: 18,
-                minFontSize: 15,
+                minFontSize: 18,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: _darkTheme ? darkThemeWords : lightThemeWords,
                   fontSize: 18.0,
-                  //1 means is done
+                  // 1 means is done
                   decoration: todo.isDone ? TextDecoration.lineThrough : null,
                 )),
           ),
@@ -124,12 +126,12 @@ class TodoListTile extends StatelessWidget {
                   ? Icon(Icons.alarm,
                       color: _darkTheme
                           ? Colors.yellowAccent
-                          // : Colors.yellow[700].withOpacity(0.8),
-                          : Colors.lime.withOpacity(0.8),
+                          : Colors.teal.withOpacity(0.8),
+                      // : Colors.lime.withOpacity(0.8),
                       size: 22)
                   : Icon(Icons.alarm_off,
                       color: _darkTheme
-                          ? Colors.grey
+                          ? Colors.grey[400]
                           : Colors.grey.withOpacity(0.8),
                       size: 22)
         ],

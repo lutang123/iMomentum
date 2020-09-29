@@ -45,7 +45,9 @@ class TopSheet extends StatefulWidget {
 //                    stick: true,
                     margin: BubbleEdges.only(top: 10),
                     nip: BubbleNip.rightTop,
-                    color: _darkTheme ? darkThemeSurface : lightThemeSurface,
+                    color: _darkTheme
+                        ? darkThemeNoPhotoColor
+                        : lightThemeNoPhotoColor,
                     child: child,
                   ),
 

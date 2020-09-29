@@ -11,6 +11,7 @@ import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_fab.dart';
+import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:iMomentum/app/constants/my_strings.dart';
@@ -227,7 +228,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                 length: 2,
                 child: Column(
                   children: <Widget>[
-                    TodoTopRow(),
+                    Visibility(visible: _listVisible, child: TodoTopRow()),
                     // two SteamBuilder nested together, The returned value is
                     // TabBarView, and this must be below StreamBuilder
                     ///StreamBuilder must wrap with Scaffold first, otherwise the empty list message will look terrible
@@ -299,7 +300,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                                       print(
                                           'PieChart StreamBuilder error: ${snapshot.error.toString()}');
 
-                                      /// this is if pie chart stream builder has error, we want to show something else
+                                      /// this is if pie chart stream builder has error, we still show the same as no data on pie chart
                                       return TabBarView(
                                         children: <Widget>[
                                           firstTab(database, todos, _events,
@@ -313,7 +314,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                                         child: CircularProgressIndicator());
                                   });
 
-                              ///here means if no data in todoList, that also
+                              ///here means if no data in today's todoList, that also
                               ///means no data in pie chart, we show both empty one
                             } else {
                               return TabBarView(
@@ -322,7 +323,8 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                                       database,
                                       _eventNoData,
                                       Strings.textTodoList1,
-                                      Strings.textTodoList2,
+                                      '',
+                                      // Strings.textTodoList2,
                                       ''),
                                   secondTabNoDataContent(
                                       database, _eventNoData),
@@ -380,7 +382,9 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                 todos), //this is a CustomScrollView inside an Expanded
           ],
         ),
-        todoAddButton(database),
+        (_todayList.isEmpty) && (_selectedList.isEmpty)
+            ? _bottomRow(database)
+            : todoAddButton(database),
       ],
     );
   }
@@ -431,8 +435,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                     (_todayList.isEmpty) && (_selectedList.isEmpty)
                         ? SliverToBoxAdapter(
                             child: TodoScreenEmptyOrError(
-                                text1: Strings.textTodoList1,
-                                tips: Strings.textTodoList2),
+                                text1: Strings.textTodoList1, tips: ''),
                           )
                         : _selectedList.isEmpty
 
@@ -451,18 +454,62 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                 ),
               ),
               //add this to make add button not hiding task item // or add show tip
-              Visibility(
-                  visible: _addButtonVisible,
-                  child: Column(
-                    children: [
-                      // SizedBox(height: 30),
-                    ],
-                  )),
+              // Visibility(
+              //     visible: _addButtonVisible,
+              //     child: Column(
+              //       children: [_bottomRow(database)],
+              //     )),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Widget _bottomRow(Database database) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    return Visibility(
+      visible: _listVisible,
+      child: Visibility(
+        visible: _addButtonVisible,
+        child: Container(
+          height: 60,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(left: 25.0),
+                child: FlatButton(
+                  child: Text(
+                    'Show Tips',
+                    style: TextStyle(
+                        fontSize: 15,
+                        color: _darkTheme
+                            ? darkThemeButton.withOpacity(0.9)
+                            : lightThemeButton.withOpacity(0.9)),
+                  ),
+                  onPressed: _showTipDialog,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 3.0, right: 15),
+                child: MyFAB(onPressed: () => _add(database)),
+              ),
+              // todoAddButton(database),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showTipDialog() async {
+    await PlatformAlertDialog(
+      title: 'Tips',
+      content: Strings.textTodoList2,
+      defaultActionText: 'OK.',
+    ).show(context);
   }
 
   Widget todoAddButton(Database database) {
@@ -563,36 +610,36 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
 
     final Todo todo = anyList[index - 1];
     // this is to make sure only today or after today can add reminder
-    final difference = todo.date.difference(DateTime.now());
+    // final difference = todo.date.difference(DateTime.now());
     return Slidable(
       key: UniqueKey(),
       closeOnScroll: true,
       actionPane: SlidableDrawerActionPane(),
       actionExtentRatio: 0.25,
       actions: <Widget>[
-        difference.inDays > 0 || difference.inDays == 0
-            ? IconSlideAction(
+        // difference.inDays > 0 || difference.inDays == 0
+        //     ?
 
-                ///this is not all necessary, but previously many todos were added without hasReminder property, so to prevent error, we add this
-                caption: todo.hasReminder == null || todo.hasReminder == false
-                    ? 'Add reminder'
-                    : 'Change reminder',
-                foregroundColor: Colors.yellow,
-                color: _darkTheme
-                    ? Colors.black12
-                    : lightThemeButton.withOpacity(0.4),
-                icon: todo.hasReminder == null || todo.hasReminder == false
-                    ? FontAwesomeIcons.bell
-                    : FontAwesomeIcons.solidBell,
-                onTap: () => _showAddReminderScreen(todo, database))
-            : null
+        IconSlideAction(
+
+            ///this is not necessary, but previously many todos were added without hasReminder property, so to prevent error, we add this
+            caption: todo.hasReminder == null || todo.hasReminder == false
+                ? 'Add reminder'
+                : 'Change reminder',
+            foregroundColor: _darkTheme ? Colors.yellowAccent : Colors.teal,
+            color: _darkTheme ? Colors.black12 : lightThemeNoPhotoColor,
+            icon: todo.hasReminder == null || todo.hasReminder == false
+                ? FontAwesomeIcons.bell
+                : FontAwesomeIcons.solidBell,
+            onTap: () => _showAddReminderScreen(todo, database))
+        // : null
       ],
       secondaryActions: <Widget>[
         IconSlideAction(
           caption: 'Delete',
           foregroundColor: Colors.red,
-          color:
-              _darkTheme ? Colors.black12 : lightThemeButton.withOpacity(0.4),
+          color: _darkTheme ? Colors.black12 : lightThemeNoPhotoColor,
+          // lightThemeButton.withOpacity(0.4),
           icon: EvaIcons.trash2Outline,
           onTap: () => _delete(
             context,
@@ -701,7 +748,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
       String text2,
       String text3) {
     return Stack(
-      alignment: Alignment.bottomRight,
+      alignment: Alignment.bottomCenter,
       children: <Widget>[
         Column(
           children: <Widget>[
@@ -709,7 +756,8 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
             todoListEmptyContent(text1, text2, text3),
           ],
         ),
-        todoAddButton(database),
+        _bottomRow(database)
+        // todoAddButton(database),
       ],
     );
   }
@@ -1074,36 +1122,41 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
         //flutter: _taskDate in update: 2020-07-27 00:00:00.000
 
         final newList = DailyTodosDetails.getTodosGroupByData(
-            _firstCalendarController.selectedDay, todos);
+            _firstCalendarController.selectedDay, todos); //e.g.
         //todo: use original selectedList works but get white color error: Unhandled Exception: RangeError (index): Invalid value: Valid value range is empty: -1
         ///this two are exactly the same, no need to create newList
-//        print('newList: $newList');
-//        print('_selectedList: $_selectedList');
-//        print(newTodo);
+        // print('newList: $newList');
+        // print('_selectedList: $_selectedList');
+        // print(newTodo);
 
         ///anyway, then we find it's index of the to-be-updated item
         ///e.g list index is [0,1,2,3]
         ///    list is       [a,b,c,d]
         ///    now we find is this newList/_selectedList, the item we want to update is in index 2
         final index = newList.indexWhere((element) => element.id == newTodo.id);
+        // print('index: $index');
 
         ///add this if statement because if edited the date, that selectedDay is not the same as final date, then we don't need to insert this to _selectedList
         //this if statement means we did not changed the date
+        //make it formatted because if not selecting any day, default selected
+        // day is today and it's in different format
         if (_dateFormatter.format(_firstCalendarController.selectedDay) ==
             _dateFormatter.format(newTodo.date)) {
-          ///then we replace this item newList[2] = e, now newList is [a,b,e,d], and of course we need to setState and update our _selectedList
+          ///then we replace this item newList[2] = e, now newList becomes [a,b,e,d], and of course we need to setState and update our _selectedList
           newList[index] = newTodo;
           setState(() {
             _selectedList = newList;
           });
 //          print(
 //              'if (_calendarController.selectedDay == newTodo.date), newTodo.date: $newTodo.date');
-        } else if (
-            //make it formatted because if not selecting any day, default selected day is today and it's in different format
-            _dateFormatter.format(_firstCalendarController.selectedDay) !=
-                _dateFormatter.format(newTodo.date)) {
-          newList[index] = newTodo;
-//          print('index: $index');
+        } else if (_dateFormatter
+                .format(_firstCalendarController.selectedDay) !=
+            _dateFormatter.format(newTodo.date)) {
+          // final newList2 = DailyTodosDetails.getTodosGroupByData(
+          //     _firstCalendarController.selectedDay, todos);
+
+          ///we sometimes got range error if inserting newTodo and then remove it
+          // newList[index] = newTodo;
           newList.remove(newTodo);
 //          print(newList.remove(newTodo)); //false
 //          print(

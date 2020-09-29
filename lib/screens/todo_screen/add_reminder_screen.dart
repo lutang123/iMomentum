@@ -154,7 +154,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                       )
                     ],
                   ),
-            SizedBox(height: 100)
+            SizedBox(height: 130)
           ],
         ),
       ),

@@ -1,13 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:iMomentum/screens/home_screen/home_screen.dart';
 import 'package:iMomentum/screens/notes_screen/folder_screen.dart';
 import 'package:iMomentum/screens/todo_screen/todo_screen.dart';
 import 'package:iMomentum/screens/tab_and_navigation/tab_item.dart';
 import '../home_drawer/home_drawer_screen.dart';
 import 'cupertino_home_scaffold.dart';
-import 'package:iMomentum/app/utils/extension_firstCaps.dart';
 
 class TabPage extends StatefulWidget {
   @override
@@ -17,50 +15,50 @@ class TabPage extends StatefulWidget {
 class _TabPageState extends State<TabPage> {
   @override
   void initState() {
-    /// test on where to call this function
-    _showDailyAtTime();
+    // /// test on where to call this function
+    // _showDailyAtTime();
     super.initState();
   }
-
-  /// for local notification
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-
-  /// Showing a daily notification at a specific time
-  Future<void> _showDailyAtTime() async {
-    // final AppUser user = Provider.of<AppUser>(context, listen: false);
-    final User user = FirebaseAuth.instance.currentUser;
-
-    String userName = user.displayName == null || user.displayName.isEmpty
-        ? ''
-        : user.displayName.contains(' ')
-            ? '${user.displayName.substring(0, user.displayName.indexOf(' ')).firstCaps}'
-            : '${user.displayName.firstCaps}';
-
-    // String _toTwoDigitString(int value) {
-    //   return value.toString().padLeft(2, '0');
-    // }
-
-    var time = Time(10, 0, 0);
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-        'repeatDailyAtTime channel id',
-        'repeatDailyAtTime channel name',
-        'repeatDailyAtTime description');
-    var iOSPlatformChannelSpecifics = IOSNotificationDetails();
-
-    var platformChannelSpecifics = NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-
-    await flutterLocalNotificationsPlugin.showDailyAtTime(
-        0, //id
-        'Good morning, $userName', //title
-        //body
-        "Have a nice day!",
-        //notificationTime
-        time,
-        //NotificationDetails notificationDetails
-        platformChannelSpecifics);
-  }
+  //
+  // /// for local notification
+  // final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  //     FlutterLocalNotificationsPlugin();
+  //
+  // /// Showing a daily notification at a specific time
+  // Future<void> _showDailyAtTime() async {
+  //   // final AppUser user = Provider.of<AppUser>(context, listen: false);
+  //   final User user = FirebaseAuth.instance.currentUser;
+  //
+  //   String userName = user.displayName == null || user.displayName.isEmpty
+  //       ? ''
+  //       : user.displayName.contains(' ')
+  //           ? '${user.displayName.substring(0, user.displayName.indexOf(' ')).firstCaps}'
+  //           : '${user.displayName.firstCaps}';
+  //
+  //   // String _toTwoDigitString(int value) {
+  //   //   return value.toString().padLeft(2, '0');
+  //   // }
+  //
+  //   var time = Time(10, 0, 0);
+  //   var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+  //       'repeatDailyAtTime channel id',
+  //       'repeatDailyAtTime channel name',
+  //       'repeatDailyAtTime description');
+  //   var iOSPlatformChannelSpecifics = IOSNotificationDetails();
+  //
+  //   var platformChannelSpecifics = NotificationDetails(
+  //       androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+  //
+  //   await flutterLocalNotificationsPlugin.showDailyAtTime(
+  //       0, //id
+  //       'Good morning, $userName', //title
+  //       //body
+  //       "Have a nice day!",
+  //       //notificationTime
+  //       time,
+  //       //NotificationDetails notificationDetails
+  //       platformChannelSpecifics);
+  // }
 
   TabItem _currentTab = TabItem.home;
 
@@ -72,7 +70,8 @@ class _TabPageState extends State<TabPage> {
 
   Map<TabItem, WidgetBuilder> get widgetBuilders {
     return {
-      TabItem.home: (_) => MyDrawer(child: HomeScreen()),
+      TabItem.home: (_) =>
+          MyDrawer(child: KeyboardVisibilityProvider(child: HomeScreen())),
       //because we want to make TodoScreen has access to Provider<CalendarBloc>,
       //and this context is from TodoScreen
       TabItem.todo: (context) => TodoScreen.create(context),

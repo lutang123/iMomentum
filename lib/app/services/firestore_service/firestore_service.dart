@@ -23,6 +23,8 @@ class FirestoreService {
 
   Stream<List<T>> collectionStream<T>({
     @required String path,
+
+    ///previous version
     // @required T builder(Map<String, dynamic> data, String documentID),
     // Query queryBuilder(Query query),
     // int sort(T lhs, T rhs),
@@ -59,7 +61,6 @@ class FirestoreService {
 
   Stream<T> documentStream<T>({
     @required String path,
-    // @required T builder(Map<String, dynamic> data, String documentID),
     @required T Function(Map<String, dynamic> data, String documentID) builder,
   }) {
     final DocumentReference reference = FirebaseFirestore.instance.doc(path);

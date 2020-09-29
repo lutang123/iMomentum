@@ -7,7 +7,7 @@
 // import 'package:rxdart/rxdart.dart';
 // import 'AppUser.dart';
 // import 'email_secure_store.dart';
-// import 'package:iMomentum/app/sign_in/new_firebase_auth_service.dart';
+// import 'package:iMomentum/app/sign_in/firebase_auth_service_new.dart';
 //
 // enum EmailLinkErrorType {
 //   linkError,

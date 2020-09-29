@@ -36,7 +36,12 @@ class _ShowUpState extends State<ShowUp> with TickerProviderStateMixin {
     } else {
       Timer(Duration(milliseconds: widget.delay), () {
         /// error here!
-        _animController.forward();
+        /// https://stackoverflow.com/questions/62726872/flutter-delayed-animation-code-error-animationcontroller-forward-called-afte
+        //'_ticker != null': AnimationController.forward() called after AnimationController.dispose()
+        //AnimationController methods should not be used after calling dispose.
+        if (mounted) {
+          _animController.forward();
+        }
       });
     }
   }

@@ -66,6 +66,10 @@ class _AddMantraScreenState extends State<AddMantraScreen> {
                     validator: (value) =>
                         value.isNotEmpty ? null : 'Mantra can\'t be empty',
                     onSaved: (value) => title = value.firstCaps,
+                    onFieldSubmitted: (value) {
+                      title = value.firstCaps;
+                      _save();
+                    },
                     style: TextStyle(
                         color: _darkTheme ? darkThemeWords : lightThemeWords,
                         fontSize: 20.0),
@@ -74,9 +78,9 @@ class _AddMantraScreenState extends State<AddMantraScreen> {
                     cursorColor:
                         _darkTheme ? darkThemeButton : lightThemeButton,
                     // keyboardType: TextInputType.multiline,
+                    // maxLines: null,
                     keyboardAppearance:
                         _darkTheme ? Brightness.dark : Brightness.light,
-                    maxLines: 1,
                     maxLength: 60,
                     decoration: InputDecoration(
                       focusedBorder: UnderlineInputBorder(

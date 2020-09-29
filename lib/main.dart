@@ -10,12 +10,14 @@ import 'package:iMomentum/screens/landing_and_signIn/start_screen1.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'app/services/firestore_service/database.dart';
-import 'app/sign_in/new_firebase_auth_service.dart';
+import 'app/sign_in/firebase_auth_service_new.dart';
 import 'screens/landing_and_signIn/auth_widget_builder.dart';
 import 'app/sign_in/apple_sign_in_available.dart';
 import 'app/constants/theme.dart';
 import 'app/services/multi_notifier.dart';
 import 'package:rxdart/subjects.dart';
+
+///https://stackoverflow.com/questions/53532810/error-launching-application-on-android-sdk-built-for-x86
 
 ///https://github.com/bizz84/starter_architecture_flutter_firebase
 
@@ -65,7 +67,7 @@ void main() async {
   await Firebase.initializeApp();
 
   // Restrict device orientation to portraitUp
-  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  // await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   /// for local notification code:
   notificationAppLaunchDetails =
@@ -196,7 +198,7 @@ void main() async {
       .then((_) async {
     ///this is for setting
     SharedPreferences.getInstance().then((prefs) async {
-      bool darkModeOn = prefs.getBool('darkMode') ?? true;
+      bool darkModeOn = prefs.getBool('darkMode') ?? false;
       bool focusModeOn = prefs.getBool('focusMode') ?? true;
       bool randomOn = prefs.getBool('randomOn') ?? true;
       String backgroundImage =
@@ -348,14 +350,9 @@ class _MyAppState extends State<MyApp> {
     /// MultiProvider for top-level services that can be created right away
     return MultiProvider(
       providers: [
+        //      final appleSignInAvailable = await AppleSignInAvailable.check();
         Provider<AppleSignInAvailable>.value(
             value: widget.appleSignInAvailable),
-
-        ///Sep.16
-        ///changed again and removed FirebaseAuthService
-        // Provider<FirebaseAuth>(
-        //   create: widget.authServiceBuilder,
-        // ),
         Provider<FirebaseAuthService>(
           // create: widget.authServiceBuilder,
           create: (_) => FirebaseAuthService(),
@@ -389,38 +386,19 @@ class _MyAppState extends State<MyApp> {
         // ),
       ],
 
-      ///this is directly to Landing page but not worl
+      ///this is the previous version that directly to Landing page but not working when sign in after the start screen
       // child: MaterialApp(
       //   debugShowCheckedModeBanner: false,
       //   title: 'iMomentum',
       //   theme: themeNotifier.getTheme(),
-      //
-      //   ///it seems does not matter here
-      //   // darkTheme:
-      //   //     darkTheme, //add this so that the app will follow phone setting
-      //   // themeMode: ThemeMode.system,
-      //
-      //   /// todo: localizations
-      //   /// from plugin: flutter_localizations
-      //   localizationsDelegates: [
-      //     GlobalMaterialLocalizations.delegate,
-      //     GlobalWidgetsLocalizations.delegate,
-      //     DefaultCupertinoLocalizations.delegate,
-      //     GlobalCupertinoLocalizations
-      //         .delegate, // Add global cupertino localiztions.
-      //   ],
-      //
-      //   locale: Locale('en', 'US'), // Current locale
-      //   supportedLocales: [
-      //     const Locale('en', 'US'), // English
-      //     const Locale('zh', 'ZH'), // Chinese??
-      //   ],
-      //
       //   home: LandingPage(),
       // ),
 
       ///this is the code that used AuthWidgetBuilder and AuthWidget
       child: AuthWidgetBuilder(
+
+          /// AuthWidgetBuilder already includes a StreamBuilder, stream: FirebaseAuth.instance.authStateChanges(),
+          /// if user =! null, userProvidersBuilder ia a MultiProvider
           // final List<SingleChildWidget> Function(BuildContext, User)
           userProvidersBuilder: (_, user) => [
                 Provider<Database>(
@@ -433,12 +411,13 @@ class _MyAppState extends State<MyApp> {
               debugShowCheckedModeBanner: false,
               title: 'iMomentum',
               theme: themeNotifier.getTheme(),
-              //   ///it seems does not matter here
-              //   // darkTheme:
-              //   //     darkTheme, //add this so that the app will follow phone setting
-              //   // themeMode: ThemeMode.system,
-              //
-              //   /// todo: localizations
+
+              ///it seems does not matter here
+              darkTheme:
+                  darkTheme, //add this so that the app will follow phone setting
+              themeMode: ThemeMode.system,
+
+              /// todo: localizations
               //   /// from plugin: flutter_localizations
               //   localizationsDelegates: [
               //     GlobalMaterialLocalizations.delegate,
@@ -454,6 +433,11 @@ class _MyAppState extends State<MyApp> {
               //     const Locale('zh', 'ZH'), // Chinese??
               //   ],
               home: AuthWidget(
+                /// this AuthWidget checks if (userSnapshot.connectionState == ConnectionState.active) {
+                /// return userSnapshot.hasData
+                //           ? signedInBuilder(context)
+                //           : nonSignedInBuilder(context);
+                ///it also checks error or waiting
                 userSnapshot: userSnapshot,
                 nonSignedInBuilder: (_) => StartScreen(),
                 signedInBuilder: (_) => TabPage(),
@@ -464,3 +448,5 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
+
+///https://stackoverflow.com/questions/45924474/how-do-you-detect-the-host-platform-from-dart-code

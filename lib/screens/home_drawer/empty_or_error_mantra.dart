@@ -32,13 +32,17 @@ class EmptyOrErrorMantra extends StatelessWidget {
                 children: [
                   Text(
                     text1,
-                    style: Theme.of(context).textTheme.bodyText2,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText2, //TextStyle(color: Colors.black87, fontSize: 18)
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 30),
                   Text(
                     text2,
-                    style: Theme.of(context).textTheme.subtitle2,
+                    style: Theme.of(context)
+                        .textTheme
+                        .subtitle2, //TextStyle(fontWeight: FontWeight.w400,color: Colors.black.withOpacity(0.7),fontStyle: FontStyle.italic,fontSize: 17),
                     // textAlign: TextAlign.center,
                   )
                 ],

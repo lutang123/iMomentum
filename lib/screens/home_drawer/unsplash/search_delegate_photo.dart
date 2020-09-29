@@ -103,7 +103,7 @@ class SearchPhotos extends SearchDelegate<Container> {
       backgroundColor:
           _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
       body: ListView.builder(
-        itemCount: (suggestionsList.length < 11) ? suggestionsList.length : 10,
+        itemCount: (suggestionsList.length < 16) ? suggestionsList.length : 15,
         itemBuilder: (context, index) {
           return GestureDetector(
             child: Container(

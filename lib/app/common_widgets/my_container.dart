@@ -103,6 +103,27 @@ class MySignInContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    // bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 15.0),
+      padding: EdgeInsets.all(15.0),
+      decoration: BoxDecoration(
+          color: lightThemeSurface, borderRadius: BorderRadius.circular(20.0)),
+      height: height,
+      child: child,
+    );
+  }
+}
+
+class MyContainerWithDarkMode extends StatelessWidget {
+  const MyContainerWithDarkMode({Key key, this.child, this.height})
+      : super(key: key);
+  final Widget child;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Container(
@@ -209,6 +230,31 @@ class SmallContainerFolderName extends StatelessWidget {
                 fontSize: 10)),
       ),
     );
+  }
+}
+
+class MyBottomContainer extends StatelessWidget {
+  final Widget child;
+
+  const MyBottomContainer({Key key, this.child}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    return Container(
+        margin: const EdgeInsets.only(top: 6.0),
+        decoration: BoxDecoration(
+          color: _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
+          borderRadius: BorderRadius.circular(5.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black54,
+              offset: Offset(0.0, 1.0), //(x,y)
+              blurRadius: 4.0,
+            ),
+          ],
+        ),
+        child: child);
   }
 }
 

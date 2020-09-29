@@ -24,6 +24,9 @@ import '../../app/constants/constants_style.dart';
 import '../../app/constants/theme.dart';
 import 'about_screen.dart';
 import 'package:iMomentum/app/utils/extension_firstCaps.dart';
+import 'dart:io' show Platform;
+
+import 'more_settings_NotUse.dart';
 
 class MyDrawer extends StatefulWidget {
   final Widget child;
@@ -119,7 +122,9 @@ class MyDrawerState extends State<MyDrawer>
                       ),
                     ),
                     Positioned(
-                      top: MediaQuery.of(context).padding.top - 10,
+                      top: Platform.isIOS
+                          ? MediaQuery.of(context).padding.top - 10
+                          : MediaQuery.of(context).padding.top + 10,
                       left: 5 + animationController.value * maxSlide,
                       child: IconButton(
                           iconSize: 25,
@@ -271,6 +276,19 @@ class MyHomeDrawer extends StatelessWidget {
                     },
                   ),
                 ),
+                // settingListTile(
+                //   context,
+                //   icon: EvaIcons.moreHorizotnalOutline,
+                //   title: 'More settings',
+                //   onTap: () {
+                //     final route = SharedAxisPageRoute(
+                //         page: MoreSettingScreen(
+                //           database: database,
+                //         ),
+                //         transitionType: _transitionType);
+                //     Navigator.of(context, rootNavigator: true).push(route);
+                //   },
+                // ),
                 settingDivider(context),
                 settingTitle(context, title: 'Customizations'),
                 settingListTile(
@@ -314,8 +332,23 @@ class MyHomeDrawer extends StatelessWidget {
                     Navigator.of(context, rootNavigator: true).push(route);
                   },
                 ),
+                settingListTile(
+                  context,
+                  icon: EvaIcons.clockOutline,
+                  title: 'Schedule focus time',
+                  onTap: () {
+                    final route = SharedAxisPageRoute(
+                        page: MoreSettingScreen(
+                          database: database,
+                        ),
+                        transitionType: _transitionType);
+                    Navigator.of(context, rootNavigator: true).push(route);
+                  },
+                ),
                 settingDivider(context),
-                settingTitle(context, title: 'Others'),
+                Platform.isIOS
+                    ? settingTitle(context, title: 'Others')
+                    : Container(),
                 settingListTile(
                   context,
                   icon: FontAwesomeIcons.directions,

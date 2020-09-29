@@ -17,7 +17,7 @@ class ImageUrl {
   static String fixedImageUrl = 'assets/images/ocean1.jpg';
   static String startImage = 'assets/images/ocean1.jpg';
   static String startImage1 = 'assets/images/ocean1.jpg';
-  static String startImage2 = 'assets/images/forest.jpg';
+  static String startImage2 = 'assets/images/landscape.jpg';
   static String startImage3 = 'assets/images/waterfall.jpg';
   static String startImage4 = 'assets/images/landscape2.jpg';
   static String signInImage = 'assets/images/mountain_new.jpg';
@@ -48,20 +48,33 @@ const KHomeDate = TextStyle(
 const KHomeQuestion =
     TextStyle(color: Colors.white, fontSize: 33.0, fontWeight: FontWeight.bold);
 
+const KHomeQuestion2 =
+    TextStyle(color: Colors.white, fontSize: 30.0, fontWeight: FontWeight.bold);
+
 const KHomeGreeting =
     TextStyle(fontSize: 35.0, color: Colors.white, fontWeight: FontWeight.bold);
 
 const KTextFieldInputDecoration = InputDecoration(
   focusedBorder: UnderlineInputBorder(
-    borderSide: BorderSide(color: Colors.white),
+    borderSide: BorderSide(color: darkThemeHint),
   ),
   enabledBorder: UnderlineInputBorder(
       borderSide: BorderSide(
-    color: Colors.white,
+    color: darkThemeHint,
   )),
+  // counterText: "",
 );
 
-const KToolTip = TextStyle(color: Colors.white);
+const KTextFieldInputDecorationLight = InputDecoration(
+  focusedBorder: UnderlineInputBorder(
+    borderSide: BorderSide(color: lightThemeHint),
+  ),
+  enabledBorder: UnderlineInputBorder(
+      borderSide: BorderSide(
+    color: lightThemeHint,
+  )),
+  // counterText: "",
+);
 
 /// for all dialog:
 const KDialogTitle =
@@ -71,6 +84,15 @@ const KDialogContent = TextStyle(color: Colors.white, fontSize: 18);
 
 const KDialogButton =
     TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20);
+
+const KDialogTitleLight = TextStyle(
+    color: lightThemeWords, fontWeight: FontWeight.w600, fontSize: 20);
+
+const KDialogContentLight = TextStyle(color: lightThemeWords, fontSize: 18);
+
+const KDialogButtonLight = TextStyle(
+    color: lightThemeWords, fontWeight: FontWeight.w600, fontSize: 20);
+
 //    //Const variables must be initialized with a constant value
 // GoogleFonts.varelaRound(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20);
 
@@ -147,20 +169,6 @@ const KLandingSubtitle2L =
         // fontWeight: FontWeight.w600,
         );
 
-// const KTeddyD = TextStyle(
-//   fontSize: 18,
-//   color: darkThemeWords,
-//   fontWeight: FontWeight.w400,
-//   fontFamily: 'Architects Daughter',
-// );
-//
-// const KTeddyL = TextStyle(
-//   fontSize: 18,
-//   color: lightThemeWords,
-//   fontWeight: FontWeight.w400,
-//   fontFamily: 'Architects Daughter',
-// );
-
 const KSignInButtonTextD = TextStyle(
   fontSize: 18,
   color: darkThemeWords,
@@ -188,13 +196,13 @@ const KSignInSecondButtonL = TextStyle(
     decoration: TextDecoration.underline);
 
 const KSignInButtonOrD = TextStyle(
-    fontSize: 18,
+    fontSize: 14,
     color: darkThemeHint2,
     fontWeight: FontWeight.w400,
     fontStyle: FontStyle.italic);
 
 const KSignInButtonOrL = TextStyle(
-    fontSize: 18,
+    fontSize: 14,
     color: lightThemeHint2,
     fontWeight: FontWeight.w400,
     fontStyle: FontStyle.italic);

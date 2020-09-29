@@ -15,8 +15,7 @@ class TodoScreenEmptyOrError extends StatelessWidget {
     Key key,
     this.text1,
     this.textTap = '',
-    this.tips,
-    // this.text2 = '',
+    this.tips = '',
     this.onTap,
   }) : super(key: key);
 
@@ -32,7 +31,7 @@ class TodoScreenEmptyOrError extends StatelessWidget {
             padding: const EdgeInsets.only(left: 15.0),
             child: Text(
               text1,
-              style: Theme.of(context).textTheme.subtitle2, // 17
+              style: Theme.of(context).textTheme.bodyText2, // 17
             ),
           ),
           SizedBox(height: 20),
@@ -40,27 +39,27 @@ class TodoScreenEmptyOrError extends StatelessWidget {
             padding: const EdgeInsets.only(left: 15.0),
             child: RichText(
               text: TextSpan(
-                style: TextStyle(
-                    color: _darkTheme
-                        ? Colors.white.withOpacity(0.85)
-                        : Colors.black54,
-                    fontStyle: FontStyle.italic,
-                    fontSize: 16),
+                //subtitle2: TextStyle(
+                //         fontWeight: FontWeight.w400,
+                //         color: Colors.white.withOpacity(0.75),
+                //         fontStyle: FontStyle.italic,
+                //         fontSize: 17)
+                style: Theme.of(context).textTheme.subtitle2,
                 children: [
                   TextSpan(
                     text: tips,
                   ),
                   TextSpan(
-                    text: textTap,
-                    recognizer: TapGestureRecognizer()..onTap = onTap,
-                    style: TextStyle(
-                        decoration: TextDecoration.underline,
-                        color: _darkTheme
-                            ? Colors.white.withOpacity(0.85)
-                            : Colors.black54,
-                        fontStyle: FontStyle.italic,
-                        fontSize: 16),
-                  ),
+                      text: textTap,
+                      recognizer: TapGestureRecognizer()..onTap = onTap,
+                      style: TextStyle(
+                          decoration: TextDecoration.underline,
+                          fontWeight: FontWeight.w400,
+                          color: _darkTheme
+                              ? Colors.white.withOpacity(0.75)
+                              : Colors.black87.withOpacity(0.7),
+                          fontStyle: FontStyle.italic,
+                          fontSize: 17)),
                   // TextSpan(text: text2),
                 ],
               ),

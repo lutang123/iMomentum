@@ -43,7 +43,8 @@ class CupertinoHomeScaffold extends StatelessWidget {
           navigatorKey: navigatorKeys[item],
           builder: (context) => widgetBuilders[item](context),
 
-          // onGenerateRoute: CupertinoTabViewRouter.generateRoute, // in Android's new code.
+          /// in Android's new code.
+          // onGenerateRoute: CupertinoTabViewRouter.generateRoute,
         );
       },
     );

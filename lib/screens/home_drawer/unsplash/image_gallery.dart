@@ -2,6 +2,7 @@ import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/utils/shared_axis.dart';
@@ -149,12 +150,7 @@ class _ImageGalleryState extends State<ImageGallery> {
   Widget secondTab() {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-//    final appliedOwnPhotoNotifier =
-//        Provider.of<AppliedOwnPhotoNotifier>(context, listen: false);
-//    bool appliedOwnPhoto = appliedOwnPhotoNotifier.getBoolOwnPhoto();
 
-    //ModalProgressHUD
-    //inAsyncCall: _picking
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -170,84 +166,29 @@ class _ImageGalleryState extends State<ImageGallery> {
                     ),
                     Expanded(
                       child: Container(
-                          width: 350,
                           margin: const EdgeInsets.all(15.0),
                           child: ClipRRect(
                               borderRadius: BorderRadius.circular(10.0),
                               child: Image.network(_appliedImageUrl,
                                   fit: BoxFit.cover))),
                     ),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(5.0),
-                      child: Container(
-                        margin: const EdgeInsets.only(top: 6.0),
-                        decoration: BoxDecoration(
-                          color: _darkTheme
-                              ? darkThemeNoPhotoColor
-                              : lightThemeNoPhotoColor,
-                          borderRadius: BorderRadius.circular(5.0),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black54,
-                              offset: Offset(0.0, 1.0), //(x,y)
-                              blurRadius: 4.0,
+                    MyBottomContainer(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 15.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            myFlatIconButton(
+                              Icons.clear,
+                              'Change',
+                              onPressed: _deleteApplied,
+                            ),
+                            myFlatIconButton(
+                              Icons.check,
+                              'Apply Again',
+                              onPressed: () => _applyAgain(_appliedImageUrl),
                             ),
                           ],
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 15.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  child: Container(
-                                    color: _darkTheme
-                                        ? Colors.black38
-                                        : lightThemeButton.withOpacity(0.5),
-                                    child: FlatButton.icon(
-                                      icon: Icon(Icons.clear,
-                                          color: _darkTheme
-                                              ? darkThemeButton
-                                              : lightThemeButton),
-                                      onPressed: _deleteApplied,
-                                      label: Text('Change',
-                                          style: TextStyle(
-                                              color: _darkTheme
-                                                  ? darkThemeWords
-                                                  : lightThemeWords)),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  child: Container(
-                                    color: _darkTheme
-                                        ? Colors.black38
-                                        : lightThemeButton.withOpacity(0.5),
-                                    child: FlatButton.icon(
-                                      icon: Icon(Icons.check,
-                                          color: _darkTheme
-                                              ? darkThemeButton
-                                              : lightThemeButton),
-                                      onPressed: () =>
-                                          _applyAgain(_appliedImageUrl),
-                                      label: Text('Apply',
-                                          style: TextStyle(
-                                              color: _darkTheme
-                                                  ? darkThemeWords
-                                                  : lightThemeWords)),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
                         ),
                       ),
                     ),
@@ -277,7 +218,6 @@ class _ImageGalleryState extends State<ImageGallery> {
                         color: _darkTheme ? darkThemeButton : lightThemeButton,
                         onPressed: () => _pickImage(ImageSource.gallery),
                       ),
-                      _picking ? CircularProgressIndicator() : Container(),
                     ],
                   ),
                 ),
@@ -299,7 +239,6 @@ class _ImageGalleryState extends State<ImageGallery> {
                 Expanded(
                   child: Container(
                     margin: const EdgeInsets.all(15.0),
-                    width: 350,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10.0),
                       child: Hero(
@@ -308,129 +247,76 @@ class _ImageGalleryState extends State<ImageGallery> {
                     ),
                   ),
                 ),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(5.0),
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 6.0),
-                    decoration: BoxDecoration(
-                      color: _darkTheme
-                          ? darkThemeNoPhotoColor
-                          : lightThemeNoPhotoColor,
-                      borderRadius: BorderRadius.circular(5.0),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black54,
-                          offset: Offset(0.0, 1.0), //(x,y)
-                          blurRadius: 4.0,
+                MyBottomContainer(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 15.0),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            myFlatIconButton(Icons.crop, 'Crop',
+                                onPressed: _cropImage),
+                            myFlatIconButton(Icons.remove_red_eye, 'Preview',
+                                onPressed: _preview),
+                            myFlatIconButton(Icons.clear, 'Cancel',
+                                onPressed: _cancel),
+                          ],
                         ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 15, right: 15, top: 10),
+                                child: Text(
+                                    'Tips: Photo on full-screen may look different as the original one. Preview first and crop the photo as needed, or click Cancel to choose another one.',
+                                    style:
+                                        Theme.of(context).textTheme.subtitle2),
+                              ),
+                            )
+                          ],
+                        )
                       ],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 15.0),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  child: Container(
-                                    color: _darkTheme
-                                        ? Colors.black38
-                                        : lightThemeButton.withOpacity(0.5),
-                                    child: FlatButton.icon(
-                                      icon: Icon(Icons.crop,
-                                          color: _darkTheme
-                                              ? darkThemeButton
-                                              : lightThemeButton),
-                                      onPressed: _cropImage,
-                                      label: Text(
-                                        'Crop',
-                                        style: TextStyle(
-                                            color: _darkTheme
-                                                ? darkThemeWords
-                                                : lightThemeWords),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  child: Container(
-                                    color: _darkTheme
-                                        ? Colors.black38
-                                        : lightThemeButton.withOpacity(0.5),
-                                    child: FlatButton.icon(
-                                      icon: Icon(Icons.remove_red_eye,
-                                          color: _darkTheme
-                                              ? darkThemeButton
-                                              : lightThemeButton),
-                                      onPressed: _preview,
-                                      label: Text('Preview',
-                                          style: TextStyle(
-                                              color: _darkTheme
-                                                  ? darkThemeWords
-                                                  : lightThemeWords)),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  child: Container(
-                                    color: _darkTheme
-                                        ? Colors.black38
-                                        : lightThemeButton.withOpacity(0.5),
-                                    child: FlatButton.icon(
-                                      icon: Icon(Icons.clear,
-                                          color: _darkTheme
-                                              ? darkThemeButton
-                                              : lightThemeButton),
-                                      onPressed: _cancel,
-                                      label: Text('Cancel',
-                                          style: TextStyle(
-                                              color: _darkTheme
-                                                  ? darkThemeWords
-                                                  : lightThemeWords)),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 15, right: 15, top: 10),
-                                  child: Text(
-                                      'Tips: Photo on full-screen may look different as the original one. Preview first and crop the photo as needed, or click Cancel to choose another one.',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .subtitle2),
-                                ),
-                              )
-                            ],
-                          )
-                        ],
-                      ),
                     ),
                   ),
                 ),
-                SizedBox(height: 15),
+                SizedBox(height: 10),
               ],
             ),
           )
         ]
       ],
+    );
+  }
+
+  Padding myFlatIconButton(IconData icon, String text,
+      {@required VoidCallback onPressed}) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10.0),
+        child: Container(
+          color: _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
+          child: FlatButton.icon(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                side: BorderSide(
+                    color: _darkTheme ? darkThemeHint : lightThemeHint,
+                    width: 1.0)),
+            icon: Icon(icon,
+                color: _darkTheme ? darkThemeButton : lightThemeButton),
+            onPressed: onPressed,
+            label: Text(
+              text,
+              style: TextStyle(
+                  color: _darkTheme ? darkThemeWords : lightThemeWords),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -482,8 +368,6 @@ class _ImageGalleryState extends State<ImageGallery> {
       _imageFile = cropped ?? _imageFile;
     });
   }
-
-  bool _picking = false;
 
   /// Select an image via gallery or camera
   Future<void> _pickImage(ImageSource source) async {

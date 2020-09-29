@@ -232,7 +232,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   scale: 0.9,
                   child: CupertinoSwitch(
                     activeColor: _darkTheme
-                        ? switchActiveColorUseInDark
+                        ? switchActiveColorDark
                         : switchActiveColorLight,
                     trackColor: Colors.grey,
                     value: _metricUnitOn,

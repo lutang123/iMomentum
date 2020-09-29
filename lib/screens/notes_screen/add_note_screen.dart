@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/utils/format.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/models/folder.dart';
@@ -141,7 +142,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
     });
   }
 
-  Widget _buildAppBar() {
+  AppBar _buildAppBar() {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
 
@@ -300,113 +301,97 @@ class AddNoteScreenState extends State<AddNoteScreen> {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(5.0),
-      child: Container(
-        margin: const EdgeInsets.only(top: 6.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5.0),
-          color: _darkTheme ? colorsDark[color] : colorsLight[color],
-          boxShadow: [
-            BoxShadow(
-              color: _darkTheme ? darkThemeDrawer : lightThemeDrawer,
-              offset: Offset(0.0, 1.0), //(x,y)
-              blurRadius: 4.0,
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsets.only(left: 5.0, right: 5, top: 10),
-          child: Column(
-            children: [
-              Visibility(
-                visible: _pickerVisible,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 5.0),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 15.0, top: 10),
-                            child: Text(
-                              'Pick a font for your Note.',
-                              style: TextStyle(
-                                  color: _darkTheme
-                                      ? darkThemeHint
-                                      : lightThemeHint),
-                            ),
+    return MyBottomContainer(
+      child: Padding(
+        padding: const EdgeInsets.only(left: 10.0, right: 10, top: 10),
+        child: Column(
+          children: [
+            Visibility(
+              visible: _pickerVisible,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 5.0),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 15.0, top: 10),
+                          child: Text(
+                            'Pick a font for your Note.',
+                            style: TextStyle(
+                                color: _darkTheme
+                                    ? darkThemeHint
+                                    : lightThemeHint),
                           ),
-                        ],
-                      ),
-                      FontPicker(
-                          selectedFont:
-                              note == null ? fontList[0] : note.fontFamily,
-                          onTap: _pickFont,
-                          backgroundColor: _darkTheme
-                              ? colorsDark[color]
-                              : colorsLight[color]),
-                      Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 15.0, top: 10),
-                            child: Text('Pick a color for your Note.',
-                                style: TextStyle(
-                                    color: _darkTheme
-                                        ? darkThemeHint
-                                        : lightThemeHint)),
-                          ),
-                        ],
-                      ),
-                      ColorPicker(
-                        selectedIndex: note == null ? 0 : note.colorIndex,
-                        onTap: _pickColor,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  IconButton(
-                    iconSize: 30,
-                    color: _darkTheme ? darkThemeButton : lightThemeButton,
-                    icon: _pickerVisible == true
-                        ? Icon(EvaIcons.closeSquareOutline)
-                        : Icon(EvaIcons.plusSquareOutline),
-                    onPressed: _showPicker,
-                    tooltip: 'Add more',
-                  ),
-                  widget.note == null
-                      ? Text('Edited ${Format.time(DateTime.now())}',
-                          style: TextStyle(
-                              color:
-                                  _darkTheme ? darkThemeHint : lightThemeHint))
-                      : formattedToday == formattedDate
-                          ? Text('Edited ${Format.time(note.date)}',
-                              style: TextStyle(
-                                  color: _darkTheme
-                                      ? darkThemeHint
-                                      : lightThemeHint))
-                          : Text('Edited ${Format.date(note.date)}',
+                        ),
+                      ],
+                    ),
+                    FontPicker(
+                        selectedFont:
+                            note == null ? fontList[0] : note.fontFamily,
+                        onTap: _pickFont,
+                        backgroundColor: _darkTheme
+                            ? colorsDark[color]
+                            : colorsLight[color]),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 15.0, top: 10),
+                          child: Text('Pick a color for your Note.',
                               style: TextStyle(
                                   color: _darkTheme
                                       ? darkThemeHint
                                       : lightThemeHint)),
-                  IconButton(
-                    key: MyGlobalKeys.addNoteKey,
-                    iconSize: 28,
-                    color: _darkTheme ? darkThemeButton : lightThemeButton,
-                    icon: Icon(EvaIcons.moreVerticalOutline),
-                    onPressed: _showPopUp,
-                    tooltip: 'more',
-                  ),
-                ],
+                        ),
+                      ],
+                    ),
+                    ColorPicker(
+                      selectedIndex: note == null ? 0 : note.colorIndex,
+                      onTap: _pickColor,
+                    ),
+                  ],
+                ),
               ),
-              SizedBox(height: 25)
-            ],
-          ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                IconButton(
+                  iconSize: 30,
+                  color: _darkTheme ? darkThemeButton : lightThemeButton,
+                  icon: _pickerVisible == true
+                      ? Icon(EvaIcons.closeSquareOutline)
+                      : Icon(EvaIcons.plusSquareOutline),
+                  onPressed: _showPicker,
+                  tooltip: 'Add more',
+                ),
+                widget.note == null
+                    ? Text('Edited ${Format.time(DateTime.now())}',
+                        style: TextStyle(
+                            color: _darkTheme ? darkThemeHint : lightThemeHint))
+                    : formattedToday == formattedDate
+                        ? Text('Edited ${Format.time(note.date)}',
+                            style: TextStyle(
+                                color: _darkTheme
+                                    ? darkThemeHint
+                                    : lightThemeHint))
+                        : Text('Edited ${Format.date(note.date)}',
+                            style: TextStyle(
+                                color: _darkTheme
+                                    ? darkThemeHint
+                                    : lightThemeHint)),
+                IconButton(
+                  key: MyGlobalKeys.addNoteKey,
+                  iconSize: 28,
+                  color: _darkTheme ? darkThemeButton : lightThemeButton,
+                  icon: Icon(EvaIcons.moreVerticalOutline),
+                  onPressed: _showPopUp,
+                  tooltip: 'more',
+                ),
+              ],
+            ),
+            SizedBox(height: 20)
+          ],
         ),
       ),
     );
@@ -466,7 +451,8 @@ class AddNoteScreenState extends State<AddNoteScreen> {
           ///first we find this specific Todo item that we want to update
           final newNote = Note(
             id: id,
-            folderId: folderId,
+            folderId:
+                folderId, //folderId is 1 if added to the default Notes folder
             title: title,
             description: description,
             date: DateTime.now(),
@@ -475,6 +461,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
             isPinned: isPinned,
           );
           //add newTodo to database
+          // print('newNote.folderId in Add Note: ${newNote.folderId}'); //newNote.folderId in Add Note: 2020-09-27T16:07:31.578943
           await database.setNote(newNote);
         } on PlatformException catch (e) {
           PlatformExceptionAlertDialog(

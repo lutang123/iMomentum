@@ -167,7 +167,7 @@ class _MyQuotesState extends State<MyQuotes> {
   }
 
   ListView buildListView(Database database, List<QuoteModel> quotes) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return ListView.separated(
         itemCount: quotes.length + 2,
@@ -194,7 +194,7 @@ class _MyQuotesState extends State<MyQuotes> {
               IconSlideAction(
                 caption: 'Edit',
                 foregroundColor: Colors.blue,
-                color: Colors.black12,
+                color: _darkTheme ? Colors.black12 : lightThemeNoPhotoColor,
                 iconWidget: FaIcon(
                   EvaIcons.edit2Outline,
                   color: Colors.blue,
@@ -206,7 +206,7 @@ class _MyQuotesState extends State<MyQuotes> {
               IconSlideAction(
                 caption: 'Delete',
                 foregroundColor: Colors.red,
-                color: Colors.black12,
+                color: _darkTheme ? Colors.black12 : lightThemeNoPhotoColor,
                 iconWidget: FaIcon(
                   EvaIcons.trash2Outline,
                   color: Colors.red,

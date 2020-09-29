@@ -48,7 +48,7 @@ class HomeTextField extends StatelessWidget {
 
         ///no save button, can not do multiline
 //        keyboardType: TextInputType.multiline,
-//        maxLines: null,
+//        maxLines: null, default is 1
         decoration: KTextFieldInputDecoration,
       ),
     );
