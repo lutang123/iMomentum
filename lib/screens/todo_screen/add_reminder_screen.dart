@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:iMomentum/app/common_widgets/add_screen_top_row.dart';
 import 'package:iMomentum/app/common_widgets/date_time_picker.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
@@ -18,11 +19,9 @@ import 'package:iMomentum/app/utils/extension_firstCaps.dart';
 class AddReminderScreen extends StatefulWidget {
   const AddReminderScreen({
     this.todo,
-    // this.user,
     this.database,
   });
   final Todo todo;
-  // final AppUser user;
   final Database database;
 
   @override
@@ -30,10 +29,7 @@ class AddReminderScreen extends StatefulWidget {
 }
 
 class _AddReminderScreenState extends State<AddReminderScreen> {
-  // final DateFormat _dateFormatter = DateFormat('MMM dd');
-  // final _formKey = GlobalKey<FormState>();
-
-  /// for local notification
+// for local notification
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
@@ -43,14 +39,11 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
 
   DateTime
       _reminderDate; //we assign an initial value as now, and the assign new picked value
+
   TimeOfDay _reminderTime;
 
-  // String formattedToday = DateFormat('M/d/y').format(DateTime.now());
-
   Todo get todo => widget.todo;
-  // AppUser get user => widget.user;
   final User user = FirebaseAuth.instance.currentUser;
-
   Database get database => widget.database;
 
   String firstName;
@@ -59,9 +52,6 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
 
   @override
   void initState() {
-    // _reminderStart = DateTime(now.year, now.month, now.day,
-    //     TimeOfDay.fromDateTime(now).hour, TimeOfDay.fromDateTime(now).minute);
-
     /// previous make it add/edit just like in addTodoScreen, but then when we are
     /// about to change, it still show the current time unless we save the reminder date, to make it simple, just to cancel reminder in TodoScreen
     _reminderDate = todo.hasReminder == null || todo.hasReminder == false
@@ -93,13 +83,12 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
         color: _darkTheme ? darkThemeAdd : lightThemeAdd,
         child: Column(
           children: <Widget>[
-            SizedBox(height: 30),
-            Text(
-                todo.hasReminder == null || todo.hasReminder == false
-                    ? 'Add Reminder'
-                    : 'Change Reminder',
-                style: Theme.of(context).textTheme.headline5),
-            SizedBox(height: 15),
+            AddScreenTopRow(
+              title: todo.hasReminder == null || todo.hasReminder == false
+                  ? 'Add Reminder'
+                  : 'Change Reminder',
+            ),
+            SizedBox(height: 10),
             Text(
               'Remind me for this task at: ',
               style: TextStyle(
@@ -124,11 +113,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
             ),
             SizedBox(height: 20),
             todo.hasReminder == null || todo.hasReminder == false
-                ? MyFlatButton(
-                    onPressed: _scheduleNotification,
-                    text: 'SAVE',
-                    bkgdColor: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
-                    color: _darkTheme ? Colors.white : lightThemeButton)
+                ? buildMyFlatButtonSave(_darkTheme)
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -144,13 +129,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                       ),
                       SizedBox(
                         width: 150,
-                        child: MyFlatButton(
-                            onPressed: _scheduleNotification,
-                            text: 'SAVE',
-                            bkgdColor:
-                                _darkTheme ? darkThemeAppBar : lightThemeAppBar,
-                            color:
-                                _darkTheme ? Colors.white : lightThemeButton),
+                        child: buildMyFlatButtonSave(_darkTheme),
                       )
                     ],
                   ),
@@ -159,6 +138,14 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
         ),
       ),
     );
+  }
+
+  MyFlatButton buildMyFlatButtonSave(bool _darkTheme) {
+    return MyFlatButton(
+        onPressed: _scheduleNotification,
+        text: 'SAVE',
+        bkgdColor: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
+        color: _darkTheme ? Colors.white : lightThemeButton);
   }
 
   Widget _buildReminderDate(Todo todo) {
@@ -178,35 +165,6 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
     );
   }
 
-  ///can be used in count down
-  //
-  // double durationInHours(DateTime start, DateTime end) =>
-  //     end.difference(start).inMinutes.toDouble() / 60.0;
-  //
-  // ///
-  // //  //the birthday's date
-  // //  final birthday = DateTime(1967, 10, 12);
-  // //  final date2 = DateTime.now();
-  // //  final difference = date2.difference(birthday).inDays;
-  // ///this can be used in count down;
-  // Widget _buildDuration() {
-  //   _reminderEnd = DateTime(_reminderDate.year, _reminderDate.month,
-  //       _reminderDate.day, _reminderTime.hour, _reminderTime.minute);
-  //
-  //   final durationFormatted =
-  //       Format.hours(durationInHours(_reminderStart, _reminderEnd));
-  //   return Row(
-  //     mainAxisAlignment: MainAxisAlignment.end,
-  //     children: <Widget>[
-  //       Text(
-  //         'Duration: $durationFormatted',
-  //         style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
-  //         maxLines: 1,
-  //         overflow: TextOverflow.ellipsis,
-  //       ),
-  //     ],
-  //   );
-  // }
   bool _errorMessageVisible = false;
 
   /// Schedules a notification that specifies a different icon, sound and vibration pattern
@@ -307,3 +265,33 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
     Navigator.of(context).pop();
   }
 }
+
+///can be used in count down
+//
+// double durationInHours(DateTime start, DateTime end) =>
+//     end.difference(start).inMinutes.toDouble() / 60.0;
+//
+// ///
+// //  //the birthday's date
+// //  final birthday = DateTime(1967, 10, 12);
+// //  final date2 = DateTime.now();
+// //  final difference = date2.difference(birthday).inDays;
+// ///this can be used in count down;
+// Widget _buildDuration() {
+//   _reminderEnd = DateTime(_reminderDate.year, _reminderDate.month,
+//       _reminderDate.day, _reminderTime.hour, _reminderTime.minute);
+//
+//   final durationFormatted =
+//       Format.hours(durationInHours(_reminderStart, _reminderEnd));
+//   return Row(
+//     mainAxisAlignment: MainAxisAlignment.end,
+//     children: <Widget>[
+//       Text(
+//         'Duration: $durationFormatted',
+//         style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
+//         maxLines: 1,
+//         overflow: TextOverflow.ellipsis,
+//       ),
+//     ],
+//   );
+// }

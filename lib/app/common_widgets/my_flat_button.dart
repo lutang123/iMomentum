@@ -24,11 +24,12 @@ class MyFlatButton extends StatelessWidget {
       color: bkgdColor,
       onPressed: onPressed,
       child: Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(8.0),
         child: Text(
           text,
           style: GoogleFonts.varelaRound(
               color: color, fontWeight: FontWeight.w600, fontSize: 20.0),
+          textAlign: TextAlign.center,
         ),
       ),
     );

@@ -74,18 +74,11 @@ class DailyTodosDetails {
     return list;
   }
 
+  ///for second calendar
   //dailly total?
   double get duration => todosDetails
       .map((jobDuration) => jobDuration.durationNumber)
       .reduce((value, element) => value + element);
-
-//final allDailyJobsDetails = DailyJobsDetails.all(allEntries);
-//
-//    /// total duration across all jobs
-//
-//    final totalDuration = allDailyJobsDetails
-//        .map((dateJobsDuration) => dateJobsDuration.duration)
-//        .reduce((value, element) => value + element);
 
   /// groups entries by date
   static Map<DateTime, List<TodoDuration>> _entriesByDate(
@@ -113,7 +106,7 @@ class DailyTodosDetails {
     return map;
   }
 
-//  /// groups entries by date
+  /// groups entries by week, not done
 //  static Map<DateTime, List<TodoDuration>> _entriesByWeek(
 //      List<TodoDuration> entries) {
 //    Map<DateTime, double> map = {};
@@ -239,7 +232,6 @@ class DailyTodosDetails {
     return duration;
   }
 
-  ///this is for second calendar
   /// groupby only one day, change to: map[date] = entry.todosDetails, instead of map[date] = entry;
   static Map<DateTime, List<dynamic>> getEventsNew(List<TodoDuration> entries) {
     final allEntries = DailyTodosDetails.all(entries); //List<DailyTodosDetails>

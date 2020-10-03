@@ -7,7 +7,7 @@ import 'package:iMomentum/app/common_widgets/avatar.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
-import 'package:iMomentum/app/constants/constants_style.dart';
+import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/sign_in/firebase_auth_service_new.dart';
 import 'package:progress_dialog/progress_dialog.dart';
@@ -15,7 +15,6 @@ import 'package:provider/provider.dart';
 import 'package:flutter/cupertino.dart';
 import '../../app/common_widgets/avatar.dart';
 import '../../app/common_widgets/platform_alert_dialog.dart';
-import '../../app/constants/constants_style.dart';
 import '../../app/constants/theme.dart';
 
 class UserScreen extends StatefulWidget {
@@ -38,7 +37,7 @@ class _UserScreenState extends State<UserScreen> {
       children: <Widget>[
         BuildPhotoView(
           imageUrl:
-              _randomOn ? ImageUrl.randomImageUrl : imageNotifier.getImage(),
+              _randomOn ? ImagePath.randomImageUrl : imageNotifier.getImage(),
         ),
         ContainerLinearGradient(),
         Scaffold(

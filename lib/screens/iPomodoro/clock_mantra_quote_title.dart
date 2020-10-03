@@ -42,10 +42,12 @@ class MantraTopBar extends StatelessWidget {
   const MantraTopBar({
     this.title,
     this.subtitle,
+    this.onPressed,
     Key key,
   }) : super(key: key);
   final String title;
   final String subtitle;
+  final Function onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -57,13 +59,24 @@ class MantraTopBar extends StatelessWidget {
       children: <Widget>[
         SizedBox(height: 5),
         Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             IconButton(
               onPressed: () => Navigator.pop(context),
               icon: Icon(Icons.arrow_back_ios, size: 30),
               color: _darkTheme ? darkThemeButton : lightThemeButton,
-            )
+            ),
+            FlatButton(
+              child: Text(
+                'Show Tips',
+                style: TextStyle(
+                    fontSize: 15,
+                    color: _darkTheme
+                        ? darkThemeButton.withOpacity(0.9)
+                        : lightThemeButton.withOpacity(0.9)),
+              ),
+              onPressed: onPressed,
+            ),
           ],
         ),
         Text(title,
@@ -71,23 +84,15 @@ class MantraTopBar extends StatelessWidget {
                 fontSize: 30,
                 color: _darkTheme ? darkThemeWords : lightThemeWords,
                 fontWeight: FontWeight.bold)),
-        SizedBox(height: 20),
-        Padding(
-          padding: const EdgeInsets.all(2.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                subtitle,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.varelaRound(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 17,
-                    color: _darkTheme ? darkThemeWords : lightThemeWords,
-                    fontStyle: FontStyle.italic),
-              ),
-            ],
-          ),
+        SizedBox(height: 15),
+        Text(
+          subtitle,
+          textAlign: TextAlign.center,
+          style: GoogleFonts.varelaRound(
+              fontWeight: FontWeight.w600,
+              fontSize: 17,
+              color: _darkTheme ? darkThemeWords : lightThemeWords,
+              fontStyle: FontStyle.italic),
         ),
         SizedBox(height: 15),
       ],

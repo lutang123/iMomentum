@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
+import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
+import 'package:iMomentum/app/constants/image_path.dart';
+import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/utils/shared_axis.dart';
-import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/home_drawer/unsplash/preview_file.dart';
@@ -82,7 +84,6 @@ class _ImageGalleryState extends State<ImageGallery> {
               _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
           extendBodyBehindAppBar: true,
           appBar: AppBar(
-            // elevation: 0.0,
             backgroundColor:
                 _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
             leading: IconButton(
@@ -159,7 +160,7 @@ class _ImageGalleryState extends State<ImageGallery> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    SizedBox(height: 20),
+                    SizedBox(height: 15),
                     Text(
                       'Uploaded photo',
                       style: Theme.of(context).textTheme.headline6,
@@ -173,23 +174,20 @@ class _ImageGalleryState extends State<ImageGallery> {
                                   fit: BoxFit.cover))),
                     ),
                     MyBottomContainer(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 15.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            myFlatIconButton(
-                              Icons.clear,
-                              'Change',
-                              onPressed: _deleteApplied,
-                            ),
-                            myFlatIconButton(
-                              Icons.check,
-                              'Apply Again',
-                              onPressed: () => _applyAgain(_appliedImageUrl),
-                            ),
-                          ],
-                        ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          myFlatIconButton(
+                            Icons.clear,
+                            'Change',
+                            onPressed: _deleteApplied,
+                          ),
+                          myFlatIconButton(
+                            Icons.check,
+                            'Apply Again',
+                            onPressed: () => _applyAgain(_appliedImageUrl),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -231,7 +229,7 @@ class _ImageGalleryState extends State<ImageGallery> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                SizedBox(height: 20),
+                SizedBox(height: 15),
                 Text(
                   'Selected photo',
                   style: Theme.of(context).textTheme.headline6,
@@ -248,40 +246,39 @@ class _ImageGalleryState extends State<ImageGallery> {
                   ),
                 ),
                 MyBottomContainer(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 15.0),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            myFlatIconButton(Icons.crop, 'Crop',
-                                onPressed: _cropImage),
-                            myFlatIconButton(Icons.remove_red_eye, 'Preview',
-                                onPressed: _preview),
-                            myFlatIconButton(Icons.clear, 'Cancel',
-                                onPressed: _cancel),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 15, right: 15, top: 10),
-                                child: Text(
-                                    'Tips: Photo on full-screen may look different as the original one. Preview first and crop the photo as needed, or click Cancel to choose another one.',
-                                    style:
-                                        Theme.of(context).textTheme.subtitle2),
-                              ),
-                            )
-                          ],
-                        )
-                      ],
-                    ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          myFlatIconButton(Icons.crop, 'Crop',
+                              onPressed: _cropImage),
+                          myFlatIconButton(Icons.remove_red_eye, 'Preview',
+                              onPressed: _preview),
+                          myFlatIconButton(Icons.clear, 'Cancel',
+                              onPressed: _cancel),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          FlatButton(
+                            child: Text(
+                              'Show Tips',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  color: _darkTheme
+                                      ? darkThemeButton.withOpacity(0.9)
+                                      : lightThemeButton.withOpacity(0.9)),
+                            ),
+                            onPressed: _showTipDialog,
+                          ),
+                        ],
+                      )
+                    ],
                   ),
                 ),
-                SizedBox(height: 10),
+                // SizedBox(height: 10),
               ],
             ),
           )
@@ -296,28 +293,30 @@ class _ImageGalleryState extends State<ImageGallery> {
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10.0),
-        child: Container(
-          color: _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
-          child: FlatButton.icon(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-                side: BorderSide(
-                    color: _darkTheme ? darkThemeHint : lightThemeHint,
-                    width: 1.0)),
-            icon: Icon(icon,
-                color: _darkTheme ? darkThemeButton : lightThemeButton),
-            onPressed: onPressed,
-            label: Text(
-              text,
-              style: TextStyle(
-                  color: _darkTheme ? darkThemeWords : lightThemeWords),
-            ),
-          ),
+      child: FlatButton.icon(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            side: BorderSide(
+                color: _darkTheme ? darkThemeHint : lightThemeHint,
+                width: 1.0)),
+        icon:
+            Icon(icon, color: _darkTheme ? darkThemeButton : lightThemeButton),
+        onPressed: onPressed,
+        label: Text(
+          text,
+          style:
+              TextStyle(color: _darkTheme ? darkThemeWords : lightThemeWords),
         ),
       ),
     );
+  }
+
+  Future<void> _showTipDialog() async {
+    await PlatformAlertDialog(
+      title: 'Tips',
+      content: Strings.tipsOnUploadYourPhoto,
+      defaultActionText: 'OK.',
+    ).show(context);
   }
 
   /// Active image file
@@ -462,12 +461,12 @@ class _ImageGalleryState extends State<ImageGallery> {
 //    final appliedOwnPhotoNotifier =
 //        Provider.of<AppliedOwnPhotoNotifier>(context, listen: false);
     //save image changes
-    imageNotifier.setImage(ImageUrl.fixedImageUrl);
+    imageNotifier.setImage(ImagePath.fixedImageUrl);
     //change the randomOn value to false at the same time
     randomNotifier.setRandom(true);
 //    appliedOwnPhotoNotifier.setBoolOwnPhoto(true);
     //then save in shared preference
-    prefs.setString('imageUrl', ImageUrl.fixedImageUrl);
+    prefs.setString('imageUrl', ImagePath.fixedImageUrl);
     //save settings
     prefs.setBool('randomOn', true);
 

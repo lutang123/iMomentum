@@ -27,17 +27,16 @@ class EmptyOrErrorMantra extends StatelessWidget {
           Visibility(
             visible: _hideEmptyMessage,
             child: Padding(
-              padding: const EdgeInsets.all(15.0),
+              padding: const EdgeInsets.all(20.0),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     text1,
                     style: Theme.of(context)
                         .textTheme
                         .bodyText2, //TextStyle(color: Colors.black87, fontSize: 18)
-                    textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: 30),
                   Text(
                     text2,
                     style: Theme.of(context)

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:iMomentum/app/common_widgets/my_sizedbox.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:provider/provider.dart';
@@ -10,17 +11,13 @@ class TodoTopRow extends StatelessWidget {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
 
-    return Column(
-      children: [
-        SizedBox(
-          height: 30,
-          child:
-              Container(color: _darkTheme ? darkThemeAppBar : lightThemeAppBar),
-        ),
-        SizedBox(
-          height: 50,
-          child: Container(
-            color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
+    return Container(
+      color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
+      child: Column(
+        children: [
+          MyTopSizedBox(),
+          SizedBox(
+            height: 50,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: TabBar(
@@ -43,8 +40,8 @@ class TodoTopRow extends StatelessWidget {
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

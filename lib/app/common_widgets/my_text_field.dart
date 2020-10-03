@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
+import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:provider/provider.dart';
 
+///https://medium.com/@nitishk72/form-validation-in-flutter-d762fbc9212c
 class HomeTextField extends StatelessWidget {
   const HomeTextField({
     Key key,
     this.onSubmitted,
-    // this.icon,
-    // this.textEditingController,
     this.onChanged,
     this.max = 100,
     this.width = 320,
@@ -19,8 +19,6 @@ class HomeTextField extends StatelessWidget {
   }) : super(key: key);
 
   final Function onSubmitted;
-  // final IconData icon;
-  // final TextEditingController textEditingController;
   final Function onChanged;
   final int max;
   final double width;
@@ -35,12 +33,22 @@ class HomeTextField extends StatelessWidget {
       child: TextFormField(
         onChanged: onChanged,
         autofocus: autofocus,
-        // controller: textEditingController,
         style: GoogleFonts.varelaRound(fontSize: 25.0, color: Colors.white),
         textAlign: TextAlign.center,
         onFieldSubmitted: onSubmitted,
-        validator: (value) =>
-            value.isNotEmpty ? null : 'Content can\'t be empty',
+        validator: (value) {
+          if (value.isNotEmpty) {
+            return null;
+
+            ///not useful because we set mas as 100, and if over 100, curse won't go.
+          } else if (value.length > 100) {
+            return max == 100
+                ? Strings.over100MaxWarning
+                : Strings.over20MaxWarning;
+          } else {
+            return Strings.emptyWarning;
+          }
+        },
         cursorColor: Colors.white,
         maxLength: max, //default 100
         inputFormatters: [LengthLimitingTextInputFormatter(max)],
@@ -49,7 +57,7 @@ class HomeTextField extends StatelessWidget {
         ///no save button, can not do multiline
 //        keyboardType: TextInputType.multiline,
 //        maxLines: null, default is 1
-        decoration: KTextFieldInputDecoration,
+        decoration: KHomeTextFieldInputDecoration,
       ),
     );
   }

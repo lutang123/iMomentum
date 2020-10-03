@@ -10,6 +10,8 @@ import 'package:iMomentum/app/common_widgets/avatar.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/my_tooltip.dart';
 import 'package:iMomentum/app/common_widgets/setting_switch.dart';
+import 'package:iMomentum/app/constants/image_path.dart';
+import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/utils/shared_axis.dart';
 import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
@@ -77,6 +79,8 @@ class MyDrawerState extends State<MyDrawer>
     final randomNotifier = Provider.of<RandomNotifier>(context);
     bool _randomOn = (randomNotifier.getRandom() == true);
     final imageNotifier = Provider.of<ImageNotifier>(context);
+
+    double height = MediaQuery.of(context).size.height;
     return GestureDetector(
       onHorizontalDragStart: _onDragStart,
       onHorizontalDragUpdate: _onDragUpdate,
@@ -91,7 +95,7 @@ class MyDrawerState extends State<MyDrawer>
             children: <Widget>[
               BuildPhotoView(
                 imageUrl: _randomOn
-                    ? ImageUrl.randomImageUrl
+                    ? ImagePath.randomImageUrl
                     : imageNotifier.getImage(),
               ),
               ContainerLinearGradient(),
@@ -122,12 +126,12 @@ class MyDrawerState extends State<MyDrawer>
                       ),
                     ),
                     Positioned(
-                      top: Platform.isIOS
+                      top: height > 700
                           ? MediaQuery.of(context).padding.top - 10
-                          : MediaQuery.of(context).padding.top + 10,
+                          : MediaQuery.of(context).padding.top + 5,
                       left: 5 + animationController.value * maxSlide,
                       child: IconButton(
-                          iconSize: 25,
+                          iconSize: 28,
                           icon: FaIcon(FontAwesomeIcons.bars),
                           onPressed: toggle,
                           color:
@@ -193,40 +197,33 @@ class MyHomeDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final database = Provider.of<Database>(context, listen: false);
-
-    ///error if no user name
-    /// AppUser won't update user name
-    // final AppUser user = Provider.of<AppUser>(context, listen: false);
     final User user = FirebaseAuth.instance.currentUser;
 
+    ///this will get error because user name might be null
 //    final String firstName =
 //        user.displayName.substring(0, user.displayName.indexOf(' '));
 
-    ///for theme
     /// do not set listen to false here
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
 
-    ///for focus mode
     ///when set listen: false, the switch button does not change
     final focusNotifier = Provider.of<FocusNotifier>(context);
     bool _focusModeOn = focusNotifier.getFocus();
 
-    ///for random on
     ///this one listen to false or not does not seem to matter, but why??
     final randomNotifier = Provider.of<RandomNotifier>(context);
     bool _randomOn = randomNotifier.getRandom();
-
+    double height = MediaQuery.of(context).size.height;
     return SizedBox(
       width: 300,
       height: double.infinity,
       child: Material(
         color: _darkTheme ? darkThemeDrawer : lightThemeDrawer,
 
-        ///two ways: either make it flexible, but then if keyboard pops up, everything kind of squeech together;
+        ///two ways: either make it flexible, but then if keyboard pops up, everything kind of squeeze together;
         ///or make it scrollable, but can't have spacer or flexible or expanded,
-        ///unless using layout builder, but that one can only have one expanded.
-        ///see notes in Add note screen.
+        ///unless using layout builder, but that one can only have one expanded. see notes in Add note screen.
         child: SingleChildScrollView(
           child: SafeArea(
             child: Column(
@@ -234,25 +231,19 @@ class MyHomeDrawer extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                SizedBox(height: 20),
                 settingTitle(context, title: 'Settings'),
-                MyToolTip(
-                  message:
-                      'This switch controls the theme color, either dark or light.',
-                  child: SettingSwitch(
-                    size: 23,
-                    icon: FontAwesomeIcons.adjust,
-                    title: 'Dark Theme',
-                    value: _darkTheme,
-                    onChanged: (val) {
-                      _darkTheme = val;
-                      _onThemeChanged(val, themeNotifier);
-                    },
-                  ),
+                SettingSwitch(
+                  size: 23,
+                  icon: FontAwesomeIcons.adjust,
+                  title: 'Dark Theme',
+                  value: _darkTheme,
+                  onChanged: (val) {
+                    _darkTheme = val;
+                    _onThemeChanged(val, themeNotifier);
+                  },
                 ),
                 MyToolTip(
-                  message:
-                      'This switch controls whether to show productivity feature on Home Screen.',
+                  message: Strings.focusSwitchTip,
                   child: SettingSwitch(
                     icon: EvaIcons.bulbOutline,
                     title: 'Focus Mode',
@@ -264,8 +255,7 @@ class MyHomeDrawer extends StatelessWidget {
                   ),
                 ),
                 MyToolTip(
-                  message:
-                      'When this switch is on, you will see a new photo every time when opening the app and you can change the photo anytime with double-tap on screen.',
+                  message: Strings.photoSwitchTip,
                   child: SettingSwitch(
                     icon: EvaIcons.shuffle2Outline,
                     title: 'Shuffle Photos',
@@ -276,19 +266,6 @@ class MyHomeDrawer extends StatelessWidget {
                     },
                   ),
                 ),
-                // settingListTile(
-                //   context,
-                //   icon: EvaIcons.moreHorizotnalOutline,
-                //   title: 'More settings',
-                //   onTap: () {
-                //     final route = SharedAxisPageRoute(
-                //         page: MoreSettingScreen(
-                //           database: database,
-                //         ),
-                //         transitionType: _transitionType);
-                //     Navigator.of(context, rootNavigator: true).push(route);
-                //   },
-                // ),
                 settingDivider(context),
                 settingTitle(context, title: 'Customizations'),
                 settingListTile(
@@ -346,7 +323,7 @@ class MyHomeDrawer extends StatelessWidget {
                   },
                 ),
                 settingDivider(context),
-                Platform.isIOS
+                height > 700
                     ? settingTitle(context, title: 'Others')
                     : Container(),
                 settingListTile(
@@ -365,18 +342,9 @@ class MyHomeDrawer extends StatelessWidget {
                     radius: 13,
                   ),
                   title: user.displayName == null || user.displayName.isEmpty
-                      ? Text('Profile',
-                          style: TextStyle(
-                              fontSize: 15,
-                              color: _darkTheme
-                                  ? darkThemeWords
-                                  : lightThemeWords))
+                      ? Text('Profile', style: _listTitleTextStyle(_darkTheme))
                       : Text(user.displayName.firstCaps,
-                          style: TextStyle(
-                              fontSize: 15,
-                              color: _darkTheme
-                                  ? darkThemeWords
-                                  : lightThemeWords)),
+                          style: _listTitleTextStyle(_darkTheme)),
                   trailing: Icon(Icons.chevron_right,
                       color: _darkTheme ? darkThemeButton : lightThemeButton),
                   onTap: () {
@@ -385,11 +353,6 @@ class MyHomeDrawer extends StatelessWidget {
                     Navigator.of(context, rootNavigator: true).push(route);
                   },
                 ),
-                // settingDivider(context),
-                // settingListTile(context,
-                //     icon: EvaIcons.logOutOutline,
-                //     title: 'Sign Out',
-                //     onTap: () => _confirmSignOut(context)),
               ],
             ),
           ),
@@ -398,9 +361,14 @@ class MyHomeDrawer extends StatelessWidget {
     );
   }
 
+  TextStyle _listTitleTextStyle(bool _darkTheme) {
+    return TextStyle(
+        fontSize: 15, color: _darkTheme ? darkThemeWords : lightThemeWords);
+  }
+
   /// this is StatelessWidget, all the method outside of build do not have context, so we need to add BuildContext context
   /// and it will still show flush bar
-  Widget settingTitle(BuildContext context, {String title}) {
+  ListTile settingTitle(BuildContext context, {String title}) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return ListTile(
@@ -418,7 +386,7 @@ class MyHomeDrawer extends StatelessWidget {
   /// it was ok, but later when I add a Tooltip, the Flexible becomes the child
   /// of ToolTip and I got error saying incorrect use of parent widget.
 
-  Widget settingListTile(BuildContext context,
+  ListTile settingListTile(BuildContext context,
       {IconData icon, String title, Function onTap}) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
@@ -427,10 +395,7 @@ class MyHomeDrawer extends StatelessWidget {
           icon,
           color: _darkTheme ? darkThemeButton : lightThemeButton,
         ),
-        title: Text(title,
-            style: TextStyle(
-                fontSize: 15,
-                color: _darkTheme ? darkThemeWords : lightThemeWords)),
+        title: Text(title, style: _listTitleTextStyle(_darkTheme)),
         trailing: Icon(Icons.chevron_right,
             color: _darkTheme ? darkThemeButton : lightThemeButton),
         onTap: onTap);
@@ -456,104 +421,58 @@ class MyHomeDrawer extends StatelessWidget {
 
   Future<void> _onFocusChanged(
       BuildContext context, bool value, FocusNotifier focusNotifier) async {
-    //change the value
-    focusNotifier.setFocus(value);
-    //save settings
-    var prefs = await SharedPreferences.getInstance();
+    focusNotifier.setFocus(value); //change the value
+    var prefs = await SharedPreferences.getInstance(); //save settings
     prefs.setBool('focusMode', value);
-
-    ///should not add this line, because when it's going to be automatically
-    ///dismissed, and then press this will take to black screen.
-    // Navigator.pop(context);
     value
-        ? Flushbar(
-            isDismissible: true,
-            margin: const EdgeInsets.all(20),
-            padding: const EdgeInsets.all(8),
-            borderRadius: 15,
-            flushbarPosition: FlushbarPosition.BOTTOM,
-            flushbarStyle: FlushbarStyle.FLOATING,
-            backgroundGradient: KFlushBarGradient,
-            duration: Duration(seconds: 4),
-            titleText: Text(
-                'This will enable productivity features on home screen.',
-                style: KFlushBarTitle),
-            messageText: Padding(
-              padding: const EdgeInsets.only(top: 3),
-              child: Text(
-                'Focus on what is the most important to us.',
-                style: KFlushBarMessage,
-              ),
-            ),
-          ).show(context)
-        : Flushbar(
-            isDismissible: true,
-            margin: const EdgeInsets.all(20),
-            padding: const EdgeInsets.all(8),
-            borderRadius: 15,
-            flushbarPosition: FlushbarPosition.BOTTOM,
-            flushbarStyle: FlushbarStyle.FLOATING,
-            backgroundGradient: KFlushBarGradient,
-            duration: Duration(seconds: 4),
-            titleText: Text(
-              'This will hide productivity features on home screen.',
-              style: KFlushBarTitle,
-            ),
-            messageText: Padding(
-              padding: const EdgeInsets.only(top: 3),
-              child: Text('We all need some downtime in a day.',
-                  style: KFlushBarMessage),
-            ),
-          ).show(context);
+        ? _showFlushBar(
+                title: Strings.focusSwitchOnTitle,
+                message: Strings.focusSwitchOnSubTitle)
+            .show(context)
+        : _showFlushBar(
+                title: Strings.focusSwitchOffTitle,
+                message: Strings.focusSwitchOFFSubTitle)
+            .show(context);
   }
 
   Future<void> _onRandomChanged(
       BuildContext context, bool value, RandomNotifier randomNotifier) async {
-    //change the value
     randomNotifier.setRandom(value);
-    //save settings
     var prefs = await SharedPreferences.getInstance();
     prefs.setBool('randomOn', value);
 
     value
-        ? Flushbar(
-            isDismissible: true,
-            margin: const EdgeInsets.all(20),
-            padding: const EdgeInsets.all(8),
-            borderRadius: 15,
-            flushbarPosition: FlushbarPosition.BOTTOM,
-            flushbarStyle: FlushbarStyle.FLOATING,
-            backgroundGradient: KFlushBarGradient,
-            duration: Duration(seconds: 4),
-            titleText: Text(
-              'This will enable a new photo to show every time when opening iMomentum App.',
-              style: KFlushBarTitle,
-            ),
-            messageText: Padding(
-              padding: const EdgeInsets.only(top: 3),
-              child: Text(
-                'You can double tap on screen to change photo anytime.',
-                style: KFlushBarMessage,
-              ),
-            ),
-          ).show(context)
-        : Flushbar(
-            isDismissible: true,
-            margin: const EdgeInsets.all(20),
-            padding: const EdgeInsets.all(10),
-            borderRadius: 15,
-            flushbarPosition: FlushbarPosition.BOTTOM,
-            flushbarStyle: FlushbarStyle.FLOATING,
-            backgroundGradient: KFlushBarGradient,
-            duration: Duration(seconds: 4),
-            titleText: Text('This will set background photo as a default ones.',
-                style: KFlushBarTitle),
-            messageText: Padding(
-              padding: const EdgeInsets.only(top: 3),
-              child: Text(
-                  'You can choose your favourite photo and change the photo anytime.',
-                  style: KFlushBarMessage),
-            ),
-          ).show(context);
+        ? _showFlushBar(
+                title: Strings.shufflePhotoSwitchOnTitle,
+                message: Strings.shufflePhotoSwitchOnSubTitle)
+            .show(context)
+        : _showFlushBar(
+                title: Strings.shufflePhotoSwitchOffTitle,
+                message: Strings.shufflePhotoSwitchOFFSubTitle)
+            .show(context);
+  }
+
+  Flushbar _showFlushBar({@required title, @required message}) {
+    ///should not add this line, because when it's going to be automatically
+    ///dismissed, and then press this will take to black screen.
+    // Navigator.pop(context);
+    return Flushbar(
+      isDismissible: true,
+      margin: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(8),
+      borderRadius: 15,
+      flushbarPosition: FlushbarPosition.BOTTOM,
+      flushbarStyle: FlushbarStyle.FLOATING,
+      backgroundGradient: KFlushBarGradient,
+      duration: Duration(seconds: 4),
+      titleText: Text(title, style: KFlushBarTitle),
+      messageText: Padding(
+        padding: const EdgeInsets.only(top: 3),
+        child: Text(
+          message,
+          style: KFlushBarMessage,
+        ),
+      ),
+    );
   }
 }

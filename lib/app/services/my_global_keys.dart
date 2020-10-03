@@ -5,4 +5,5 @@ class MyGlobalKeys {
   static final addNoteKey = GlobalKey();
   static final restQuoteKey = GlobalKey();
   static final dailyQuoteKey = GlobalKey();
+  // static final yourOwnQuoteKey = GlobalKey();
 }

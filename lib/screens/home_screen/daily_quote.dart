@@ -41,14 +41,20 @@ class _APIQuoteState extends State<APIQuote> {
   @override
   Widget build(BuildContext context) {
     return _state == QuoteLoadingState.FINISHED_DOWNLOADING
-        ? DailyQuote(title: dailyQuote, author: author)
+        ? QuoteUI(
+            title: dailyQuote,
+            author: author,
+            key: GlobalKey(),
+          )
         : _state == QuoteLoadingState.DOWNLOADING
             ? Center(child: CircularProgressIndicator())
 
             ///if error we return default;
-            : DailyQuote(
+            : QuoteUI(
                 title: DefaultQuoteList().getQuote().body,
-                author: DefaultQuoteList().getQuote().author);
+                author: DefaultQuoteList().getQuote().author,
+                key: GlobalKey(),
+              );
   }
 
 //http://quotes.rest/qod/categories.json
@@ -57,7 +63,6 @@ class _APIQuoteState extends State<APIQuote> {
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
     if (!mounted) return;
-    // if (mounted) {
     setState(() {
       _state = QuoteLoadingState.DOWNLOADING;
     });
@@ -68,20 +73,15 @@ class _APIQuoteState extends State<APIQuote> {
           'response.statusCode in quote: ${response.statusCode}'); //429, meaning too many request
       if (response.statusCode == 200) {
         var quoteData = json.decode(response.body)['contents']['quotes'][0];
-
-        ///??
-        // if (mounted) {
         setState(() {
           dailyQuote = quoteData['quote'];
           author = quoteData['author'];
         });
-        // }
       } else {
         setState(() {
           dailyQuote = DefaultQuoteList().getQuote().body;
           author = DefaultQuoteList().getQuote().author;
         });
-        //        throw Exception('Failed to load quote');
       }
     } catch (e) {
       setState(() {
@@ -95,35 +95,144 @@ class _APIQuoteState extends State<APIQuote> {
       _state = QuoteLoadingState.FINISHED_DOWNLOADING;
     });
   }
-  // }
 }
 
-class DailyQuote extends StatelessWidget {
-  DailyQuote(
-      {Key key, @required this.title, this.author, this.bottomPadding = 15})
-      : super(key: key);
+// class DailyQuote extends StatelessWidget {
+//   DailyQuote({Key key, @required this.title, this.author}) : super(key: key);
+//
+//   final String title;
+//   final String author;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     print('title.length: ${title.length}');
+//     return Align(
+//       alignment: Alignment.bottomCenter,
+//       child: Padding(
+//           padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+//           child: author == null || author == ''
+//               ? (title.length) < 75
+//                   ? Text(
+//                       '"$title"',
+//                       textAlign: TextAlign.center,
+//                       maxLines: 2,
+//                       style: KQuote,
+//                     )
+//                   : _richTextWithoutAuthor(context)
+//               : (title.length + 2 + author.length) < 75
+//                   ? Text(
+//                       '"$title -- $author"',
+//                       textAlign: TextAlign.center,
+//                       maxLines: 2,
+//                       style: KQuote,
+//                     )
+//                   : _richText(context)),
+//     );
+//   }
+//
+//   Widget _richTextWithoutAuthor(BuildContext context) {
+//     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+//     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+//     print('hello');
+//     return RichText(
+//       maxLines: 2,
+//       textAlign: TextAlign.center,
+//       text: TextSpan(
+//         style: KQuote, //fontSize: 16,
+//         children: <TextSpan>[
+//           TextSpan(text: '"${title.substring(0, 70)}'),
+//           TextSpan(
+//               text: '...',
+//               style: TextStyle(
+//                   color: _darkTheme ? darkThemeButton : Colors.lightBlueAccent,
+//                   fontSize: 18,
+//                   fontStyle: FontStyle.italic),
+//               recognizer: TapGestureRecognizer()
+//                 ..onTap = () {
+//                   _showMoreText(context: context, text: '"$title"');
+//                 }),
+//           TextSpan(text: '"'),
+//         ],
+//       ),
+//     );
+//   }
+//
+//   Widget _richText(BuildContext context) {
+//     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+//     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+//     return RichText(
+//       maxLines: 2,
+//       textAlign: TextAlign.center,
+//       text: TextSpan(
+//         style: KQuote, //fontSize: 16,
+//         children: <TextSpan>[
+//           TextSpan(text: '"${title.substring(0, 69)}'),
+//           TextSpan(
+//               text: '...',
+//               style: TextStyle(
+//                   color: _darkTheme ? darkThemeButton : Colors.lightBlueAccent,
+//                   fontSize: 18,
+//                   fontStyle: FontStyle.italic),
+//               recognizer: TapGestureRecognizer()
+//                 ..onTap = () {
+//                   _showMoreText(
+//                     context: context,
+//                     text: '"$title -- $author"',
+//                   );
+//                 }),
+//           TextSpan(text: '"'),
+//         ],
+//       ),
+//     );
+//   }
+//
+//   ///we can not put this inside the function.
+//   final GlobalKey key = MyGlobalKeys.dailyQuoteKey;
+//   void _showMoreText({@required BuildContext context, @required String text}) {
+//     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+//     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+//     ShowMoreTextPopup popup = ShowMoreTextPopup(context,
+//         text: text,
+//         textStyle:
+//             TextStyle(color: _darkTheme ? darkThemeWords : lightThemeWords),
+//         height: 95,
+//         width: 280,
+//         backgroundColor:
+//             _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
+//         padding: EdgeInsets.all(6.0),
+//         borderRadius: BorderRadius.circular(10.0));
+//
+//     /// show the popup for specific widget
+//     popup.show(
+//       widgetKey: key,
+//     );
+//   }
+// }
+
+class QuoteUI extends StatelessWidget {
+  QuoteUI({@required this.title, this.author, this.key});
 
   final String title;
   final String author;
-  final double bottomPadding;
+  final GlobalKey key;
 
   @override
   Widget build(BuildContext context) {
+    // print('title.length: ${title.length}');
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(
-        padding: EdgeInsets.only(left: 10, right: 10, bottom: bottomPadding),
-        child: (title.length) < 90
-            ? Text(
-                author == null || author == ''
-                    ? '"$title"'
-                    : '"$title -- $author"',
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                style: KQuote,
-              )
-            : _richText(context),
-      ),
+          padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+          child: (title.length) < 75
+              ? Text(
+                  author == null || author == ''
+                      ? '"$title"'
+                      : '"$title -- $author"',
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  style: KQuote,
+                )
+              : _richText(context)),
     );
   }
 
@@ -134,9 +243,9 @@ class DailyQuote extends StatelessWidget {
       maxLines: 2,
       textAlign: TextAlign.center,
       text: TextSpan(
-        style: KQuote,
+        style: KQuote, //fontSize: 16,
         children: <TextSpan>[
-          TextSpan(text: '"${title.substring(0, 90)}'),
+          TextSpan(text: '"${title.substring(0, 69)}'),
           TextSpan(
               text: '...',
               style: TextStyle(
@@ -146,10 +255,11 @@ class DailyQuote extends StatelessWidget {
               recognizer: TapGestureRecognizer()
                 ..onTap = () {
                   _showMoreText(
-                      author == null || author == ''
-                          ? '"$title"'
-                          : '"$title -- $author"',
-                      context);
+                    context: context,
+                    text: author == null || author == ''
+                        ? '"$title"'
+                        : '"$title -- $author"',
+                  );
                 }),
           TextSpan(text: '"'),
         ],
@@ -158,14 +268,18 @@ class DailyQuote extends StatelessWidget {
   }
 
   ///we can not put this inside the function.
-  final GlobalKey key = MyGlobalKeys.dailyQuoteKey;
-  void _showMoreText(String text, BuildContext context) {
+  // final GlobalKey key = MyGlobalKeys.dailyQuoteKey;
+  void _showMoreText({@required BuildContext context, @required String text}) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     ShowMoreTextPopup popup = ShowMoreTextPopup(context,
         text: text,
-        textStyle: TextStyle(color: Colors.white),
-        height: 200,
-        width: 100,
-        backgroundColor: darkThemeNoPhotoColor,
+        textStyle:
+            TextStyle(color: _darkTheme ? darkThemeWords : lightThemeWords),
+        height: 95,
+        width: 280,
+        backgroundColor:
+            _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
         padding: EdgeInsets.all(6.0),
         borderRadius: BorderRadius.circular(10.0));
 
@@ -176,9 +290,20 @@ class DailyQuote extends StatelessWidget {
   }
 }
 
-class RestQuoteClass extends StatelessWidget {
-  RestQuoteClass({Key key, @required this.title, this.author})
-      : super(key: key);
+///Duplicate GlobalKey detected in widget tree.
+//
+// The following GlobalKey was specified multiple times in the widget tree. This will lead to parts of the widget tree being truncated unexpectedly, because the second time a key is seen, the previous instance is moved to the new location. The key was:
+// - [GlobalKey#7261d]
+// This was determined by noticing that after the widget with the above global key was moved out of its previous parent, that previous parent never updated during this frame, meaning that it either did not update at all or updated before the widget was moved, in either case implying that it still thinks that it should have a child with that global key.
+// The specific parent that did not update after having one or more children forcibly removed due to GlobalKey reparenting is:
+// - Center(alignment: center, dependencies: [Directionality], renderObject: RenderPositionedBox#4a8ab relayoutBoundary=up7)
+// A GlobalKey can only be specified on one widget at a time in the widget tree.
+
+//_showMoreText not working when refactor the two class as one, so i wrote separately
+
+///changed to adding key as a property, use key: GlobalKey(), then it works
+class RestQuoteUI extends StatelessWidget {
+  RestQuoteUI({Key key, @required this.title, this.author}) : super(key: key);
 
   final String title;
   final String author;
@@ -188,13 +313,14 @@ class RestQuoteClass extends StatelessWidget {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(
-        padding: const EdgeInsets.only(left: 10, right: 10, bottom: 15.0),
-        child: (title.length) < 100
+        padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10.0),
+        child: (title.length) < 75
             ? Text(
                 author == null || author == ''
                     ? '"$title"'
                     : '"$title -- $author"',
                 textAlign: TextAlign.center,
+                // maxLines: 2,
                 style: KQuote,
               )
             : _richText(context),
@@ -206,11 +332,12 @@ class RestQuoteClass extends StatelessWidget {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return RichText(
+      // maxLines: 2,
       textAlign: TextAlign.center,
       text: TextSpan(
         style: KQuote,
         children: <TextSpan>[
-          TextSpan(text: '"${title.substring(0, 99)}'),
+          TextSpan(text: '"${title.substring(0, 69)}'),
           TextSpan(
               text: '...',
               style: TextStyle(
@@ -220,10 +347,11 @@ class RestQuoteClass extends StatelessWidget {
               recognizer: TapGestureRecognizer()
                 ..onTap = () {
                   _showMoreText(
-                      author == null || author == ''
-                          ? '"$title"'
-                          : '"$title -- $author"',
-                      context);
+                    context: context,
+                    text: author == null || author == ''
+                        ? '"$title"'
+                        : '"$title -- $author"',
+                  );
                 }),
           TextSpan(text: '"'),
         ],
@@ -233,13 +361,18 @@ class RestQuoteClass extends StatelessWidget {
 
   ///notes on show more text
   final GlobalKey key = MyGlobalKeys.restQuoteKey;
-  void _showMoreText(String text, BuildContext context) {
+
+  void _showMoreText({@required BuildContext context, @required String text}) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     ShowMoreTextPopup popup = ShowMoreTextPopup(context,
         text: text,
-        textStyle: TextStyle(color: Colors.white),
-        height: 200,
-        width: 100,
-        backgroundColor: darkThemeNoPhotoColor,
+        textStyle:
+            TextStyle(color: _darkTheme ? darkThemeWords : lightThemeWords),
+        height: 95,
+        width: 280,
+        backgroundColor:
+            _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
         padding: EdgeInsets.all(6.0),
         borderRadius: BorderRadius.circular(10.0));
 

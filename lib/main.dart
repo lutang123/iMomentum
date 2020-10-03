@@ -3,12 +3,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:iMomentum/app/constants/constants_style.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:iMomentum/screens/tab_and_navigation/tab_page.dart';
 import 'package:iMomentum/screens/landing_and_signIn/auth_widget_(landing).dart';
 import 'package:iMomentum/screens/landing_and_signIn/start_screen1.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:showcaseview/showcase_widget.dart';
+import 'app/constants/image_path.dart';
 import 'app/services/firestore_service/database.dart';
 import 'app/sign_in/firebase_auth_service_new.dart';
 import 'screens/landing_and_signIn/auth_widget_builder.dart';
@@ -16,6 +18,7 @@ import 'app/sign_in/apple_sign_in_available.dart';
 import 'app/constants/theme.dart';
 import 'app/services/multi_notifier.dart';
 import 'package:rxdart/subjects.dart';
+import 'app/utils/app_localizations.dart';
 
 ///https://stackoverflow.com/questions/53532810/error-launching-application-on-android-sdk-built-for-x86
 
@@ -66,7 +69,8 @@ void main() async {
   ///added on Sep.16 with new firebase:
   await Firebase.initializeApp();
 
-  // Restrict device orientation to portraitUp
+  //Todo
+  /// Restrict device orientation to portraitUp
   // await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   /// for local notification code:
@@ -188,12 +192,11 @@ void main() async {
 // SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom])
 //
 // 2. Transparant Statusbar
-//  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-//     statusBarColor: Colors.transparent,
-//  ));
-// enter image description here
-//
-// 3. Show Statusbar
+  //TODO
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+  ));
+//3. Show Statusbar
   SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values)
       .then((_) async {
     ///this is for setting
@@ -202,7 +205,7 @@ void main() async {
       bool focusModeOn = prefs.getBool('focusMode') ?? true;
       bool randomOn = prefs.getBool('randomOn') ?? true;
       String backgroundImage =
-          prefs.getString('imageUrl') ?? ImageUrl.fixedImageUrl;
+          prefs.getString('imageUrl') ?? ImagePath.fixedImageUrl;
       bool metricUnitOn = prefs.getBool('metricUnitOn') ?? true;
       bool useYourMantras = prefs.getBool('useMyMantras') ?? true;
       int index = prefs.getInt('indexMantra') ?? 0;
@@ -344,7 +347,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    ///we can not change this off
+    ///we can not change this to false
     final themeNotifier = Provider.of<ThemeNotifier>(context);
 
     /// MultiProvider for top-level services that can be created right away
@@ -408,42 +411,87 @@ class _MyAppState extends State<MyApp> {
           // final Widget Function(BuildContext, AsyncSnapshot<User>)
           builder: (context, userSnapshot) {
             return MaterialApp(
-              debugShowCheckedModeBanner: false,
-              title: 'iMomentum',
-              theme: themeNotifier.getTheme(),
+                debugShowCheckedModeBanner: false,
+                title: 'iMomentum',
+                theme: themeNotifier.getTheme(),
 
-              ///it seems does not matter here
-              darkTheme:
-                  darkTheme, //add this so that the app will follow phone setting
-              themeMode: ThemeMode.system,
+                ///it seems does not matter here
+                darkTheme:
+                    darkTheme, //add this so that the app will follow phone setting
+                themeMode: ThemeMode.system,
 
-              /// todo: localizations
-              //   /// from plugin: flutter_localizations
-              //   localizationsDelegates: [
-              //     GlobalMaterialLocalizations.delegate,
-              //     GlobalWidgetsLocalizations.delegate,
-              //     DefaultCupertinoLocalizations.delegate,
-              //     GlobalCupertinoLocalizations
-              //         .delegate, // Add global cupertino localiztions.
-              //   ],
-              //
-              //   locale: Locale('en', 'US'), // Current locale
-              //   supportedLocales: [
-              //     const Locale('en', 'US'), // English
-              //     const Locale('zh', 'ZH'), // Chinese??
-              //   ],
-              home: AuthWidget(
-                /// this AuthWidget checks if (userSnapshot.connectionState == ConnectionState.active) {
-                /// return userSnapshot.hasData
-                //           ? signedInBuilder(context)
-                //           : nonSignedInBuilder(context);
-                ///it also checks error or waiting
-                userSnapshot: userSnapshot,
-                nonSignedInBuilder: (_) => StartScreen(),
-                signedInBuilder: (_) => TabPage(),
-              ),
-              // onGenerateRoute: AppRouter.onGenerateRoute, ///in Andrea's code
-            );
+                /// from plugin: flutter_localizations
+                // List all of the app's supported locales here
+                supportedLocales: [
+                  const Locale('en', ''), // English, no country code
+                  const Locale('zh', ''),
+                  // const Locale('he', ''), // Hebrew, no country code
+
+                  // // Full Chinese support for CN, TW, and HK
+                  // const Locale.fromSubtags(
+                  //     languageCode: 'zh'), // Chinese *See Advanced Locales below*
+                  // const Locale.fromSubtags(
+                  //     languageCode: 'zh',
+                  //     scriptCode: 'Hans'), // generic simplified Chinese 'zh_Hans'
+                  // const Locale.fromSubtags(
+                  //     languageCode: 'zh',
+                  //     scriptCode:
+                  //         'Hant'), // generic traditional Chinese 'zh_Hant'
+                  // const Locale.fromSubtags(
+                  //     languageCode: 'zh',
+                  //     scriptCode: 'Hans',
+                  //     countryCode: 'CN'), // 'zh_Hans_CN'
+                  // const Locale.fromSubtags(
+                  //     languageCode: 'zh',
+                  //     scriptCode: 'Hant',
+                  //     countryCode: 'TW'), // 'zh_Hant_TW'
+                  // const Locale.fromSubtags(
+                  //     languageCode: 'zh',
+                  //     scriptCode: 'Hant',
+                  //     countryCode: 'HK'), // 'zh_Hant_HK'
+                  // // ... other locales the app supports
+                ],
+                // These delegates make sure that the localization data for the proper language is loaded
+                localizationsDelegates: [
+                  // THIS CLASS WILL BE ADDED LATER
+                  // A class which loads the translations from JSON files
+                  AppLocalizations.delegate,
+                  // Built-in localization of basic text for Material widgets
+                  GlobalMaterialLocalizations.delegate,
+                  // Built-in localization for text direction LTR/RTL
+                  GlobalWidgetsLocalizations.delegate,
+                ],
+                // Returns a locale which will be used by the app
+                localeResolutionCallback: (locale, supportedLocales) {
+                  // Check if the current device locale is supported
+                  for (var supportedLocale in supportedLocales) {
+                    if (supportedLocale.languageCode == locale.languageCode &&
+                        supportedLocale.countryCode == locale.countryCode) {
+                      return supportedLocale;
+                    }
+                  }
+                  // If the locale of the device is not supported, use the first one
+                  // from the list (English, in this case).
+                  return supportedLocales.first;
+                },
+
+                ///If a user’s preferred locale is not specified, then the closest match is used instead, which will likely contain differences to what the user expects. Flutter only resolves to locales defined in supportedLocales. Flutter provides scriptCode-differentiated localized content for commonly used languages.
+
+                /// lookup an app’s current locale: Locale myLocale = Localizations.localeOf(context);
+
+                home: AuthWidget(
+                  /// this AuthWidget checks if (userSnapshot.connectionState == ConnectionState.active) {
+                  /// return userSnapshot.hasData
+                  //           ? signedInBuilder(context)
+                  //           : nonSignedInBuilder(context);
+                  ///it also checks error or waiting
+                  userSnapshot: userSnapshot,
+                  nonSignedInBuilder: (_) => StartScreen(),
+                  signedInBuilder: (_) => ShowCaseWidget(
+                    builder: Builder(builder: (context) => TabPage()),
+                  ),
+                  // onGenerateRoute: AppRouter.onGenerateRoute, ///in Andrea's code
+                ));
           }),
     );
   }

@@ -114,14 +114,14 @@ class HomeMantraListTile extends StatelessWidget {
       title: AutoSizeText(
         mantra.title,
         maxLines: 3,
-        maxFontSize: 35,
-        minFontSize: 30,
+        maxFontSize: 33,
+        minFontSize: 33,
         overflow: TextOverflow.ellipsis,
         textAlign: TextAlign.center,
         style: TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,
-          fontSize: 35.0,
+          fontSize: 33.0,
         ),
       ),
       onTap: onTap,
@@ -181,7 +181,7 @@ class QuoteListTile extends StatelessWidget {
               : '"${quote.title} -- ${quote.author}"',
           maxLines: 4,
           maxFontSize: 18,
-          minFontSize: 18,
+          minFontSize: 17,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
               color: _darkTheme ? darkThemeWords : lightThemeWords,

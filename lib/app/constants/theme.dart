@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-//f6f5f5
+const Color topFlatButton =
+    Color(0xf0fafafa); //a little darker than darkThemeWords
+const Color signInOr =
+    Color(0xf0222831); //a little lighter than lightThemeWords
+
 //Drawer Icon and other button and Icons
 const Color darkThemeButton = Color(0xf0ffcb74);
 const Color lightThemeButton = Color(0xFF006a71); //button. icon

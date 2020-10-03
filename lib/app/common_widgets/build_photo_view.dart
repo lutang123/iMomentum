@@ -24,7 +24,7 @@ class BuildPhotoView extends StatelessWidget {
       loadFailedChild: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/cloud.jpg'),
+            image: AssetImage('assets/images/start_photo.jpg'),
             fit: BoxFit.cover,
 //            colorFilter: ColorFilter.mode(
 //                Colors.white.withOpacity(0.8), BlendMode.dstATop),

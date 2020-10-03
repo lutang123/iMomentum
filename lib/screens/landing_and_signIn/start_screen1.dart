@@ -2,6 +2,8 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/my_text_field.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
+import 'package:iMomentum/app/constants/image_path.dart';
+import 'package:iMomentum/app/utils/app_localizations.dart';
 import 'package:iMomentum/screens/landing_and_signIn/start_screen2.dart';
 import 'package:iMomentum/app/utils/pages_routes.dart';
 
@@ -14,11 +16,14 @@ class _StartScreenState extends State<StartScreen> {
   Widget getQuestion() {
     return TypewriterAnimatedTextKit(
       isRepeatingAnimation: false,
-      text: ["Hello, what's your name?"],
+      //todo : localization not working
+      text: [AppLocalizations.of(context).translate('askName')],
       textAlign: TextAlign.center,
       textStyle: KHomeQuestion,
     );
   }
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +33,7 @@ class _StartScreenState extends State<StartScreen> {
         body: Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage(ImageUrl.startImage),
+              image: AssetImage(ImagePath.startImage),
               fit: BoxFit.cover,
             ),
           ),
@@ -36,13 +41,14 @@ class _StartScreenState extends State<StartScreen> {
           child: Center(
               child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Padding(
                   padding: const EdgeInsets.all(15.0), child: getQuestion()),
               Padding(
                 padding: const EdgeInsets.all(15.0),
-                child: HomeTextField(onSubmitted: _onSubmitted, max: 20),
+                child: Form(
+                    key: _formKey,
+                    child: HomeTextField(onSubmitted: _onSubmitted, max: 20)),
               ),
             ],
           )),
@@ -51,8 +57,19 @@ class _StartScreenState extends State<StartScreen> {
     );
   }
 
+  bool _validateAndSaveForm() {
+    final form = _formKey.currentState;
+    //validate
+    if (form.validate()) {
+      //save
+      form.save();
+      return true;
+    }
+    return false;
+  }
+
   void _onSubmitted(newText) async {
-    if (newText.isNotEmpty) {
+    if (_validateAndSaveForm()) {
       FocusScope.of(context).unfocus();
       Navigator.of(context).pushReplacement(
         PageRoutes.fade(() => StartScreen2(name: newText)),

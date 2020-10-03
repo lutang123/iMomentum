@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_tooltip.dart';
+import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/utils/format.dart';
 import 'package:iMomentum/app/common_widgets/my_round_button.dart';
@@ -15,6 +16,8 @@ import 'package:iMomentum/app/services/calendar_bloc.dart';
 import 'package:iMomentum/app/services/daily_todos_details.dart';
 import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
+import 'package:iMomentum/app/utils/top_sheet.dart';
+import 'package:iMomentum/screens/iPomodoro/today_line_chart.dart';
 import 'package:provider/provider.dart';
 import '../../app/utils/pages_routes.dart';
 import 'clock_bottom.dart';
@@ -68,8 +71,6 @@ class _CompletionScreenState extends State<CompletionScreen> {
   }
 
   void _clearButton() {
-    /// not go back to HomeScreen
-//  Navigator.pop(context);
     Navigator.of(context).pushReplacement(PageRoutes.fade(
         () => ClockBeginScreen(
               database: widget.database,
@@ -81,7 +82,7 @@ class _CompletionScreenState extends State<CompletionScreen> {
   int counter = 0;
   void _onDoubleTap() {
     setState(() {
-      ImageUrl.randomImageUrl = '${ImageUrl.randomImageUrlFirstPart}$counter';
+      ImagePath.randomImageUrl = '${ImagePath.randomImageUrlFirstPart}$counter';
       counter++;
     });
   }
@@ -97,7 +98,7 @@ class _CompletionScreenState extends State<CompletionScreen> {
       children: <Widget>[
         BuildPhotoView(
           imageUrl:
-              _randomOn ? ImageUrl.randomImageUrl : imageNotifier.getImage(),
+              _randomOn ? ImagePath.randomImageUrl : imageNotifier.getImage(),
         ),
         ContainerLinearGradient(),
         GestureDetector(
@@ -173,7 +174,7 @@ class _CompletionScreenState extends State<CompletionScreen> {
                       onPressed: _play,
                       onPressedEdit: () => showEditDialog(),
                     ),
-                    SizedBox(height: 60),
+                    SizedBox(height: 15),
                     ClockBottomToday(text: '${widget.todo.title}'),
                   ],
                 ),
@@ -207,7 +208,8 @@ class _CompletionScreenState extends State<CompletionScreen> {
         ///cancel and done button all have context from here
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
-            backgroundColor: darkThemeNoPhotoColor,
+            backgroundColor:
+                _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20.0))),
             title: Text(
@@ -259,7 +261,7 @@ class _CompletionScreenState extends State<CompletionScreen> {
                                     ? darkThemeWords
                                     : lightThemeWords,
                                 decoration: _darkTheme
-                                    ? KTextFieldInputDecoration
+                                    ? KTextFieldInputDecorationDark
                                     : KTextFieldInputDecorationLight,
                               ),
                             ),
@@ -355,6 +357,16 @@ class _CompletionScreenState extends State<CompletionScreen> {
     setState(() {
       _topOpacity = 0.0;
     });
+    //
+    // TopSheet.show(
+    //   context: context,
+    //   // child: SimpleTimeSeriesChart(),
+    //   child: TodayLineChart(),
+    //   direction: TopSheetDirection.TOP,
+    // ).then((value) => setState(() {
+    //       _topOpacity = 1.0;
+    //     }));
+    //
     Flushbar(
       ///must remove
       // mainButton: FlatButton(

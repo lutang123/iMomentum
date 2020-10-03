@@ -50,17 +50,17 @@ class NewPieChart extends StatelessWidget {
       );
     } else {
       return TodoScreenEmptyOrError(
-        text1: Strings.textPieChart1,
-        tips: Strings.textPieTip,
-        textTap: Strings.textPieTap,
-        onTap: () async {
-          const url = 'https://en.wikipedia.org/wiki/Pomodoro_Technique';
-          if (await canLaunch(url)) {
-            await launch(url);
-          } else {
-            throw 'Could not launch $url';
-          }
-        },
+        text1: Strings.emptyPieChart,
+        // tips: Strings.tipsOnPieChartScreen,
+        // textTap: Strings.textPieTap,
+        // onTap: () async {
+        //   const url = 'https://en.wikipedia.org/wiki/Pomodoro_Technique';
+        //   if (await canLaunch(url)) {
+        //     await launch(url);
+        //   } else {
+        //     throw 'Could not launch $url';
+        //   }
+        // },
       );
     }
   }

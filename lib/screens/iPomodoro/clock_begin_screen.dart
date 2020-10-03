@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
+import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/models/todo.dart';
 import 'package:iMomentum/app/utils/extension_clockFmt.dart';
@@ -11,6 +12,7 @@ import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/utils/pages_routes.dart';
 import 'package:iMomentum/app/utils/top_sheet.dart';
+import 'package:iMomentum/screens/iPomodoro/today_line_chart.dart';
 import 'package:iMomentum/screens/iPomodoro/top_sheet_pomodoro_info.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -51,7 +53,7 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
   int counter = 0;
   void _onDoubleTap() {
     setState(() {
-      ImageUrl.randomImageUrl = '${ImageUrl.randomImageUrlFirstPart}$counter';
+      ImagePath.randomImageUrl = '${ImagePath.randomImageUrlFirstPart}$counter';
       counter++;
     });
   }
@@ -67,7 +69,7 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
       children: <Widget>[
         BuildPhotoView(
           imageUrl:
-              _randomOn ? ImageUrl.randomImageUrl : imageNotifier.getImage(),
+              _randomOn ? ImagePath.randomImageUrl : imageNotifier.getImage(),
         ),
         ContainerLinearGradient(),
         GestureDetector(
@@ -177,7 +179,8 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
             contentPadding: EdgeInsets.only(top: 10.0),
-            backgroundColor: darkThemeNoPhotoColor,
+            backgroundColor:
+                _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20.0))),
             title: Text("Change Focus Setting",
@@ -241,7 +244,7 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                                         ? darkThemeWords
                                         : lightThemeWords,
                                     decoration: _darkTheme
-                                        ? KTextFieldInputDecoration
+                                        ? KTextFieldInputDecorationDark
                                         : KTextFieldInputDecorationLight),
                               ),
                             ),
@@ -283,10 +286,14 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                                     onSaved: (value) =>
                                         _restInMin = int.parse(value),
                                     keyboardType: TextInputType.number,
-                                    style: KDialogContent,
-                                    cursorColor: Colors.white,
+                                    style: _darkTheme
+                                        ? KDialogContent
+                                        : KDialogContentLight,
+                                    cursorColor: _darkTheme
+                                        ? darkThemeWords
+                                        : lightThemeWords,
                                     decoration: _darkTheme
-                                        ? KTextFieldInputDecoration
+                                        ? KTextFieldInputDecorationDark
                                         : KTextFieldInputDecorationLight),
                               ),
                             ),
@@ -434,43 +441,43 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
           _topOpacity = 1.0;
         }));
 
-    Flushbar(
-      margin: const EdgeInsets.all(20),
-      padding: const EdgeInsets.all(8),
-      borderRadius: 15,
-      flushbarPosition: FlushbarPosition.TOP,
-      flushbarStyle: FlushbarStyle.FLOATING,
-      backgroundGradient: KFlushBarGradient,
-      duration: Duration(seconds: 4),
-      titleText: RichText(
-        text: TextSpan(
-          style: KFlushBarTitle,
-          children: <TextSpan>[
-            TextSpan(text: 'Our Focus Mode uses '),
-            TextSpan(
-              text: 'Pomodoro Technique ',
-              style: KFlushBarEmphasis,
-            ),
-            TextSpan(text: 'to help you focus.')
-          ],
-        ),
-      ),
-      messageText: GestureDetector(
-        onTap: () async {
-          const url = 'https://en.wikipedia.org/wiki/Pomodoro_Technique';
-          if (await canLaunch(url)) {
-            await launch(url);
-          } else {
-            throw 'Could not launch $url';
-          }
-        },
-        child: Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: Text('Learn more.', style: KTextButton),
-        ),
-      ),
-    )..show(context).then((value) => setState(() {
-          _topOpacity = 1.0;
-        }));
+    // Flushbar(
+    //   margin: const EdgeInsets.all(20),
+    //   padding: const EdgeInsets.all(8),
+    //   borderRadius: 15,
+    //   flushbarPosition: FlushbarPosition.TOP,
+    //   flushbarStyle: FlushbarStyle.FLOATING,
+    //   backgroundGradient: KFlushBarGradient,
+    //   duration: Duration(seconds: 4),
+    //   titleText: RichText(
+    //     text: TextSpan(
+    //       style: KFlushBarTitle,
+    //       children: <TextSpan>[
+    //         TextSpan(text: 'Our Focus Mode uses '),
+    //         TextSpan(
+    //           text: 'Pomodoro Technique ',
+    //           style: KFlushBarEmphasis,
+    //         ),
+    //         TextSpan(text: 'to help you focus.')
+    //       ],
+    //     ),
+    //   ),
+    //   messageText: GestureDetector(
+    //     onTap: () async {
+    //       const url = 'https://en.wikipedia.org/wiki/Pomodoro_Technique';
+    //       if (await canLaunch(url)) {
+    //         await launch(url);
+    //       } else {
+    //         throw 'Could not launch $url';
+    //       }
+    //     },
+    //     child: Padding(
+    //       padding: const EdgeInsets.only(top: 5),
+    //       child: Text('Learn more.', style: KTextButton),
+    //     ),
+    //   ),
+    // )..show(context).then((value) => setState(() {
+    //       _topOpacity = 1.0;
+    //     }));
   }
 }

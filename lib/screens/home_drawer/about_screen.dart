@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
+import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -48,7 +49,7 @@ class AboutScreen extends StatelessWidget {
       children: <Widget>[
         BuildPhotoView(
           imageUrl:
-              _randomOn ? ImageUrl.randomImageUrl : imageNotifier.getImage(),
+              _randomOn ? ImagePath.randomImageUrl : imageNotifier.getImage(),
         ),
         ContainerLinearGradient(),
         Scaffold(
@@ -71,14 +72,14 @@ class AboutScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(15.0),
                 child: Text(
                   "xxxxxx",
-                  style: KLandingSubtitleD,
+                  style: KLandingTitleD,
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: Text(
                   "xxxxxx",
-                  style: KLandingSubtitleD,
+                  style: KLandingTitleD,
                 ),
               ),
               SizedBox(height: 10),

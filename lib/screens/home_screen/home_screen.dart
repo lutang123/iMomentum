@@ -1,9 +1,7 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
@@ -12,8 +10,10 @@ import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_text_field.dart';
 import 'package:iMomentum/app/common_widgets/my_tooltip.dart';
+import 'package:iMomentum/app/common_widgets/my_sizedbox.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
+import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/services/network_service/weather_service.dart';
 import 'package:iMomentum/app/sign_in/firebase_auth_service_new.dart';
@@ -38,12 +38,12 @@ import 'package:intl/intl.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:showcaseview/showcase.dart';
 import 'package:showcaseview/showcase_widget.dart';
 import 'daily_quote.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:iMomentum/app/utils/extension_firstCaps.dart';
-import 'dart:io' show Platform;
 
 class HomeScreen extends StatefulWidget {
   static const PREFERENCES_IS_FIRST_LAUNCH_STRING =
@@ -55,8 +55,11 @@ class HomeScreen extends StatefulWidget {
 enum CurrentWeatherState { NOT_DOWNLOADED, DOWNLOADING, FINISHED_DOWNLOADING }
 
 class _HomeScreenState extends State<HomeScreen> {
-  double _mantraOpacity = 1.0;
-  double _topBarOpacity = 1.0;
+  double _quoteOpacity = 1.0; //used when showing flush bar
+  double _wholeBodyOpacity = 1.0; //used when edit or show top sheet
+  //todo
+  bool _questionVisible = true;
+  bool _nameVisible = true; //used when edit name
 
   CurrentWeatherState _state = CurrentWeatherState.NOT_DOWNLOADED;
   int temperature;
@@ -65,16 +68,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _showTopSheet() {
     setState(() {
-      _mantraOpacity = 0.0;
-      _topBarOpacity = 0.0;
+      _wholeBodyOpacity = 0.0;
     });
     TopSheet.show(
       context: context,
       child: WeatherScreen(),
       direction: TopSheetDirection.TOP,
     ).then((value) => setState(() {
-          _mantraOpacity = 1.0;
-          _topBarOpacity = 1.0;
+          _wholeBodyOpacity = 1.0;
           _fetchWeather();
         }));
   }
@@ -83,9 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ///because we call fetch weather again after changing, so listen can be false
     final metricNotifier = Provider.of<MetricNotifier>(context, listen: false);
     bool _metricUnitOn = metricNotifier.getMetric();
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
+    // If the widget was removed from the tree while the asynchronous platform message was in flight, we want to discard the reply rather than calling setState to update our non-existent appearance.
     if (!mounted) return;
     setState(() {
       _state = CurrentWeatherState.DOWNLOADING;
@@ -93,12 +92,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
     var weatherData = await WeatherService.getCurrentWeather(
         _metricUnitOn ? 'metric' : 'imperial');
-
     setState(() {
       if (weatherData == null) {
         return;
       }
-
       temperature = weatherData['main']['temp'].toInt();
       cityName = weatherData['name'];
       weatherIcon = weatherData['weather'][0]['icon'];
@@ -110,9 +107,26 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Widget _getWeatherIconImage(String weatherIcon, {double size = 20}) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    if (weatherIcon == '01n') {
+      return Icon(EvaIcons.moonOutline,
+          color: _darkTheme
+              ? darkThemeWords.withOpacity(0.7)
+              : lightThemeWords.withOpacity(0.7),
+          size: size);
+    } else {
+      return Image(
+        image: NetworkImage(
+            //https://openweathermap.org/img/wn/04n@2x.png
+            "https://openweathermap.org/img/wn/$weatherIcon@2x.png"),
+      );
+    }
+  }
+
   void _focusButton(Database database, Todo todo) {
-    ///if using this one, it works fine but when click play button on Clock Begin
-    ///Screen, it always shows a black screen first, and then start timer.
+    ///if using SharedAxisPageRoute, it works fine but when click play button on Clock Begin Screen, it always shows a black screen first, and then start timer.
     ///adding BuildContext context has no difference, it still showing black screen when start to play.
     // // default is 400 milliseconds
     // SharedAxisTransitionType _transitionType = SharedAxisTransitionType.scaled;
@@ -128,13 +142,11 @@ class _HomeScreenState extends State<HomeScreen> {
       fullscreenDialog: true,
     ));
 
-    /// the problem of using this is that if we cancel in ClockBeginScreen, it pop
-    /// to a black screen instead of HomeScreen.
-    /// Notes:
+    /// the problem of using PageRoutes.fade is that if we cancel in ClockBeginScreen, it pop to a black screen instead of HomeScreen.
     //https://stackoverflow.com/questions/53723294/flutter-navigator-popcontext-returning-a-black-screen#:~:text=As%20the%20history%20of%20your,MaterialApp%20in%20all%20nested%20screens.
     //https://medium.com/flutter-community/flutter-push-pop-push-1bb718b13c31
     //https://www.freecodecamp.org/news/how-to-handle-navigation-in-your-flutter-apps-ceaf2f411dcd/
-    ///
+    //
     // Navigator.of(context).pushReplacement(
     //   PageRoutes.fade(() => ClockBeginScreen(database: database, todo: todo)),
     // );
@@ -145,11 +157,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final String _congrats = CongratsList().getCongrats().body;
   String _defaultMantra;
 
-  bool _middleColumnVisible = true;
-
-  /// change visible to opacity, otherwise, quote always updates.
-  double _quoteOpacity = 1.0;
-
   DateTime _date = DateTime.now();
 
   @override
@@ -159,49 +166,28 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
   }
 
-  ///this code will not sun when coming to home screen from sign in
-  // String userName;
-  // void getUserName() {
-  //   final User user = FirebaseAuth.instance.currentUser;
-  //   String userName;
-  //   if (user.displayName != null && user.displayName.isNotEmpty) {
-  //     // user.displayName.contains(' ')
-  //     //     ? userName = user.displayName
-  //     //         .substring(0, user.displayName.indexOf(' '))
-  //     //         .firstCaps
-  //     //     :
-  //
-  //     userName = user.displayName.firstCaps;
-  //
-  //     print('userName in home screen initState: $userName');
-  //   }
-  // }
-
   int counter = 0;
   void _onDoubleTap() {
     setState(() {
-      ImageUrl.randomImageUrl = '${ImageUrl.randomImageUrlFirstPart}$counter';
+      ImagePath.randomImageUrl = '${ImagePath.randomImageUrlFirstPart}$counter';
       counter++;
     });
   }
 
   ///notes on showcase view
-  GlobalKey _oneShowcase = GlobalKey();
-  GlobalKey _twoShowcase = GlobalKey();
-  GlobalKey _threeShowcase = GlobalKey();
+  GlobalKey _first = GlobalKey();
+  GlobalKey _second = GlobalKey();
+  GlobalKey _third = GlobalKey();
+  GlobalKey _fourth = GlobalKey();
 
   Future<bool> _isFirstLaunch() async {
     final sharedPreferences = await SharedPreferences.getInstance();
-
     bool isFirstLaunch = sharedPreferences
             .getBool(HomeScreen.PREFERENCES_IS_FIRST_LAUNCH_STRING) ??
         true;
-
     if (isFirstLaunch)
       sharedPreferences.setBool(
           HomeScreen.PREFERENCES_IS_FIRST_LAUNCH_STRING, false);
-
-    print('$isFirstLaunch');
     return isFirstLaunch;
   }
 
@@ -210,16 +196,13 @@ class _HomeScreenState extends State<HomeScreen> {
     /// add showcase only if first launch
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _isFirstLaunch().then((result) {
-        print('First Launch: $result');
         if (result)
           ShowCaseWidget.of(context)
-              .startShowCase([_oneShowcase, _twoShowcase, _threeShowcase]);
+              .startShowCase([_first, _second, _third, _fourth]);
       });
     });
 
-    /// in homepage this can not have listen to false (same as HomeDrawer) otherwise the screen photo
-    /// not immediately updates, but in other screen it can have listen to false
-    /// because it only need to get the value when we fist come to the page.
+    /// in homepage this can not have listen to false (same as HomeDrawer) otherwise the screen photo not immediately updates, but in other screen it can have listen to false
     final randomNotifier = Provider.of<RandomNotifier>(context);
     bool _randomOn = (randomNotifier.getRandom() == true);
     final imageNotifier = Provider.of<ImageNotifier>(context);
@@ -230,7 +213,7 @@ class _HomeScreenState extends State<HomeScreen> {
       children: <Widget>[
         BuildPhotoView(
           imageUrl:
-              _randomOn ? ImageUrl.randomImageUrl : imageNotifier.getImage(),
+              _randomOn ? ImagePath.randomImageUrl : imageNotifier.getImage(),
         ),
         ContainerLinearGradient(),
         GestureDetector(
@@ -240,23 +223,30 @@ class _HomeScreenState extends State<HomeScreen> {
             backgroundColor: Colors.transparent,
             body: SafeArea(
                 top: false,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Opacity(
-                        opacity: _topBarOpacity,
-                        child: _topBar()), //for weather
-                    Visibility(
-                        visible: _middleColumnVisible,
-                        child: _middleContent()), //Expanded
-                    isKeyboardVisible
-                        ? Container()
-                        : Opacity(
-                            opacity: _quoteOpacity,
-                            child: _buildQuoteStream(),
-                          ),
-                  ],
+                child: Opacity(
+                  opacity: _wholeBodyOpacity,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _topBar(),
+                      Showcase(
+                          key: _second,
+                          description: Strings.second,
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 5, horizontal: 15),
+                          child: Container()), //for weather
+                      _middleContent(), //Expanded
+                      !isKeyboardVisible
+                          ? Visibility(
+                              visible: _nameVisible,
+                              //this opacity is used when flushbar comes from bottom
+                              child: Opacity(
+                                  opacity: _quoteOpacity,
+                                  child: _buildQuoteStream()))
+                          : Container(),
+                    ],
+                  ),
                 )),
           ),
         )
@@ -272,7 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
       color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
       child: Column(
         children: <Widget>[
-          SizedBox(height: 30),
+          MyTopSizedBox(),
           SizedBox(
               height: 50,
               child: Row(
@@ -280,9 +270,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   InkWell(
                     onTap: _showTopSheet,
-                    onDoubleTap: _fetchWeather,
                     child: Padding(
-                      padding: const EdgeInsets.only(right: 15, left: 5),
+                      padding: const EdgeInsets.only(right: 15),
                       child: _resultView(),
                     ),
                   ),
@@ -294,69 +283,56 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _resultView() => _state == CurrentWeatherState.FINISHED_DOWNLOADING
-      ? contentFinishedDownload()
+      ? _contentFinished()
       : _state == CurrentWeatherState.DOWNLOADING
           ? Center(child: CircularProgressIndicator(strokeWidth: 5))
           : Container();
-  Widget _getWeatherIconImage(String weatherIcon, {double size = 20}) {
-    if (weatherIcon == '01n') {
-      return Icon(EvaIcons.moonOutline, color: Colors.white, size: size);
-    } else {
-      return Image(
-        image: NetworkImage(
-            //https://openweathermap.org/img/wn/04n@2x.png
-            "https://openweathermap.org/img/wn/$weatherIcon@2x.png"),
-      );
-    }
-  }
 
-  Widget contentFinishedDownload() {
+  Widget _contentFinished() {
     final themeNotifier = Provider.of<ThemeNotifier>(context);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-
-    ///because we call fetch weather again after changing, so listen can be false
+    //because we call fetch weather again after changing, so listen can be false
     final metricNotifier = Provider.of<MetricNotifier>(context, listen: false);
     bool _metricUnitOn = metricNotifier.getMetric();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Row(children: [
-          Container(
-            decoration: BoxDecoration(
-                color: _darkTheme ? Colors.transparent : Colors.transparent,
-                shape: BoxShape.circle),
-            height: 30,
-            width: 30,
-            child: _getWeatherIconImage(weatherIcon),
-          ),
-          SizedBox(width: 3.0),
+    return Showcase(
+      key: _first,
+      description: Strings.first,
+      contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Row(children: [
+            Container(
+              decoration: BoxDecoration(
+                  color: _darkTheme ? Colors.transparent : Colors.transparent,
+                  shape: BoxShape.circle),
+              height: 30,
+              width: 30,
+              child: _getWeatherIconImage(weatherIcon),
+            ),
+            SizedBox(width: 3.0),
+            Text(
+              _metricUnitOn ? '$temperature°C' : '$temperature°F',
+              style: TextStyle(
+                  color: _darkTheme ? darkThemeWords : lightThemeWords,
+                  fontSize: 15.0),
+            ),
+          ]),
           Text(
-            _metricUnitOn ? '$temperature°C' : '$temperature°F',
+            '$cityName',
             style: TextStyle(
-                // color: Colors.white,
                 color: _darkTheme ? darkThemeWords : lightThemeWords,
                 fontSize: 15.0),
           ),
-        ]),
-        Text(
-          '$cityName',
-          style: TextStyle(
-              color: _darkTheme ? darkThemeWords : lightThemeWords,
-              fontSize: 15.0),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   /// middle content
   int _current = 0; // for the dot
-  Widget _middleContent() {
+  StreamBuilder<List<Todo>> _middleContent() {
     final database = Provider.of<Database>(context, listen: false);
-
-    ///we can not set this to listen: false, otherwise the screen will not update immediately
-    final focusNotifier = Provider.of<FocusNotifier>(context);
-    bool _focusModeOn = focusNotifier.getFocus();
-
     return StreamBuilder<List<Todo>>(
       stream: database.todosStream(),
       builder: (context, snapshot) {
@@ -365,66 +341,54 @@ class _HomeScreenState extends State<HomeScreen> {
           if (todos.isNotEmpty) {
             final todayTodosNotDone = _getTodayNotDone(todos);
             if (todayTodosNotDone.length > 0) {
-//              final todo = todayTodosNotDone.first; //changed to carousal
-              return Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Spacer(flex: _focusModeOn ? 3 : 1),
-                    Opacity(
-                      opacity: _mantraOpacity,
-                      child: Column(
-                        children: <Widget>[
-                          _buildMantraStream(),
-                          Visibility(
-                            visible: _focusModeOn ? true : false,
-                            child: Column(
-                              children: <Widget>[
-                                SizedBox(
-                                    height:
-                                        50), //space between mantra and Today's Todos
-                                _buildTaskCarouselSlider(
-                                    database, todayTodosNotDone),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Spacer()
-                  ],
-                ),
-              );
+              return _todoItemContent(database, todayTodosNotDone); //Expanded
             } else {
-              return _emptyListScreen(); //if todayTodosNotDone is empty
+              return _emptyListQuestionContent(); //if todayTodosNotDone is empty //Expanded
             }
           } else {
-            return _emptyListScreen(); // if todos is empty
+            return _emptyListQuestionContent(); // if todos is empty //Expanded
           }
         } else if (snapshot.hasError) {
           ///Todo: onTap contact us
           return _errorScreen(
-              text: Strings.textError, textTap: 'Or contact us'); //if error
+              text: Strings.textError,
+              textTap: 'Or contact us'); //if error  //Expanded
         }
         return Center(child: CircularProgressIndicator());
       },
     );
   }
 
-  List<Todo> _getTodayNotDone(List<Todo> todos) {
-    List<Todo> todayTodos = [];
-    todos.forEach((todo) {
-      DateTime today = DateTime(
-          DateTime.now().year, DateTime.now().month, DateTime.now().day);
-      DateTime date = DateTime(todo.date.year, todo.date.month, todo.date.day);
-      if ((date == today) && (todo.isDone == false) && (todo.category == 0)) {
-        todayTodos.add(todo);
-      }
-    });
-    return todayTodos;
+  Expanded _todoItemContent(Database database, List<Todo> todayTodosNotDone) {
+    //we can not set this to listen: false, otherwise the screen will not update immediately
+    final focusNotifier = Provider.of<FocusNotifier>(context);
+    bool _focusModeOn = focusNotifier.getFocus();
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Spacer(flex: _focusModeOn ? 2 : 1),
+          Column(
+            children: <Widget>[
+              _buildMantraStream(),
+              Visibility(
+                visible: _focusModeOn ? true : false,
+                child: Column(
+                  children: <Widget>[
+                    MyHomeMiddleSpaceSizedBox(), //space between mantra and Today's Todos
+                    _buildTaskCarouselSlider(database, todayTodosNotDone),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          Spacer()
+        ],
+      ),
+    );
   }
 
-  Widget _buildTaskCarouselSlider(
+  Column _buildTaskCarouselSlider(
       Database database, List<Todo> todayTodosNotDone) {
     return Column(
       children: [
@@ -456,8 +420,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     SizedBox(height: 10),
                     MyToolTip(
-                      message:
-                          'This button takes you to Pomodoro Timer Screen.',
+                      message: Strings.focusButtonTip,
                       child: MyFlatButton(
                         onPressed: () => _focusButton(database, todo),
                         text: 'Focus Mode',
@@ -470,12 +433,12 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           }).toList(),
         ),
-        _sliderDot(todayTodosNotDone),
+        _sliderDot(todayTodosNotDone, _current, 8.0),
       ],
     );
   }
 
-  Widget _sliderDot(List list) {
+  Row _sliderDot(List list, int current, double size) {
     return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: list.length < 11
@@ -483,98 +446,90 @@ class _HomeScreenState extends State<HomeScreen> {
                 int index = list.indexOf(todo);
                 return list.length > 1
                     ? MyDotContainer(
+                        size: size,
                         color:
-                            _current == index ? Colors.white70 : Colors.white38)
+                            current == index ? Colors.white70 : Colors.white38)
                     : Container();
               }).toList()
             : list.take(10).map((todo) {
                 int index = list.indexOf(todo);
                 return list.length > 1
                     ? MyDotContainer(
+                        size: size,
                         color:
-                            _current == index ? Colors.white70 : Colors.white38)
+                            current == index ? Colors.white70 : Colors.white38)
                     : Container();
               }).toList());
   }
 
   /// middle content Question, this means if there is no data from TodoStream, then we display question.
-  Widget _emptyListScreen() {
+  Expanded _emptyListQuestionContent() {
     final focusNotifier = Provider.of<FocusNotifier>(context);
     bool _focusModeOn = (focusNotifier.getFocus() == true);
-
-    final bool isKeyboardVisible =
-        KeyboardVisibilityProvider.isKeyboardVisible(context);
-    return _focusModeOn
-        ? Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Spacer(),
-                Opacity(
-                  opacity: _mantraOpacity,
-                  child: Column(
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: getFirstGreetings,
-                      ), //first greetings
-                      isKeyboardVisible
-                          ? SizedBox(height: 20)
-                          : SizedBox(height: Platform.isIOS ? 70 : 50),
-                      Visibility(
-                          visible: _nameVisible, child: questionColumn()),
-                    ],
-                  ),
-                ),
-                Spacer(),
-              ],
-            ),
-          )
-        : Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Spacer(),
-                Opacity(
-                  opacity: _mantraOpacity,
-                  child: _buildMantraStream(),
-                ),
-                Spacer(),
-              ],
-            ),
-          );
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          Spacer(),
+          _focusModeOn
+              ? _buildGreetingAndQuestionColumn()
+              : _buildMantraStream(),
+          Spacer(),
+        ],
+      ),
+    );
   }
 
-  bool _questionVisible = true;
-  Column questionColumn() {
+  Column _buildGreetingAndQuestionColumn() {
+    final bool isKeyboardVisible =
+        KeyboardVisibilityProvider.isKeyboardVisible(context);
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: getFirstGreetings,
+        ), //first greetings
+        !isKeyboardVisible //this is to prevent no space when adding task
+            ? Visibility(
+                //this is to edit name without running out of space, add this visibility, including quote
+                visible: _nameVisible,
+                child: MyHomeMiddleSpaceSizedBox())
+            : SizedBox(height: 10),
+        Visibility(
+          visible: _nameVisible,
+          child: _questionAndTextField(),
+        ),
+      ],
+    );
+  }
+
+  Column _questionAndTextField() {
     return Column(
       children: <Widget>[
         Text('$dayOfWeek, $formattedDate ', style: KHomeDate),
         SizedBox(height: 15),
         Column(
           children: [
-            buildQuestion(), //33
-            buildHomeTextField(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: _buildQuestion(),
+            ), //33
+            Showcase(
+                key: _fourth,
+                description: Strings.fourth,
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                child: _buildHomeTextField()),
           ],
         ),
-        Visibility(
-          visible: !_questionVisible,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: ShowUp(
-              child: Text('Have a good night sleep.', style: KHomeQuestion2),
-            ),
-          ),
-        )
       ],
     );
   }
 
-  Widget buildQuestion() {
+  // todo: make user schedule
+  Widget _buildQuestion() {
     final int hour = int.parse(DateFormat('kk').format(DateTime.now()));
-    print(hour);
-
-    if ((hour >= 6) & (hour < 21)) {
+    if ((hour >= 6) & (hour < 20)) {
       return TypewriterAnimatedTextKit(
         isRepeatingAnimation: false,
         text: ['What is your main focus today?'],
@@ -582,9 +537,10 @@ class _HomeScreenState extends State<HomeScreen> {
         textStyle: KHomeQuestion,
       );
     } //8pm
-    else if ((hour >= 21) & (hour < 23)) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
+    else if ((hour >= 20) & (hour < 23)) {
+      return Visibility(
+        //after submitTomorrow,  _questionVisible is false;
+        visible: _questionVisible,
         child: TypewriterAnimatedTextKit(
           isRepeatingAnimation: false,
           text: ['What is your plan tomorrow?'],
@@ -592,125 +548,56 @@ class _HomeScreenState extends State<HomeScreen> {
           textStyle: KHomeQuestion,
         ),
       );
-    } else
-      return Visibility(
-        visible:
-            _questionVisible, //after submit, this becomes false, and we have question that already shows good night
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: ShowUp(
-            child: Text('Have a good night sleep.', style: KHomeQuestion2),
-          ),
-        ),
+    } else //after 11pm
+      return ShowUp(
+        delay: 500,
+        child: Text('Have a good night sleep.', style: KHomeQuestion2),
       );
   }
 
-  Widget buildHomeTextField() {
+  Widget _buildHomeTextField() {
     final int hour = int.parse(DateFormat('kk').format(DateTime.now()));
-
-    if ((hour >= 6) & (hour < 21)) {
+    if ((hour >= 6) & (hour < 20)) {
       return HomeTextField(onSubmitted: _onSubmitted);
     } //8pm
-    else if ((hour >= 21) & (hour < 23)) {
+    else if ((hour >= 20) & (hour < 23)) {
+      // 8pm-11pm
       return Visibility(
+          //after submitTomorrow,  _questionVisible is false;
           visible: _questionVisible,
           child: HomeTextField(onSubmitted: _onSubmittedTomorrow));
-    } else
+    } else //after 11pm, and on question will becomes good night
       return Container();
   }
 
-  Widget _errorScreen({String text = '', textTap = '', onTap}) {
+  ///error screen
+  Expanded _errorScreen({String text = '', textTap = '', onTap}) {
     final focusNotifier = Provider.of<FocusNotifier>(context);
     bool _focusModeOn = (focusNotifier.getFocus() == true);
-
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-
-    final bool isKeyboardVisible =
-        KeyboardVisibilityProvider.isKeyboardVisible(context);
-    return _focusModeOn
-        ? Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Spacer(),
-                Opacity(
-                  opacity: _mantraOpacity,
-                  child: Column(
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: getFirstGreetings,
-                      ), //first greetings
-                      isKeyboardVisible
-                          ? SizedBox(height: 20)
-                          : SizedBox(height: Platform.isIOS ? 70 : 50),
-                      Column(
-                        children: <Widget>[
-                          questionColumn(),
-                          SizedBox(height: 10),
-                          errorMessage(_darkTheme, text, textTap,
-                              onTap) // default is empty, but if error, we show error message
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Spacer(),
-              ],
-            ),
-          )
-        : Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Spacer(),
-                Opacity(
-                  opacity: _mantraOpacity,
-                  child: _buildMantraStream(),
-                ),
-                Spacer(),
-              ],
-            ),
-          );
-  }
-
-  MyContainerWithDarkMode errorMessage(
-      bool _darkTheme, String text, textTap, onTap) {
-    return MyContainerWithDarkMode(
-        child: RichText(
-      text: TextSpan(
-        style: TextStyle(
-            color: _darkTheme
-                ? darkThemeWords.withOpacity(0.85)
-                : lightThemeWords.withOpacity(0.85),
-            fontStyle: FontStyle.italic,
-            fontSize: 16),
-        children: [
-          TextSpan(
-            text: text,
-          ),
-          TextSpan(
-            text: textTap,
-            recognizer: TapGestureRecognizer()..onTap = onTap,
-            style: TextStyle(
-                decoration: TextDecoration.underline,
-                color: _darkTheme
-                    ? darkThemeWords.withOpacity(0.85)
-                    : lightThemeWords.withOpacity(0.85),
-                fontStyle: FontStyle.italic,
-                fontSize: 16),
-          ),
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          Spacer(),
+          _focusModeOn
+              ? Column(
+                  children: [
+                    _buildGreetingAndQuestionColumn(),
+                    SizedBox(height: 10),
+                    HomeErrorMessage(text: text, textTap: textTap, onTap: onTap)
+                  ],
+                )
+              : _buildMantraStream(),
+          Spacer(),
         ],
       ),
-    ));
+    );
   }
 
   ///mantra stream
-  Widget _buildMantraStream() {
+  StreamBuilder<List<MantraModel>> _buildMantraStream() {
     final database = Provider.of<Database>(context, listen: false);
-    //for mantra
-    ///because we will pop back, so it will update
+    //because we will pop back after change setting, so it will update
     final mantraNotifier = Provider.of<MantraNotifier>(context, listen: false);
     bool _useMyMantra = mantraNotifier.getMantra();
     return StreamBuilder<List<MantraModel>>(
@@ -720,34 +607,7 @@ class _HomeScreenState extends State<HomeScreen> {
           final List<MantraModel> mantras = snapshot.data;
           if (mantras.isNotEmpty) {
             if (_useMyMantra == true) {
-//              final mantra = mantras[mantras.length - 1]; //changed to CarouselSlider
-              return Column(
-                children: [
-                  ShowUp(
-                    delay: 500,
-                    child: CarouselSlider(
-                      options: CarouselOptions(
-                        height:
-                            120.0, //if we don't give it a height, it will set as default height which is higher
-                        viewportFraction: 1,
-                      ),
-                      items: mantras.map((mantra) {
-                        return Builder(
-                          builder: (BuildContext context) {
-                            return Center(
-                              child: HomeMantraListTile(
-                                mantra: mantra,
-                                onTap: () => _onTapMantra(database, mantra),
-                              ),
-                            );
-                          },
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                  _sliderDot(mantras),
-                ],
-              );
+              return _mantraCarousel(mantras, database);
             } else {
               return getDefaultMantra;
             }
@@ -762,8 +622,47 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  ShowUp _mantraCarousel(List<MantraModel> mantras, Database database) {
+    return ShowUp(
+      delay: 500,
+      child: CarouselSlider(
+        options: CarouselOptions(
+          height:
+              120.0, //if we don't give it a height, it will set as default height which is higher
+          viewportFraction: 1,
+        ),
+        items: mantras.map((mantra) {
+          return Builder(
+            builder: (BuildContext context) {
+              return Center(
+                child: HomeMantraListTile(
+                  mantra: mantra,
+                  onTap: () => _onTapMantra(database, mantra),
+                ),
+              );
+            },
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget get getDefaultMantra {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: ShowUp(
+        delay: 500,
+        child: Text(
+          _defaultMantra, //SecondGreetings().showGreetings().body
+          textAlign: TextAlign.center,
+          style: KHomeGreeting,
+        ),
+      ),
+    );
+  }
+
   ///quote stream
-  Widget _buildQuoteStream() {
+  StreamBuilder<List<QuoteModel>> _buildQuoteStream() {
     final database = Provider.of<Database>(context, listen: false);
     final quoteNotifier = Provider.of<QuoteNotifier>(context, listen: false);
     bool _useMyQuote = quoteNotifier.getQuote();
@@ -774,32 +673,7 @@ class _HomeScreenState extends State<HomeScreen> {
           final List<QuoteModel> quotes = snapshot.data;
           if (quotes.isNotEmpty) {
             if (_useMyQuote == true) {
-              return Column(
-                children: [
-                  CarouselSlider(
-                    options: CarouselOptions(
-                      height: 50.0,
-                      viewportFraction: 1,
-                    ),
-                    items: quotes.map((quote) {
-                      return Builder(
-                        builder: (BuildContext context) {
-                          return InkWell(
-                            onTap: () => _onTapQuote(database, quote),
-                            child: Center(
-                              child: DailyQuote(
-                                  title: quote.title,
-                                  author: quote.author,
-                                  bottomPadding: _useMyQuote ? 0 : 15),
-                            ),
-                          );
-                        },
-                      );
-                    }).toList(),
-                  ),
-                  _sliderDot(quotes),
-                ],
-              );
+              return _quoteCarousel(quotes, database);
             } else {
               return APIQuote();
             }
@@ -814,7 +688,45 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  CarouselSlider _quoteCarousel(List<QuoteModel> quotes, Database database) {
+    return CarouselSlider(
+      options: CarouselOptions(
+        height: 50.0,
+        viewportFraction: 1,
+      ),
+      items: quotes.map((quote) {
+        return Builder(
+          builder: (BuildContext context) {
+            return InkWell(
+              onTap: () => _onTapQuote(database, quote),
+              child: Center(
+                child: QuoteUI(
+                  title: quote.title,
+                  author: quote.author,
+                  key: GlobalKey(),
+                ),
+              ),
+            );
+          },
+        );
+      }).toList(),
+    );
+  }
+
   ///all function on task:
+  List<Todo> _getTodayNotDone(List<Todo> todos) {
+    List<Todo> todayTodos = [];
+    todos.forEach((todo) {
+      DateTime today = DateTime(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day);
+      DateTime date = DateTime(todo.date.year, todo.date.month, todo.date.day);
+      if ((date == today) && (todo.isDone == false) && (todo.category == 0)) {
+        todayTodos.add(todo);
+      }
+    });
+    return todayTodos;
+  }
+
   void _onSubmitted(newText) async {
     final database = Provider.of<Database>(context, listen: false);
     if (newText.isNotEmpty) {
@@ -841,7 +753,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void _onSubmittedTomorrow(newText) async {
     final now = DateTime.now();
     final tomorrow = DateTime(now.year, now.month, now.day + 1);
-
     final database = Provider.of<Database>(context, listen: false);
     if (newText.isNotEmpty) {
       FocusScope.of(context).unfocus();
@@ -855,7 +766,6 @@ class _HomeScreenState extends State<HomeScreen> {
           hasReminder: false,
         );
         await database.setTodo(todo);
-
         setState(() {
           _questionVisible = false;
         });
@@ -870,26 +780,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showGoodNightFlushBar() {
-    Flushbar(
-      isDismissible: true,
-      margin: const EdgeInsets.all(20),
-      padding: const EdgeInsets.all(8),
-      borderRadius: 15,
-      flushbarPosition: FlushbarPosition.BOTTOM,
-      flushbarStyle: FlushbarStyle.FLOATING,
-      backgroundGradient: KFlushBarGradient,
-      duration: Duration(seconds: 3),
-      icon: Icon(
-        EvaIcons.moon,
-        color: Colors.white,
-      ),
-      titleText:
-          Text('Task has been added to calendar.', style: KFlushBarTitle),
-      messageText: Text('Have a good evening.',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: KFlushBarMessage),
-    )..show(context);
+    _showNoActionFlushbar(
+        icon: EvaIcons.moon,
+        title: 'Task has been added to calendar.',
+        subtitle: 'Have a good evening.');
   }
 
   Future<void> _delete(Database database, Todo todo) async {
@@ -904,8 +798,271 @@ class _HomeScreenState extends State<HomeScreen> {
         exception: e,
       ).show(context);
     }
+    await _showDeleteFlushbar(database, todo);
+  }
 
-    Flushbar(
+  Future<void> _onChangedCheckbox(
+      newValue, Database database, Todo todo) async {
+    setState(() {
+      _quoteOpacity = 0.0;
+    });
+
+    try {
+      todo.isDone = true;
+      await database.setTodo(todo);
+    } on PlatformException catch (e) {
+      PlatformExceptionAlertDialog(
+        title: 'Operation failed',
+        exception: e,
+      ).show(context);
+    }
+    _showNoActionFlushbar(
+        icon: Icons.check, title: _congrats, subtitle: todo.title);
+  }
+
+  /// update & at the same time update _selectedList
+  void _onTapTodo(Database database, Todo todo) async {
+    setState(() {
+      _wholeBodyOpacity = 0.0;
+    });
+
+    var _typedTitleAndComment = await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => AddTodoScreen(
+        database: database,
+        todo: todo,
+        pickedDate: _date,
+      ),
+    );
+
+    if (_typedTitleAndComment != null) {
+      try {
+        //we get the id from job in the firebase, if the job.id is null, we create a new one, otherwise we use the existing job.id
+        final id = todo?.id ?? documentIdFromCurrentDate();
+        final isDone = todo?.isDone ?? false;
+        final hasReminder = todo?.hasReminder ?? false;
+        final reminderData = todo?.reminderDate ?? null;
+
+        ///first we find this specific Todo item that we want to update
+        final newTodo = Todo(
+            id: id,
+            title: _typedTitleAndComment[0],
+            comment: _typedTitleAndComment[1],
+            date: _typedTitleAndComment[2],
+            isDone: isDone,
+            category: _typedTitleAndComment[3],
+            hasReminder: hasReminder,
+            reminderDate: reminderData);
+        //add newTodo to database
+        await database.setTodo(newTodo);
+      } on PlatformException catch (e) {
+        PlatformExceptionAlertDialog(
+          title: 'Operation failed',
+          exception: e,
+        ).show(context);
+      }
+    }
+
+    setState(() {
+      _wholeBodyOpacity = 1.0;
+    });
+  }
+
+  void _onTapMantra(Database database, MantraModel mantra) async {
+    setState(() {
+      _wholeBodyOpacity = 0.0;
+    });
+    await showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (context) => AddMantraScreen(
+              database: database,
+              mantra: mantra,
+            ));
+    setState(() {
+      _wholeBodyOpacity = 1.0;
+    });
+  }
+
+  void _onTapQuote(Database database, QuoteModel quote) async {
+    setState(() {
+      _wholeBodyOpacity = 0.0;
+    });
+    await showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (context) => AddQuoteScreen(
+              database: database,
+              quote: quote,
+            ));
+    setState(() {
+      _wholeBodyOpacity = 1.0;
+    });
+  }
+
+  /// first Greetings
+  get getFirstGreetings {
+    final User user = FirebaseAuth.instance.currentUser;
+    // user.reload();
+    // String userName;
+    if (user.displayName != null && user.displayName.isNotEmpty) {
+      // user.displayName.contains(' ')
+      //     ? userName = user.displayName
+      //         .substring(0, user.displayName.indexOf(' '))
+      //         .firstCaps
+      //     :
+      final userName = user.displayName.firstCaps;
+      if (userName.length < 5) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Wrap(
+              // mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ///AutoSizeText not useful here
+                Text('${FirstGreetings().showGreetings()}, ',
+                    style: KHomeGreeting),
+                Showcase(
+                    key: _third,
+                    description: Strings.third,
+                    contentPadding:
+                        const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                    child: name(userName)),
+              ],
+            ),
+            nameTextField()
+          ],
+        );
+      } else if (userName.length > 4) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('${FirstGreetings().showGreetings()}',
+                style: KHomeGreeting, textAlign: TextAlign.center),
+            Visibility(
+              visible: _nameVisible,
+              child: GestureDetector(
+                onTap: _onTapName,
+                child: Text(
+                  '$userName',
+                  style: KHomeGreeting,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+            nameTextField()
+          ],
+        );
+      }
+    }
+    // if (user.displayName == null || user.displayName.isEmpty)
+    else {
+      return Text('${FirstGreetings().showGreetings()}', style: KHomeGreeting);
+    }
+  }
+
+  Visibility name(String userName) {
+    return Visibility(
+      visible: _nameVisible,
+      child: GestureDetector(
+        onTap: _onTapName,
+        child: Text(
+          '$userName',
+          style: KHomeGreeting,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+    );
+  }
+
+  Visibility nameTextField() {
+    return Visibility(
+      visible: !_nameVisible,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          HomeTextField(
+            onSubmitted: _editName,
+            width: 200,
+            max: 20,
+            autofocus: true,
+          ),
+          InkWell(
+              onTap: _onTapName,
+              child: Icon(Icons.clear, color: darkThemeHint2))
+        ],
+      ),
+    );
+  }
+
+  void _onTapName() {
+    setState(() {
+      _nameVisible = !_nameVisible;
+    });
+  }
+
+  void _editName(String value) async {
+    final FirebaseAuthService auth =
+        Provider.of<FirebaseAuthService>(context, listen: false);
+    final ProgressDialog pr = ProgressDialog(
+      context,
+      type: ProgressDialogType.Normal,
+      isDismissible: true,
+    );
+    _progressDialogStyle(pr);
+    await pr.show();
+    await auth.updateUserName(value);
+    await pr.hide();
+    setState(() {
+      _nameVisible = !_nameVisible;
+    });
+  }
+
+  void _progressDialogStyle(ProgressDialog pr) {
+    return pr.style(
+      message: 'Please wait',
+      borderRadius: 20.0,
+      backgroundColor: darkThemeNoPhotoColor,
+      elevation: 10.0,
+      insetAnimCurve: Curves.easeInOut,
+      progress: 0.0,
+      progressWidgetAlignment: Alignment.center,
+      maxProgress: 100.0,
+      progressTextStyle: TextStyle(
+          color: Colors.white, fontSize: 13.0, fontWeight: FontWeight.w400),
+      messageTextStyle: TextStyle(
+          color: Colors.white, fontSize: 19.0, fontWeight: FontWeight.w600),
+    );
+  }
+
+  Future<Flushbar> _showNoActionFlushbar({icon, title, subtitle}) async {
+    return Flushbar(
+      isDismissible: true,
+      margin: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(8),
+      borderRadius: 15,
+      flushbarPosition: FlushbarPosition.BOTTOM,
+      flushbarStyle: FlushbarStyle.FLOATING,
+      backgroundGradient: KFlushBarGradient,
+      duration: Duration(seconds: 3),
+      icon: Icon(
+        icon,
+        color: Colors.white,
+      ),
+      titleText: Text(title, style: KFlushBarTitle),
+      messageText: Text(subtitle,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: KFlushBarMessage),
+    )..show(context).then((value) => setState(() {
+          _quoteOpacity = 1.0;
+        }));
+  }
+
+  Future<Flushbar> _showDeleteFlushbar(Database database, Todo todo) async {
+    return Flushbar(
       isDismissible: true,
       mainButton: FlatButton(
           onPressed: () async {
@@ -943,289 +1100,20 @@ class _HomeScreenState extends State<HomeScreen> {
           _quoteOpacity = 1.0;
         }));
   }
-
-  Future<void> _onChangedCheckbox(
-      newValue, Database database, Todo todo) async {
-    setState(() {
-      _quoteOpacity = 0.0;
-    });
-
-    try {
-      todo.isDone = true;
-      await database.setTodo(todo);
-    } on PlatformException catch (e) {
-      PlatformExceptionAlertDialog(
-        title: 'Operation failed',
-        exception: e,
-      ).show(context);
-    }
-
-    Flushbar(
-      isDismissible: true,
-      margin: const EdgeInsets.all(20),
-      padding: const EdgeInsets.all(8),
-      borderRadius: 15,
-      flushbarPosition: FlushbarPosition.BOTTOM,
-      flushbarStyle: FlushbarStyle.FLOATING,
-      backgroundGradient: KFlushBarGradient,
-      duration: Duration(seconds: 3),
-      icon: Icon(
-        Icons.check,
-        color: Colors.white,
-      ),
-      titleText: Text(
-        _congrats,
-        style: KFlushBarTitle,
-      ),
-      messageText: Text(
-        todo.title,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: KFlushBarMessage,
-      ),
-    )..show(context).then((value) => setState(() {
-          _quoteOpacity = 1.0;
-        }));
-  }
-
-  /// update & at the same time update _selectedList
-  void _onTapTodo(Database database, Todo todo) async {
-    setState(() {
-      _middleColumnVisible = false;
-      _quoteOpacity = 0.0;
-    });
-    var _typedTitleAndComment = await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => AddTodoScreen(
-        database: database,
-        todo: todo,
-        pickedDate: _date,
-      ),
-    );
-
-    if (_typedTitleAndComment != null) {
-      try {
-        //we get the id from job in the firebase, if the job.id is null,
-        //we create a new one, otherwise we use the existing job.id
-        final id = todo?.id ?? documentIdFromCurrentDate();
-        final isDone = todo?.isDone ?? false;
-        final hasReminder = todo?.hasReminder ?? false;
-        final reminderData = todo?.reminderDate ?? null;
-
-        ///first we find this specific Todo item that we want to update
-        final newTodo = Todo(
-            id: id,
-            title: _typedTitleAndComment[0],
-            comment: _typedTitleAndComment[1],
-            date: _typedTitleAndComment[2],
-            isDone: isDone,
-            category: _typedTitleAndComment[3],
-            hasReminder: hasReminder,
-            reminderDate: reminderData);
-
-        //add newTodo to database
-        await database.setTodo(newTodo);
-      } on PlatformException catch (e) {
-        PlatformExceptionAlertDialog(
-          title: 'Operation failed',
-          exception: e,
-        ).show(context);
-      }
-    }
-
-    setState(() {
-      _middleColumnVisible = true;
-      _quoteOpacity = 1.0;
-    });
-  }
-
-  void _onTapMantra(Database database, MantraModel mantra) async {
-    setState(() {
-      _quoteOpacity = 0.0;
-      _middleColumnVisible = false;
-    });
-    await showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (context) => AddMantraScreen(
-              database: database,
-              mantra: mantra,
-            ));
-    setState(() {
-      _quoteOpacity = 1.0;
-      _middleColumnVisible = true;
-    });
-  }
-
-  void _onTapQuote(Database database, QuoteModel quote) async {
-    setState(() {
-      _middleColumnVisible = false;
-      _quoteOpacity = 0.0;
-    });
-    await showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (context) => AddQuoteScreen(
-              database: database,
-              quote: quote,
-            ));
-    setState(() {
-      _middleColumnVisible = true;
-      _quoteOpacity = 1.0;
-    });
-  }
-
-  /// first Greetings
-  bool _nameVisible = true;
-
-  get getFirstGreetings {
-    final User user = FirebaseAuth.instance.currentUser;
-    // user.reload();
-    // String userName;
-    if (user.displayName != null && user.displayName.isNotEmpty) {
-      // user.displayName.contains(' ')
-      //     ? userName = user.displayName
-      //         .substring(0, user.displayName.indexOf(' '))
-      //         .firstCaps
-      //     :
-
-      final userName = user.displayName.firstCaps;
-
-      print('userName in home screen: $userName');
-
-      if (userName.length < 6) {
-        return Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ///AutoSizeText not useful here
-                Text('${FirstGreetings().showGreetings()}',
-                    style: KHomeGreeting),
-                name(userName),
-              ],
-            ),
-            nameTextField()
-          ],
-        );
-      } else if (userName.length > 6) {
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('${FirstGreetings().showGreetings()}',
-                style: KHomeGreeting, textAlign: TextAlign.center),
-            Visibility(
-              visible: _nameVisible,
-              child: GestureDetector(
-                onTap: _onTapName,
-                child: AutoSizeText(
-                  '$userName',
-                  style: KHomeGreeting,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ),
-            nameTextField()
-          ],
-        );
-      }
-    }
-
-    // if (user.displayName == null || user.displayName.isEmpty)
-    else {
-      return Text('${FirstGreetings().showGreetings()}', style: KHomeGreeting);
-    }
-  }
-
-  Visibility name(String userName) {
-    return Visibility(
-      visible: _nameVisible,
-      child: GestureDetector(
-        onTap: _onTapName,
-        child: AutoSizeText(
-          ', $userName',
-          style: KHomeGreeting,
-          overflow: TextOverflow.ellipsis,
-        ),
-      ),
-    );
-  }
-
-  Visibility nameTextField() {
-    return Visibility(
-      visible: !_nameVisible,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          HomeTextField(
-            onSubmitted: _editName,
-            width: 200,
-            max: 20,
-            autofocus: true,
-          ),
-          InkWell(
-              onTap: _onTapName,
-              child: Icon(Icons.clear, color: darkThemeHint2))
-        ],
-      ),
-    );
-  }
-
-  void _onTapName() {
-    setState(() {
-      _nameVisible = !_nameVisible;
-    });
-  }
-
-  void _editName(String value) async {
-    final FirebaseAuthService auth =
-        Provider.of<FirebaseAuthService>(context, listen: false);
-    //from ProgressDialog plugin
-    final ProgressDialog pr = ProgressDialog(
-      context,
-      type: ProgressDialogType.Normal,
-      // textDirection: TextDirection.rtl,
-      isDismissible: true,
-    );
-    pr.style(
-      message: 'Please wait',
-      borderRadius: 20.0,
-      backgroundColor: darkThemeNoPhotoColor,
-      elevation: 10.0,
-      insetAnimCurve: Curves.easeInOut,
-      progress: 0.0,
-      progressWidgetAlignment: Alignment.center,
-      maxProgress: 100.0,
-      progressTextStyle: TextStyle(
-          color: Colors.white, fontSize: 13.0, fontWeight: FontWeight.w400),
-      messageTextStyle: TextStyle(
-          color: Colors.white, fontSize: 19.0, fontWeight: FontWeight.w600),
-    );
-
-    await pr.show();
-
-    await auth.updateUserName(value);
-
-    ///because it takes a while to update name
-    await pr.hide();
-
-    setState(() {
-      _nameVisible = !_nameVisible;
-    });
-  }
-
-  Widget get getDefaultMantra {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: ShowUp(
-        delay: 500,
-        child: Text(
-          _defaultMantra, //SecondGreetings().showGreetings().body
-          textAlign: TextAlign.center,
-          style: KHomeGreeting,
-        ),
-      ),
-    );
-  }
 }
+
+///this code getUserName will not run in initState when coming to home screen from sign in
+// String userName;
+// void getUserName() {
+//   final User user = FirebaseAuth.instance.currentUser;
+//   String userName;
+//   if (user.displayName != null && user.displayName.isNotEmpty) {
+//     // user.displayName.contains(' ')
+//     //     ? userName = user.displayName
+//     //         .substring(0, user.displayName.indexOf(' '))
+//     //         .firstCaps
+//     //     :
+//     userName = user.displayName.firstCaps;
+//     print('userName in home screen initState: $userName');
+//   }
+// }

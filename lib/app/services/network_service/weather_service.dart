@@ -13,6 +13,7 @@ class WeatherService {
   static Future<dynamic> getCurrentWeather(String units) async {
     var position = await Geolocator()
         .getCurrentPosition(desiredAccuracy: LocationAccuracy.low);
+    // print("position: $position");
     String url =
         '$urlFirstPart?lat=${position.latitude}&lon=${position.longitude}&units=$units&appid=$apiKey';
     var weatherData = await NetworkHelper(url: url).getData();

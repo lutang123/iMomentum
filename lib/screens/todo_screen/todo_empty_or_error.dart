@@ -39,11 +39,6 @@ class TodoScreenEmptyOrError extends StatelessWidget {
             padding: const EdgeInsets.only(left: 15.0),
             child: RichText(
               text: TextSpan(
-                //subtitle2: TextStyle(
-                //         fontWeight: FontWeight.w400,
-                //         color: Colors.white.withOpacity(0.75),
-                //         fontStyle: FontStyle.italic,
-                //         fontSize: 17)
                 style: Theme.of(context).textTheme.subtitle2,
                 children: [
                   TextSpan(

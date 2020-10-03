@@ -26,7 +26,7 @@ class MyFAB extends StatelessWidget {
       child: Icon(Icons.add,
           size: 30, color: _darkTheme ? darkThemeButton : lightThemeButton),
       // child: child,
-      backgroundColor: _darkTheme ? Colors.transparent : Colors.white24,
+      backgroundColor: _darkTheme ? darkThemeAppBar : Colors.white24,
     );
   }
 }

@@ -33,6 +33,9 @@ class MyCalendar extends StatelessWidget {
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     final DateTime today = DateTime(
         DateTime.now().year, DateTime.now().month, DateTime.now().day, 12);
+
+    double height = MediaQuery.of(context).size.height;
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
@@ -46,7 +49,7 @@ class MyCalendar extends StatelessWidget {
           events: events,
           holidays: holidays,
           initialSelectedDay: DateTime.now(), //default
-          initialCalendarFormat: Platform.isIOS
+          initialCalendarFormat: height > 700
               ? CalendarFormat.twoWeeks
               : CalendarFormat.week, //default
           formatAnimation: FormatAnimation.slide,

@@ -19,10 +19,16 @@ class FolderContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    double height = MediaQuery.of(context)
+        .size
+        .height; //iPhone large: height: 180/896 = 0.2
+    double width =
+        MediaQuery.of(context).size.width; //iPhone large: width: 414,
+
     return Center(
       child: Container(
-        height: 180,
-        width: 180,
+        height: height * 0.2,
+        width: width * 0.4,
         margin: EdgeInsets.only(left: 8.0, right: 8),
         decoration: BoxDecoration(
           color: _darkTheme ? darkThemeDrawer : lightThemeDrawer,
@@ -40,10 +46,10 @@ class FolderContainer extends StatelessWidget {
                     children: [
                       Spacer(),
                       Icon(EvaIcons.bookOutline,
-                          size: 50,
+                          size: height > 700 ? 50 : 40,
                           color:
                               _darkTheme ? darkThemeButton : lightThemeButton),
-                      SizedBox(height: 8),
+                      // SizedBox(height: 8),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: AutoSizeText(

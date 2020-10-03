@@ -14,6 +14,7 @@ import 'package:iMomentum/app/common_widgets/my_fab.dart';
 import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
+import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/models/todo.dart';
 import 'package:iMomentum/app/services/firestore_service/database.dart';
@@ -52,31 +53,26 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
   CalendarController _firstCalendarController;
   CalendarController _secondCalendarController;
   AnimationController _animationController;
+  Map<DateTime, List<dynamic>> _eventNoData =
+      {}; //this is for empty content in task list
 
+  ///for todoList (first tab)
   bool _addButtonVisible = true;
   bool _calendarVisible = true;
   ScrollController _hideButtonController;
-
-  //default as today, and if select other dates, _date will be _calendarController.selectedDay, and
-  //then pass it to AddTodoScreen
+  //default as today, and if select other dates, _date will be _calendarController.selectedDay, and then pass it to AddTodoScreen
   DateTime _taskDate = DateTime.now();
-  //this is for empty content in task list
-  Map<DateTime, List<dynamic>> _eventNoData = {};
 
-  final today = DateTime.now();
-
-  ///this is what first shown on the screen, and when user tap on calendar, the date title will change.
+  //this is the list title on the screen, and when user tap on calendar, the date title will change.
   String _titleDateString = 'Today';
-  String _titleDateStringPieChart = 'Today';
 
-  ///for todoList
   Map<DateTime, List> _events; // for first calendar
   Map<DateTime, List> _notDoneEvents; //for first calendar marker
   //we assign value in StreamBuilder, but must have an initial value
   List<Todo> _todayList = [];
   List<Todo> _todayNotDoneList = [];
 
-  /// if not give an initial value, _selectedList.isEmpty will throw error
+  // if not give an initial value, _selectedList.isEmpty will throw error
   List<Todo> _selectedList = [];
   List<Todo> _selectedNotDoneList = [];
 
@@ -118,10 +114,11 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
     });
   }
 
-  ///for pie chart
-  /// groupby only one day, change to: map[date] = entry.todosDetails, instead of map[date] = entry;
+  /// for pie chart
+  String _titleDateStringPieChart = 'Today';
+  // groupby only one day, change to: map[date] = entry.todosDetails, instead of map[date] = entry;
   Map<DateTime, List> _eventsNew; //for second calendar
-  // this is map because this is the value used in pie chart
+  //this is map because this is the value used in pie chart
   Map<String, double> _todayDataMap; //again we assign value in SteamBuilder
   Map<String, double> _selectedDataMap =
       {}; // again we gave an empty value to this because we have _dataMapSelected.isEmpty ?
@@ -162,6 +159,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 400),
     );
     _animationController.forward();
+
     _firstCalendarController = CalendarController();
     _secondCalendarController = CalendarController();
 //    print(_calendarController
@@ -196,7 +194,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
   int counter = 0;
   void _onDoubleTap() {
     setState(() {
-      ImageUrl.randomImageUrl = '${ImageUrl.randomImageUrlFirstPart}$counter';
+      ImagePath.randomImageUrl = '${ImagePath.randomImageUrlFirstPart}$counter';
       counter++;
     });
   }
@@ -215,7 +213,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
       children: <Widget>[
         BuildPhotoView(
           imageUrl:
-              _randomOn ? ImageUrl.randomImageUrl : imageNotifier.getImage(),
+              _randomOn ? ImagePath.randomImageUrl : imageNotifier.getImage(),
         ),
         ContainerLinearGradient(),
         GestureDetector(
@@ -322,7 +320,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                                   firstTabNoDataContent(
                                       database,
                                       _eventNoData,
-                                      Strings.textTodoList1,
+                                      Strings.emptyTodoList,
                                       '',
                                       // Strings.textTodoList2,
                                       ''),
@@ -435,7 +433,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                     (_todayList.isEmpty) && (_selectedList.isEmpty)
                         ? SliverToBoxAdapter(
                             child: TodoScreenEmptyOrError(
-                                text1: Strings.textTodoList1, tips: ''),
+                                text1: Strings.emptyTodoList, tips: ''),
                           )
                         : _selectedList.isEmpty
 
@@ -453,7 +451,8 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                   ],
                 ),
               ),
-              //add this to make add button not hiding task item // or add show tip
+
+              ///add this to make add button not hiding task item // or add show tip
               // Visibility(
               //     visible: _addButtonVisible,
               //     child: Column(
@@ -473,7 +472,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
       visible: _listVisible,
       child: Visibility(
         visible: _addButtonVisible,
-        child: Container(
+        child: SizedBox(
           height: 60,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -507,7 +506,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
   Future<void> _showTipDialog() async {
     await PlatformAlertDialog(
       title: 'Tips',
-      content: Strings.textTodoList2,
+      content: Strings.tipsOnTodoListScreen,
       defaultActionText: 'OK.',
     ).show(context);
   }
@@ -658,6 +657,65 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
     );
   }
 
+  /// UI for first Tab no data or error
+  Widget firstTabNoDataContent(
+      Database database,
+      Map<DateTime, List<dynamic>> calendarEvent,
+      String text1,
+      String text2,
+      String text3) {
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: <Widget>[
+        Column(
+          children: <Widget>[
+            firstCalendarEmpty(calendarEvent),
+            todoListEmptyContent(text1, text2, text3),
+          ],
+        ),
+        _bottomRow(database)
+        // todoAddButton(database),
+      ],
+    );
+  }
+
+  Widget firstCalendarEmpty(Map<DateTime, List<dynamic>> calendarEvent) {
+    return Opacity(
+      opacity: _calendarOpacity,
+      child: MyCalendar(
+        events: calendarEvent, //this is empty
+        calendarController: _firstCalendarController,
+        onDaySelected: (date, _) => _getTodoDateTitle(date),
+        animationController: _animationController,
+      ),
+    );
+  }
+
+  Widget todoListEmptyContent(String text1, String text2, String text3) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    return Expanded(
+      child: Visibility(
+        visible: _listVisible,
+        child: CustomizedContainerNew(
+          color: _darkTheme ? darkThemeSurface : lightThemeSurface,
+          child: CustomScrollView(
+            shrinkWrap: true,
+            controller: _hideButtonController,
+            // put AppBar in NestedScrollView to have it sliver off on scrolling
+            slivers: <Widget>[
+              _buildBoxAdaptorForTodoListTitle(),
+              SliverToBoxAdapter(
+                child: TodoScreenEmptyOrError(
+                    text1: text1, tips: text2, textTap: text3),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   /// secondTab UI
   Widget secondTab(
       List<TodoDuration> entries, Map<DateTime, List<dynamic>> calendarEvent) {
@@ -740,58 +798,59 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
     );
   }
 
-  /// UI for no data or error
-  Widget firstTabNoDataContent(
-      Database database,
-      Map<DateTime, List<dynamic>> calendarEvent,
-      String text1,
-      String text2,
-      String text3) {
+  Widget secondTabNoDataContent(
+      Database database, Map<DateTime, List<dynamic>> calendarEvent) {
     return Stack(
       alignment: Alignment.bottomCenter,
-      children: <Widget>[
+      children: [
         Column(
+          // mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            firstCalendarEmpty(calendarEvent),
-            todoListEmptyContent(text1, text2, text3),
+            MyCalendar(
+              events: calendarEvent, //also empty
+              calendarController: _secondCalendarController,
+              onDaySelected: (date, _) => _getPieChartTitle(date),
+              animationController: _animationController,
+            ), //calendar
+            //this already included the content if it's empty
+            pieChartCustomScrollView(),
           ],
         ),
-        _bottomRow(database)
-        // todoAddButton(database),
+        _bottomRowSecondTab(database),
       ],
     );
   }
 
-  Widget firstCalendarEmpty(Map<DateTime, List<dynamic>> calendarEvent) {
-    return Opacity(
-      opacity: _calendarOpacity,
-      child: MyCalendar(
-        events: calendarEvent, //this is empty
-        calendarController: _firstCalendarController,
-        onDaySelected: (date, _) => _getTodoDateTitle(date),
-        animationController: _animationController,
-      ),
-    );
-  }
-
-  Widget todoListEmptyContent(String text1, String text2, String text3) {
+  Widget _bottomRowSecondTab(Database database) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    return Expanded(
+    return Visibility(
+      visible: _listVisible,
       child: Visibility(
-        visible: _listVisible,
-        child: CustomizedContainerNew(
-          color: _darkTheme ? darkThemeSurface : lightThemeSurface,
-          child: CustomScrollView(
-            shrinkWrap: true,
-            controller: _hideButtonController,
-            // put AppBar in NestedScrollView to have it sliver off on scrolling
-            slivers: <Widget>[
-              _buildBoxAdaptorForTodoListTitle(),
-              SliverToBoxAdapter(
-                child: TodoScreenEmptyOrError(
-                    text1: text1, tips: text2, textTap: text3),
-              )
+        visible: _addButtonVisible,
+        child: SizedBox(
+          height: 60,
+          child: Row(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(left: 25.0),
+                child: FlatButton(
+                  child: Text(
+                    'Show Tips',
+                    style: TextStyle(
+                        fontSize: 15,
+                        color: _darkTheme
+                            ? darkThemeButton.withOpacity(0.9)
+                            : lightThemeButton.withOpacity(0.9)),
+                  ),
+                  onPressed: _showTipDialogSecondTab,
+                ),
+              ),
+              // Padding(
+              //   padding: const EdgeInsets.only(bottom: 3.0, right: 15),
+              //   child: MyFAB(onPressed: () => _add(database)),
+              // ),
+              // todoAddButton(database),
             ],
           ),
         ),
@@ -799,23 +858,15 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget secondTabNoDataContent(
-      Database database, Map<DateTime, List<dynamic>> calendarEvent) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        MyCalendar(
-          events: calendarEvent, //also empty
-          calendarController: _secondCalendarController,
-          onDaySelected: (date, _) => _getPieChartTitle(date),
-          animationController: _animationController,
-        ), //calendar
-        //this already included the content if it's empty
-        pieChartCustomScrollView(),
-      ],
-    );
+  Future<void> _showTipDialogSecondTab() async {
+    await PlatformAlertDialog(
+      title: 'Tips',
+      content: Strings.tipsOnPieChartScreen,
+      defaultActionText: 'OK.',
+    ).show(context);
   }
 
+  /// all functions for first Tab
   void _showAddReminderScreen(Todo todo, Database database) async {
     setState(() {
       _listVisible = false;
@@ -1183,7 +1234,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
   void dispose() {
     super.dispose();
     _firstCalendarController.dispose();
-    _secondCalendarController.dispose();
+    // _secondCalendarController.dispose();
     _animationController.dispose();
   }
 }

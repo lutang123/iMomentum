@@ -1,41 +1,95 @@
+///
+
 class Strings {
-  /// StartScreen2:
-  static const text1 =
-      "iMomentum is a peaceful application that keeps you focus on what's most important. ";
-//and delivery inspiration, peacefulness and positivity
-  //organize your daily tasks, increase productivity and .
-  static const text2 = 'Inspiration';
+  // StartScreen
+  static const askName = "Hello, what's your name?";
+  static const welcome = 'Welcome to iMomentum, ';
+  static const introSwipe = 'Swipe to next';
+  static const startButton = 'Start Now';
 
-  //'Photos: Inspiring photography; Quotes: Timeless wisdom; Mantras: positive concepts.'
+  /// Part 1
+  static const intro =
+      "iMomentum is a one-stop productivity application that brings you inspiration "
+      "and keeps you focus on what's most important. ";
+  static const intro1 =
+      "iMomentum is a one-stop productivity application that brings you ";
+  static const intro2 = "inspiration";
+  static const intro3 = " and keeps you ";
+  static const intro4 = "focus";
+  static const intro5 = " on what's most important.";
 
-  static const text3 = 'Focus';
+  /// Part 2
+  static const title1 = 'Inspiration';
+  static const subtitle1 = 'Breathe life into your device.';
+  static const inspirationFeature1 =
+      'Inspiring photography with dynamic display.';
+  static const inspirationFeature2 = 'Positive concept with mantras';
+  static const inspirationFeature3 = 'Timeless wisdom with daily quote.';
 
-  // 'Daily focus: set a daily focus reminder; Todo: organize your daily tasks
+  /// Part 3
+  static const title2 = 'Focus';
+  static const subtitle2 = 'Approach each day with intent.';
+  static const focusFeature1 = 'Pomodoro Timer with daily focus report.';
+  static const focusFeature2 = 'Calendar with Task list and Reminder.';
+  static const focusFeature3 = 'Notes with different colors and font styles.';
 
-  static const text4 = 'Personal experience'
-      // '\n'
-      // 'Personalize with your own photos, mantras and quotes'
-      ;
+  /// Part 4
+  static const title3 = 'Customization';
+  static const subtitle3 = 'Make it your own App.';
+  static const customizationFeature1 = 'Add your own photo.';
+  static const customizationFeature2 = 'Add your own mantras.';
+  static const customizationFeature3 = 'Add your own quotes.';
 
-  static const text5 = '';
+  // StartScreen3 (sign in)
+  // I will need to change this to why join iMomentum Plus (or other words like upgrade or membership)
+  static const whySignIn = 'Why Sign In';
+  static const whySignInTitle = 'Why sign in to use iMomentum?';
+  static const signInReason1 = 'Secure all of your data.';
+  static const signInReason1detail =
+      'If you change your device or delete the app, you will not loose your data.';
+  static const signInReason2 = 'Access your data from multi device';
+  static const signInReason2detail =
+      'iMomentum Web version will be available soon and you will be able to access your account on web browser.';
+  static const signInReason3 = 'Personalize your experience';
+  static const signInReason3detail =
+      'By signing in, you can access your account and update your information.';
 
-// '//Your privacy is important. Learn more about how we‘re protecting your privacy in our Terms and Privacy Policy.'
+  // here I will need to add term and private policy
+  static const privacy =
+      'Your privacy is important. iMomentum will not share any of your data with '
+      'any third party. Learn more about how we‘re protecting your privacy in our ';
+  static const privacyTap = ' Terms and Privacy Policy.';
 
-  /// StartScreen3 (sign in)
-  ///
   static const signInAnonymouslyWarning =
       'Not sure whether to sign in? No problem, you can stay signed out and just explore! '
       '\n'
       '\n'
-      'iMomentum kindly reminds you that when you choose Just Explore, you will not have a user account, and that means when you log out, or when you delete the app, or change device, you can not access your account again. You will also lose the benefit of syncing your data across multi platform, including iMomentum web version.';
-  // TodoScreen
-  static const String textTodoList1 =
+      'iMomentum kindly reminds you that when you choose Just Explore, you will '
+      'not have a user account, and that means when you log out, or when you '
+      'delete the app, or change device, you can not access your account again. '
+      'You will also lose the benefit of syncing your data across multi platform, '
+      'including iMomentum web version.';
+
+  static const hi = 'Hi, ';
+  static const teddy = 'I am Teddy. I am here to sign in with you.';
+
+  // Home screen tip on showcase
+  static const first = 'Tap on weather information to show details.';
+  static const second =
+      'Double tap anywhere on the screen to change the photo.';
+  static const third = 'Tap on your name to edit.';
+  static const fourth = "Add your today's focus here.";
+  static const focusButtonTip =
+      'Press here to start working on your task with our customizable Pomodoro Timer.';
+
+  // TodoScreen when user haven't added any data
+  static const String emptyTodoList =
       "Do you have any tasks to complete today? "
       "\n"
       "\n"
       "Tap on the plus button to enter your first task today!";
 
-  static const String textTodoList2 = "We have 5 categories "
+  static const String tipsOnTodoListScreen = "You can choose from 5 categories "
       "(Focus, Work, Home, Shopping and Others) "
       "to organize your daily tasks. Tasks in Focus category will show "
       "on Home screen to enable Focus Mode for these tasks. "
@@ -46,29 +100,20 @@ class Strings {
       "\n"
       ' After entering a task, you can add a reminder by swiping right on the task item.';
 
-  static const String textPieChart1 =
-      'You have not done any focused task on this day.'
-      '\n'
-      '\n'
-      'Enter a task from Home screen (or from Todo screen and choose task category as Focus), you will see Focus Mode button on Home screen.'
-      ' When you complete a focus session, you will see a pie chart showing your daily focus summary on this screen.';
+  static const String emptyPieChart =
+      'You have not done any focused task on this day.';
 
-  static const String textPieTip =
-      'Our Focus Mode uses Pomodoro Technique to help you focus. ';
-
-  static const String textPieTap = 'Learn more.';
-
-  // For all error:
-  ///Todo: add contact us
-  static const String textError =
-      'Oops! Something went wrong, please try again later. ';
-  static const String textErrorOnTap = 'Or contact us';
+  static const String tipsOnPieChartScreen =
+      'Enter a task from Home screen (or from Todo screen and choose task category as Focus), you will see Focus Mode button on Home screen. '
+      "\n"
+      "\n"
+      'This button will take you to Pomodoro Timer screen, when you complete a focus session, you will see a pie chart showing your daily focus summary on this screen.';
 
   // Folder/Note Screen
   static const emptyNoteAndFolder =
       'Any thoughts or new ideas you want to write? Tap on the plus button to add a new note, or create a folder to add note in a specific folder.';
 
-  static const folderScreenTips =
+  static const tipsOnFolderScreen =
       'The plus button on Folders screen will add note to the default "Notes" folder. You can also create your own folders and tap on the folder to read or add notes. '
       '\n'
       '\n'
@@ -76,6 +121,10 @@ class Strings {
 
   static const emptyNote =
       'No notes in this folder yet. Tap the plus button to add a new note.';
+
+  // Uploading photo screen
+  static const tipsOnUploadYourPhoto =
+      'Photo on full-screen may look different as the original one. Preview first and crop the photo as needed, or click Cancel to choose another one.';
 
   // Mantra Screen
   static const textMantra1 =
@@ -87,6 +136,12 @@ class Strings {
       '\n'
       'Personalize your experience by adding your own mantras.';
 
+  static const tipsOnMantraScreen =
+      'When you add your own mantras, your mantras will show on Home screen every time after you enter a focused task. '
+      '\n'
+      '\n'
+      'Your most recently added/edited one will show first, and you can swipe right or left to view different ones from Home screen, and tap on the mantra to edit.';
+
   // Quote Screen
   static const textQuote1 = 'Get inspired with timeless wisdom.'
       '\n';
@@ -95,4 +150,54 @@ class Strings {
       '\n'
       '\n'
       'Personalize your experience by adding your own quotes.';
+
+  static const tipsOnQuoteScreen =
+      'When you add your own quotes, your quotes will show on Home screen. '
+      '\n'
+      '\n'
+      'Your most recently added/edited one will show first, and you can swipe right or left  to view different ones from Home screen, and tap on the quote to edit.';
+
+  // For all error:
+  ///Todo: add contact us
+  static const String textError =
+      'Oops! Something went wrong, please try again later.';
+  static const String textErrorOnTap = 'Or contact us';
+
+  static const String over100MaxWarning =
+      'For screen design reason, we have set maximum character for as 100. You can add comment if you need, and there is no limited characters for comment.';
+  static const String over20MaxWarning =
+      'For screen design reason, we have set maximum character for as 20.';
+
+  static const String emptyWarning = "Content can\'t be empty";
+
+  // on Settings
+  // show a message after user switch (since those are not common features, so I show a message)
+
+  static const String focusSwitchTip =
+      'This switch controls whether to show productivity feature on Home Screen.';
+  static const String photoSwitchTip =
+      'When this switch is on, you will see a new photo every time when opening the app and you can change the photo anytime with double-tap on screen.';
+
+  //focus switch on
+  static const String focusSwitchOnTitle =
+      'Focus mode button will show on Home screen after you add a focused task.';
+  static const String focusSwitchOnSubTitle =
+      'Focus on what is the most important to us.';
+
+  //photo switch off
+  static const String focusSwitchOffTitle =
+      'Focus mode will be hidden from home screen.';
+  static const String focusSwitchOFFSubTitle =
+      'We all need some downtime in a day.';
+
+  //photo switch on
+  static const String shufflePhotoSwitchOnTitle =
+      'A new photo will show every time when opening iMomentum App.';
+  static const String shufflePhotoSwitchOnSubTitle =
+      'You can double tap on screen to change photo anytime.';
+  //photo switch off
+  static const String shufflePhotoSwitchOffTitle =
+      'Background photo is set as a default one.';
+  static const String shufflePhotoSwitchOFFSubTitle =
+      'You can change the photo by choosing your favourite photo in Customizations.';
 }

@@ -10,6 +10,7 @@ import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
 import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
+import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/constants/strings_sign_in.dart';
 import 'package:iMomentum/app/sign_in/apple_sign_in_available.dart';
@@ -102,14 +103,6 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
     super.initState();
   }
 
-  ///this is wrong (updateUserName)
-  // void _updateUserName(String name) {
-  //   final AuthService auth = Provider.of<AuthService>(context, listen: false);
-  // //The method 'updateProfile' was called on null.
-  //   auth.updateUserName(name);
-  //   print('StartScreen3 init: ${auth.updateUserName(name)}');
-  // }
-
   @override
   void dispose() {
     _node.dispose();
@@ -140,7 +133,7 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
         Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage(ImageUrl.signInImage),
+                image: AssetImage(ImagePath.signInImage),
                 fit: BoxFit.cover,
               ),
             ),
@@ -160,13 +153,10 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
               actions: [
                 FlatButton.icon(
                     label: Text(
-                      'Why sign in?',
-                      style: TextStyle(
-                          color: Colors.white.withOpacity(0.8),
-                          fontStyle: FontStyle.italic),
+                      Strings.whySignIn,
+                      style: KTopFlatButtonText,
                     ),
-                    icon: Icon(Icons.info_outline,
-                        color: Colors.white.withOpacity(0.8)),
+                    icon: Icon(Icons.info_outline, color: topFlatButton),
                     onPressed: _showTopSheet),
               ],
             ),
@@ -180,8 +170,6 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
     // if (model.isLoading) {
     //   return Center(
     //       child: SpinKitDoubleBounce(
-    //     color: Colors.white,
-    //     size: 50.0,
     //   ));
     // }
     return SingleChildScrollView(
@@ -189,7 +177,6 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
         children: [
           _firstPart(),
           _secondPart(),
-          // _thirdPart(),
         ],
       ),
     );
@@ -197,8 +184,6 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
 
   Widget _firstPart() {
     double height = MediaQuery.of(context).size.height;
-    // final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    // bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     final bool isKeyboardVisible =
         KeyboardVisibilityProvider.isKeyboardVisible(context);
     return Column(
@@ -207,218 +192,130 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
           visible: isKeyboardVisible ? false : true,
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 15.0),
-            decoration: ShapeDecoration(
-              color:
-                  // _darkTheme ? darkThemeAppBar :
-                  lightThemeAppBar,
-              shape: TooltipShapeBorder(arrowArc: 0.5),
-              shadows: [
-                BoxShadow(
-                    color:
-                        // _darkTheme ? darkThemeAppBar :
-                        lightThemeAppBar,
-                    blurRadius: 4.0,
-                    offset: Offset(2, 2))
-              ],
-            ),
+            decoration: shapeDecoration(),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                  'Hi, ${userNameFinal.firstCaps}, '
-                  'I am Teddy. I am here to sign in with you.',
-                  style: GoogleFonts.getFont(
-                    'Architects Daughter',
-                    fontSize: 14,
-                    color:
-                        // _darkTheme ? darkThemeWords :
-                        lightThemeWords,
-                    fontWeight: FontWeight.w400,
-                  )),
+                  '${Strings.hi} ${userNameFinal.firstCaps}, '
+                  '${Strings.teddy}',
+                  style: teddyStyle()),
             ),
           ),
         ),
-        Container(
-          height: height * 0.15,
-          child: FlareActor(
-            "assets/Teddy.flr",
-            shouldClip: false,
-            alignment: Alignment.bottomCenter,
-            fit: BoxFit.contain,
-            controller: _teddyController,
-          ),
-        ),
-        MySignInContainer(
-          child: FocusScope(
-            node: _node,
-            child: Column(
-              children: <Widget>[
-                _buildEmailField(),
-                if (model.formType !=
-                    EmailPasswordSignInFormType.forgotPassword) ...<Widget>[
-                  SizedBox(height: 5.0),
-                  _buildPasswordField(),
-                ],
-                SizedBox(height: 15.0),
-                // model.isLoading
-                // ? SpinKitThreeBounce(
-                //     color: _darkTheme ? darkThemeButton : lightThemeButton,
-                //     size: 25.0,
-                //   )
-                // :
-                MyFlatButton(
-                  text: model.primaryButtonText,
-                  onPressed: () => _submit(context),
-                  color:
-                      // _darkTheme ? darkThemeButton :
-                      lightThemeButton,
-                  bkgdColor:
-                      // _darkTheme ? darkThemeAppBar :
-                      lightThemeAppBar,
+        teddyContainer(height),
+        mySignInContainer(),
+      ],
+    );
+  }
+
+  MySignInContainer mySignInContainer() {
+    return MySignInContainer(
+      child: FocusScope(
+        node: _node,
+        child: Column(
+          children: <Widget>[
+            _buildEmailField(),
+            if (model.formType !=
+                EmailPasswordSignInFormType.forgotPassword) ...<Widget>[
+              SizedBox(height: 5.0),
+              _buildPasswordField(),
+            ],
+            SizedBox(height: 10.0),
+            MyFlatButton(
+              text: model.primaryButtonText,
+              onPressed: () => _submit(context),
+              color: lightThemeButton,
+              bkgdColor: lightThemeAppBar,
+            ),
+            Row(
+              children: [
+                FlatButton(
+                  key: Key('secondary-button'),
+                  child: Text(model.secondaryButtonText,
+                      style: KSignInSecondButtonL),
+                  onPressed: () =>
+                      _updateFormType(model.secondaryActionFormType),
                 ),
-                Row(
-                  children: [
-                    FlatButton(
-                      key: Key('secondary-button'),
-                      child: Text(model.secondaryButtonText,
-                          style:
-                              // _darkTheme
-                              //     ? KSignInSecondButtonD
-                              //     :
-                              KSignInSecondButtonL),
-                      onPressed:
-                          // model.isLoading
-                          //     ? null
-                          //     :
-                          () => _updateFormType(model.secondaryActionFormType),
-                    ),
-                  ],
-                ),
-                if (model.formType == EmailPasswordSignInFormType.signIn)
-                  Row(
-                    children: [
-                      FlatButton(
-                        key: Key('tertiary-button'),
-                        child: Text(StringsSignIn.forgotPasswordQuestion,
-                            style:
-                                // _darkTheme
-                                //     ? KSignInSecondButtonD
-                                //     :
-                                KSignInSecondButtonL),
-                        onPressed:
-                            // model.isLoading
-                            //     ? null
-                            //     :
-                            () => _updateFormType(
-                                EmailPasswordSignInFormType.forgotPassword),
-                      ),
-                    ],
-                  ),
               ],
             ),
-          ),
+            if (model.formType == EmailPasswordSignInFormType.signIn)
+              Row(
+                children: [
+                  FlatButton(
+                    key: Key('tertiary-button'),
+                    child: Text(StringsSignIn.forgotPasswordQuestion,
+                        style: KSignInSecondButtonL),
+                    onPressed: () => _updateFormType(
+                        EmailPasswordSignInFormType.forgotPassword),
+                  ),
+                ],
+              ),
+          ],
         ),
+      ),
+    );
+  }
+
+  Container teddyContainer(double height) {
+    return Container(
+      height: height * 0.14,
+      child: FlareActor(
+        "assets/Teddy.flr",
+        shouldClip: false,
+        alignment: Alignment.bottomCenter,
+        fit: BoxFit.contain,
+        controller: _teddyController,
+      ),
+    );
+  }
+
+  TextStyle teddyStyle() {
+    return GoogleFonts.getFont(
+      'Architects Daughter',
+      fontSize: 14,
+      color: lightThemeWords,
+      fontWeight: FontWeight.w400,
+    );
+  }
+
+  ShapeDecoration shapeDecoration() {
+    return ShapeDecoration(
+      color: lightThemeAppBar,
+      shape: TooltipShapeBorder(arrowArc: 0.5),
+      shadows: [
+        BoxShadow(
+            color: lightThemeAppBar, blurRadius: 4.0, offset: Offset(2, 2))
       ],
     );
   }
 
   Widget _secondPart() {
     final appleSignInAvailable = Provider.of<AppleSignInAvailable>(context);
-    // final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    // bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    double height = MediaQuery.of(context).size.height;
     return Column(
       children: [
-        SizedBox(height: 20),
+        sizedBox(height),
         (appleSignInAvailable.isAvailable)
             ? Column(
                 children: [
                   MySignInContainer(
                     child: Column(
                       children: [
-                        Text('Or Sign In with: ',
-                            style:
-                                // _darkTheme
-                                //     ? KSignInButtonOrD
-                                //     :
-                                KSignInButtonOrL),
+                        textSignInWith(),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            FlatButton.icon(
-                                onPressed:
-                                    // model.isLoading ? null :
-                                    _signInWithGoogle,
-                                icon: Icon(
-                                  FontAwesomeIcons.google,
-                                  color:
-                                      // _darkTheme
-                                      //     ? darkThemeButton
-                                      //     :
-                                      lightThemeButton,
-                                ),
-                                label: Text('Google',
-                                    style:
-                                        // _darkTheme
-                                        //     ? KSignInButtonTextD
-                                        //     :
-                                        KSignInButtonTextL)),
+                            flatButtonGoogle(),
                             if (appleSignInAvailable.isAvailable) ...[
-                              FlatButton.icon(
-                                  onPressed:
-                                      // model.isLoading ? null :
-                                      _signInWithApple,
-                                  icon: Icon(
-                                    FontAwesomeIcons.apple,
-                                    color:
-                                        // _darkTheme
-                                        //     ? darkThemeButton
-                                        //     :
-                                        lightThemeButton,
-                                  ),
-                                  label: Text(
-                                    'Apple',
-                                    style:
-                                        // _darkTheme
-                                        //     ? KSignInButtonTextD
-                                        //     :
-                                        KSignInButtonTextL,
-                                  )),
+                              flatButtonApple(),
                             ],
                           ],
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: 20),
-                  MySignInContainer(
-                    child: Column(
-                      children: [
-                        Text(
-                          'Or Stay signed out',
-                          style: TextStyle(
-                              fontSize: 14,
-                              color:
-                                  // _darkTheme
-                                  //     ? Colors.white.withOpacity(0.8)
-                                  //     :
-                                  Colors.black.withOpacity(0.8),
-                              fontWeight: FontWeight.w400,
-                              fontStyle: FontStyle.italic),
-                        ),
-                        FlatButton(
-                            onPressed:
-                                // model.isLoading ? null :
-                                _showAlert,
-                            child: Text(
-                              'Just explore',
-                              style:
-                                  // _darkTheme
-                                  //     ? KSignInButtonTextD
-                                  //     :
-                                  KSignInButtonTextL,
-                            )),
-                      ],
-                    ),
-                  ),
+                  sizedBox(height),
+                  mySignInContainerJustExplore(),
                 ],
               )
             : Row(
@@ -427,66 +324,71 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
                   MySignInContainer(
                     child: Column(
                       children: [
-                        Text('Or Sign In with: ',
-                            style:
-                                // _darkTheme
-                                //     ? KSignInButtonOrD
-                                //     :
-                                KSignInButtonOrL),
-                        FlatButton.icon(
-                            onPressed:
-                                // model.isLoading ? null :
-                                _signInWithGoogle,
-                            icon: Icon(
-                              FontAwesomeIcons.google,
-                              color:
-                                  // _darkTheme
-                                  //     ? darkThemeButton
-                                  //     :
-                                  lightThemeButton,
-                            ),
-                            label: Text('Google',
-                                style:
-                                    // _darkTheme
-                                    //     ? KSignInButtonTextD
-                                    //     :
-                                    KSignInButtonTextL)),
+                        textSignInWith(),
+                        flatButtonGoogle(),
                       ],
                     ),
                   ),
-                  MySignInContainer(
-                    child: Column(
-                      children: [
-                        Text('Or Stay signed out',
-                            style:
-                                // _darkTheme
-                                //     ? KSignInButtonOrD
-                                //     :
-                                KSignInButtonOrL),
-                        FlatButton(
-                            onPressed:
-                                // model.isLoading ? null :
-                                _showAlert,
-                            child: Text(
-                              'Just explore',
-                              style:
-                                  // _darkTheme
-                                  //     ? KSignInButtonTextD
-                                  //     :
-                                  KSignInButtonTextL,
-                            )),
-                      ],
-                    ),
-                  ),
+                  mySignInContainerJustExplore()
                 ],
               ),
       ],
     );
   }
 
+  SizedBox sizedBox(double height) => SizedBox(height: height > 700 ? 25 : 15);
+
+  Text textSignInWith() => Text('Or Sign In with: ', style: KSignInButtonOrL);
+
+  MySignInContainer mySignInContainerJustExplore() {
+    return MySignInContainer(
+      child: Column(
+        children: [
+          Text('Or Stay signed out', style: KSignInButtonOrL),
+          InkWell(
+            onTap: _showAlert,
+            child: Text(
+              'Just explore',
+              style: KSignInButtonTextL,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  FlatButton flatButtonApple() {
+    return FlatButton.icon(
+        onPressed: _signInWithApple,
+        icon: Icon(
+          FontAwesomeIcons.apple,
+          color: lightThemeButton,
+        ),
+        label: Text(
+          'Apple',
+          style: KSignInButtonTextL,
+        ));
+  }
+
+  FlatButton flatButtonGoogle() {
+    return FlatButton.icon(
+        onPressed: _signInWithGoogle,
+        icon: Icon(
+          FontAwesomeIcons.google,
+          color: lightThemeButton,
+        ),
+        label: Text('Google', style: KSignInButtonTextL));
+  }
+
+  UnderlineInputBorder underlineInputBorder() {
+    return UnderlineInputBorder(
+        borderSide: BorderSide(color: lightThemeDivider));
+  }
+
+  TextStyle textStyleHintAndLabel() =>
+      TextStyle(fontSize: 16.0, color: lightThemeHint);
+
   Widget _buildEmailField() {
-    // final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    // bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return TrackingTextInput(
       textController: emailTextController,
       onTextChanged: (String email) {
@@ -499,36 +401,21 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
       },
       inputDecoration: InputDecoration(
         labelText: StringsSignIn.emailLabel,
-        labelStyle: TextStyle(
-            fontSize: 16.0,
-            color:
-                // _darkTheme ? darkThemeHint2 :
-                lightThemeHint2),
+        labelStyle: textStyleHintAndLabel(),
         hintText: StringsSignIn.emailHint,
-        hintStyle: TextStyle(
-            fontSize: 16.0,
-            color:
-                // _darkTheme ? darkThemeHint :
-                lightThemeHint),
+        hintStyle: textStyleHintAndLabel(),
+
+        ///we can not have this otherwise it always show empty error before user input
         // errorText: model.emailErrorText,
         // enabled: !model.isLoading,
-        prefixIcon: Icon(Icons.email,
-            color:
-                // _darkTheme
-                //     ? darkThemeButton.withOpacity(0.7)
-                //     :
-                lightThemeButton.withOpacity(0.7)),
-        focusedBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: lightThemeDivider)),
-        enabledBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: lightThemeDivider)),
+        prefixIcon: Icon(Icons.email, color: lightThemeButton.withOpacity(0.7)),
+        focusedBorder: underlineInputBorder(),
+        enabledBorder: underlineInputBorder(),
       ),
     );
   }
 
   Widget _buildPasswordField() {
-    // final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    // bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -547,39 +434,19 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
             isObscured: _isObscured,
             inputDecoration: InputDecoration(
               labelText: StringsSignIn.passwordLabel,
-              labelStyle: TextStyle(
-                  fontSize: 16.0,
-                  color:
-                      // _darkTheme ? darkThemeHint2 :
-                      lightThemeHint2),
+              labelStyle: textStyleHintAndLabel(),
               hintText: model.passwordLabelText,
-              hintStyle: TextStyle(
-                  fontSize: 16.0,
-                  color:
-                      // _darkTheme ? darkThemeHint :
-                      lightThemeHint),
-              // errorText: model.passwordErrorText,
-              // enabled: !model.isLoading,
-              prefixIcon: Icon(Icons.lock,
-                  color:
-                      // _darkTheme
-                      //     ? darkThemeButton.withOpacity(0.7)
-                      //     :
-                      lightThemeButton.withOpacity(0.7)),
-              focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: lightThemeDivider)),
-              enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: lightThemeDivider)),
+              hintStyle: textStyleHintAndLabel(),
+              prefixIcon:
+                  Icon(Icons.lock, color: lightThemeButton.withOpacity(0.7)),
+              focusedBorder: underlineInputBorder(),
+              enabledBorder: underlineInputBorder(),
             ),
           ),
         ),
         IconButton(
           icon: Icon(_isObscured ? Icons.visibility : Icons.visibility_off,
-              color:
-                  // _darkTheme
-                  //     ? darkThemeButton.withOpacity(0.7)
-                  //     :
-                  lightThemeButton.withOpacity(0.7)),
+              color: lightThemeButton.withOpacity(0.7)),
           onPressed: () {
             setState(() {
               _isObscured = !_isObscured;
@@ -591,18 +458,12 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
   }
 
   void _emailEditingComplete() {
-    if (_email.isEmpty) {
-      _teddyController.play('fail');
-      _showSnackBar('Please Enter Valid Information');
-    }
     if (!_isEmailValid(_email)) {
       _teddyController.play('fail');
-      _showSnackBar('Please Enter Valid Information');
     }
     if (model.canSubmitEmail) {
       _teddyController.play('success');
-      // delay
-      // Future.delayed(const Duration(milliseconds: 500));
+      Future.delayed(const Duration(milliseconds: 200));
       _node.nextFocus();
     } else {
       _teddyController.play('fail');
@@ -610,23 +471,21 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
   }
 
   void _passwordEditingComplete(BuildContext context) {
-    // FocusScope.of(context).unfocus(); //no need
     if (_password.isEmpty) {
       _teddyController.play('fail');
-      _showSnackBar('Please Enter Valid Information');
     }
     if (!_isPasswordValid(_password)) {
       _teddyController.play('fail');
-      _showSnackBar('Please Enter Valid Information');
     }
-    if (!model.canSubmitEmail) {
+    if (model.canSubmitEmail) {
+      _teddyController.play('success');
+      Future.delayed(const Duration(milliseconds: 200));
+      _submit(context);
+    } else {
       _teddyController.play('fail');
-      // delay
-      // Future.delayed(const Duration(milliseconds: 500));
       _node.previousFocus();
       return;
     }
-    _submit(context);
   }
 
   void _updateFormType(EmailPasswordSignInFormType formType) {
@@ -638,52 +497,25 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
   Future<void> _submit(BuildContext context) async {
     // FocusScope.of(context).unfocus(); //no need
     try {
-      if (_email.isEmpty || _password.isEmpty) {
-        _teddyController.play('fail');
-        _showSnackBar('Please Enter Valid Information');
-      }
-
       if (!_isEmailValid(_email)) {
         _teddyController.play('fail');
-        _showSnackBar('Please Enter Valid Information');
       }
 
       if (!_isPasswordValid(_password)) {
         _teddyController.play('fail');
-        _showSnackBar('Please Enter Valid Information');
       }
 
       ///from ProgressDialog plugin
       final ProgressDialog pr = ProgressDialog(
         context,
         type: ProgressDialogType.Normal,
-        // textDirection: TextDirection.rtl,
         isDismissible: true,
       );
-      pr.style(
-        message: 'Please wait',
-        borderRadius: 20.0,
-        backgroundColor: darkThemeNoPhotoColor,
-        elevation: 10.0,
-        insetAnimCurve: Curves.easeInOut,
-        progress: 0.0,
-        progressWidgetAlignment: Alignment.center,
-        maxProgress: 100.0,
-        progressTextStyle: TextStyle(
-            color: Colors.white, fontSize: 13.0, fontWeight: FontWeight.w400),
-        messageTextStyle: TextStyle(
-            color: Colors.white, fontSize: 19.0, fontWeight: FontWeight.w600),
-      );
-
+      progressDialogStyle(pr);
       await pr.show();
-
-      ///original
       final bool success = await model.submit(context);
-      // print('success: $success');
       await pr.hide();
-
       if (success) {
-        print('success');
         _teddyController.play('success');
         if (model.formType == EmailPasswordSignInFormType.forgotPassword) {
           await PlatformAlertDialog(
@@ -704,7 +536,6 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
         //   ).show(context);
         //   print('show verify dialog? ');
         // }
-
       }
     } catch (e) {
       _teddyController.play('fail');
@@ -715,38 +546,16 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
   Future<void> _signInWithGoogle() async {
     final FirebaseAuthService firebaseAuthService =
         Provider.of<FirebaseAuthService>(context, listen: false);
-
     try {
       _teddyController.play('success');
-
-      ///from ProgressDialog plugin
       final ProgressDialog pr = ProgressDialog(
         context,
         type: ProgressDialogType.Normal,
-        // textDirection: TextDirection.rtl,
         isDismissible: true,
       );
-      pr.style(
-        message: 'Please wait',
-        borderRadius: 20.0,
-        backgroundColor: darkThemeNoPhotoColor,
-        elevation: 10.0,
-        insetAnimCurve: Curves.easeInOut,
-        progress: 0.0,
-        progressWidgetAlignment: Alignment.center,
-        maxProgress: 100.0,
-        progressTextStyle: TextStyle(
-            color: Colors.white, fontSize: 13.0, fontWeight: FontWeight.w400),
-        messageTextStyle: TextStyle(
-            color: Colors.white, fontSize: 19.0, fontWeight: FontWeight.w600),
-      );
-
+      progressDialogStyle(pr);
       await pr.show();
-
-      // await viewModel.signInWithGoogle();
-
       await firebaseAuthService.signInWithGoogle();
-
       await pr.hide();
     } on PlatformException catch (e) {
       _teddyController.play('fail'); // added
@@ -760,37 +569,16 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
   Future<void> _signInWithApple() async {
     final FirebaseAuthService firebaseAuthService =
         Provider.of<FirebaseAuthService>(context, listen: false);
-
     try {
       _teddyController.play('success');
-
-      ///from ProgressDialog plugin
       final ProgressDialog pr = ProgressDialog(
         context,
         type: ProgressDialogType.Normal,
-        // textDirection: TextDirection.rtl,
         isDismissible: true,
       );
-      pr.style(
-        message: 'Please wait',
-        borderRadius: 20.0,
-        backgroundColor: darkThemeNoPhotoColor,
-        elevation: 10.0,
-        insetAnimCurve: Curves.easeInOut,
-        progress: 0.0,
-        progressWidgetAlignment: Alignment.center,
-        maxProgress: 100.0,
-        progressTextStyle: TextStyle(
-            color: Colors.white, fontSize: 13.0, fontWeight: FontWeight.w400),
-        messageTextStyle: TextStyle(
-            color: Colors.white, fontSize: 19.0, fontWeight: FontWeight.w600),
-      );
-
+      progressDialogStyle(pr);
       await pr.show();
-
-      // await viewModel.signInWithApple();
       await firebaseAuthService.signInWithApple();
-
       await pr.hide();
     } on PlatformException catch (e) {
       _teddyController.play('fail'); // added
@@ -818,58 +606,46 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
         Provider.of<FirebaseAuthService>(context, listen: false);
     try {
       _teddyController.play('success');
-
-      ///from ProgressDialog plugin
       final ProgressDialog pr = ProgressDialog(
         context,
         type: ProgressDialogType.Normal,
-        // textDirection: TextDirection.rtl,
         isDismissible: true,
       );
-      pr.style(
-        message: 'Please wait',
-        borderRadius: 20.0,
-        backgroundColor: darkThemeNoPhotoColor,
-        elevation: 10.0,
-        insetAnimCurve: Curves.easeInOut,
-        progress: 0.0,
-        progressWidgetAlignment: Alignment.center,
-        maxProgress: 100.0,
-        progressTextStyle: TextStyle(
-            color: Colors.white, fontSize: 13.0, fontWeight: FontWeight.w400),
-        messageTextStyle: TextStyle(
-            color: Colors.white, fontSize: 19.0, fontWeight: FontWeight.w600),
-      );
-
+      progressDialogStyle(pr);
       await pr.show();
-
-      // await viewModel.signInAnonymously();
       await firebaseAuthService.signInAnonymously(name: userNameFinal);
-
       await pr.hide();
     } catch (e) {
       _teddyController.play('fail');
-      _showSignInError(context, e);
+      _showSignInError(context,
+          e); // must have this because sometime if sign in and out too much times, it will have error too.
     }
   }
 
-  /// notes on previous SignInError
-  // void _showSignInError(
-  //     EmailPasswordSignInModel model, PlatformException exception) {
-  //   _teddyController.play('fail');
-  //   PlatformExceptionAlertDialog(
-  //     title: model.errorAlertTitle,
-  //     exception: exception,
-  //   ).show(context);
-  // }
+  void progressDialogStyle(ProgressDialog pr) {
+    return pr.style(
+      message: 'Please wait',
+      borderRadius: 20.0,
+      backgroundColor: darkThemeNoPhotoColor,
+      elevation: 10.0,
+      insetAnimCurve: Curves.easeInOut,
+      progress: 0.0,
+      progressWidgetAlignment: Alignment.center,
+      maxProgress: 100.0,
+      progressTextStyle: TextStyle(
+          color: Colors.white, fontSize: 13.0, fontWeight: FontWeight.w400),
+      messageTextStyle: TextStyle(
+          color: Colors.white, fontSize: 19.0, fontWeight: FontWeight.w600),
+    );
+  }
 
+  /// notes on previous SignInError
   // Future<void> _showSignInError2(PlatformException exception) async {
   //   await PlatformExceptionAlertDialog(
   //     title: Strings.signInFailed,
   //     exception: exception,
   //   ).show(context);
   // }
-
   Future<void> _showSignInError(BuildContext context, dynamic exception) async {
     await showExceptionAlertDialog(
       context: context,
@@ -908,7 +684,13 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
 
   void _showSnackBar(String title) => _scaffoldKey.currentState.showSnackBar(
         SnackBar(
-          content: Text(title, textAlign: TextAlign.center),
+          content: Text(
+            title,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.red),
+          ),
+          duration: Duration(milliseconds: 2000),
+          backgroundColor: lightThemeNoPhotoColor,
         ),
       );
 }

@@ -10,9 +10,11 @@ import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_fab.dart';
 import 'package:iMomentum/app/common_widgets/my_list_tile.dart';
+import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/setting_switch.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
+import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/models/mantra_model.dart';
@@ -37,7 +39,7 @@ class _MyMantrasState extends State<MyMantras> {
   int counter = 0;
   void _onDoubleTap() {
     setState(() {
-      ImageUrl.randomImageUrl = '${ImageUrl.randomImageUrlFirstPart}$counter';
+      ImagePath.randomImageUrl = '${ImagePath.randomImageUrlFirstPart}$counter';
       counter++;
     });
   }
@@ -60,7 +62,7 @@ class _MyMantrasState extends State<MyMantras> {
       children: <Widget>[
         BuildPhotoView(
           imageUrl:
-              _randomOn ? ImageUrl.randomImageUrl : imageNotifier.getImage(),
+              _randomOn ? ImagePath.randomImageUrl : imageNotifier.getImage(),
         ),
         ContainerLinearGradient(),
         GestureDetector(
@@ -75,7 +77,12 @@ class _MyMantrasState extends State<MyMantras> {
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
                     children: [
-                      _topRow(),
+                      MantraTopBar(
+                        title: 'Mantras',
+                        subtitle:
+                            'Simple phrases to build positive mental habits.',
+                        onPressed: _showTipDialog,
+                      ),
                       StreamBuilder<List<MantraModel>>(
                           stream: widget.database
                               .mantrasStream(), //print: flutter: Instance of '_MapStream<List<TodoDuration>, dynamic>'
@@ -104,12 +111,9 @@ class _MyMantrasState extends State<MyMantras> {
                                       Visibility(
                                         visible: _hideMantras,
                                         child: Expanded(
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(20.0),
-                                            child: buildListView(
-                                              widget.database,
-                                              mantras,
-                                            ),
+                                          child: buildListView(
+                                            widget.database,
+                                            mantras,
                                           ),
                                         ),
                                       ),
@@ -147,11 +151,12 @@ class _MyMantrasState extends State<MyMantras> {
     );
   }
 
-  Widget _topRow() {
-    return MantraTopBar(
-      title: 'Mantras',
-      subtitle: 'Simple phrases to build positive mental habits.',
-    );
+  Future<void> _showTipDialog() async {
+    await PlatformAlertDialog(
+      title: 'Tips',
+      content: Strings.tipsOnMantraScreen,
+      defaultActionText: 'OK.',
+    ).show(context);
   }
 
   Future<void> onMantraChanged(

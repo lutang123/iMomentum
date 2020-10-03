@@ -4,7 +4,7 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_round_button.dart';
-import 'package:iMomentum/app/constants/constants_style.dart';
+import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/models/data/rest_quote.dart';
 import 'package:iMomentum/app/models/todo.dart';
 import 'package:iMomentum/app/utils/extension_clockFmt.dart';
@@ -159,7 +159,7 @@ class _RestScreenState extends State<RestScreen>
   int counter = 0;
   void _onDoubleTap() {
     setState(() {
-      ImageUrl.randomImageUrl = '${ImageUrl.randomImageUrlFirstPart}$counter';
+      ImagePath.randomImageUrl = '${ImagePath.randomImageUrlFirstPart}$counter';
       counter++;
     });
   }
@@ -174,7 +174,7 @@ class _RestScreenState extends State<RestScreen>
       children: <Widget>[
         BuildPhotoView(
           imageUrl:
-              _randomOn ? ImageUrl.randomImageUrl : imageNotifier.getImage(),
+              _randomOn ? ImagePath.randomImageUrl : imageNotifier.getImage(),
         ),
         ContainerLinearGradient(),
         GestureDetector(
@@ -249,13 +249,16 @@ class _RestScreenState extends State<RestScreen>
                         ),
                       ),
                     ),
-                    SizedBox(height: 60),
+                    SizedBox(height: 15),
                     Padding(
                       padding: const EdgeInsets.all(15.0),
                       child: _state == QuoteLoadingState.FINISHED_DOWNLOADING
 
                           /// Same as Daily, but different Global key on show more
-                          ? RestQuoteClass(title: dailyQuote, author: author)
+                          ? RestQuoteUI(
+                              title: dailyQuote,
+                              author: author,
+                            )
                           : _state == QuoteLoadingState.DOWNLOADING
                               ? Center(child: CircularProgressIndicator())
                               : Container(),

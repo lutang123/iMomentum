@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
@@ -6,14 +7,16 @@ import 'package:provider/provider.dart';
 // in home screen
 class MyDotContainer extends StatelessWidget {
   final Color color;
+  final double size;
 
-  const MyDotContainer({Key key, this.color}) : super(key: key);
+  const MyDotContainer({Key key, this.color, this.size = 8.0})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 8.0,
-      height: 8.0,
-      margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
+      width: size,
+      height: size,
+      margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
       decoration: BoxDecoration(shape: BoxShape.circle, color: color),
     );
   }
@@ -107,7 +110,7 @@ class MySignInContainer extends StatelessWidget {
     // bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 15.0),
-      padding: EdgeInsets.all(15.0),
+      padding: EdgeInsets.only(left: 15.0, right: 15, bottom: 15, top: 15),
       decoration: BoxDecoration(
           color: lightThemeSurface, borderRadius: BorderRadius.circular(20.0)),
       height: height,
@@ -116,6 +119,7 @@ class MySignInContainer extends StatelessWidget {
   }
 }
 
+// in home screen error
 class MyContainerWithDarkMode extends StatelessWidget {
   const MyContainerWithDarkMode({Key key, this.child, this.height})
       : super(key: key);
@@ -135,6 +139,47 @@ class MyContainerWithDarkMode extends StatelessWidget {
       height: height,
       child: child,
     );
+  }
+}
+
+class HomeErrorMessage extends StatelessWidget {
+  final String text;
+  final String textTap;
+  final Function onTap;
+  const HomeErrorMessage({Key key, this.text, this.textTap, this.onTap})
+      : super(key: key);
+  @override
+  @override
+  Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    return MyContainerWithDarkMode(
+        child: RichText(
+      text: TextSpan(
+        style: TextStyle(
+            color: _darkTheme
+                ? darkThemeWords.withOpacity(0.85)
+                : lightThemeWords.withOpacity(0.85),
+            fontStyle: FontStyle.italic,
+            fontSize: 16),
+        children: [
+          TextSpan(
+            text: text,
+          ),
+          TextSpan(
+            text: textTap,
+            recognizer: TapGestureRecognizer()..onTap = onTap,
+            style: TextStyle(
+                decoration: TextDecoration.underline,
+                color: _darkTheme
+                    ? darkThemeWords.withOpacity(0.85)
+                    : lightThemeWords.withOpacity(0.85),
+                fontStyle: FontStyle.italic,
+                fontSize: 16),
+          ),
+        ],
+      ),
+    ));
   }
 }
 
@@ -242,7 +287,7 @@ class MyBottomContainer extends StatelessWidget {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Container(
-        margin: const EdgeInsets.only(top: 6.0),
+        margin: const EdgeInsets.only(top: 5.0),
         decoration: BoxDecoration(
           color: _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
           borderRadius: BorderRadius.circular(5.0),
@@ -254,7 +299,7 @@ class MyBottomContainer extends StatelessWidget {
             ),
           ],
         ),
-        child: child);
+        child: Center(child: child));
   }
 }
 

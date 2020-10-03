@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:iMomentum/app/common_widgets/add_screen_top_row.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
@@ -7,6 +8,7 @@ import 'package:iMomentum/app/models/mantra_model.dart';
 import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/constants/theme.dart';
+import 'package:iMomentum/screens/todo_screen/add_todo_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:iMomentum/app/utils/extension_firstCaps.dart';
 
@@ -49,15 +51,9 @@ class _AddMantraScreenState extends State<AddMantraScreen> {
           key: _formKey,
           child: Column(
             children: <Widget>[
-              SizedBox(height: 20),
-              Text(mantra != null ? 'Edit Mantra' : 'Add Mantra',
-                  style: Theme.of(context).textTheme.headline5),
+              AddScreenTopRow(
+                  title: mantra != null ? 'Edit Mantra' : 'Add Mantra'),
               SizedBox(
-                height: 10,
-              ),
-
-              /// todo, keyboard done
-              Container(
                 width: 350,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -70,9 +66,10 @@ class _AddMantraScreenState extends State<AddMantraScreen> {
                       title = value.firstCaps;
                       _save();
                     },
+                    maxLength: 50,
                     style: TextStyle(
                         color: _darkTheme ? darkThemeWords : lightThemeWords,
-                        fontSize: 20.0),
+                        fontSize: 18.0),
                     autofocus: true,
                     textAlign: TextAlign.center,
                     cursorColor:
@@ -81,8 +78,11 @@ class _AddMantraScreenState extends State<AddMantraScreen> {
                     // maxLines: null,
                     keyboardAppearance:
                         _darkTheme ? Brightness.dark : Brightness.light,
-                    maxLength: 60,
                     decoration: InputDecoration(
+                      hintText: 'Your favourite mantra',
+                      hintStyle: TextStyle(
+                          fontSize: 15,
+                          color: _darkTheme ? Colors.white54 : Colors.black38),
                       focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(
                               color:

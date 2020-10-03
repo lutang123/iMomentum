@@ -10,9 +10,11 @@ import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_fab.dart';
 import 'package:iMomentum/app/common_widgets/my_list_tile.dart';
+import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/setting_switch.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
+import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/models/quote_model.dart';
@@ -36,7 +38,7 @@ class _MyQuotesState extends State<MyQuotes> {
   int counter = 0;
   void _onDoubleTap() {
     setState(() {
-      ImageUrl.randomImageUrl = '${ImageUrl.randomImageUrlFirstPart}$counter';
+      ImagePath.randomImageUrl = '${ImagePath.randomImageUrlFirstPart}$counter';
       counter++;
     });
   }
@@ -58,7 +60,7 @@ class _MyQuotesState extends State<MyQuotes> {
       children: <Widget>[
         BuildPhotoView(
           imageUrl:
-              _randomOn ? ImageUrl.randomImageUrl : imageNotifier.getImage(),
+              _randomOn ? ImagePath.randomImageUrl : imageNotifier.getImage(),
         ),
         ContainerLinearGradient(),
         GestureDetector(
@@ -73,7 +75,12 @@ class _MyQuotesState extends State<MyQuotes> {
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
                     children: [
-                      _topRow(),
+                      MantraTopBar(
+                        title: 'Quotes',
+                        subtitle:
+                            'A daily reminder for inspiration and growth.',
+                        onPressed: _showTipDialog,
+                      ),
                       StreamBuilder<List<QuoteModel>>(
                           stream: widget.database
                               .quotesStream(), //print: flutter: Instance of '_MapStream<List<TodoDuration>, dynamic>'
@@ -109,12 +116,9 @@ class _MyQuotesState extends State<MyQuotes> {
                                       Visibility(
                                         visible: _quoteVisible,
                                         child: Expanded(
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(20.0),
-                                            child: buildListView(
-                                              widget.database,
-                                              quotes,
-                                            ),
+                                          child: buildListView(
+                                            widget.database,
+                                            quotes,
                                           ),
                                         ),
                                       ),
@@ -123,6 +127,7 @@ class _MyQuotesState extends State<MyQuotes> {
                                 );
                               } else {
                                 return EmptyOrErrorMantra(
+                                  //already in Expanded
                                   hideEmptyMessage: _hideEmptyMessage,
                                   text1: Strings.textQuote1,
                                   text2: Strings.textQuote2,
@@ -152,11 +157,12 @@ class _MyQuotesState extends State<MyQuotes> {
     );
   }
 
-  Widget _topRow() {
-    return MantraTopBar(
-      title: 'Quotes',
-      subtitle: 'A daily reminder for inspiration and growth.',
-    );
+  Future<void> _showTipDialog() async {
+    await PlatformAlertDialog(
+      title: 'Tips',
+      content: Strings.tipsOnQuoteScreen,
+      defaultActionText: 'OK.',
+    ).show(context);
   }
 
   Future<void> onQuoteChanged(bool value, QuoteNotifier quoteNotifier) async {

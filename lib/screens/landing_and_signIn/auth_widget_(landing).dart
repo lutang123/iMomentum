@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
-import 'package:iMomentum/app/constants/constants_style.dart';
+import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 
 /// Builds the signed-in or non signed-in UI, depending on the user snapshot.
@@ -35,7 +35,7 @@ class AuthWidget extends StatelessWidget {
         body: Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage(ImageUrl.startImage1),
+              image: AssetImage(ImagePath.introImage),
               fit: BoxFit.cover,
             ),
           ),
@@ -54,7 +54,7 @@ class AuthWidget extends StatelessWidget {
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(ImageUrl.startImage1),
+            image: AssetImage(ImagePath.introImage),
             fit: BoxFit.cover,
           ),
         ),

@@ -165,9 +165,8 @@ class _PreviewFileState extends State<PreviewFile>
                       // Allows user to decide when to start the upload
                       : Container(
                           child: MyFlatButton(
-                              text: 'Set as background photo', onPressed: _apply
-//                  _onImageChanged(context, imageFile, imageNotifier),
-                              ),
+                              text: 'Set as background photo',
+                              onPressed: _apply),
                         ),
                 ),
               ),

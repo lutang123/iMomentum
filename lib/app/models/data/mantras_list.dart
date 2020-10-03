@@ -24,6 +24,15 @@ class DefaultMantra {
   String body;
 }
 
+// var list = ['a','b','c','d','e'];
+//
+// // generates a new Random object
+// final _random = new Random();
+//
+// // generate a random index based on the list length
+// // and use it to retrieve the element
+// var element = list[_random.nextInt(list.length)];
+
 class DefaultMantraList {
   //a function to return a random mantra
   DefaultMantra showMantra() {

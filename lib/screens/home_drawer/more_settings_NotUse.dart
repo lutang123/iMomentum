@@ -4,6 +4,7 @@ import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/setting_switch.dart';
+import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/models/mantra_model.dart';
 import 'package:iMomentum/app/models/quote_model.dart';
@@ -12,9 +13,7 @@ import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/iPomodoro/clock_mantra_quote_title.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:flutter/cupertino.dart';
-import '../../app/constants/constants_style.dart';
 
 class MoreSettingScreen extends StatefulWidget {
   final Database database;
@@ -44,7 +43,7 @@ class _MoreSettingScreenState extends State<MoreSettingScreen> {
 
   void _onDoubleTap() {
     setState(() {
-      ImageUrl.randomImageUrl =
+      ImagePath.randomImageUrl =
           'https://source.unsplash.com/random?nature/$counter';
       counter++;
     });
@@ -71,7 +70,7 @@ class _MoreSettingScreenState extends State<MoreSettingScreen> {
       children: <Widget>[
         BuildPhotoView(
           imageUrl:
-              _randomOn ? ImageUrl.randomImageUrl : imageNotifier.getImage(),
+              _randomOn ? ImagePath.randomImageUrl : imageNotifier.getImage(),
         ),
         ContainerLinearGradient(),
         GestureDetector(

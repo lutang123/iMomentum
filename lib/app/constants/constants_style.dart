@@ -1,28 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 
-// https://source.unsplash.com/daily?nature
-//'https://source.unsplash.com/random?nature'
-//https://source.unsplash.com/random?nature/$counter
-
-class ImageUrl {
-  ///todo: how to filter good photo, order_by=popular seems no use
-  static String randomImageUrl =
-      'https://source.unsplash.com/random?nature&wallpaper&travel&landscape/';
-  static String randomImageUrlFirstPart =
-      'https://source.unsplash.com/random?nature&wallpaper&travel&landscape/';
-
-  // static String fixedImageUrl =
-  //     'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2706&q=80';
-  static String fixedImageUrl = 'assets/images/ocean1.jpg';
-  static String startImage = 'assets/images/ocean1.jpg';
-  static String startImage1 = 'assets/images/ocean1.jpg';
-  static String startImage2 = 'assets/images/landscape.jpg';
-  static String startImage3 = 'assets/images/waterfall.jpg';
-  static String startImage4 = 'assets/images/landscape2.jpg';
-  static String signInImage = 'assets/images/mountain_new.jpg';
-}
-
 const KBackgroundGradient = LinearGradient(
   colors: [
     Colors.transparent, //we can not add with opacity
@@ -37,7 +15,6 @@ const KBackgroundGradient = LinearGradient(
 // Home and Pomodoro Screen
 const KHomeToday =
     TextStyle(color: Colors.white, fontSize: 25.0, fontWeight: FontWeight.bold);
-// HomeTodoListTile used GoogleFonts.varelaRound, 25, bold
 
 const KHomeDate = TextStyle(
   color: Colors.white,
@@ -52,9 +29,10 @@ const KHomeQuestion2 =
     TextStyle(color: Colors.white, fontSize: 30.0, fontWeight: FontWeight.bold);
 
 const KHomeGreeting =
-    TextStyle(fontSize: 35.0, color: Colors.white, fontWeight: FontWeight.bold);
+    TextStyle(fontSize: 33.0, color: Colors.white, fontWeight: FontWeight.bold);
 
-const KTextFieldInputDecoration = InputDecoration(
+//in HomeTextField (home and name)
+const KHomeTextFieldInputDecoration = InputDecoration(
   focusedBorder: UnderlineInputBorder(
     borderSide: BorderSide(color: darkThemeHint),
   ),
@@ -62,16 +40,37 @@ const KTextFieldInputDecoration = InputDecoration(
       borderSide: BorderSide(
     color: darkThemeHint,
   )),
+
+  ///validator can't show when over the max length
   // counterText: "",
 );
 
+//in AddTodo calendar
+const KTransparentInputDecoration = InputDecoration(
+  focusedBorder:
+      UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
+  enabledBorder:
+      UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
+);
+
+//in pomodoro screen
 const KTextFieldInputDecorationLight = InputDecoration(
   focusedBorder: UnderlineInputBorder(
-    borderSide: BorderSide(color: lightThemeHint),
+    borderSide: BorderSide(color: lightThemeDivider),
   ),
   enabledBorder: UnderlineInputBorder(
       borderSide: BorderSide(
-    color: lightThemeHint,
+    color: lightThemeDivider,
+  )),
+  // counterText: "",
+);
+const KTextFieldInputDecorationDark = InputDecoration(
+  focusedBorder: UnderlineInputBorder(
+    borderSide: BorderSide(color: darkThemeDivider),
+  ),
+  enabledBorder: UnderlineInputBorder(
+      borderSide: BorderSide(
+    color: darkThemeDivider,
   )),
   // counterText: "",
 );
@@ -129,7 +128,7 @@ const KTextButton = TextStyle(
 const KQuote = TextStyle(
     color: Colors.white,
     fontWeight: FontWeight.w600,
-    fontSize: 15,
+    fontSize: 16,
     fontStyle: FontStyle.italic);
 
 const KQuoteDot = TextStyle(
@@ -138,8 +137,8 @@ const KQuoteDot = TextStyle(
 const KEmptyContent = TextStyle(
     fontSize: 18, fontStyle: FontStyle.italic, fontWeight: FontWeight.w400);
 
-// for landing screen
-const KLandingTitle = TextStyle(
+/// for start screen
+const KWelcome = TextStyle(
   fontSize: 30,
   fontFamily: "Billy",
   color: Colors.white,
@@ -147,27 +146,40 @@ const KLandingTitle = TextStyle(
 );
 
 ///in landing swipe
-const KLandingSubtitleD = TextStyle(
+const KLandingTitleD = TextStyle(
   fontSize: 25,
   color: darkThemeWords,
   fontWeight: FontWeight.w600,
 );
 
-const KLandingSubtitleL = TextStyle(
+const KLandingTitleL = TextStyle(
   fontSize: 25,
   color: lightThemeWords,
   fontWeight: FontWeight.w600,
 );
 
-const KLandingSubtitle2D =
-    TextStyle(fontSize: 20, color: darkThemeWords, fontStyle: FontStyle.italic
-        // fontWeight: FontWeight.w600,
-        );
+const KLandingTitleHighlight = TextStyle(
+  fontSize: 25,
+  color: lightThemeButton,
+  fontWeight: FontWeight.w600,
+);
 
-const KLandingSubtitle2L =
-    TextStyle(fontSize: 20, color: lightThemeWords, fontStyle: FontStyle.italic
-        // fontWeight: FontWeight.w600,
-        );
+const KLandingSubtitleD = TextStyle(
+  fontSize: 20,
+  color: darkThemeWords,
+  fontStyle: FontStyle.italic,
+  fontWeight: FontWeight.w400,
+);
+
+const KLandingSubtitleL = TextStyle(
+  fontSize: 20,
+  color: lightThemeWords,
+  fontStyle: FontStyle.italic,
+  fontWeight: FontWeight.w400,
+);
+
+const KFeatureL =
+    TextStyle(color: lightThemeWords, fontWeight: FontWeight.w400);
 
 const KSignInButtonTextD = TextStyle(
   fontSize: 18,
@@ -195,34 +207,28 @@ const KSignInSecondButtonL = TextStyle(
     fontStyle: FontStyle.italic,
     decoration: TextDecoration.underline);
 
-const KSignInButtonOrD = TextStyle(
-    fontSize: 14,
-    color: darkThemeHint2,
-    fontWeight: FontWeight.w400,
-    fontStyle: FontStyle.italic);
-
 const KSignInButtonOrL = TextStyle(
     fontSize: 14,
-    color: lightThemeHint2,
+    color: signInOr,
     fontWeight: FontWeight.w400,
     fontStyle: FontStyle.italic);
 
-const KPrivacyD = TextStyle(
-    color: Color(0xf0fafafa), fontSize: 15, fontStyle: FontStyle.italic);
+const KTopFlatButtonText =
+    TextStyle(color: topFlatButton, fontStyle: FontStyle.italic);
 
-const KPrivacyL = TextStyle(
+///why sign in
+const KWhySignInTitleL = TextStyle(
+    fontSize: 22, color: lightThemeWords, fontWeight: FontWeight.w600);
+
+const KSignInReason = TextStyle(color: lightThemeWords, fontSize: 17);
+
+const KSignInReasonDetail = TextStyle(
     color: Color(0xf01a1a2e), fontSize: 15, fontStyle: FontStyle.italic);
 
-const KPrivacyTapD = TextStyle(
-  color: Color(0xf0fafafa),
-  fontSize: 15,
-  fontStyle: FontStyle.italic,
-  decoration: TextDecoration.underline,
-);
+const KPrivacyL = TextStyle(fontSize: 14, color: lightThemeHint2);
 
 const KPrivacyTapL = TextStyle(
-  color: Color(0xf01a1a2e),
-  fontSize: 15,
-  fontStyle: FontStyle.italic,
+  color: lightThemeHint2,
+  fontSize: 14,
   decoration: TextDecoration.underline,
 );

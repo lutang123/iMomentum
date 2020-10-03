@@ -10,9 +10,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
+import 'package:iMomentum/app/common_widgets/my_sizedbox.dart';
 import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
-import 'package:iMomentum/app/constants/constants_style.dart';
+import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/models/folder.dart';
 import 'package:iMomentum/app/models/note.dart';
@@ -83,7 +84,7 @@ class FolderScreenState extends State<FolderScreen> {
   int counter = 0;
   void _onDoubleTap() {
     setState(() {
-      ImageUrl.randomImageUrl = '${ImageUrl.randomImageUrlFirstPart}$counter';
+      ImagePath.randomImageUrl = '${ImagePath.randomImageUrlFirstPart}$counter';
       counter++;
     });
   }
@@ -109,7 +110,7 @@ class FolderScreenState extends State<FolderScreen> {
       children: <Widget>[
         BuildPhotoView(
           imageUrl:
-              _randomOn ? ImageUrl.randomImageUrl : imageNotifier.getImage(),
+              _randomOn ? ImagePath.randomImageUrl : imageNotifier.getImage(),
         ),
         ContainerLinearGradient(),
         GestureDetector(
@@ -231,50 +232,52 @@ class FolderScreenState extends State<FolderScreen> {
   Widget _topRow() {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    return Column(
-      children: <Widget>[
-        SizedBox(
-          height: 35,
-          child: Container(
-            color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
-          ),
-        ),
-        Container(
-          height: 50,
-          color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 40.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Folders',
-                    style: TextStyle(
-                        color: _darkTheme ? darkThemeWords : lightThemeWords,
-                        fontSize: 34,
-                        fontWeight: FontWeight.w600)),
-                FlatButton(
-                  child: Text(
-                    'Show Tips',
-                    style: TextStyle(
-                        fontSize: 15,
-                        color: _darkTheme
-                            ? darkThemeButton.withOpacity(0.7)
-                            : lightThemeButton.withOpacity(0.7)),
-                  ),
-                  onPressed: _showTipDialog,
+    return Container(
+      color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
+      child: Column(
+        children: <Widget>[
+          MyTopSizedBox(),
+          SizedBox(
+            height: 50,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 40.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // textBaseline: TextBaseline.ideographic,
+                  // crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text('Folders',
+                        style: TextStyle(
+                            color:
+                                _darkTheme ? darkThemeWords : lightThemeWords,
+                            fontSize: 33,
+                            fontWeight: FontWeight.w600)),
+                    FlatButton(
+                      child: Text(
+                        'Show Tips',
+                        style: TextStyle(
+                            fontSize: 15,
+                            color: _darkTheme
+                                ? darkThemeButton.withOpacity(0.9)
+                                : lightThemeButton.withOpacity(0.9)),
+                      ),
+                      onPressed: _showTipDialog,
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   Future<void> _showTipDialog() async {
     await PlatformAlertDialog(
       title: 'Tips',
-      content: Strings.folderScreenTips,
+      content: Strings.tipsOnFolderScreen,
       defaultActionText: 'OK.',
     ).show(context);
   }
