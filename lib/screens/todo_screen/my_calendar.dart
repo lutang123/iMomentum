@@ -4,7 +4,6 @@ import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:iMomentum/app/constants/theme.dart';
-import 'dart:io' show Platform;
 
 class MyCalendar extends StatelessWidget {
   const MyCalendar({

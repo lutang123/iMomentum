@@ -53,48 +53,7 @@ class _AddMantraScreenState extends State<AddMantraScreen> {
             children: <Widget>[
               AddScreenTopRow(
                   title: mantra != null ? 'Edit Mantra' : 'Add Mantra'),
-              SizedBox(
-                width: 350,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: TextFormField(
-                    initialValue: title,
-                    validator: (value) =>
-                        value.isNotEmpty ? null : 'Mantra can\'t be empty',
-                    onSaved: (value) => title = value.firstCaps,
-                    onFieldSubmitted: (value) {
-                      title = value.firstCaps;
-                      _save();
-                    },
-                    maxLength: 50,
-                    style: TextStyle(
-                        color: _darkTheme ? darkThemeWords : lightThemeWords,
-                        fontSize: 18.0),
-                    autofocus: true,
-                    textAlign: TextAlign.center,
-                    cursorColor:
-                        _darkTheme ? darkThemeButton : lightThemeButton,
-                    // keyboardType: TextInputType.multiline,
-                    // maxLines: null,
-                    keyboardAppearance:
-                        _darkTheme ? Brightness.dark : Brightness.light,
-                    decoration: InputDecoration(
-                      hintText: 'Your favourite mantra',
-                      hintStyle: TextStyle(
-                          fontSize: 15,
-                          color: _darkTheme ? Colors.white54 : Colors.black38),
-                      focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color:
-                                  _darkTheme ? darkThemeHint : lightThemeHint)),
-                      enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color:
-                                  _darkTheme ? darkThemeHint : lightThemeHint)),
-                    ),
-                  ),
-                ),
-              ),
+              buildSizedBoxMantra(_darkTheme),
               MyFlatButton(
                   onPressed: _save,
                   text: 'SAVE',
@@ -106,6 +65,54 @@ class _AddMantraScreenState extends State<AddMantraScreen> {
         ),
       ),
     );
+  }
+
+  SizedBox buildSizedBoxMantra(bool _darkTheme) {
+    return SizedBox(
+      width: 350,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        child: TextFormField(
+          initialValue: title,
+          validator: (value) =>
+              value.isNotEmpty ? null : 'Mantra can\'t be empty',
+          onSaved: (value) => title = value.firstCaps,
+          onFieldSubmitted: (value) {
+            title = value.firstCaps;
+            _save();
+          },
+          maxLength: 50,
+          style: buildTextStyleMantra(_darkTheme),
+          autofocus: true,
+          cursorColor: _darkTheme ? darkThemeButton : lightThemeButton,
+          // keyboardType: TextInputType.multiline,
+          // maxLines: null,
+          keyboardAppearance: _darkTheme ? Brightness.dark : Brightness.light,
+          decoration: InputDecoration(
+            hintText: 'Your favourite mantra',
+            hintStyle: buildTextStyleMantraHint(_darkTheme),
+            focusedBorder: buildUnderlineInputBorder(_darkTheme),
+            enabledBorder: buildUnderlineInputBorder(_darkTheme),
+          ),
+        ),
+      ),
+    );
+  }
+
+  TextStyle buildTextStyleMantraHint(bool _darkTheme) {
+    return TextStyle(
+        fontSize: 15, color: _darkTheme ? darkThemeHint : lightThemeHint);
+  }
+
+  TextStyle buildTextStyleMantra(bool _darkTheme) {
+    return TextStyle(
+        fontSize: 18.0, color: _darkTheme ? darkThemeWords : lightThemeWords);
+  }
+
+  UnderlineInputBorder buildUnderlineInputBorder(bool _darkTheme) {
+    return UnderlineInputBorder(
+        borderSide:
+            BorderSide(color: _darkTheme ? darkThemeHint : lightThemeHint));
   }
 
   bool _validateAndSaveForm() {

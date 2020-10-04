@@ -118,154 +118,105 @@ class _StartScreen2State extends State<StartScreen2> {
             enableSlideIcon: true,
             positionSlideIcon: 0.6,
             fullTransitionValue: 600,
-            slideIconWidget: page == pages.length - 1
-                ? null
-                : Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: darkThemeAppBar,
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(20.0))),
-                      child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Icon(Icons.arrow_back_ios, color: Colors.white),
-                            Text(Strings.introSwipe, style: KSignInButtonTextD)
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+            slideIconWidget: page == pages.length - 1 ? null : swipeButton(),
             enableLoop: true,
             onPageChangeCallback: pageChangeCallback,
             waveType: WaveType.liquidReveal,
-            ignoreUserGestureWhileAnimating:
-                page == pages.length - 1 ? false : true,
-            liquidController: liquidController,
+            // ignoreUserGestureWhileAnimating:
+            //     page == pages.length - 1 ? false : true,
+            // liquidController: liquidController,
           ),
-          Positioned(
-            left: 30,
-            right: 30,
-            top: height * 0.06, // 50/896
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    InkWell(
-                      child: Icon(Icons.arrow_back_ios, color: Colors.white),
-                      onTap: () =>
-                          Navigator.of(context).pushReplacement(PageRoutes.fade(
-                        () => StartScreen(),
-                      )),
-                    )
-                  ],
-                ),
-                SizedBox(height: 20),
-                Text('${Strings.welcome} ${userName.firstCaps}.',
-                    style: KWelcome),
-              ],
-            ),
-          ),
-          page == pages.length - 1
-              ? Positioned(
-                  left: 30,
-                  right: 30,
-                  bottom: height * 0.15, //100,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: MyFlatButton(
-                              text: Strings.startButton,
-                              onPressed: () => Navigator.of(context)
-                                      .pushReplacement(PageRoutes.fade(
-                                    () => StartScreen3(name: userName),
-                                  ))))
-                    ],
-                  ),
-                )
-              : Container(),
-          Padding(
-            padding: EdgeInsets.all(20),
-            child: Column(
-              children: <Widget>[
-                Expanded(child: SizedBox()),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List<Widget>.generate(pages.length, _buildDot),
-                ),
-              ],
-            ),
-          ),
-
-          /// jump to end and previous
-          // page == pages.length - 1
-          //     ? Container()
-          //     : Align(
-          //         alignment: Alignment.bottomRight,
-          //         child: Padding(
-          //           padding: const EdgeInsets.all(25.0),
-          //           child: FlatButton(
-          //             onPressed: () {
-          //               liquidController.animateToPage(
-          //                   page: pages.length - 1, duration: 500);
-          //             },
-          //             child: Container(
-          //               child: Padding(
-          //                 padding: const EdgeInsets.all(8.0),
-          //                 child: Text("Skip to End",
-          //                     style: TextStyle(
-          //                       fontSize: 14,
-          //                       color: Colors.white,
-          //                     )),
-          //               ),
-          //               decoration: BoxDecoration(
-          //                   color: darkThemeAppBar,
-          //                   borderRadius:
-          //                       BorderRadius.all(Radius.circular(10.0))),
-          //             ),
-          //             color: Colors.black.withOpacity(0.01),
-          //           ),
-          //         ),
-          //       ),
-          //
-          // page == 0
-          //     ? Container()
-          //     : Align(
-          //         alignment: Alignment.bottomLeft,
-          //         child: Padding(
-          //           padding: const EdgeInsets.all(25.0),
-          //           child: FlatButton(
-          //             onPressed: () {
-          //               liquidController.jumpToPage(
-          //                   page: liquidController.currentPage - 1);
-          //             },
-          //             child: Container(
-          //               child: Padding(
-          //                 padding: const EdgeInsets.all(8.0),
-          //                 child: Text(
-          //                   "Previous Page",
-          //                   style: TextStyle(
-          //                     fontSize: 14,
-          //                     color: Colors.white,
-          //                   ),
-          //                 ),
-          //               ),
-          //               decoration: BoxDecoration(
-          //                   color: darkThemeAppBar,
-          //                   borderRadius:
-          //                       BorderRadius.all(Radius.circular(10.0))),
-          //             ),
-          //             color: Colors.black.withOpacity(0.01),
-          //           ),
-          //         ),
-          //       )
+          topColumn(height, context),
+          page == pages.length - 1 ? startButton(height, context) : Container(),
+          bottomDots(),
         ],
+      ),
+    );
+  }
+
+  Padding bottomDots() {
+    return Padding(
+      padding: EdgeInsets.all(20),
+      child: Column(
+        children: <Widget>[
+          Expanded(child: SizedBox()),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List<Widget>.generate(pages.length, _buildDot),
+          ),
+          SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+
+  Positioned startButton(double height, BuildContext context) {
+    return Positioned(
+      left: 30,
+      right: 30,
+      bottom: height * 0.15, //100,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: MyFlatButton(
+                  text: Strings.startButton,
+                  onPressed: () =>
+                      Navigator.of(context).pushReplacement(PageRoutes.fade(
+                        () => StartScreen3(name: userName),
+                      ))))
+        ],
+      ),
+    );
+  }
+
+  Positioned topColumn(double height, BuildContext context) {
+    return Positioned(
+      left: 30,
+      right: 30,
+      top: height * 0.06, // 50/896
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              InkWell(
+                child: Icon(Icons.arrow_back_ios, color: Colors.white),
+                onTap: () =>
+                    Navigator.of(context).pushReplacement(PageRoutes.fade(
+                  () => StartScreen(),
+                )),
+              )
+            ],
+          ),
+          SizedBox(height: 20),
+          Text('${Strings.welcome} ${userName.firstCaps}.', style: KWelcome),
+        ],
+      ),
+    );
+  }
+
+  Padding swipeButton() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 30.0),
+      child: Container(
+        decoration: BoxDecoration(
+            color: darkThemeAppBar,
+            borderRadius: BorderRadius.all(Radius.circular(20.0))),
+        child: Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.arrow_back_ios, color: Colors.white),
+              SizedBox(width: 2),
+              Text(Strings.introSwipe, style: KSignInButtonTextD)
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -311,6 +262,7 @@ class MyIntroPageContainer extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   RichText(
+                    textAlign: TextAlign.center,
                     text: TextSpan(
                       style: KLandingTitleL,
                       children: [
@@ -321,7 +273,6 @@ class MyIntroPageContainer extends StatelessWidget {
                         TextSpan(text: title5),
                       ],
                     ),
-                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
@@ -369,11 +320,13 @@ class MyPageContainer extends StatelessWidget {
       constraints: BoxConstraints.expand(),
       child: SafeArea(
         child: Center(
+          //without this Center MySignInContainer will expand the screen
           child: Padding(
             padding: const EdgeInsets.all(15.0),
             child: MySignInContainer(
                 child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              // crossAxisAlignment: CrossAxisAlignment.center, //default
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(title, style: KLandingTitleL, textAlign: TextAlign.center),
@@ -381,21 +334,9 @@ class MyPageContainer extends StatelessWidget {
                 Text(subtitle,
                     style: KLandingSubtitleL, textAlign: TextAlign.center),
                 SizedBox(height: 15),
-                ListTile(
-                  leading: Icon(icon1, //  FontAwesomeIcons.images,
-                      color: lightThemeButton),
-                  title: Text(feature1, style: KFeatureL),
-                ),
-                ListTile(
-                  leading: Icon(icon2, //FontAwesomeIcons.quoteLeft,
-                      color: lightThemeButton),
-                  title: Text(feature2, style: KFeatureL),
-                ),
-                ListTile(
-                  leading: Icon(icon3, //FontAwesomeIcons.solidHeart,
-                      color: lightThemeButton),
-                  title: Text(feature3, style: KFeatureL),
-                )
+                buildListTile(icon1, feature1),
+                buildListTile(icon2, feature2),
+                buildListTile(icon3, feature3),
               ],
             )),
           ),
@@ -403,4 +344,93 @@ class MyPageContainer extends StatelessWidget {
       ),
     );
   }
+
+  /// list tile tend to expand and take all screen width and does not look good on wide screen like iPad or web
+  ListTile buildListTile(IconData icon, String text) {
+    return ListTile(
+      leading: Icon(icon, //  FontAwesomeIcons.images,
+          color: lightThemeButton),
+      title: Text(text, style: KFeatureL),
+    );
+  }
+
+  /// tried to make it a row, but then on mobile it can run out of space
+  Padding iconAndWordsRow(IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.all(15.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, //  FontAwesomeIcons.images,
+              color: lightThemeButton),
+          SizedBox(width: 30),
+          Text(text, style: KFeatureL)
+        ],
+      ),
+    );
+  }
 }
+
+/// jump to end and previous
+// page == pages.length - 1
+//     ? Container()
+//     : Align(
+//         alignment: Alignment.bottomRight,
+//         child: Padding(
+//           padding: const EdgeInsets.all(25.0),
+//           child: FlatButton(
+//             onPressed: () {
+//               liquidController.animateToPage(
+//                   page: pages.length - 1, duration: 500);
+//             },
+//             child: Container(
+//               child: Padding(
+//                 padding: const EdgeInsets.all(8.0),
+//                 child: Text("Skip to End",
+//                     style: TextStyle(
+//                       fontSize: 14,
+//                       color: Colors.white,
+//                     )),
+//               ),
+//               decoration: BoxDecoration(
+//                   color: darkThemeAppBar,
+//                   borderRadius:
+//                       BorderRadius.all(Radius.circular(10.0))),
+//             ),
+//             color: Colors.black.withOpacity(0.01),
+//           ),
+//         ),
+//       ),
+//
+// page == 0
+//     ? Container()
+//     : Align(
+//         alignment: Alignment.bottomLeft,
+//         child: Padding(
+//           padding: const EdgeInsets.all(25.0),
+//           child: FlatButton(
+//             onPressed: () {
+//               liquidController.jumpToPage(
+//                   page: liquidController.currentPage - 1);
+//             },
+//             child: Container(
+//               child: Padding(
+//                 padding: const EdgeInsets.all(8.0),
+//                 child: Text(
+//                   "Previous Page",
+//                   style: TextStyle(
+//                     fontSize: 14,
+//                     color: Colors.white,
+//                   ),
+//                 ),
+//               ),
+//               decoration: BoxDecoration(
+//                   color: darkThemeAppBar,
+//                   borderRadius:
+//                       BorderRadius.all(Radius.circular(10.0))),
+//             ),
+//             color: Colors.black.withOpacity(0.01),
+//           ),
+//         ),
+//       )

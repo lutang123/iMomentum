@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iMomentum/app/common_widgets/my_round_button.dart';
+import 'package:iMomentum/app/constants/constants_style.dart';
 import 'only_thin_ring.dart';
 
 class ClockStart extends StatelessWidget {
@@ -32,49 +33,15 @@ class ClockStart extends StatelessWidget {
             child: OnlyThinRing(),
           ),
           Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Opacity(
-                    //just to take the space.
-                    opacity: 0.0,
-                    child: IconButton(
-                      icon: Icon(Icons.edit),
-                      onPressed: null,
-                    ),
-                  ),
-                  SizedBox(width: 3),
-                  Text(
-                    text1,
-                    style: GoogleFonts.varelaRound(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 55.0,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(width: 3),
-                  IconButton(
-                    icon: Icon(FontAwesomeIcons.ellipsisH,
-                        color: Colors.white.withOpacity(0.85)),
-                    onPressed: onPressedEdit,
-                  )
-                ],
-              ),
+              firstRow(),
               //add SizedBox to make the layout consistent.
               SizedBox(
                 height: 25,
                 child: Center(
-                  child: Text(
-                    text2, //can be '' or 'Take a break'
-                    style: GoogleFonts.varelaRound(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 22.0,
-                      color: Colors.white,
-                    ),
-                  ),
+                  child: Text(text2, //can be '' or 'Take a break'
+                      style: KTimerBeginSubtitle),
                 ),
               ),
               SizedBox(height: height), //SizedBox(height: 15),
@@ -87,6 +54,30 @@ class ClockStart extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Row firstRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Opacity(
+          //just to take the space.
+          opacity: 0.0,
+          child: IconButton(
+            icon: Icon(Icons.edit),
+            onPressed: null,
+          ),
+        ),
+        SizedBox(width: 3),
+        Text(text1, style: KTimer),
+        SizedBox(width: 3),
+        IconButton(
+          icon: Icon(FontAwesomeIcons.ellipsisH,
+              color: Colors.white.withOpacity(0.9)),
+          onPressed: onPressedEdit,
+        )
+      ],
     );
   }
 }

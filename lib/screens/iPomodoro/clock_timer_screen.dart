@@ -5,6 +5,7 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_round_button.dart';
+import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/models/duration_model.dart';
@@ -14,6 +15,7 @@ import 'package:iMomentum/app/services/calendar_bloc.dart';
 import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/utils/pages_routes.dart';
+import 'package:iMomentum/screens/iPomodoro/top_trans_row.dart';
 import 'package:provider/provider.dart';
 import 'clock_bottom.dart';
 import 'clock_completion_screen.dart';
@@ -93,7 +95,7 @@ class _ClockTimerScreenState extends State<ClockTimerScreen>
     }
     _timer = Timer.periodic(Duration(milliseconds: 10), (Timer t) {
       // update display
-      ///error here
+      ///error here, added mounted
       ///_ClockTimerScreenState._start.<anonymous closure>
       // https://stackoverflow.com/questions/52288613/how-to-dispose-of-my-stateful-widget-completely
       // https://stackoverflow.com/questions/49340116/setstate-called-after-dispose
@@ -146,19 +148,13 @@ class _ClockTimerScreenState extends State<ClockTimerScreen>
     });
 
     if (cancelled) {
-      ///this is wrong
-//      //https://stackoverflow.com/questions/49672706/flutter-navigation-pop-to-index-1
-//      int count = 0;
-//      Navigator.popUntil(context, (route) {
-//        return count++ == 2;
-//      });
       /// go back to HomeScreen
       Navigator.pop(context);
     } else {
       ///save duration in database when it's done
       _setDuration(context);
 
-      ///then go to completion page
+      /// if finished, then go to completion page
       Navigator.of(context).pushReplacement(PageRoutes.fade(
           () => Provider<CalendarBloc>(
                 create: (_) => CalendarBloc(database: widget.database),
@@ -195,111 +191,69 @@ class _ClockTimerScreenState extends State<ClockTimerScreen>
     }
   }
 
-  int counter = 0;
-  void _onDoubleTap() {
-    setState(() {
-      ImagePath.randomImageUrl = '${ImagePath.randomImageUrlFirstPart}$counter';
-      counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
-    bool _randomOn = (randomNotifier.getRandom() == true);
-    final imageNotifier = Provider.of<ImageNotifier>(context, listen: false);
-    return Stack(
-      fit: StackFit.expand,
-      children: <Widget>[
-        BuildPhotoView(
-          imageUrl:
-              _randomOn ? ImagePath.randomImageUrl : imageNotifier.getImage(),
-        ),
-        ContainerLinearGradient(),
-        GestureDetector(
-          onDoubleTap: _onDoubleTap,
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: SingleChildScrollView(
-              child: SafeArea(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    ///just to make sure the clock is in the same position
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Opacity(
-                            opacity: 0.0,
-                            child: IconButton(
-                              onPressed: null,
-                              icon: Icon(Icons.clear, size: 30),
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ), //clear button
-                    ClockTitle(
-                      title: 'Time to focus',
-                      subtitle: 'Break your work into intervals',
-                    ), //begin title
-                    ClockTimer(
-                      duration: widget.duration,
-                      animationController: _animationController,
-                      text1: _display,
-                      text2: 'Focus',
-                    ),
-                    SizedBox(
-                      height: 60,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            RoundTextButton(
-                              text: 'Cancel',
-                              textColor: Colors.white70,
-
-                              /// go back to HomeScreen
-                              onPressed: () => _end(cancelled: true),
-                              circleColor: Colors.white70,
-                              fillColor: Colors.black12,
-                            ),
-                            _stopwatch.isRunning
-                                ? RoundTextButton(
-                                    text: 'Pause',
-                                    textColor: Colors.white,
-                                    onPressed: _pause,
-                                    circleColor: Colors.white,
-                                    fillColor:
-                                        Colors.deepOrange.withOpacity(0.3),
-                                  )
-                                : RoundTextButton(
-                                    text: 'Resume',
-                                    textColor: Colors.white,
-                                    onPressed: _resume,
-                                    circleColor: Colors.white,
-                                    fillColor: Colors.green.withOpacity(0.2),
-                                  ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 15),
-                    ClockBottomToday(
-                      text: '${widget.todo.title}',
-                    ), //clock
-                  ],
+    return MyStackScreen(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SingleChildScrollView(
+          child: SafeArea(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                ///just to make sure the clock is in the same position
+                PomodoroTopTransRow(), //clear button
+                PomodoroTitle(
+                  title: 'Time to focus',
+                  subtitle: 'Break your work into intervals',
+                ), //begin title
+                ClockTimer(
+                  duration: widget.duration,
+                  animationController: _animationController,
+                  text1: _display,
+                  text2: 'Focus',
                 ),
-              ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      RoundTextButton(
+                        text: 'Cancel',
+                        textColor: Colors.white70,
+
+                        /// go back to HomeScreen
+                        onPressed: () => _end(cancelled: true),
+                        circleColor: Colors.white70,
+                        fillColor: Colors.black12,
+                      ),
+                      _stopwatch.isRunning
+                          ? RoundTextButton(
+                              text: 'Pause',
+                              textColor: Colors.white,
+                              onPressed: _pause,
+                              circleColor: Colors.white,
+                              fillColor: Colors.deepOrange.withOpacity(0.3),
+                            )
+                          : RoundTextButton(
+                              text: 'Resume',
+                              textColor: Colors.white,
+                              onPressed: _resume,
+                              circleColor: Colors.white,
+                              fillColor: Colors.green.withOpacity(0.2),
+                            ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 15),
+                ClockBottomToday(
+                  text: '${widget.todo.title}',
+                ), //clock
+              ],
             ),
           ),
         ),
-      ],
+      ),
     );
   }
 }

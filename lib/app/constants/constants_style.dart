@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 
+/// Gradient
 const KBackgroundGradient = LinearGradient(
   colors: [
     Colors.transparent, //we can not add with opacity
@@ -12,33 +14,15 @@ const KBackgroundGradient = LinearGradient(
   tileMode: TileMode.repeated,
 );
 
-// Home and Pomodoro Screen
-const KHomeToday =
-    TextStyle(color: Colors.white, fontSize: 25.0, fontWeight: FontWeight.bold);
-
-const KHomeDate = TextStyle(
-  color: Colors.white,
-  fontSize: 25.0,
-  fontWeight: FontWeight.bold,
-);
-
-const KHomeQuestion =
-    TextStyle(color: Colors.white, fontSize: 33.0, fontWeight: FontWeight.bold);
-
-const KHomeQuestion2 =
-    TextStyle(color: Colors.white, fontSize: 30.0, fontWeight: FontWeight.bold);
-
-const KHomeGreeting =
-    TextStyle(fontSize: 33.0, color: Colors.white, fontWeight: FontWeight.bold);
-
+/// InputDecoration
 //in HomeTextField (home and name)
 const KHomeTextFieldInputDecoration = InputDecoration(
   focusedBorder: UnderlineInputBorder(
-    borderSide: BorderSide(color: darkThemeHint),
+    borderSide: BorderSide(color: Colors.white),
   ),
   enabledBorder: UnderlineInputBorder(
       borderSide: BorderSide(
-    color: darkThemeHint,
+    color: Colors.white,
   )),
 
   ///validator can't show when over the max length
@@ -73,6 +57,57 @@ const KTextFieldInputDecorationDark = InputDecoration(
     color: darkThemeDivider,
   )),
   // counterText: "",
+);
+
+/// TextStyle
+// Home and Pomodoro Screen
+const KHomeToday =
+    TextStyle(color: Colors.white, fontSize: 25.0, fontWeight: FontWeight.bold);
+
+const KHomeDate = TextStyle(
+  color: Colors.white,
+  fontSize: 25.0,
+  fontWeight: FontWeight.bold,
+);
+
+const KHomeQuestion =
+    TextStyle(color: Colors.white, fontSize: 33.0, fontWeight: FontWeight.bold);
+
+const KHomeQuestion2 =
+    TextStyle(color: Colors.white, fontSize: 30.0, fontWeight: FontWeight.bold);
+
+const KHomeGreeting =
+    TextStyle(fontSize: 33.0, color: Colors.white, fontWeight: FontWeight.bold);
+
+const KTimer = TextStyle(
+  fontSize: 55.0,
+  color: Colors.white,
+  fontWeight: FontWeight.w600,
+);
+
+const KTimerBeginSubtitle = TextStyle(
+  fontSize: 22.0,
+  color: Colors.white,
+  fontWeight: FontWeight.w600,
+  fontFamily: "varelaRound",
+);
+
+const KTimerSubtitle = TextStyle(
+  fontSize: 35.0,
+  color: Colors.white,
+  fontWeight: FontWeight.w600,
+  fontFamily: "varelaRound",
+);
+
+const KPomodoroTitle =
+    TextStyle(fontSize: 32, color: Colors.white, fontWeight: FontWeight.bold);
+
+const KPomodoroSubtitle = TextStyle(
+  fontSize: 20.0,
+  color: Colors.white,
+  fontWeight: FontWeight.w600,
+  fontStyle: FontStyle.italic,
+  fontFamily: "varelaRound",
 );
 
 /// for all dialog:

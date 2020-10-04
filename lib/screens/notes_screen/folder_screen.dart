@@ -11,6 +11,7 @@ import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_sizedbox.dart';
+import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
 import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/constants/image_path.dart';
@@ -81,90 +82,58 @@ class FolderScreenState extends State<FolderScreen> {
     super.dispose();
   }
 
-  int counter = 0;
-  void _onDoubleTap() {
-    setState(() {
-      ImagePath.randomImageUrl = '${ImagePath.randomImageUrlFirstPart}$counter';
-      counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final database = Provider.of<Database>(context, listen: false);
-
-    final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
-    bool _randomOn = (randomNotifier.getRandom() == true);
-
-    final imageNotifier = Provider.of<ImageNotifier>(context, listen: false);
-
-//    double deviceHeight = MediaQuery.of(context).size.height;
-//    double deviceWidth = MediaQuery.of(context).size.width;
-//    isMobile = deviceWidth > deviceHeight ? false : true;
-//
-//    device = Device(
-//        MediaQuery.of(context).size.height, MediaQuery.of(context).size.width);
-
-    return Stack(
-      fit: StackFit.expand,
-      children: <Widget>[
-        BuildPhotoView(
-          imageUrl:
-              _randomOn ? ImagePath.randomImageUrl : imageNotifier.getImage(),
-        ),
-        ContainerLinearGradient(),
-        GestureDetector(
-          onDoubleTap: _onDoubleTap,
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            // appBar: _buildAppBar(), //created another appBar because default one is too high
-            body: SafeArea(
-              top: false,
-              child: Column(
-                children: <Widget>[
-                  _topRow(), //this is just for the words 'Folders'.
-                  // nested StreamBuilder for Note and Folder
-                  //this StreamBuilder is only to find out how many notes in a folder
-                  StreamBuilder<List<Note>>(
-                      stream: database.notesStream(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          final List<Note> allNotes = snapshot.data;
-                          if (allNotes.isNotEmpty) {
-                            return _folderStream(database, allNotes);
-                          } else {
-                            //this is for the very beginning, and when no notes,
-                            // we do not have folder stream too, it's all empty,
-                            // and once we add folder or add notes, we no longer use this one.
-                            ///but if notes are empty, we want to show folders too
-                            return _folderStream(database, allNotes);
-                          }
-                        } else if (snapshot.hasError) {
-                          print(
-                              'snapshot.hasError in note stream: ${snapshot.error.toString()}');
-                          //no access on  allNotes, so we can not use _noAddedFolderContent
-                          return Expanded(
-                              child: Column(
-                            children: [
-                              Spacer(),
-                              EmptyOrError(
-                                  text: '',
-                                  tips: Strings.textError,
-                                  textTap: 'Or contact us.',
-                                  onTap: null),
-                              Spacer(),
-                            ],
-                          ));
-                        }
-                        return Center(child: CircularProgressIndicator());
-                      }),
-                  _bottomRow(database),
-                ],
-              ),
-            ),
+    return MyStackScreen(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        // appBar: _buildAppBar(), //created another appBar because default one is too high
+        body: SafeArea(
+          top: false,
+          child: Column(
+            children: <Widget>[
+              _topRow(), //this is just for the words 'Folders'.
+              // nested StreamBuilder for Note and Folder
+              //this StreamBuilder is only to find out how many notes in a folder
+              StreamBuilder<List<Note>>(
+                  stream: database.notesStream(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final List<Note> allNotes = snapshot.data;
+                      if (allNotes.isNotEmpty) {
+                        return _folderStream(database, allNotes);
+                      } else {
+                        //this is for the very beginning, and when no notes,
+                        // we do not have folder stream too, it's all empty,
+                        // and once we add folder or add notes, we no longer use this one.
+                        ///but if notes are empty, we want to show folders too
+                        return _folderStream(database, allNotes);
+                      }
+                    } else if (snapshot.hasError) {
+                      print(
+                          'snapshot.hasError in note stream: ${snapshot.error.toString()}');
+                      //no access on  allNotes, so we can not use _noAddedFolderContent
+                      return Expanded(
+                          child: Column(
+                        children: [
+                          Spacer(),
+                          EmptyOrError(
+                              text: '',
+                              tips: Strings.textError,
+                              textTap: 'Or contact us.',
+                              onTap: null),
+                          Spacer(),
+                        ],
+                      ));
+                    }
+                    return Center(child: CircularProgressIndicator());
+                  }),
+              _bottomRow(database),
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 
@@ -241,7 +210,7 @@ class FolderScreenState extends State<FolderScreen> {
             height: 50,
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.only(left: 40.0),
+                padding: const EdgeInsets.only(left: 20.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   // textBaseline: TextBaseline.ideographic,
@@ -296,12 +265,12 @@ class FolderScreenState extends State<FolderScreen> {
           ),
         ),
         height: 60,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(left: 25.0),
-              child: FlatButton.icon(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              FlatButton.icon(
                 icon: Icon(EvaIcons.folderAddOutline,
                     size: 30,
                     color: _darkTheme ? darkThemeButton : lightThemeButton),
@@ -315,10 +284,7 @@ class FolderScreenState extends State<FolderScreen> {
                 ),
                 onPressed: () => _showAddDialog(database),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 12.0),
-              child: OpenContainer(
+              OpenContainer(
                 useRootNavigator: true,
                 transitionType: _transitionType,
                 openElevation: 0.0,
@@ -350,8 +316,8 @@ class FolderScreenState extends State<FolderScreen> {
                       ));
                 },
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

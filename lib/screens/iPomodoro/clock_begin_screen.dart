@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
+import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/constants/theme.dart';
@@ -33,7 +34,6 @@ class ClockBeginScreen extends StatefulWidget {
 }
 
 class _ClockBeginScreenState extends State<ClockBeginScreen> {
-//  Keeps track of how much time has elapsed
 //  Duration _duration; //old
   int _durationInMin;
   int _restInMin;
@@ -50,84 +50,63 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
     super.initState();
   }
 
-  int counter = 0;
-  void _onDoubleTap() {
-    setState(() {
-      ImagePath.randomImageUrl = '${ImagePath.randomImageUrlFirstPart}$counter';
-      counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
-    bool _randomOn = (randomNotifier.getRandom() == true);
-    final imageNotifier = Provider.of<ImageNotifier>(context, listen: false);
-
-    return Stack(
-      fit: StackFit.expand,
-      children: <Widget>[
-        BuildPhotoView(
-          imageUrl:
-              _randomOn ? ImagePath.randomImageUrl : imageNotifier.getImage(),
-        ),
-        ContainerLinearGradient(),
-        GestureDetector(
-          onDoubleTap: _onDoubleTap,
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: SingleChildScrollView(
-              child: SafeArea(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Opacity(
-                      opacity: _topOpacity,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            IconButton(
-                              /// go back to HomeScreen
-                              onPressed: () => Navigator.of(context).pop(),
-                              icon: Icon(Icons.clear, size: 30),
-                              color: Colors.white,
-                            ),
-                            IconButton(
-                              onPressed: () => _showFlushBar(),
-                              icon: Icon(Icons.info_outline,
-                                  color: Colors.white, size: 32),
-                              color: Colors.white,
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                    Opacity(
-                      opacity: _topOpacity,
-                      child: ClockTitle(
-                        title: 'Time to focus',
-                        subtitle: 'Break your work into intervals',
-                      ),
-                    ),
-                    ClockStart(
-                      text1: Duration(minutes: _durationInMin).clockFmt(),
-                      text2: '',
-                      height: 0,
-                      onPressed: () => _play(),
-                      onPressedEdit: () => showEditDialog(),
-                    ),
-                    SizedBox(height: 30),
-                    ClockBottomToday(text: '${widget.todo.title}'),
-                  ],
+    return MyStackScreen(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SingleChildScrollView(
+          child: SafeArea(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Opacity(
+                  opacity: _topOpacity,
+                  child: topRow(context),
                 ),
-              ),
+                Opacity(
+                  opacity: _topOpacity,
+                  child: PomodoroTitle(
+                    title: 'Time to focus',
+                    subtitle: 'Break your work into intervals',
+                  ),
+                ),
+                ClockStart(
+                  text1: Duration(minutes: _durationInMin).clockFmt(),
+                  text2: '',
+                  height: 0,
+                  onPressed: () => _play(),
+                  onPressedEdit: () => showEditDialog(),
+                ),
+                SizedBox(height: 30),
+                ClockBottomToday(text: '${widget.todo.title}'),
+              ],
             ),
           ),
         ),
-      ],
+      ),
+    );
+  }
+
+  Padding topRow(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          IconButton(
+            /// go back to HomeScreen
+            onPressed: () => Navigator.of(context).pop(),
+            icon: Icon(Icons.clear, size: 30),
+            color: Colors.white,
+          ),
+          IconButton(
+            onPressed: () => _showFlushBar(),
+            icon: Icon(Icons.info_outline, color: Colors.white, size: 32),
+            color: Colors.white,
+          )
+        ],
+      ),
     );
   }
 

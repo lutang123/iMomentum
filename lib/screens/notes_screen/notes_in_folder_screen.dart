@@ -23,7 +23,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import '../../app/common_widgets/empty_and_error_content.dart';
 import 'move_folder_screen.dart';
-import 'my_flutter_app_icon.dart';
+import 'my_custom_icon.dart';
 
 class NotesInFolderScreen extends StatefulWidget {
   final Folder folder;
@@ -291,8 +291,8 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
                     child: IconButton(
                       icon: Icon(
                         axisCount == 2
-                            ? MyFlutterAppIcon.menu_outline
-                            : MyFlutterAppIcon.th_large_outline,
+                            ? MyCustomIcon.menu_outline
+                            : MyCustomIcon.th_large_outline,
                         size: 20,
                         color: _darkTheme ? Colors.white : lightThemeButton,
                       ),
@@ -341,8 +341,8 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
                   child: IconButton(
                     icon: Icon(
                       axisCount == 2
-                          ? MyFlutterAppIcon.menu_outline
-                          : MyFlutterAppIcon.th_large_outline,
+                          ? MyCustomIcon.menu_outline
+                          : MyCustomIcon.th_large_outline,
                       size: 20,
                       color: _darkTheme ? Colors.white : lightThemeButton,
                     ),

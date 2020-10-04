@@ -7,6 +7,8 @@ import 'package:iMomentum/app/common_widgets/avatar.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
+import 'package:iMomentum/app/common_widgets/my_go_back_icon.dart';
+import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
 import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/sign_in/firebase_auth_service_new.dart';
@@ -25,93 +27,79 @@ class UserScreen extends StatefulWidget {
 class _UserScreenState extends State<UserScreen> {
   @override
   Widget build(BuildContext context) {
-    final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
-    bool _randomOn = (randomNotifier.getRandom() == true);
-    final imageNotifier = Provider.of<ImageNotifier>(context, listen: false);
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-
     final User user = FirebaseAuth.instance.currentUser;
-    return Stack(
-      fit: StackFit.expand,
-      children: <Widget>[
-        BuildPhotoView(
-          imageUrl:
-              _randomOn ? ImagePath.randomImageUrl : imageNotifier.getImage(),
+
+    return MyStackScreen(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: buildAppBar(_darkTheme),
+        body: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Spacer(),
+            middleContent(user, _darkTheme),
+            Spacer(flex: 2),
+          ],
         ),
-        ContainerLinearGradient(),
-        Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            elevation: 0.0,
-            backgroundColor: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
-            leading: IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: Icon(
-                Icons.arrow_back_ios,
-                size: 30,
-                color: _darkTheme ? darkThemeButton : lightThemeButton,
-              ),
+      ),
+    );
+  }
+
+  MyContainerWithDarkMode middleContent(User user, bool _darkTheme) {
+    return MyContainerWithDarkMode(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            /// todo: let user add their photo
+            Avatar(
+              photoUrl: user.photoURL,
+              radius: 30,
             ),
-            actions: [
-              _popup(),
-            ],
-          ),
-          body: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Spacer(),
-              MyContainerWithDarkMode(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      /// todo: let user add their photo
-                      Avatar(
-                        photoUrl: user.photoURL,
-                        radius: 30,
-                      ),
-                      SizedBox(height: 30),
-                      _buildNameRow(),
-                      SizedBox(height: 20.0),
-                      _buildEmailRow(),
-                      SizedBox(height: 20.0),
-                      _buildEmailVerifyRow(),
-                      Row(
-                        children: [
-                          Visibility(
-                            visible: _confirmVerifiedVisible,
-                            child: FlatButton(
-                              onPressed: _confirmVerified,
-                              child: Text('I have verified my email address.',
-                                  style: TextStyle(
-                                      color: _darkTheme
-                                          ? darkThemeButton
-                                          : lightThemeButton,
-                                      fontSize: 18)),
-                            ),
-                          ),
-                        ],
-                      ),
-                      // SizedBox(height: 20.0),
-                      // _buildLastRow(),
-                    ],
-                  ),
-                ),
-              ),
-              Spacer(flex: 2),
-            ],
+            SizedBox(height: 30),
+            _buildNameRow(_darkTheme, user),
+            SizedBox(height: 20.0),
+            _buildEmailRow(_darkTheme, user),
+            SizedBox(height: 20.0),
+            _buildEmailVerifyRow(_darkTheme, user),
+            confirmVerifiedFlatButton(_darkTheme),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Row confirmVerifiedFlatButton(bool _darkTheme) {
+    return Row(
+      children: [
+        Visibility(
+          visible: _confirmVerifiedVisible,
+          child: FlatButton(
+            onPressed: _confirmVerified,
+            child: Text('I have verified my email address.',
+                style: TextStyle(
+                    color: _darkTheme ? darkThemeButton : lightThemeButton,
+                    fontSize: 18)),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildNameRow() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    final User user = FirebaseAuth.instance.currentUser;
+  AppBar buildAppBar(bool _darkTheme) {
+    return AppBar(
+      elevation: 0.0,
+      backgroundColor: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
+      leading: MyGoBackIcon(darkTheme: _darkTheme),
+      actions: [
+        _popup(_darkTheme),
+      ],
+    );
+  }
 
+  Row _buildNameRow(bool _darkTheme, User user) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
@@ -130,10 +118,7 @@ class _UserScreenState extends State<UserScreen> {
                       user.displayName == null || user.displayName.isEmpty
                           ? 'No added name yet.'
                           : user.displayName,
-                      style: TextStyle(
-                          color: _darkTheme ? darkThemeWords : lightThemeWords,
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold)),
+                      style: textStyleName(_darkTheme)),
                 ),
               ),
               Expanded(
@@ -141,37 +126,7 @@ class _UserScreenState extends State<UserScreen> {
                   visible: !_nameVisible,
                   child: SizedBox(
                     width: 150,
-                    child: TextFormField(
-                      autofocus: true,
-                      validator: (value) =>
-                          value.isNotEmpty ? null : 'Content can\'t be empty',
-                      onFieldSubmitted: _onSubmittedName,
-                      keyboardAppearance:
-                          _darkTheme ? Brightness.dark : Brightness.light,
-                      cursorColor:
-                          _darkTheme ? darkThemeWords : lightThemeWords,
-                      maxLines: 1, //default
-                      maxLength: 20,
-                      inputFormatters: [LengthLimitingTextInputFormatter(15)],
-                      decoration: InputDecoration(
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: _darkTheme
-                                ? darkThemeDivider
-                                : lightThemeDivider,
-                          ),
-                        ),
-                        enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                          color:
-                              _darkTheme ? darkThemeDivider : lightThemeDivider,
-                        )),
-                      ),
-                      style: TextStyle(
-                          color: _darkTheme ? darkThemeWords : lightThemeWords,
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold),
-                    ),
+                    child: textFormField(_darkTheme),
                   ),
                 ),
               ),
@@ -190,10 +145,37 @@ class _UserScreenState extends State<UserScreen> {
     );
   }
 
-  Widget _buildEmailRow() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    final User user = FirebaseAuth.instance.currentUser;
+  TextFormField textFormField(bool _darkTheme) {
+    return TextFormField(
+      autofocus: true,
+      validator: (value) => value.isNotEmpty ? null : 'Content can\'t be empty',
+      onFieldSubmitted: _onSubmittedName,
+      keyboardAppearance: _darkTheme ? Brightness.dark : Brightness.light,
+      cursorColor: _darkTheme ? darkThemeWords : lightThemeWords,
+      maxLength: 20,
+      decoration: InputDecoration(
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: _darkTheme ? darkThemeDivider : lightThemeDivider,
+          ),
+        ),
+        enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+          color: _darkTheme ? darkThemeDivider : lightThemeDivider,
+        )),
+      ),
+      style: textStyleName(_darkTheme),
+    );
+  }
+
+  TextStyle textStyleName(bool _darkTheme) {
+    return TextStyle(
+        color: _darkTheme ? darkThemeWords : lightThemeWords,
+        fontSize: 20.0,
+        fontWeight: FontWeight.bold);
+  }
+
+  Row _buildEmailRow(bool _darkTheme, User user) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
@@ -206,18 +188,12 @@ class _UserScreenState extends State<UserScreen> {
             user.email == null || user.email.isEmpty
                 ? 'No registered email.'
                 : user.email,
-            style: TextStyle(
-                color: _darkTheme ? darkThemeWords : lightThemeWords,
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold)),
+            style: textStyleName(_darkTheme)),
       ],
     );
   }
 
-  Widget _buildEmailVerifyRow() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    final User user = FirebaseAuth.instance.currentUser;
+  Widget _buildEmailVerifyRow(bool _darkTheme, User user) {
     return user.isAnonymous
         ? Container()
         : user.emailVerified
@@ -251,9 +227,7 @@ class _UserScreenState extends State<UserScreen> {
   }
 
   ///notes for pop up to choose from gallery or camera
-  Widget _popup() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+  PopupMenuButton<int> _popup(bool _darkTheme) {
     return PopupMenuButton<int>(
         color: _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
         icon: Icon(
@@ -281,33 +255,6 @@ class _UserScreenState extends State<UserScreen> {
         });
   }
 
-  // Widget _buildLastRow() {
-  //   final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-  //   bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-  //   return Row(
-  //     // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //     // mainAxisAlignment: MainAxisAlignment.start,
-  //     children: <Widget>[
-  //       FlatButton(
-  //         onPressed: () => _confirmDelete(context),
-  //         child: Text('Delete account',
-  //             style: TextStyle(
-  //                 color: _darkTheme ? darkThemeHint : lightThemeHint,
-  //                 fontSize: 18.0)),
-  //       ),
-  //       FlatButton(
-  //         child: Text(
-  //           'Logout',
-  //           style: TextStyle(
-  //               color: _darkTheme ? darkThemeButton : lightThemeButton,
-  //               fontSize: 18),
-  //         ),
-  //         onPressed: () => _confirmSignOut(context),
-  //       ),
-  //     ],
-  //   );
-  // }
-
   bool _nameVisible = true;
   void _updateName() {
     setState(() {
@@ -325,20 +272,7 @@ class _UserScreenState extends State<UserScreen> {
           // textDirection: TextDirection.rtl,
           isDismissible: true,
         );
-        pr.style(
-          message: 'Please wait',
-          borderRadius: 20.0,
-          backgroundColor: darkThemeNoPhotoColor,
-          elevation: 10.0,
-          insetAnimCurve: Curves.easeInOut,
-          progress: 0.0,
-          progressWidgetAlignment: Alignment.center,
-          maxProgress: 100.0,
-          progressTextStyle: TextStyle(
-              color: Colors.white, fontSize: 13.0, fontWeight: FontWeight.w400),
-          messageTextStyle: TextStyle(
-              color: Colors.white, fontSize: 19.0, fontWeight: FontWeight.w600),
-        );
+        prStyle(pr);
 
         await pr.show();
 
@@ -357,6 +291,23 @@ class _UserScreenState extends State<UserScreen> {
       print(e.toString());
       _showSignInError(context, e);
     }
+  }
+
+  void prStyle(ProgressDialog pr) {
+    return pr.style(
+      message: 'Please wait',
+      borderRadius: 20.0,
+      backgroundColor: darkThemeNoPhotoColor,
+      elevation: 10.0,
+      insetAnimCurve: Curves.easeInOut,
+      progress: 0.0,
+      progressWidgetAlignment: Alignment.center,
+      maxProgress: 100.0,
+      progressTextStyle: TextStyle(
+          color: Colors.white, fontSize: 13.0, fontWeight: FontWeight.w400),
+      messageTextStyle: TextStyle(
+          color: Colors.white, fontSize: 19.0, fontWeight: FontWeight.w600),
+    );
   }
 
   bool _confirmVerifiedVisible = false;

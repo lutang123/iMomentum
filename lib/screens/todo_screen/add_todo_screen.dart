@@ -306,7 +306,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
         keyboardAppearance: _darkTheme ? Brightness.dark : Brightness.light,
         initialValue: title,
         focusNode: _textFocusNode,
-//                    textInputAction: TextInputAction.done, //we can not have this
+        // textInputAction: TextInputAction.done, //we can not have this
         validator: (value) {
           if (value.isNotEmpty) {
             return null;
@@ -321,7 +321,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
           title = value;
           _save();
         },
-        style: buildTextStyleTodoTitle(_darkTheme),
+        style: buildTextStyleTitle(_darkTheme),
         autofocus: true,
         cursorColor: _darkTheme ? darkThemeButton : lightThemeButton,
         // can not remove this
@@ -332,7 +332,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
           ///https://stackoverflow.com/questions/51893926/how-can-i-hide-letter-counter-from-bottom-of-textfield-in-flutter#:~:text=To%20hide%20counter%20value%20from,InputDecoration%20property%20with%20empty%20value.
           counterText: "",
           hintText: 'Title',
-          hintStyle: buildTextStyleHint(_darkTheme),
+          hintStyle: buildTextStyleTitleHint(_darkTheme),
           focusedBorder: buildUnderlineInputBorder(_darkTheme),
           enabledBorder: buildUnderlineInputBorder(_darkTheme),
         ),
@@ -353,14 +353,14 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
         fontSize: 14.0);
   }
 
-  TextStyle buildTextStyleHint(bool _darkTheme) {
+  TextStyle buildTextStyleTitleHint(bool _darkTheme) {
     return TextStyle(
         fontSize: 15, color: _darkTheme ? darkThemeHint : lightThemeHint);
   }
 
-  TextStyle buildTextStyleTodoTitle(bool _darkTheme) {
+  TextStyle buildTextStyleTitle(bool _darkTheme) {
     return TextStyle(
-        color: _darkTheme ? darkThemeWords : lightThemeWords, fontSize: 18.0);
+        fontSize: 18.0, color: _darkTheme ? darkThemeWords : lightThemeWords);
   }
 
   UnderlineInputBorder buildUnderlineInputBorder(bool _darkTheme) {

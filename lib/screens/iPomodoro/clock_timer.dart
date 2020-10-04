@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:iMomentum/app/constants/constants_style.dart';
 
 import 'countdown_circle.dart';
 
@@ -33,26 +33,11 @@ class ClockTimer extends StatelessWidget {
             ),
           ),
           Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text(
-                text1,
-                style: GoogleFonts.varelaRound(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 55.0,
-                  color: Colors.white,
-                ),
-              ),
+              Text(text1, style: KTimer),
               SizedBox(height: 20),
-              Text(
-                text2,
-                style: GoogleFonts.varelaRound(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 35.0,
-                  color: Colors.white,
-                ),
-              ),
+              Text(text2, style: KTimerSubtitle),
             ],
           ),
         ],

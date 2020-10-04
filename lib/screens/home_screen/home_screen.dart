@@ -551,7 +551,11 @@ class _HomeScreenState extends State<HomeScreen> {
     } else //after 11pm
       return ShowUp(
         delay: 500,
-        child: Text('Have a good night sleep.', style: KHomeQuestion2),
+        child: Text(
+          'Have a good night sleep.',
+          style: KHomeQuestion2,
+          textAlign: TextAlign.center,
+        ),
       );
   }
 

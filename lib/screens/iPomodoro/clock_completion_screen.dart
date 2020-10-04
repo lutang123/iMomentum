@@ -3,6 +3,7 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
+import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
 import 'package:iMomentum/app/common_widgets/my_tooltip.dart';
 import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/constants/theme.dart';
@@ -79,111 +80,90 @@ class _CompletionScreenState extends State<CompletionScreen> {
         milliseconds: 450));
   }
 
-  int counter = 0;
-  void _onDoubleTap() {
-    setState(() {
-      ImagePath.randomImageUrl = '${ImagePath.randomImageUrlFirstPart}$counter';
-      counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final bloc = Provider.of<CalendarBloc>(context, listen: false);
-    final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
-    bool _randomOn = (randomNotifier.getRandom() == true);
-    final imageNotifier = Provider.of<ImageNotifier>(context, listen: false);
-    return Stack(
-      fit: StackFit.expand,
-      children: <Widget>[
-        BuildPhotoView(
-          imageUrl:
-              _randomOn ? ImagePath.randomImageUrl : imageNotifier.getImage(),
-        ),
-        ContainerLinearGradient(),
-        GestureDetector(
-          onDoubleTap: _onDoubleTap,
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: SingleChildScrollView(
-              child: SafeArea(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Opacity(
-                      opacity: _topOpacity,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            IconButton(
-                              onPressed: _clearButton,
-                              icon: Icon(Icons.arrow_back_ios, size: 30),
-                              color: Colors.white,
-                            ),
-                            StreamBuilder<List<TodoDuration>>(
-                                stream: bloc
-                                    .allTodoDurationStream, //print: flutter: Instance of '_MapStream<List<TodoDuration>, dynamic>'
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasData) {
-                                    final List<TodoDuration> entries = snapshot
-                                        .data; //print('x: $entries'); //x: [Instance of 'TodoDuration', Instance of 'TodoDuration']
-                                    if (entries.isNotEmpty) {
-                                      _todayDuration = DailyTodosDetails
-                                          .getDailyTotalDuration(
-                                              DateTime.now(), entries);
-//                                            print(_todayDuration); // if no data, it will show null, not 0
-                                      ///moved StreamBuilder up above TabBarView, otherwise we got error: Bad state: Stream has already been listened to
-                                      return progressButton(_todayDuration);
-                                    } else {
-                                      ///actually we don't need to check this
-                                      return progressButton(_todayDuration);
-                                    }
-                                  } else if (snapshot.hasError) {
-                                    ///still show it but onPress is null
-                                    return MyToolTip(
-                                      message: 'See my progress for today',
-                                      child: RoundSmallIconButton(
-                                        //this is only for if it has error
-                                        icon: EvaIcons.trendingUpOutline,
-                                        onPressed: null,
-                                        color: Colors.white,
-                                      ),
-                                    );
-                                  }
-                                  return Center(
-                                      child: CircularProgressIndicator());
-                                }),
-                          ],
+    return MyStackScreen(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SingleChildScrollView(
+          child: SafeArea(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Opacity(
+                  opacity: _topOpacity,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        IconButton(
+                          onPressed: _clearButton,
+                          icon: Icon(Icons.arrow_back_ios, size: 30),
+                          color: Colors.white,
                         ),
-                      ),
+                        buildStreamBuilder(bloc),
+                      ],
                     ),
-                    Opacity(
-                      opacity: _topOpacity,
-                      child: ClockTitle(
-                          title: _congrats,
-                          subtitle:
-                              'Your have stayed focused for ${widget.duration.inMinutes} minutes.'),
-                    ), //clear button
-                    ClockStart(
-                      text1: Duration(minutes: _restDurationInMin).clockFmt(),
-                      text2: 'Take a break',
-                      height: 15,
-                      onPressed: _play,
-                      onPressedEdit: () => showEditDialog(),
-                    ),
-                    SizedBox(height: 15),
-                    ClockBottomToday(text: '${widget.todo.title}'),
-                  ],
+                  ),
                 ),
-              ),
+                Opacity(
+                  opacity: _topOpacity,
+                  child: PomodoroTitle(
+                      title: _congrats,
+                      subtitle:
+                          'Your have stayed focused for ${widget.duration.inMinutes} minutes.'),
+                ), //clear button
+                ClockStart(
+                  text1: Duration(minutes: _restDurationInMin).clockFmt(),
+                  text2: 'Take a break',
+                  height: 15,
+                  onPressed: _play,
+                  onPressedEdit: () => showEditDialog(),
+                ),
+                SizedBox(height: 15),
+                ClockBottomToday(text: '${widget.todo.title}'),
+              ],
             ),
           ),
         ),
-      ],
+      ),
     );
+  }
+
+  StreamBuilder<List<TodoDuration>> buildStreamBuilder(CalendarBloc bloc) {
+    return StreamBuilder<List<TodoDuration>>(
+        stream: bloc
+            .allTodoDurationStream, //print: flutter: Instance of '_MapStream<List<TodoDuration>, dynamic>'
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final List<TodoDuration> entries = snapshot
+                .data; //print('x: $entries'); //x: [Instance of 'TodoDuration', Instance of 'TodoDuration']
+            if (entries.isNotEmpty) {
+              _todayDuration = DailyTodosDetails.getDailyTotalDuration(
+                  DateTime.now(), entries);
+//                                            print(_todayDuration); // if no data, it will show null, not 0
+              ///moved StreamBuilder up above TabBarView, otherwise we got error: Bad state: Stream has already been listened to
+              return progressButton(_todayDuration);
+            } else {
+              ///actually we don't need to check this
+              return progressButton(_todayDuration);
+            }
+          } else if (snapshot.hasError) {
+            ///still show it but onPress is null
+            return MyToolTip(
+              message: 'See my progress for today',
+              child: RoundSmallIconButton(
+                //this is only for if it has error
+                icon: EvaIcons.trendingUpOutline,
+                onPressed: null,
+                color: Colors.white,
+              ),
+            );
+          }
+          return Center(child: CircularProgressIndicator());
+        });
   }
 
   Widget progressButton(double todayDuration) {

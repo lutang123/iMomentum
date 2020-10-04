@@ -4,6 +4,7 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_round_button.dart';
+import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
 import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/models/data/rest_quote.dart';
 import 'package:iMomentum/app/models/todo.dart';
@@ -12,6 +13,8 @@ import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/utils/pages_routes.dart';
 import 'package:iMomentum/screens/home_screen/daily_quote.dart';
+import 'package:iMomentum/screens/iPomodoro/rest_screen_bottom_quote.dart';
+import 'package:iMomentum/screens/iPomodoro/top_trans_row.dart';
 import 'package:provider/provider.dart';
 import 'clock_begin_screen.dart';
 import 'clock_timer.dart';
@@ -140,136 +143,86 @@ class _RestScreenState extends State<RestScreen>
     if (cancelled) {
       /// not go back to HomeScreen
 //      Navigator.pop(context);
-      Navigator.of(context).pushReplacement(PageRoutes.fade(
-          () => ClockBeginScreen(
-                database: widget.database,
-                todo: widget.job,
-              ),
-          milliseconds: 450));
+      backToBeginScreen();
     } else {
-      Navigator.of(context).pushReplacement(PageRoutes.fade(
-          () => ClockBeginScreen(
-                database: widget.database,
-                todo: widget.job,
-              ),
-          milliseconds: 450));
+      backToBeginScreen();
     }
   }
 
-  int counter = 0;
-  void _onDoubleTap() {
-    setState(() {
-      ImagePath.randomImageUrl = '${ImagePath.randomImageUrlFirstPart}$counter';
-      counter++;
-    });
+  Future backToBeginScreen() {
+    return Navigator.of(context).pushReplacement(PageRoutes.fade(
+        () => ClockBeginScreen(
+              database: widget.database,
+              todo: widget.job,
+            ),
+        milliseconds: 450));
   }
 
   @override
   Widget build(BuildContext context) {
-    final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
-    bool _randomOn = (randomNotifier.getRandom() == true);
-    final imageNotifier = Provider.of<ImageNotifier>(context, listen: false);
-    return Stack(
-      fit: StackFit.expand,
-      children: <Widget>[
-        BuildPhotoView(
-          imageUrl:
-              _randomOn ? ImagePath.randomImageUrl : imageNotifier.getImage(),
-        ),
-        ContainerLinearGradient(),
-        GestureDetector(
-          onDoubleTap: _onDoubleTap,
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: SingleChildScrollView(
-              child: SafeArea(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Opacity(
-                            opacity: 0.0,
-                            child: IconButton(
-                              onPressed: _end,
-                              icon: Icon(Icons.clear, size: 30),
-                              color: Colors.white,
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    ClockTitle(
-                      title: 'Time to Rest',
-                      subtitle:
-                          'Come back in ${widget.restDuration.inMinutes} minutes',
-                    ), //clear button//begin title
-                    ClockTimer(
-                      duration: _restDuration,
-                      animationController: _animationController,
-                      text1: _display,
-                      text2: 'Rest',
-                    ),
-                    SizedBox(
-                      height: 60,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            RoundTextButton(
-                              text: 'Cancel',
-                              textColor: Colors.white70,
-                              onPressed: _end,
-                              circleColor: Colors.white70,
-                              fillColor: Colors.black12,
-                            ),
-                            _stopwatch.isRunning
-                                ? RoundTextButton(
-                                    text: 'Pause',
-                                    textColor: Colors.white,
-                                    onPressed: _pause,
-                                    circleColor: Colors.white,
-                                    fillColor:
-                                        Colors.deepOrange.withOpacity(0.3),
-                                  )
-                                : RoundTextButton(
-                                    text: 'Resume',
-                                    textColor: Colors.white,
-                                    onPressed: _resume,
-                                    circleColor: Colors.white,
-                                    fillColor: Colors.lightGreenAccent
-                                        .withOpacity(0.3),
-                                  ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 15),
-                    Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: _state == QuoteLoadingState.FINISHED_DOWNLOADING
-
-                          /// Same as Daily, but different Global key on show more
-                          ? RestQuoteUI(
-                              title: dailyQuote,
-                              author: author,
-                            )
-                          : _state == QuoteLoadingState.DOWNLOADING
-                              ? Center(child: CircularProgressIndicator())
-                              : Container(),
-                    ),
-                  ],
+    return MyStackScreen(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SingleChildScrollView(
+          child: SafeArea(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                PomodoroTopTransRow(),
+                PomodoroTitle(
+                  title: 'Time to Rest',
+                  subtitle:
+                      'Come back in ${widget.restDuration.inMinutes} minutes',
+                ), //clear button//begin title
+                ClockTimer(
+                  duration: _restDuration,
+                  animationController: _animationController,
+                  text1: _display,
+                  text2: 'Rest',
                 ),
-              ),
+                timerButtonRow(),
+                SizedBox(height: 15),
+                RestScreenBottomQuote(
+                    state: _state, dailyQuote: dailyQuote, author: author),
+              ],
             ),
           ),
         ),
-      ],
+      ),
+    );
+  }
+
+  Padding timerButtonRow() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          RoundTextButton(
+            text: 'Cancel',
+            textColor: Colors.white70,
+            onPressed: _end,
+            circleColor: Colors.white70,
+            fillColor: Colors.black12,
+          ),
+          _stopwatch.isRunning
+              ? RoundTextButton(
+                  text: 'Pause',
+                  textColor: Colors.white,
+                  onPressed: _pause,
+                  circleColor: Colors.white,
+                  fillColor: Colors.deepOrange.withOpacity(0.3),
+                )
+              : RoundTextButton(
+                  text: 'Resume',
+                  textColor: Colors.white,
+                  onPressed: _resume,
+                  circleColor: Colors.white,
+                  fillColor: Colors.lightGreenAccent.withOpacity(0.3),
+                ),
+        ],
+      ),
     );
   }
 

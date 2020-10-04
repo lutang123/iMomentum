@@ -160,7 +160,10 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
                     onPressed: _showTopSheet),
               ],
             ),
-            body: Opacity(opacity: _signInOpacity, child: _buildContent())),
+            body: Opacity(
+              opacity: _signInOpacity,
+              child: _buildContent(),
+            )),
       ],
     );
   }
@@ -174,6 +177,7 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
     // }
     return SingleChildScrollView(
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _firstPart(),
           _secondPart(),

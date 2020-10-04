@@ -3,7 +3,7 @@ import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:provider/provider.dart';
 
-// TodoScreen, quote and Mantra,, reminder
+// TodoScreen, quote and Mantra,, reminder, move folder
 class AddScreenTopRow extends StatelessWidget {
   final String title;
 
@@ -28,13 +28,10 @@ class AddScreenTopRow extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               )),
           Spacer(),
-          Padding(
-            padding: const EdgeInsets.only(right: 15.0),
-            child: IconButton(
-                onPressed: () => Navigator.of(context).pop(),
-                icon: Icon(Icons.clear),
-                color: _darkTheme ? darkThemeHint : lightThemeHint),
-          ),
+          IconButton(
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icon(Icons.clear),
+              color: _darkTheme ? darkThemeHint : lightThemeHint),
         ],
       ),
     );

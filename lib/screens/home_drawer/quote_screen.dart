@@ -10,6 +10,7 @@ import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_fab.dart';
 import 'package:iMomentum/app/common_widgets/my_list_tile.dart';
+import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
 import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/setting_switch.dart';
@@ -20,6 +21,7 @@ import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/models/quote_model.dart';
 import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
+import 'package:iMomentum/screens/home_drawer/top_title.dart';
 import 'package:iMomentum/screens/iPomodoro/clock_mantra_quote_title.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -35,125 +37,102 @@ class MyQuotes extends StatefulWidget {
 }
 
 class _MyQuotesState extends State<MyQuotes> {
-  int counter = 0;
-  void _onDoubleTap() {
-    setState(() {
-      ImagePath.randomImageUrl = '${ImagePath.randomImageUrlFirstPart}$counter';
-      counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
-    bool _randomOn = randomNotifier.getRandom();
-    final imageNotifier = Provider.of<ImageNotifier>(context, listen: false);
 
     ///for quote
     final quoteNotifier = Provider.of<QuoteNotifier>(context);
     bool _quoteOn = quoteNotifier.getQuote();
 
-    return Stack(
-      fit: StackFit.expand,
-      children: <Widget>[
-        BuildPhotoView(
-          imageUrl:
-              _randomOn ? ImagePath.randomImageUrl : imageNotifier.getImage(),
-        ),
-        ContainerLinearGradient(),
-        GestureDetector(
-          onDoubleTap: _onDoubleTap,
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: SafeArea(
-              bottom: false,
-              child: CustomizedContainerNew(
-                color: _darkTheme ? darkThemeSurface : lightThemeSurface,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      MantraTopBar(
-                        title: 'Quotes',
-                        subtitle:
-                            'A daily reminder for inspiration and growth.',
-                        onPressed: _showTipDialog,
-                      ),
-                      StreamBuilder<List<QuoteModel>>(
-                          stream: widget.database
-                              .quotesStream(), //print: flutter: Instance of '_MapStream<List<TodoDuration>, dynamic>'
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              final List<QuoteModel> quotes = snapshot
-                                  .data; //print('x: $entries'); //x: [Instance of 'TodoDuration', Instance of 'TodoDuration']
-                              if (quotes.isNotEmpty) {
-                                ///The following assertion was thrown during performLayout():
-                                // RenderFlex children have non-zero flex but incoming height constraints are unbounded.
-                                //
-                                // When a column is in a parent that does not provide a finite height constraint, for example if it is in a vertical scrollable, it will try to shrink-wrap its children along the vertical axis. Setting a flex on a child (e.g. using Expanded) indicates that the child is to expand to fill the remaining space in the vertical direction.
-                                // These two directives are mutually exclusive. If a parent is to shrink-wrap its child, the child cannot simultaneously expand to fit its parent.
-                                //
-                                // Consider setting mainAxisSize to MainAxisSize.min and using FlexFit.loose fits for the flexible children (using Flexible rather than Expanded). This will allow the flexible children to size themselves to less than the infinite remaining space they would otherwise be forced to take, and then will cause the RenderFlex to shrink-wrap the children rather than expanding to fit the maximum constraints provided by the parent.
-                                return Expanded(
-                                  //need to wrap this column with an Expanded, because the whole thing is in another column
-                                  child: Column(
-                                    children: <Widget>[
-                                      SizedBox(
-                                        width: 320,
-                                        child: SettingSwitchNoIcon(
-                                          title: 'Apply Your Own Quotes',
-                                          value: quotes.length > 0
-                                              ? _quoteOn
-                                              : false,
-                                          onChanged: (val) {
-                                            _quoteOn = val;
-                                            onQuoteChanged(val, quoteNotifier);
-                                          },
-                                        ),
-                                      ),
-                                      Visibility(
-                                        visible: _quoteVisible,
-                                        child: Expanded(
-                                          child: buildListView(
-                                            widget.database,
-                                            quotes,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              } else {
-                                return EmptyOrErrorMantra(
-                                  //already in Expanded
-                                  hideEmptyMessage: _hideEmptyMessage,
-                                  text1: Strings.textQuote1,
-                                  text2: Strings.textQuote2,
-                                );
-                              }
-                            } else if (snapshot.hasError) {
-                              return EmptyOrErrorMantra(
-                                hideEmptyMessage: _hideEmptyMessage,
-                                text1: Strings.textQuote1,
-                                text2: Strings.textError,
-                              );
-                            }
-                            return Center(child: CircularProgressIndicator());
-                          }),
-                    ],
+    return MyStackScreen(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          bottom: false,
+          child: CustomizedContainerNew(
+            color: _darkTheme ? darkThemeSurface : lightThemeSurface,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  MantraTopTitle(
+                    title: 'Quotes',
+                    subtitle: 'A daily reminder for inspiration and growth.',
+                    onPressed: _showTipDialog,
+                    darkTheme: _darkTheme,
                   ),
-                ),
+                  StreamBuilder<List<QuoteModel>>(
+                      stream: widget.database
+                          .quotesStream(), //print: flutter: Instance of '_MapStream<List<TodoDuration>, dynamic>'
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          final List<QuoteModel> quotes = snapshot
+                              .data; //print('x: $entries'); //x: [Instance of 'TodoDuration', Instance of 'TodoDuration']
+                          if (quotes.isNotEmpty) {
+                            ///The following assertion was thrown during performLayout():
+                            // RenderFlex children have non-zero flex but incoming height constraints are unbounded.
+                            //
+                            // When a column is in a parent that does not provide a finite height constraint, for example if it is in a vertical scrollable, it will try to shrink-wrap its children along the vertical axis. Setting a flex on a child (e.g. using Expanded) indicates that the child is to expand to fill the remaining space in the vertical direction.
+                            // These two directives are mutually exclusive. If a parent is to shrink-wrap its child, the child cannot simultaneously expand to fit its parent.
+                            //
+                            // Consider setting mainAxisSize to MainAxisSize.min and using FlexFit.loose fits for the flexible children (using Flexible rather than Expanded). This will allow the flexible children to size themselves to less than the infinite remaining space they would otherwise be forced to take, and then will cause the RenderFlex to shrink-wrap the children rather than expanding to fit the maximum constraints provided by the parent.
+                            return Expanded(
+                              //need to wrap this column with an Expanded, because the whole thing is in another column
+                              child: Column(
+                                children: <Widget>[
+                                  SizedBox(
+                                    width: 320,
+                                    child: SettingSwitchNoIcon(
+                                      title: 'Apply Your Own Quotes',
+                                      value:
+                                          quotes.length > 0 ? _quoteOn : false,
+                                      onChanged: (val) {
+                                        _quoteOn = val;
+                                        onQuoteChanged(val, quoteNotifier);
+                                      },
+                                    ),
+                                  ),
+                                  Visibility(
+                                    visible: _quoteVisible,
+                                    child: Expanded(
+                                      child: buildListView(
+                                        widget.database,
+                                        quotes,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else {
+                            return EmptyOrErrorMantra(
+                              //already in Expanded
+                              hideEmptyMessage: _hideEmptyMessage,
+                              text1: Strings.textQuote1,
+                              text2: Strings.textQuote2,
+                            );
+                          }
+                        } else if (snapshot.hasError) {
+                          return EmptyOrErrorMantra(
+                            hideEmptyMessage: _hideEmptyMessage,
+                            text1: Strings.textQuote1,
+                            text2: Strings.textError,
+                          );
+                        }
+                        return Center(child: CircularProgressIndicator());
+                      }),
+                ],
               ),
             ),
-            floatingActionButton: Visibility(
-              visible: _fabVisible,
-              child: MyFAB(onPressed: () => _add(widget.database)),
-            ),
           ),
-        )
-      ],
+        ),
+        floatingActionButton: Visibility(
+          visible: _fabVisible,
+          child: MyFAB(onPressed: () => _add(widget.database)),
+        ),
+      ),
     );
   }
 

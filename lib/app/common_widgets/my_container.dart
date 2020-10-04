@@ -110,7 +110,7 @@ class MySignInContainer extends StatelessWidget {
     // bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 15.0),
-      padding: EdgeInsets.only(left: 15.0, right: 15, bottom: 15, top: 15),
+      padding: EdgeInsets.all(15),
       decoration: BoxDecoration(
           color: lightThemeSurface, borderRadius: BorderRadius.circular(20.0)),
       height: height,

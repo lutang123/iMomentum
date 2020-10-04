@@ -11,6 +11,7 @@ import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_fab.dart';
+import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
 import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
@@ -191,171 +192,145 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
     super.initState();
   }
 
-  int counter = 0;
-  void _onDoubleTap() {
-    setState(() {
-      ImagePath.randomImageUrl = '${ImagePath.randomImageUrlFirstPart}$counter';
-      counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final database = Provider.of<Database>(context, listen: false);
     final bloc = Provider.of<CalendarBloc>(context, listen: false);
 
-    final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
-    bool _randomOn = (randomNotifier.getRandom() == true);
-    final imageNotifier = Provider.of<ImageNotifier>(context, listen: false);
+    return MyStackScreen(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          top: false, // this is to make top bar color cover all
+          child: DefaultTabController(
+            length: 2,
+            child: Column(
+              children: <Widget>[
+                Visibility(visible: _listVisible, child: TodoTopRow()),
+                // two SteamBuilder nested together, The returned value is
+                // TabBarView, and this must be below StreamBuilder
+                ///StreamBuilder must wrap with Scaffold first, otherwise the empty list message will look terrible
+                /// can not remove this Expanded
+                Expanded(
+                  child: StreamBuilder<List<Todo>>(
+                    stream: database
+                        .todosStream(), // print(database.todosStream());//Instance of '_MapStream<QuerySnapshot, List<TodoModel>>'
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final List<Todo> todos = snapshot.data;
+                        if (todos.isNotEmpty) {
+                          _events = DailyTodosDetails.getEvents(
+                              todos); //return a map to use on calender
+                          _notDoneEvents =
+                              DailyTodosDetails.getNotDoneEvents(todos);
 
-    return Stack(
-      fit: StackFit.expand,
-      children: <Widget>[
-        BuildPhotoView(
-          imageUrl:
-              _randomOn ? ImagePath.randomImageUrl : imageNotifier.getImage(),
-        ),
-        ContainerLinearGradient(),
-        GestureDetector(
-          onDoubleTap: _onDoubleTap,
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: SafeArea(
-              top: false, // this is to make top bar color cover all
-              child: DefaultTabController(
-                length: 2,
-                child: Column(
-                  children: <Widget>[
-                    Visibility(visible: _listVisible, child: TodoTopRow()),
-                    // two SteamBuilder nested together, The returned value is
-                    // TabBarView, and this must be below StreamBuilder
-                    ///StreamBuilder must wrap with Scaffold first, otherwise the empty list message will look terrible
-                    /// can not remove this Expanded
-                    Expanded(
-                      child: StreamBuilder<List<Todo>>(
-                        stream: database
-                            .todosStream(), // print(database.todosStream());//Instance of '_MapStream<QuerySnapshot, List<TodoModel>>'
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            final List<Todo> todos = snapshot.data;
-                            if (todos.isNotEmpty) {
-                              _events = DailyTodosDetails.getEvents(
-                                  todos); //return a map to use on calender
-                              _notDoneEvents =
-                                  DailyTodosDetails.getNotDoneEvents(todos);
+                          ///get today's list, (unfortunately, it's designed to show _todayList on every other day if this day is empty.)
+                          _todayList = DailyTodosDetails.getTodosGroupByData(
+                              DateTime.now(), todos);
 
-                              ///get today's list, (unfortunately, it's designed to show _todayList on every other day if this day is empty.)
-                              _todayList =
-                                  DailyTodosDetails.getTodosGroupByData(
-                                      DateTime.now(), todos);
+                          _todayNotDoneList =
+                              DailyTodosDetails.getNotDoneTodosGroupByData(
+                                  DateTime.now(), todos);
 
-                              _todayNotDoneList =
-                                  DailyTodosDetails.getNotDoneTodosGroupByData(
-                                      DateTime.now(), todos);
+                          return StreamBuilder<List<TodoDuration>>(
+                              stream: bloc
+                                  .allTodoDurationStream, //print: flutter: Instance of '_MapStream<List<TodoDuration>, dynamic>'
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  final List<TodoDuration> entries = snapshot
+                                      .data; //print('x: $entries'); //x: [Instance of 'TodoDuration', Instance of 'TodoDuration']
+                                  if (entries.isNotEmpty) {
+                                    ///for second calendar
+                                    _eventsNew =
+                                        DailyTodosDetails.getEventsNew(entries);
 
-                              return StreamBuilder<List<TodoDuration>>(
-                                  stream: bloc
-                                      .allTodoDurationStream, //print: flutter: Instance of '_MapStream<List<TodoDuration>, dynamic>'
-                                  builder: (context, snapshot) {
-                                    if (snapshot.hasData) {
-                                      final List<TodoDuration> entries = snapshot
-                                          .data; //print('x: $entries'); //x: [Instance of 'TodoDuration', Instance of 'TodoDuration']
-                                      if (entries.isNotEmpty) {
-                                        ///for second calendar
-                                        _eventsNew =
-                                            DailyTodosDetails.getEventsNew(
-                                                entries);
-
-                                        /// for the pie chart /// it seems every function in this level were execute three times every time I tap on the screen, o
-                                        _todayDataMap = DailyTodosDetails
-                                            .getDataMapGroupByDate(
-                                                DateTime.now(), entries);
-                                        _todayDuration = DailyTodosDetails
-                                            .getDailyTotalDuration(
-                                                DateTime.now(), entries);
+                                    /// for the pie chart /// it seems every function in this level were execute three times every time I tap on the screen, o
+                                    _todayDataMap =
+                                        DailyTodosDetails.getDataMapGroupByDate(
+                                            DateTime.now(), entries);
+                                    _todayDuration =
+                                        DailyTodosDetails.getDailyTotalDuration(
+                                            DateTime.now(), entries);
 //                                            print(_todayDuration); // if no data, it will show null, not 0
-                                        ///moved StreamBuilder up above TabBarView, otherwise we got error: Bad state: Stream has already been listened to
-                                        return TabBarView(
-                                          children: <Widget>[
-                                            firstTab(database, todos, _events,
-                                                _notDoneEvents),
-                                            secondTab(entries, _eventsNew),
-                                          ],
-                                        );
-                                      } else {
-                                        ///the problem is if no data on pie chart, it always shows nothing on task list,
-                                        ///that's why if no data on pie chart, we return the whole first tab column
-                                        return TabBarView(
-                                          children: <Widget>[
-                                            firstTab(database, todos, _events,
-                                                _notDoneEvents),
-                                            secondTabNoDataContent(
-                                                database, _eventNoData),
-                                          ],
-                                        );
-                                      }
-                                    } else if (snapshot.hasError) {
-                                      print(
-                                          'PieChart StreamBuilder error: ${snapshot.error.toString()}');
+                                    ///moved StreamBuilder up above TabBarView, otherwise we got error: Bad state: Stream has already been listened to
+                                    return TabBarView(
+                                      children: <Widget>[
+                                        firstTab(database, todos, _events,
+                                            _notDoneEvents),
+                                        secondTab(entries, _eventsNew),
+                                      ],
+                                    );
+                                  } else {
+                                    ///the problem is if no data on pie chart, it always shows nothing on task list,
+                                    ///that's why if no data on pie chart, we return the whole first tab column
+                                    return TabBarView(
+                                      children: <Widget>[
+                                        firstTab(database, todos, _events,
+                                            _notDoneEvents),
+                                        secondTabNoDataContent(
+                                            database, _eventNoData),
+                                      ],
+                                    );
+                                  }
+                                } else if (snapshot.hasError) {
+                                  print(
+                                      'PieChart StreamBuilder error: ${snapshot.error.toString()}');
 
-                                      /// this is if pie chart stream builder has error, we still show the same as no data on pie chart
-                                      return TabBarView(
-                                        children: <Widget>[
-                                          firstTab(database, todos, _events,
-                                              _notDoneEvents),
-                                          secondTabNoDataContent(
-                                              database, _eventNoData),
-                                        ],
-                                      );
-                                    }
-                                    return Center(
-                                        child: CircularProgressIndicator());
-                                  });
+                                  /// this is if pie chart stream builder has error, we still show the same as no data on pie chart
+                                  return TabBarView(
+                                    children: <Widget>[
+                                      firstTab(database, todos, _events,
+                                          _notDoneEvents),
+                                      secondTabNoDataContent(
+                                          database, _eventNoData),
+                                    ],
+                                  );
+                                }
+                                return Center(
+                                    child: CircularProgressIndicator());
+                              });
 
-                              ///here means if no data in today's todoList, that also
-                              ///means no data in pie chart, we show both empty one
-                            } else {
-                              return TabBarView(
-                                children: <Widget>[
-                                  firstTabNoDataContent(
-                                      database,
-                                      _eventNoData,
-                                      Strings.emptyTodoList,
-                                      '',
-                                      // Strings.textTodoList2,
-                                      ''),
-                                  secondTabNoDataContent(
-                                      database, _eventNoData),
-                                ],
-                              );
-                            }
-                          } else if
+                          ///here means if no data in today's todoList, that also
+                          ///means no data in pie chart, we show both empty one
+                        } else {
+                          return TabBarView(
+                            children: <Widget>[
+                              firstTabNoDataContent(
+                                  database,
+                                  _eventNoData,
+                                  Strings.emptyTodoList,
+                                  '',
+                                  // Strings.textTodoList2,
+                                  ''),
+                              secondTabNoDataContent(database, _eventNoData),
+                            ],
+                          );
+                        }
+                      } else if
 
-                              /// this is if TodoList stream builder has error, we show our error content
-                              (snapshot.hasError) {
-                            print(
-                                'Todo StreamBuilder error: ${snapshot.error.toString()}');
+                          /// this is if TodoList stream builder has error, we show our error content
+                          (snapshot.hasError) {
+                        print(
+                            'Todo StreamBuilder error: ${snapshot.error.toString()}');
 
-                            return TabBarView(
-                              children: <Widget>[
-                                ///Todo, contact us
-                                firstTabNoDataContent(database, _eventNoData,
-                                    '', Strings.textError, 'Or contact us'),
-                                secondTabNoDataContent(database, _eventNoData),
-                              ],
-                            );
-                          }
-                          return Center(child: CircularProgressIndicator());
-                        },
-                      ),
-                    ),
-                  ],
+                        return TabBarView(
+                          children: <Widget>[
+                            ///Todo, contact us
+                            firstTabNoDataContent(database, _eventNoData, '',
+                                Strings.textError, 'Or contact us'),
+                            secondTabNoDataContent(database, _eventNoData),
+                          ],
+                        );
+                      }
+                      return Center(child: CircularProgressIndicator());
+                    },
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ),
-      ],
+      ),
     );
   }
 

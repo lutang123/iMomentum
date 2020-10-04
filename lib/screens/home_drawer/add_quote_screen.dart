@@ -55,83 +55,8 @@ class _AddQuoteScreenState extends State<AddQuoteScreen> {
             children: <Widget>[
               AddScreenTopRow(
                   title: quote != null ? 'Edit Quote' : 'Add Quote'),
-              SizedBox(
-                width: 350,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: TextFormField(
-                    initialValue: title,
-                    validator: (value) =>
-                        value.isNotEmpty ? null : 'Quote can\'t be empty',
-                    onSaved: (value) =>
-                        title = value.firstCaps, //for save button
-                    onFieldSubmitted: (value) {
-                      title = value.firstCaps;
-                      _save();
-                    },
-                    maxLength: 120,
-                    style: TextStyle(
-                        color: _darkTheme ? darkThemeWords : lightThemeWords,
-                        fontSize: 18.0),
-                    autofocus: true,
-                    cursorColor:
-                        _darkTheme ? darkThemeButton : lightThemeButton,
-                    // keyboardType: TextInputType.multiline,
-                    // maxLines: null,
-                    keyboardAppearance:
-                        _darkTheme ? Brightness.dark : Brightness.light,
-                    decoration: InputDecoration(
-                      hintText: 'Your favorite quote.',
-                      hintStyle: TextStyle(
-                          fontSize: 15,
-                          color: _darkTheme ? Colors.white54 : Colors.black38),
-                      focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color:
-                                  _darkTheme ? darkThemeHint : lightThemeHint)),
-                      enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color:
-                                  _darkTheme ? darkThemeHint : lightThemeHint)),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 350,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: TextFormField(
-                    initialValue: author,
-                    onSaved: (value) => author = value,
-                    onEditingComplete: _save,
-                    // maxLines: 1,
-                    maxLength: 20,
-                    style: TextStyle(
-                        color: _darkTheme ? darkThemeWords : lightThemeWords,
-                        fontSize: 18.0),
-                    autofocus: true,
-                    cursorColor:
-                        _darkTheme ? darkThemeButton : lightThemeButton,
-                    keyboardAppearance:
-                        _darkTheme ? Brightness.dark : Brightness.light,
-                    decoration: InputDecoration(
-                      hintText: 'Author (optional)',
-                      hintStyle: TextStyle(
-                          fontSize: 15,
-                          color: _darkTheme ? Colors.white54 : Colors.black38),
-                      focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color:
-                                  _darkTheme ? darkThemeHint : lightThemeHint)),
-                      enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color:
-                                  _darkTheme ? darkThemeHint : lightThemeHint)),
-                    ),
-                  ),
-                ),
-              ),
+              buildSizedBoxQuote(_darkTheme),
+              buildSizedBoxAuthor(_darkTheme),
               MyFlatButton(
                   onPressed: _save,
                   text: 'SAVE',
@@ -143,6 +68,76 @@ class _AddQuoteScreenState extends State<AddQuoteScreen> {
         ),
       ),
     );
+  }
+
+  SizedBox buildSizedBoxAuthor(bool _darkTheme) {
+    return SizedBox(
+      width: 350,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        child: TextFormField(
+          initialValue: author,
+          onSaved: (value) => author = value,
+          onEditingComplete: _save,
+          maxLength: 20,
+          style: buildTextStyleQuote(_darkTheme),
+          cursorColor: _darkTheme ? darkThemeButton : lightThemeButton,
+          keyboardAppearance: _darkTheme ? Brightness.dark : Brightness.light,
+          decoration: InputDecoration(
+            hintText: 'Author (optional)',
+            hintStyle: buildTextStyleHint(_darkTheme),
+            focusedBorder: buildUnderlineInputBorder(_darkTheme),
+            enabledBorder: buildUnderlineInputBorder(_darkTheme),
+          ),
+        ),
+      ),
+    );
+  }
+
+  SizedBox buildSizedBoxQuote(bool _darkTheme) {
+    return SizedBox(
+      width: 350,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        child: TextFormField(
+          initialValue: title,
+          validator: (value) =>
+              value.isNotEmpty ? null : 'Quote can\'t be empty',
+          onSaved: (value) => title = value.firstCaps, //for save button
+          onFieldSubmitted: (value) {
+            title = value.firstCaps;
+            _save();
+          },
+          maxLength: 120,
+          style: buildTextStyleQuote(_darkTheme),
+          autofocus: true,
+          cursorColor: _darkTheme ? darkThemeButton : lightThemeButton,
+          keyboardAppearance: _darkTheme ? Brightness.dark : Brightness.light,
+          decoration: InputDecoration(
+            hintText: 'Your favorite quote.',
+            hintStyle: buildTextStyleHint(_darkTheme),
+            focusedBorder: buildUnderlineInputBorder(_darkTheme),
+            enabledBorder: buildUnderlineInputBorder(_darkTheme),
+          ),
+        ),
+      ),
+    );
+  }
+
+  UnderlineInputBorder buildUnderlineInputBorder(bool _darkTheme) {
+    return UnderlineInputBorder(
+        borderSide:
+            BorderSide(color: _darkTheme ? darkThemeHint : lightThemeHint));
+  }
+
+  TextStyle buildTextStyleHint(bool _darkTheme) {
+    return TextStyle(
+        fontSize: 15, color: _darkTheme ? Colors.white54 : Colors.black38);
+  }
+
+  TextStyle buildTextStyleQuote(bool _darkTheme) {
+    return TextStyle(
+        color: _darkTheme ? darkThemeWords : lightThemeWords, fontSize: 18.0);
   }
 
   bool _validateAndSaveForm() {

@@ -10,10 +10,12 @@ import 'package:iMomentum/app/models/mantra_model.dart';
 import 'package:iMomentum/app/models/quote_model.dart';
 import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
+import 'package:iMomentum/screens/home_drawer/top_title.dart';
 import 'package:iMomentum/screens/iPomodoro/clock_mantra_quote_title.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:iMomentum/app/constants/theme.dart';
 
 class MoreSettingScreen extends StatefulWidget {
   final Database database;
@@ -171,49 +173,9 @@ class _MoreSettingScreenState extends State<MoreSettingScreen> {
     );
   }
 
-  // Widget _mantraSwitch(List<MantraModel> mantras) {
-  //   return SizedBox(
-  //     width: 350,
-  //     child: ListTile(
-  //       title: Text('Apply Your Own Mantras'),
-  //       trailing: Transform.scale(
-  //         scale: 0.9,
-  //         child: CupertinoSwitch(
-  //           activeColor: switchActiveColor,
-  //           trackColor: Colors.grey,
-  //           value: mantras.length > 0 ? _mantraOn : false,
-  //           onChanged: (val) {
-  //             _mantraOn = val;
-  //             onMantraChanged(val, mantraNotifier);
-  //           },
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // Widget _quoteSwitch(List<QuoteModel> quotes) {
-  //   return SizedBox(
-  //     width: 350,
-  //     child: ListTile(
-  //       title: Text('Apply Your Own Quotes'),
-  //       trailing: Transform.scale(
-  //         scale: 0.9,
-  //         child: CupertinoSwitch(
-  //           activeColor: switchActiveColor,
-  //           trackColor: Colors.grey,
-  //           value: quotes.length > 0 ? _quoteOn : false,
-  //           onChanged: (val) {
-  //             _quoteOn = val;
-  //             onQuoteChanged(val, quoteNotifier);
-  //           },
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
   Widget _topRow() {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Column(
       children: [
         SizedBox(height: 5),
@@ -227,9 +189,10 @@ class _MoreSettingScreenState extends State<MoreSettingScreen> {
             )
           ],
         ),
-        MantraTopBar(
+        MantraTopTitle(
           title: 'Settings',
           subtitle: 'More options to customize your experience.',
+          darkTheme: _darkTheme,
         ),
       ],
     );

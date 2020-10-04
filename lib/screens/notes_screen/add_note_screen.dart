@@ -20,7 +20,7 @@ import 'package:share/share.dart';
 import 'package:iMomentum/app/utils/extension_firstCaps.dart';
 import 'package:flutter/widgets.dart';
 import 'font_picker.dart';
-import 'my_flutter_app_icon.dart';
+import 'my_custom_icon.dart';
 
 class AddNoteScreen extends StatefulWidget {
   const AddNoteScreen({this.database, this.note, this.folder, this.folders});
@@ -46,7 +46,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
   String fontFamily;
   bool isPinned;
   //must give an initial value
-  Icon pinIcon = Icon(MyFlutterAppIcon.pin_outline);
+  Icon pinIcon = Icon(MyCustomIcon.pin_outline);
 
   Note get note => widget.note;
   Database get database => widget.database;
@@ -104,8 +104,8 @@ class AddNoteScreenState extends State<AddNoteScreen> {
 
     ///we can't assign value here, need to give it an initial value otherwise screen crash
     isPinned
-        ? pinIcon = Icon(MyFlutterAppIcon.pin)
-        : Icon(MyFlutterAppIcon.pin_outline);
+        ? pinIcon = Icon(MyCustomIcon.pin)
+        : Icon(MyCustomIcon.pin_outline);
     super.initState();
   }
 
@@ -122,7 +122,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
             child: CustomScrollView(
               shrinkWrap: true,
               slivers: <Widget>[
-                _buildMiddleContent(),
+                SliverToBoxAdapter(child: _buildMiddleContent()),
               ],
             ),
           ),
@@ -165,9 +165,9 @@ class AddNoteScreenState extends State<AddNoteScreen> {
           padding: EdgeInsets.only(right: _isEdited ? 0.0 : 8.0),
           child: IconButton(
             icon: isPinned
-                ? Icon(MyFlutterAppIcon.pin,
+                ? Icon(MyCustomIcon.pin,
                     color: _darkTheme ? darkThemeButton : lightThemeButton)
-                : Icon(MyFlutterAppIcon.pin_outline,
+                : Icon(MyCustomIcon.pin_outline,
                     color: _darkTheme ? darkThemeButton : lightThemeButton),
             onPressed: _togglePinned,
           ),
@@ -194,107 +194,89 @@ class AddNoteScreenState extends State<AddNoteScreen> {
     );
   }
 
-  Widget _buildMiddleContent() {
+  Column _buildMiddleContent() {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    return SliverToBoxAdapter(
-        child: Column(
+    return Column(
       children: <Widget>[
-        Container(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-            child: TextFormField(
-              initialValue: title,
-              keyboardType: TextInputType.multiline,
-              keyboardAppearance:
-                  _darkTheme ? Brightness.dark : Brightness.light,
-              maxLines: null,
-              style: GoogleFonts.getFont(
-                fontFamily,
-                color: _darkTheme ? darkThemeWords : lightThemeWords,
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-              ),
-              onChanged: (value) {
-                if (note == null) {
-                  if (value.isNotEmpty) {
-                    print('value: $value');
-                    setState(() {
-                      _isEdited = true;
-                    });
-                    title = value.firstCaps; //we should add here
-                  }
-                }
-
-                if (note != null) {
-                  if (value != note.title && value.isNotEmpty) {
-                    setState(() {
-                      _isEdited = true;
-                    });
-                    title = value.firstCaps; //we should add here
-                  }
-                }
-              },
-              // onSaved: (value) => title = value.firstCaps,
-              cursorColor: _darkTheme ? darkThemeButton : lightThemeButton,
-              decoration: InputDecoration.collapsed(
-                  hintText: 'Title',
-                  hintStyle: GoogleFonts.getFont(fontFamily,
-                      color: _darkTheme ? darkThemeHint : lightThemeHint,
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600)),
-            ),
-          ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+          child: textFormFieldTitle(_darkTheme),
         ),
-        Container(
-          child: Padding(
-            padding: const EdgeInsets.only(left: 15.0, right: 15, bottom: 15),
-            child: TextFormField(
-              initialValue: description,
-              autofocus: note == null ? true : false,
-              cursorColor: _darkTheme ? darkThemeButton : lightThemeButton,
-              keyboardType: TextInputType.multiline,
-              keyboardAppearance:
-                  _darkTheme ? Brightness.dark : Brightness.light,
-              maxLines: null,
-              style: GoogleFonts.getFont(
-                fontFamily,
-                color: _darkTheme ? darkThemeWords : lightThemeWords,
-                fontSize: 18,
-              ),
-              onChanged: (value) {
-                if (note == null) {
-                  if (value.isNotEmpty) {
-                    setState(() {
-                      _isEdited = true;
-                    });
-                    description = value.firstCaps; //we should add here
-                  }
-                }
-
-                if (note != null) {
-                  if (value != note.description && value.isNotEmpty) {
-                    setState(() {
-                      _isEdited = true;
-                    });
-                    description = value.firstCaps; //we should add here
-                  }
-                }
-              },
-              // onSaved: (value) => description = value.firstCaps,
-              decoration: InputDecoration.collapsed(
-                hintText: 'Note',
-                hintStyle: GoogleFonts.getFont(
-                  fontFamily,
-                  color: _darkTheme ? darkThemeHint : lightThemeHint,
-                  fontSize: 18,
-                ),
-              ),
-            ),
-          ),
+        Padding(
+          padding: const EdgeInsets.only(left: 15.0, right: 15, bottom: 15),
+          child: textFormFieldNote(_darkTheme),
         ),
       ],
-    ));
+    );
+  }
+
+  TextFormField textFormFieldNote(bool _darkTheme) {
+    return TextFormField(
+      initialValue: description,
+      autofocus: note == null ? true : false,
+      cursorColor: _darkTheme ? darkThemeButton : lightThemeButton,
+      keyboardType: TextInputType.multiline,
+      keyboardAppearance: _darkTheme ? Brightness.dark : Brightness.light,
+      maxLines: null,
+      style: noteStyle(_darkTheme),
+      onChanged: onChangedNote,
+      decoration: InputDecoration.collapsed(
+        hintText: 'Note',
+        hintStyle: noteHintStyle(_darkTheme),
+      ),
+    );
+  }
+
+  TextFormField textFormFieldTitle(bool _darkTheme) {
+    return TextFormField(
+      initialValue: title,
+      keyboardType: TextInputType.multiline,
+      keyboardAppearance: _darkTheme ? Brightness.dark : Brightness.light,
+      maxLines: null,
+      style: titleStyle(_darkTheme),
+      onChanged: onChangedTitle,
+      // onSaved: (value) => title = value.firstCaps,
+      cursorColor: _darkTheme ? darkThemeButton : lightThemeButton,
+      decoration: InputDecoration.collapsed(
+          hintText: 'Title', hintStyle: titleHintStyle(_darkTheme)),
+    );
+  }
+
+  TextStyle titleHintStyle(bool _darkTheme) {
+    return GoogleFonts.getFont(fontFamily,
+        color: _darkTheme ? darkThemeHint : lightThemeHint,
+        fontSize: 20,
+        fontWeight: FontWeight.w600);
+  }
+
+  TextStyle titleStyle(bool _darkTheme) {
+    return GoogleFonts.getFont(
+      fontFamily,
+      color: _darkTheme ? darkThemeWords : lightThemeWords,
+      fontSize: 20,
+      fontWeight: FontWeight.w600,
+    );
+  }
+
+  TextStyle noteStyle(bool _darkTheme) {
+    return GoogleFonts.getFont(
+      fontFamily,
+      color: _darkTheme ? darkThemeWords : lightThemeWords,
+      fontSize: 18,
+    );
+  }
+
+  TextStyle noteHintStyle(bool _darkTheme) {
+    return GoogleFonts.getFont(
+      fontFamily,
+      color: _darkTheme ? darkThemeHint : lightThemeHint,
+      fontSize: 18,
+    );
+  }
+
+  TextStyle textStyleEditTime(bool _darkTheme) {
+    return TextStyle(color: _darkTheme ? darkThemeHint : lightThemeHint);
   }
 
   Widget _bottomRow() {
@@ -306,95 +288,124 @@ class AddNoteScreenState extends State<AddNoteScreen> {
         padding: const EdgeInsets.only(left: 10.0, right: 10, top: 10),
         child: Column(
           children: [
-            Visibility(
-              visible: _pickerVisible,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 5.0),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 15.0, top: 10),
-                          child: Text(
-                            'Pick a font for your Note.',
-                            style: TextStyle(
-                                color: _darkTheme
-                                    ? darkThemeHint
-                                    : lightThemeHint),
-                          ),
-                        ),
-                      ],
-                    ),
-                    FontPicker(
-                        selectedFont:
-                            note == null ? fontList[0] : note.fontFamily,
-                        onTap: _pickFont,
-                        backgroundColor: _darkTheme
-                            ? colorsDark[color]
-                            : colorsLight[color]),
-                    Row(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 15.0, top: 10),
-                          child: Text('Pick a color for your Note.',
-                              style: TextStyle(
-                                  color: _darkTheme
-                                      ? darkThemeHint
-                                      : lightThemeHint)),
-                        ),
-                      ],
-                    ),
-                    ColorPicker(
-                      selectedIndex: note == null ? 0 : note.colorIndex,
-                      onTap: _pickColor,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                IconButton(
-                  iconSize: 30,
-                  color: _darkTheme ? darkThemeButton : lightThemeButton,
-                  icon: _pickerVisible == true
-                      ? Icon(EvaIcons.closeSquareOutline)
-                      : Icon(EvaIcons.plusSquareOutline),
-                  onPressed: _showPicker,
-                  tooltip: 'Add more',
-                ),
-                widget.note == null
-                    ? Text('Edited ${Format.time(DateTime.now())}',
-                        style: TextStyle(
-                            color: _darkTheme ? darkThemeHint : lightThemeHint))
-                    : formattedToday == formattedDate
-                        ? Text('Edited ${Format.time(note.date)}',
-                            style: TextStyle(
-                                color: _darkTheme
-                                    ? darkThemeHint
-                                    : lightThemeHint))
-                        : Text('Edited ${Format.date(note.date)}',
-                            style: TextStyle(
-                                color: _darkTheme
-                                    ? darkThemeHint
-                                    : lightThemeHint)),
-                IconButton(
-                  key: MyGlobalKeys.addNoteKey,
-                  iconSize: 28,
-                  color: _darkTheme ? darkThemeButton : lightThemeButton,
-                  icon: Icon(EvaIcons.moreVerticalOutline),
-                  onPressed: _showPopUp,
-                  tooltip: 'more',
-                ),
-              ],
-            ),
+            visibilityPick(_darkTheme),
+            rowBottom(_darkTheme),
             SizedBox(height: 20)
           ],
         ),
       ),
     );
+  }
+
+  Row rowBottom(bool _darkTheme) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        IconButton(
+          iconSize: 30,
+          color: _darkTheme ? darkThemeButton : lightThemeButton,
+          icon: _pickerVisible == true
+              ? Icon(EvaIcons.closeSquareOutline)
+              : Icon(EvaIcons.plusSquareOutline),
+          onPressed: _showPicker,
+          tooltip: 'Add more',
+        ),
+        widget.note == null
+            ? Text('Edited ${Format.time(DateTime.now())}',
+                style: textStyleEditTime(_darkTheme))
+            : formattedToday == formattedDate
+                ? Text('Edited ${Format.time(note.date)}',
+                    style: textStyleEditTime(_darkTheme))
+                : Text('Edited ${Format.date(note.date)}',
+                    style: textStyleEditTime(_darkTheme)),
+        IconButton(
+          key: MyGlobalKeys.addNoteKey,
+          iconSize: 28,
+          color: _darkTheme ? darkThemeButton : lightThemeButton,
+          icon: Icon(EvaIcons.moreVerticalOutline),
+          onPressed: _showPopUp,
+          tooltip: 'more',
+        ),
+      ],
+    );
+  }
+
+  Visibility visibilityPick(bool _darkTheme) {
+    return Visibility(
+      visible: _pickerVisible,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 5.0),
+        child: Column(
+          children: [
+            rowPickTitle(_darkTheme, 'Pick a font for your Note.'),
+            FontPicker(
+                selectedFont: note == null ? fontList[0] : note.fontFamily,
+                onTap: _pickFont,
+                backgroundColor:
+                    _darkTheme ? colorsDark[color] : colorsLight[color]),
+            rowPickTitle(_darkTheme, 'Pick a color for your Note.'),
+            ColorPicker(
+              selectedIndex: note == null ? 0 : note.colorIndex,
+              onTap: _pickColor,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Row rowPickTitle(bool _darkTheme, String text) {
+    return Row(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 15.0, top: 10),
+          child: Text(
+            text,
+            style: textStyleEditTime(_darkTheme),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void onChangedTitle(value) {
+    if (note == null) {
+      if (value.isNotEmpty) {
+        setState(() {
+          _isEdited = true;
+        });
+        title = value.firstCaps; //we should add here
+      }
+    }
+
+    if (note != null) {
+      if (value != note.title && value.isNotEmpty) {
+        setState(() {
+          _isEdited = true;
+        });
+        title = value.firstCaps; //we should add here
+      }
+    }
+  }
+
+  void onChangedNote(value) {
+    if (note == null) {
+      if (value.isNotEmpty) {
+        setState(() {
+          _isEdited = true;
+        });
+        description = value.firstCaps; //we should add here
+      }
+    }
+
+    if (note != null) {
+      if (value != note.description && value.isNotEmpty) {
+        setState(() {
+          _isEdited = true;
+        });
+        description = value.firstCaps; //we should add here
+      }
+    }
   }
 
   bool _pickerVisible = false;
@@ -428,23 +439,9 @@ class AddNoteScreenState extends State<AddNoteScreen> {
     }
   }
 
-  // bool _validateAndSaveForm() {
-  //   final form = _formKey.currentState;
-  //   //validate
-  //   if (form.validate()) {
-  //     //save
-  //     form.save();
-  //     return true;
-  //   }
-  //   return false;
-  // }
-
   Future<void> _saveAndBack(Database database, Note note) async {
-    // if (_validateAndSaveForm()) {
     if (_isEdited) {
       if ((title.isNotEmpty) || (description.isNotEmpty)) {
-        print('title: $title');
-        print('description: $description');
         try {
           final id = note?.id ?? documentIdFromCurrentDate();
 

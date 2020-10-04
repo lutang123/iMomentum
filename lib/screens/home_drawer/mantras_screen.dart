@@ -10,6 +10,7 @@ import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_fab.dart';
 import 'package:iMomentum/app/common_widgets/my_list_tile.dart';
+import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
 import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/setting_switch.dart';
@@ -20,6 +21,7 @@ import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/models/mantra_model.dart';
 import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
+import 'package:iMomentum/screens/home_drawer/top_title.dart';
 import 'package:iMomentum/screens/iPomodoro/clock_mantra_quote_title.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -36,119 +38,92 @@ class MyMantras extends StatefulWidget {
 }
 
 class _MyMantrasState extends State<MyMantras> {
-  int counter = 0;
-  void _onDoubleTap() {
-    setState(() {
-      ImagePath.randomImageUrl = '${ImagePath.randomImageUrlFirstPart}$counter';
-      counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
 
-    final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
-    bool _randomOn = randomNotifier.getRandom();
-
-    final imageNotifier = Provider.of<ImageNotifier>(context, listen: false);
-
     ///for mantra
     final mantraNotifier = Provider.of<MantraNotifier>(context);
     bool _mantraOn = mantraNotifier.getMantra();
-    return Stack(
-      fit: StackFit.expand,
-      children: <Widget>[
-        BuildPhotoView(
-          imageUrl:
-              _randomOn ? ImagePath.randomImageUrl : imageNotifier.getImage(),
-        ),
-        ContainerLinearGradient(),
-        GestureDetector(
-          onDoubleTap: _onDoubleTap,
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: SafeArea(
-              bottom: false,
-              child: CustomizedContainerNew(
-                color: _darkTheme ? darkThemeSurface : lightThemeSurface,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      MantraTopBar(
-                        title: 'Mantras',
-                        subtitle:
-                            'Simple phrases to build positive mental habits.',
-                        onPressed: _showTipDialog,
-                      ),
-                      StreamBuilder<List<MantraModel>>(
-                          stream: widget.database
-                              .mantrasStream(), //print: flutter: Instance of '_MapStream<List<TodoDuration>, dynamic>'
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              final List<MantraModel> mantras = snapshot
-                                  .data; //print('x: $entries'); //x: [Instance of 'TodoDuration', Instance of 'TodoDuration']
-                              if (mantras.isNotEmpty) {
-                                return Expanded(
-                                  child: Column(
-                                    children: <Widget>[
-                                      SizedBox(
-                                        width: 320,
-                                        child: SettingSwitchNoIcon(
-                                          title: 'Apply Your Own Mantras',
-                                          value: mantras.length > 0
-                                              ? _mantraOn
-                                              : false,
-                                          onChanged: (val) {
-                                            _mantraOn = val;
-                                            onMantraChanged(
-                                                val, mantraNotifier);
-                                          },
-                                        ),
-                                      ),
-                                      Visibility(
-                                        visible: _hideMantras,
-                                        child: Expanded(
-                                          child: buildListView(
-                                            widget.database,
-                                            mantras,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              } else {
-                                return EmptyOrErrorMantra(
-                                  hideEmptyMessage: _hideEmptyMessage,
-                                  text1: Strings.textMantra1,
-                                  text2: Strings.textMantra2,
-                                );
-                              }
-                            } else if (snapshot.hasError) {
-                              return EmptyOrErrorMantra(
-                                hideEmptyMessage: _hideEmptyMessage,
-                                text1: Strings.textMantra1,
-                                text2: Strings.textError,
-                              );
-                            }
-                            return Center(child: CircularProgressIndicator());
-                          }),
-                    ],
-                  ),
+    return MyStackScreen(
+        child: Scaffold(
+      backgroundColor: Colors.transparent,
+      body: SafeArea(
+        bottom: false,
+        child: CustomizedContainerNew(
+          color: _darkTheme ? darkThemeSurface : lightThemeSurface,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                MantraTopTitle(
+                  title: 'Mantras',
+                  subtitle: 'Simple phrases to build positive mental habits.',
+                  onPressed: _showTipDialog,
+                  darkTheme: _darkTheme,
                 ),
-              ),
-            ),
-            floatingActionButton: Visibility(
-              visible: _fabVisible,
-              child: MyFAB(onPressed: () => _add(widget.database)),
+                StreamBuilder<List<MantraModel>>(
+                    stream: widget.database
+                        .mantrasStream(), //print: flutter: Instance of '_MapStream<List<TodoDuration>, dynamic>'
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        final List<MantraModel> mantras = snapshot
+                            .data; //print('x: $entries'); //x: [Instance of 'TodoDuration', Instance of 'TodoDuration']
+                        if (mantras.isNotEmpty) {
+                          return Expanded(
+                            child: Column(
+                              children: <Widget>[
+                                SizedBox(
+                                  width: 320,
+                                  child: SettingSwitchNoIcon(
+                                    title: 'Apply Your Own Mantras',
+                                    value:
+                                        mantras.length > 0 ? _mantraOn : false,
+                                    onChanged: (val) {
+                                      _mantraOn = val;
+                                      onMantraChanged(val, mantraNotifier);
+                                    },
+                                  ),
+                                ),
+                                Visibility(
+                                  visible: _hideMantras,
+                                  child: Expanded(
+                                    child: buildListView(
+                                      widget.database,
+                                      mantras,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        } else {
+                          return EmptyOrErrorMantra(
+                            hideEmptyMessage: _hideEmptyMessage,
+                            text1: Strings.textMantra1,
+                            text2: Strings.textMantra2,
+                          );
+                        }
+                      } else if (snapshot.hasError) {
+                        return EmptyOrErrorMantra(
+                          hideEmptyMessage: _hideEmptyMessage,
+                          text1: Strings.textMantra1,
+                          text2: Strings.textError,
+                        );
+                      }
+                      return Center(child: CircularProgressIndicator());
+                    }),
+              ],
             ),
           ),
-        )
-      ],
-    );
+        ),
+      ),
+      floatingActionButton: Visibility(
+        visible: _fabVisible,
+        child: MyFAB(onPressed: () => _add(widget.database)),
+      ),
+    ));
   }
 
   Future<void> _showTipDialog() async {
