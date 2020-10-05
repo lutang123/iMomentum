@@ -57,9 +57,8 @@ enum CurrentWeatherState { NOT_DOWNLOADED, DOWNLOADING, FINISHED_DOWNLOADING }
 class _HomeScreenState extends State<HomeScreen> {
   double _quoteOpacity = 1.0; //used when showing flush bar
   double _wholeBodyOpacity = 1.0; //used when edit or show top sheet
-  //todo
-  bool _questionVisible = true;
   bool _nameVisible = true; //used when edit name
+  bool _questionVisible = true; //used when changing question
 
   CurrentWeatherState _state = CurrentWeatherState.NOT_DOWNLOADED;
   int temperature;
@@ -76,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
       direction: TopSheetDirection.TOP,
     ).then((value) => setState(() {
           _wholeBodyOpacity = 1.0;
-          _fetchWeather();
+          _fetchWeather(); //call again to refresh the weather on home screen, this is useful when user changed metric
         }));
   }
 
@@ -154,10 +153,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final String dayOfWeek = DateFormat.E().format(DateTime.now());
   final String formattedDate = DateFormat.MMMd().format(DateTime.now());
+
   final String _congrats = CongratsList().getCongrats().body;
   String _defaultMantra;
-
-  DateTime _date = DateTime.now();
+  DateTime _date = DateTime.now(); //this is default date when adding a task
 
   @override
   void initState() {
@@ -175,6 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   ///notes on showcase view
+  BuildContext myContext;
   GlobalKey _first = GlobalKey();
   GlobalKey _second = GlobalKey();
   GlobalKey _third = GlobalKey();
@@ -196,8 +196,11 @@ class _HomeScreenState extends State<HomeScreen> {
     /// add showcase only if first launch
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _isFirstLaunch().then((result) {
+        // // print('first');
+        // if (!mounted) return; //not making any difference
+        // // print('second');
         if (result)
-          ShowCaseWidget.of(context)
+          ShowCaseWidget.of(myContext)
               .startShowCase([_first, _second, _third, _fourth]);
       });
     });
@@ -208,50 +211,58 @@ class _HomeScreenState extends State<HomeScreen> {
     final imageNotifier = Provider.of<ImageNotifier>(context);
     final bool isKeyboardVisible =
         KeyboardVisibilityProvider.isKeyboardVisible(context);
-    return Stack(
-      fit: StackFit.expand,
-      children: <Widget>[
-        BuildPhotoView(
-          imageUrl:
-              _randomOn ? ImagePath.randomImageUrl : imageNotifier.getImage(),
-        ),
-        ContainerLinearGradient(),
-        GestureDetector(
-          onDoubleTap: _onDoubleTap,
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: SafeArea(
-                top: false,
-                child: Opacity(
-                  opacity: _wholeBodyOpacity,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _topBar(),
-                      Showcase(
-                          key: _second,
-                          description: Strings.second,
-                          contentPadding: const EdgeInsets.symmetric(
-                              vertical: 5, horizontal: 15),
-                          child: Container()), //for weather
-                      _middleContent(), //Expanded
-                      !isKeyboardVisible
-                          ? Visibility(
-                              visible: _nameVisible,
-                              //this opacity is used when flushbar comes from bottom
-                              child: Opacity(
-                                  opacity: _quoteOpacity,
-                                  child: _buildQuoteStream()))
-                          : Container(),
-                    ],
-                  ),
-                )),
+
+    ///Dart Unhandled Exception: NoSuchMethodError: The method 'findAncestorStateOfType' was called on null.
+    ///https://stackoverflow.com/questions/52130648/nosuchmethoderror-the-method-ancestorstateoftype-was-called-on-null
+    ///https://stackoverflow.com/questions/49373774/inheritedwidget-with-scaffold-as-child-doesnt-seem-to-be-working
+    ///https://stackoverflow.com/questions/60930636/how-can-i-use-show-case-view-in-flutter
+    return ShowCaseWidget(builder: Builder(builder: (context) {
+      myContext = context;
+      return Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          BuildPhotoView(
+            imageUrl:
+                _randomOn ? ImagePath.randomImageUrl : imageNotifier.getImage(),
           ),
-        )
-      ],
-    );
+          ContainerLinearGradient(),
+          GestureDetector(
+            onDoubleTap: _onDoubleTap,
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              body: SafeArea(
+                  top: false,
+                  child: Opacity(
+                    opacity: _wholeBodyOpacity,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _topBar(),
+                        Showcase(
+                            key: _second,
+                            description: Strings.second,
+                            contentPadding: const EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 15),
+                            child: Container()), //for weather
+                        _middleContent(), //Expanded
+                        !isKeyboardVisible
+                            ? Visibility(
+                                visible: _nameVisible,
+                                //this opacity is used when flushbar comes from bottom
+                                child: Opacity(
+                                    opacity: _quoteOpacity,
+                                    child: _buildQuoteStream()))
+                            : Container(),
+                      ],
+                    ),
+                  )),
+            ),
+          )
+        ],
+      );
+    }));
   }
 
   /// top bar
@@ -553,7 +564,7 @@ class _HomeScreenState extends State<HomeScreen> {
         delay: 500,
         child: Text(
           'Have a good night sleep.',
-          style: KHomeQuestion2,
+          style: KHomeGoodNight,
           textAlign: TextAlign.center,
         ),
       );

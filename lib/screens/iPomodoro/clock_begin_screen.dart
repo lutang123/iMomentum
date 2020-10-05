@@ -1,22 +1,14 @@
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
-import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
-import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
-import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/models/todo.dart';
 import 'package:iMomentum/app/utils/extension_clockFmt.dart';
 import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/utils/pages_routes.dart';
-import 'package:iMomentum/app/utils/top_sheet.dart';
-import 'package:iMomentum/screens/iPomodoro/today_line_chart.dart';
-import 'package:iMomentum/screens/iPomodoro/top_sheet_pomodoro_info.dart';
+import 'package:iMomentum/screens/iPomodoro/pomodoro_base_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'clock_bottom.dart';
 import 'clock_start.dart';
 import 'clock_timer_screen.dart';
@@ -52,45 +44,33 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MyStackScreen(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SingleChildScrollView(
-          child: SafeArea(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Opacity(
-                  opacity: _topOpacity,
-                  child: topRow(context),
-                ),
-                Opacity(
-                  opacity: _topOpacity,
-                  child: PomodoroTitle(
-                    title: 'Time to focus',
-                    subtitle: 'Break your work into intervals',
-                  ),
-                ),
-                ClockStart(
-                  text1: Duration(minutes: _durationInMin).clockFmt(),
-                  text2: '',
-                  height: 0,
-                  onPressed: () => _play(),
-                  onPressedEdit: () => showEditDialog(),
-                ),
-                SizedBox(height: 30),
-                ClockBottomToday(text: '${widget.todo.title}'),
-              ],
-            ),
-          ),
+    return PomodoroBaseScreen(
+      topRow: Opacity(
+        opacity: _topOpacity,
+        child: topRow(context),
+      ),
+      titleWidget: Opacity(
+        opacity: _topOpacity,
+        child: PomodoroTitle(
+          title: 'Time to focus',
+          subtitle: 'Break your work into intervals',
         ),
       ),
+      bigCircle: ClockStart(
+        text1: Duration(minutes: _durationInMin).clockFmt(),
+        text2: '',
+        height: 0,
+        onPressed: () => _play(),
+        onPressedEdit: () => showEditDialog(),
+      ),
+      timerButton: Container(),
+      bottomWidget: ClockBottomToday(text: '${widget.todo.title}'),
     );
   }
 
   Padding topRow(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
@@ -100,11 +80,11 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
             icon: Icon(Icons.clear, size: 30),
             color: Colors.white,
           ),
-          IconButton(
-            onPressed: () => _showFlushBar(),
-            icon: Icon(Icons.info_outline, color: Colors.white, size: 32),
-            color: Colors.white,
-          )
+          // IconButton(
+          //   onPressed: () => _showFlushBar(),
+          //   icon: Icon(Icons.info_outline, color: Colors.white, size: 32),
+          //   color: Colors.white,
+          // )
         ],
       ),
     );
@@ -148,9 +128,6 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
   void showEditDialog() async {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    // setState(() {
-    //   _topOpacity = 0.0;
-    // });
     await showDialog(
       context: context,
       builder: (BuildContext _) {
@@ -173,196 +150,11 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(
-                          'Focus length',
-                          style:
-                              _darkTheme ? KDialogContent : KDialogContentLight,
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Container(
-                              width: 70,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 15),
-                                child: TextFormField(
-                                    initialValue: _durationInMin.toString(),
-
-                                    ///int.tryParse returns a null on an invalid number;
-                                    ///int.parse returns an exception on an invalid number;
-                                    //it does not matter in this case, because it's always number
-                                    validator: (value) => (value.isNotEmpty) &&
-                                            (int.parse(value) > 0)
-                                        ? null
-                                        : 'error',
-
-                                    ///below not good
-                                    // (value) => (value.length == 0) ||
-                                    //     (int.tryParse(value) < 0) ||
-                                    //     (int.tryParse(value) == 0)
-                                    // ? 'Error'
-                                    // : null,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _durationInMin != int.tryParse(value)
-                                            ? _isDifferentLength = true
-                                            : _isDifferentLength = false;
-                                      });
-                                    },
-                                    onSaved: (value) =>
-                                        _durationInMin = int.tryParse(value),
-                                    keyboardType: TextInputType.number,
-                                    style: _darkTheme
-                                        ? KDialogContent
-                                        : KDialogContentLight,
-                                    autofocus: true,
-                                    cursorColor: _darkTheme
-                                        ? darkThemeWords
-                                        : lightThemeWords,
-                                    decoration: _darkTheme
-                                        ? KTextFieldInputDecorationDark
-                                        : KTextFieldInputDecorationLight),
-                              ),
-                            ),
-                            Text('min',
-                                style: _darkTheme
-                                    ? KDialogContent
-                                    : KDialogContentLight),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text('Rest length',
-                            style: _darkTheme
-                                ? KDialogContent
-                                : KDialogContentLight),
-                        Row(
-                          children: <Widget>[
-                            Container(
-                              width: 70,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 15),
-                                child: TextFormField(
-                                    initialValue: _restInMin.toString(),
-                                    validator: (value) => (value.isNotEmpty) &&
-                                            (int.parse(value) > 0)
-                                        ? null
-                                        : 'error',
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _restInMin != int.parse(value)
-                                            ? _isDifferentLength = true
-                                            : _isDifferentLength = false;
-                                      });
-                                    },
-                                    onSaved: (value) =>
-                                        _restInMin = int.parse(value),
-                                    keyboardType: TextInputType.number,
-                                    style: _darkTheme
-                                        ? KDialogContent
-                                        : KDialogContentLight,
-                                    cursorColor: _darkTheme
-                                        ? darkThemeWords
-                                        : lightThemeWords,
-                                    decoration: _darkTheme
-                                        ? KTextFieldInputDecorationDark
-                                        : KTextFieldInputDecorationLight),
-                              ),
-                            ),
-                            Text('min',
-                                style: _darkTheme
-                                    ? KDialogContent
-                                    : KDialogContentLight),
-                          ],
-                        ),
-                      ],
-                    ),
+                    rowFocusLength(_darkTheme, setState),
+                    rowReastLength(_darkTheme, setState),
                     SizedBox(height: 5),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text('Play sounds',
-                            style: _darkTheme
-                                ? KDialogContent
-                                : KDialogContentLight),
-                        SizedBox(
-                          width: 50,
-                          child: Transform.scale(
-                            scale: 0.9,
-                            child: CupertinoSwitch(
-                              activeColor: _darkTheme
-                                  ? switchActiveColorDark
-                                  : switchActiveColorLight,
-                              trackColor: Colors.grey,
-                              value: _playSound,
-                              onChanged: (val) {
-                                print(val);
-                                setState(() {
-                                  _playSound = val;
-                                });
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          FlatButton(
-                              child: Text(
-                                'Cancel',
-                                style: _darkTheme
-                                    ? KDialogButton
-                                    : KDialogButtonLight,
-                              ),
-                              shape: _isDifferentLength || _playSound == false
-                                  ? null
-                                  : RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(68.0),
-                                      side: BorderSide(
-                                          color: _darkTheme
-                                              ? darkThemeHint
-                                              : lightThemeHint,
-                                          width: 1.0)),
-                              onPressed: () {
-                                // setState(() {
-                                //   _topOpacity = 1.0;
-                                // });
-                                Navigator.of(context).pop();
-                              }),
-                          FlatButton(
-                              child: Text(
-                                'Done',
-                                style: _darkTheme
-                                    ? KDialogButton
-                                    : KDialogButtonLight,
-                              ),
-                              shape: _isDifferentLength || _playSound == false
-                                  ? RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(68.0),
-                                      side: BorderSide(
-                                          color: _darkTheme
-                                              ? darkThemeHint
-                                              : lightThemeHint,
-                                          width: 1.0))
-                                  : null,
-
-                              ///_done must have a BuildContext, so that it will
-                              ///use the same context as cancel button, which is all from StatefulBuilder
-                              onPressed: () => _done(context)),
-                        ],
-                      ),
-                    ),
+                    rowPlaySounds(_darkTheme, setState),
+                    rowButton(_darkTheme, context),
 
                     ///tried to use ListTile for switch button as in drawer but design not looking good
                   ],
@@ -372,15 +164,178 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
           );
         });
       },
-    )
-        //     .then((val) {
-        //   //https://stackoverflow.com/questions/49706046/how-run-code-after-showdialog-is-dismissed-in-flutter
-        //   setState(() {
-        //     _topOpacity = 1.0;
-        //   });
-        // })
+    );
+  }
 
-        ;
+  Padding rowButton(bool _darkTheme, BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          FlatButton(
+              child: Text(
+                'Cancel',
+                style: _darkTheme ? KDialogButton : KDialogButtonLight,
+              ),
+              shape: _isDifferentLength || _playSound == false
+                  ? null
+                  : RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(68.0),
+                      side: BorderSide(
+                          color: _darkTheme ? darkThemeHint : lightThemeHint,
+                          width: 1.0)),
+              onPressed: () {
+                // setState(() {
+                //   _topOpacity = 1.0;
+                // });
+                Navigator.of(context).pop();
+              }),
+          FlatButton(
+              child: Text(
+                'Done',
+                style: _darkTheme ? KDialogButton : KDialogButtonLight,
+              ),
+              shape: _isDifferentLength || _playSound == false
+                  ? RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(68.0),
+                      side: BorderSide(
+                          color: _darkTheme ? darkThemeHint : lightThemeHint,
+                          width: 1.0))
+                  : null,
+
+              ///_done must have a BuildContext, so that it will
+              ///use the same context as cancel button, which is all from StatefulBuilder
+              onPressed: () => _done(context)),
+        ],
+      ),
+    );
+  }
+
+  Row rowPlaySounds(bool _darkTheme, StateSetter setState) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Text('Play sounds',
+            style: _darkTheme ? KDialogContent : KDialogContentLight),
+        SizedBox(
+          width: 50,
+          child: Transform.scale(
+            scale: 0.9,
+            child: CupertinoSwitch(
+              activeColor:
+                  _darkTheme ? switchActiveColorDark : switchActiveColorLight,
+              trackColor: Colors.grey,
+              value: _playSound,
+              onChanged: (val) {
+                print(val);
+                setState(() {
+                  _playSound = val;
+                });
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Row rowReastLength(bool _darkTheme, StateSetter setState) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Text('Rest length',
+            style: _darkTheme ? KDialogContent : KDialogContentLight),
+        Row(
+          children: <Widget>[
+            SizedBox(
+              width: 70,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: TextFormField(
+                    initialValue: _restInMin.toString(),
+                    validator: (value) =>
+                        (value.isNotEmpty) && (int.parse(value) > 0)
+                            ? null
+                            : 'error',
+                    onChanged: (value) {
+                      setState(() {
+                        _restInMin != int.parse(value)
+                            ? _isDifferentLength = true
+                            : _isDifferentLength = false;
+                      });
+                    },
+                    onSaved: (value) => _restInMin = int.parse(value),
+                    keyboardType: TextInputType.number,
+                    style: _darkTheme ? KDialogContent : KDialogContentLight,
+                    cursorColor: _darkTheme ? darkThemeWords : lightThemeWords,
+                    decoration: _darkTheme
+                        ? KTextFieldInputDecorationDark
+                        : KTextFieldInputDecorationLight),
+              ),
+            ),
+            Text('min',
+                style: _darkTheme ? KDialogContent : KDialogContentLight),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Row rowFocusLength(bool _darkTheme, StateSetter setState) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Text(
+          'Focus length',
+          style: _darkTheme ? KDialogContent : KDialogContentLight,
+        ),
+        Row(
+          children: <Widget>[
+            SizedBox(
+              width: 70,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: TextFormField(
+                    initialValue: _durationInMin.toString(),
+
+                    ///int.tryParse returns a null on an invalid number;
+                    ///int.parse returns an exception on an invalid number;
+                    //it does not matter in this case, because it's always number
+                    validator: (value) =>
+                        (value.isNotEmpty) && (int.parse(value) > 0)
+                            ? null
+                            : 'error',
+
+                    ///below not good
+                    // (value) => (value.length == 0) ||
+                    //     (int.tryParse(value) < 0) ||
+                    //     (int.tryParse(value) == 0)
+                    // ? 'Error'
+                    // : null,
+                    onChanged: (value) {
+                      setState(() {
+                        _durationInMin != int.tryParse(value)
+                            ? _isDifferentLength = true
+                            : _isDifferentLength = false;
+                      });
+                    },
+                    onSaved: (value) => _durationInMin = int.tryParse(value),
+                    keyboardType: TextInputType.number,
+                    style: _darkTheme ? KDialogContent : KDialogContentLight,
+                    autofocus: true,
+                    cursorColor: _darkTheme ? darkThemeWords : lightThemeWords,
+                    decoration: _darkTheme
+                        ? KTextFieldInputDecorationDark
+                        : KTextFieldInputDecorationLight),
+              ),
+            ),
+            Text('min',
+                style: _darkTheme ? KDialogContent : KDialogContentLight),
+          ],
+        ),
+      ],
+    );
   }
 
   bool _validateAndSaveForm() {
@@ -407,56 +362,52 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
 
   double _topOpacity = 1.0;
 
-  void _showFlushBar() {
-    setState(() {
-      _topOpacity = 0.0;
-    });
-
-    TopSheet.show(
-      context: context,
-      child: TopSheetPomodoroInfo(),
-      direction: TopSheetDirection.TOP,
-    ).then((value) => setState(() {
-          _topOpacity = 1.0;
-        }));
-
-    // Flushbar(
-    //   margin: const EdgeInsets.all(20),
-    //   padding: const EdgeInsets.all(8),
-    //   borderRadius: 15,
-    //   flushbarPosition: FlushbarPosition.TOP,
-    //   flushbarStyle: FlushbarStyle.FLOATING,
-    //   backgroundGradient: KFlushBarGradient,
-    //   duration: Duration(seconds: 4),
-    //   titleText: RichText(
-    //     text: TextSpan(
-    //       style: KFlushBarTitle,
-    //       children: <TextSpan>[
-    //         TextSpan(text: 'Our Focus Mode uses '),
-    //         TextSpan(
-    //           text: 'Pomodoro Technique ',
-    //           style: KFlushBarEmphasis,
-    //         ),
-    //         TextSpan(text: 'to help you focus.')
-    //       ],
-    //     ),
-    //   ),
-    //   messageText: GestureDetector(
-    //     onTap: () async {
-    //       const url = 'https://en.wikipedia.org/wiki/Pomodoro_Technique';
-    //       if (await canLaunch(url)) {
-    //         await launch(url);
-    //       } else {
-    //         throw 'Could not launch $url';
-    //       }
-    //     },
-    //     child: Padding(
-    //       padding: const EdgeInsets.only(top: 5),
-    //       child: Text('Learn more.', style: KTextButton),
-    //     ),
-    //   ),
-    // )..show(context).then((value) => setState(() {
-    //       _topOpacity = 1.0;
-    //     }));
-  }
+  // void _showFlushBar() async {
+  //   setState(() {
+  //     _topOpacity = 0.0;
+  //   });
+  //
+  //   await flushbar();
+  // }
+  //
+  // Future<Flushbar> flushbar() async {
+  //   return Flushbar(
+  //     margin: const EdgeInsets.all(20),
+  //     padding: const EdgeInsets.all(8),
+  //     borderRadius: 15,
+  //     flushbarPosition: FlushbarPosition.TOP,
+  //     flushbarStyle: FlushbarStyle.FLOATING,
+  //     backgroundGradient: KFlushBarGradient,
+  //     duration: Duration(seconds: 4),
+  //     titleText: RichText(
+  //       text: TextSpan(
+  //         style: KFlushBarTitle,
+  //         children: <TextSpan>[
+  //           TextSpan(text: 'Our Focus Mode uses '),
+  //           TextSpan(
+  //             text: 'Pomodoro Technique ',
+  //             style: KFlushBarEmphasis,
+  //           ),
+  //           TextSpan(text: 'to help you focus.')
+  //         ],
+  //       ),
+  //     ),
+  //     messageText: GestureDetector(
+  //       onTap: () async {
+  //         const url = 'https://en.wikipedia.org/wiki/Pomodoro_Technique';
+  //         if (await canLaunch(url)) {
+  //           await launch(url);
+  //         } else {
+  //           throw 'Could not launch $url';
+  //         }
+  //       },
+  //       child: Padding(
+  //         padding: const EdgeInsets.only(top: 5),
+  //         child: Text('Learn more.', style: KTextButton),
+  //       ),
+  //     ),
+  //   )..show(context).then((value) => setState(() {
+  //         _topOpacity = 1.0;
+  //       }));
+  // }
 }

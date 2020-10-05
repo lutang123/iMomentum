@@ -7,15 +7,12 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
-import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_fab.dart';
 import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
 import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
-import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/models/todo.dart';
 import 'package:iMomentum/app/services/firestore_service/database.dart';
@@ -59,7 +56,10 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
 
   ///for todoList (first tab)
   bool _addButtonVisible = true;
-  bool _calendarVisible = true;
+  double _calendarOpacity = 1; //changed to not hide
+  bool _listVisible = true; //changed to not hide
+
+  final DateFormat _dateFormatter = DateFormat('M/d/y');
   ScrollController _hideButtonController;
   //default as today, and if select other dates, _date will be _calendarController.selectedDay, and then pass it to AddTodoScreen
   DateTime _taskDate = DateTime.now();
@@ -171,19 +171,17 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
     _hideButtonController.addListener(() {
       if (_hideButtonController.position.userScrollDirection ==
           ScrollDirection.reverse) {
-        if (_addButtonVisible == true && _calendarVisible == true) {
+        if (_addButtonVisible == true) {
           setState(() {
             _addButtonVisible = false;
-            _calendarVisible = false;
           });
         }
       } else {
         if (_hideButtonController.position.userScrollDirection ==
             ScrollDirection.forward) {
-          if (_addButtonVisible == false && _calendarVisible == false) {
+          if (_addButtonVisible == false) {
             setState(() {
               _addButtonVisible = true;
-              _calendarVisible = true;
             });
           }
         }
@@ -206,131 +204,131 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
             length: 2,
             child: Column(
               children: <Widget>[
-                Visibility(visible: _listVisible, child: TodoTopRow()),
+                Visibility(
+                  visible: _listVisible,
+                  child: TodoTopRow(),
+                ),
                 // two SteamBuilder nested together, The returned value is
                 // TabBarView, and this must be below StreamBuilder
                 ///StreamBuilder must wrap with Scaffold first, otherwise the empty list message will look terrible
                 /// can not remove this Expanded
-                Expanded(
-                  child: StreamBuilder<List<Todo>>(
-                    stream: database
-                        .todosStream(), // print(database.todosStream());//Instance of '_MapStream<QuerySnapshot, List<TodoModel>>'
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        final List<Todo> todos = snapshot.data;
-                        if (todos.isNotEmpty) {
-                          _events = DailyTodosDetails.getEvents(
-                              todos); //return a map to use on calender
-                          _notDoneEvents =
-                              DailyTodosDetails.getNotDoneEvents(todos);
-
-                          ///get today's list, (unfortunately, it's designed to show _todayList on every other day if this day is empty.)
-                          _todayList = DailyTodosDetails.getTodosGroupByData(
-                              DateTime.now(), todos);
-
-                          _todayNotDoneList =
-                              DailyTodosDetails.getNotDoneTodosGroupByData(
-                                  DateTime.now(), todos);
-
-                          return StreamBuilder<List<TodoDuration>>(
-                              stream: bloc
-                                  .allTodoDurationStream, //print: flutter: Instance of '_MapStream<List<TodoDuration>, dynamic>'
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  final List<TodoDuration> entries = snapshot
-                                      .data; //print('x: $entries'); //x: [Instance of 'TodoDuration', Instance of 'TodoDuration']
-                                  if (entries.isNotEmpty) {
-                                    ///for second calendar
-                                    _eventsNew =
-                                        DailyTodosDetails.getEventsNew(entries);
-
-                                    /// for the pie chart /// it seems every function in this level were execute three times every time I tap on the screen, o
-                                    _todayDataMap =
-                                        DailyTodosDetails.getDataMapGroupByDate(
-                                            DateTime.now(), entries);
-                                    _todayDuration =
-                                        DailyTodosDetails.getDailyTotalDuration(
-                                            DateTime.now(), entries);
-//                                            print(_todayDuration); // if no data, it will show null, not 0
-                                    ///moved StreamBuilder up above TabBarView, otherwise we got error: Bad state: Stream has already been listened to
-                                    return TabBarView(
-                                      children: <Widget>[
-                                        firstTab(database, todos, _events,
-                                            _notDoneEvents),
-                                        secondTab(entries, _eventsNew),
-                                      ],
-                                    );
-                                  } else {
-                                    ///the problem is if no data on pie chart, it always shows nothing on task list,
-                                    ///that's why if no data on pie chart, we return the whole first tab column
-                                    return TabBarView(
-                                      children: <Widget>[
-                                        firstTab(database, todos, _events,
-                                            _notDoneEvents),
-                                        secondTabNoDataContent(
-                                            database, _eventNoData),
-                                      ],
-                                    );
-                                  }
-                                } else if (snapshot.hasError) {
-                                  print(
-                                      'PieChart StreamBuilder error: ${snapshot.error.toString()}');
-
-                                  /// this is if pie chart stream builder has error, we still show the same as no data on pie chart
-                                  return TabBarView(
-                                    children: <Widget>[
-                                      firstTab(database, todos, _events,
-                                          _notDoneEvents),
-                                      secondTabNoDataContent(
-                                          database, _eventNoData),
-                                    ],
-                                  );
-                                }
-                                return Center(
-                                    child: CircularProgressIndicator());
-                              });
-
-                          ///here means if no data in today's todoList, that also
-                          ///means no data in pie chart, we show both empty one
-                        } else {
-                          return TabBarView(
-                            children: <Widget>[
-                              firstTabNoDataContent(
-                                  database,
-                                  _eventNoData,
-                                  Strings.emptyTodoList,
-                                  '',
-                                  // Strings.textTodoList2,
-                                  ''),
-                              secondTabNoDataContent(database, _eventNoData),
-                            ],
-                          );
-                        }
-                      } else if
-
-                          /// this is if TodoList stream builder has error, we show our error content
-                          (snapshot.hasError) {
-                        print(
-                            'Todo StreamBuilder error: ${snapshot.error.toString()}');
-
-                        return TabBarView(
-                          children: <Widget>[
-                            ///Todo, contact us
-                            firstTabNoDataContent(database, _eventNoData, '',
-                                Strings.textError, 'Or contact us'),
-                            secondTabNoDataContent(database, _eventNoData),
-                          ],
-                        );
-                      }
-                      return Center(child: CircularProgressIndicator());
-                    },
-                  ),
-                ),
+                Expanded(child: buildStreamBuilderTodo(database, bloc)),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  StreamBuilder<List<Todo>> buildStreamBuilderTodo(
+      Database database, CalendarBloc bloc) {
+    return StreamBuilder<List<Todo>>(
+      stream: database
+          .todosStream(), // print(database.todosStream());//Instance of '_MapStream<QuerySnapshot, List<TodoModel>>'
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final List<Todo> todos = snapshot.data;
+          if (todos.isNotEmpty) {
+            _events = DailyTodosDetails.getEvents(
+                todos); //return a map to use on calender
+            _notDoneEvents = DailyTodosDetails.getNotDoneEvents(todos);
+
+            ///get today's list, (unfortunately, it's designed to show _todayList on every other day if this day is empty.)
+            _todayList =
+                DailyTodosDetails.getTodosGroupByData(DateTime.now(), todos);
+
+            _todayNotDoneList = DailyTodosDetails.getNotDoneTodosGroupByData(
+                DateTime.now(), todos);
+
+            return buildStreamBuilderDuration(bloc, database, todos);
+
+            ///here means if no data in today's todoList, that also
+            ///means no data in pie chart, we show both empty one
+          } else {
+            return buildTabBarViewEmptyContent(database);
+          }
+        } else if
+
+            /// this is if TodoList stream builder has error, we show our error content
+            (snapshot.hasError) {
+          print('Todo StreamBuilder error: ${snapshot.error.toString()}');
+          return buildTabBarViewTodoError(database);
+        }
+        return Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+
+  TabBarView buildTabBarViewEmptyContent(Database database) {
+    return TabBarView(
+      children: <Widget>[
+        firstTabNoDataContent(
+            database, _eventNoData, Strings.emptyTodoList, '', ''),
+        secondTabNoDataContent(database, _eventNoData),
+      ],
+    );
+  }
+
+  TabBarView buildTabBarViewTodoError(Database database) {
+    return TabBarView(
+      children: <Widget>[
+        ///Todo, contact us
+        firstTabNoDataContent(
+            database, _eventNoData, '', Strings.textError, 'Or contact us'),
+        secondTabNoDataContent(database, _eventNoData),
+      ],
+    );
+  }
+
+  StreamBuilder<List<TodoDuration>> buildStreamBuilderDuration(
+      CalendarBloc bloc, Database database, List<Todo> todos) {
+    return StreamBuilder<List<TodoDuration>>(
+        stream: bloc
+            .allTodoDurationStream, //print: flutter: Instance of '_MapStream<List<TodoDuration>, dynamic>'
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final List<TodoDuration> entries = snapshot
+                .data; //print('x: $entries'); //x: [Instance of 'TodoDuration', Instance of 'TodoDuration']
+            if (entries.isNotEmpty) {
+              ///for second calendar
+              _eventsNew = DailyTodosDetails.getEventsNew(entries);
+
+              /// for the pie chart /// it seems every function in this level were execute three times every time I tap on the screen, o
+              _todayDataMap = DailyTodosDetails.getDataMapGroupByDate(
+                  DateTime.now(), entries);
+              _todayDuration = DailyTodosDetails.getDailyTotalDuration(
+                  DateTime.now(), entries);
+//                                            print(_todayDuration); // if no data, it will show null, not 0
+              ///moved StreamBuilder up above TabBarView, otherwise we got error: Bad state: Stream has already been listened to
+              return TabBarView(
+                children: <Widget>[
+                  firstTab(database, todos, _events, _notDoneEvents),
+                  secondTab(entries, _eventsNew),
+                ],
+              );
+            } else {
+              ///the problem is if no data on pie chart, it always shows nothing on task list,
+              ///that's why if no data on pie chart, we return the whole first tab column
+              return buildTabBarViewDurationEmptyAndError(database, todos);
+            }
+          } else if (snapshot.hasError) {
+            print('PieChart StreamBuilder error: ${snapshot.error.toString()}');
+
+            /// this is if pie chart stream builder has error, we still show the same as no data on pie chart
+            return buildTabBarViewDurationEmptyAndError(database, todos);
+          }
+          return Center(child: CircularProgressIndicator());
+        });
+  }
+
+  TabBarView buildTabBarViewDurationEmptyAndError(
+      Database database, List<Todo> todos) {
+    return TabBarView(
+      children: <Widget>[
+        firstTab(database, todos, _events, _notDoneEvents),
+        secondTabNoDataContent(database, _eventNoData),
+      ],
     );
   }
 
@@ -361,8 +359,6 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
       ],
     );
   }
-
-  double _calendarOpacity = 1;
 
   Widget firstCalendar(
     Database database,
@@ -440,6 +436,58 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
     );
   }
 
+  Padding titleAndSubtitle(bool _darkTheme,
+      {String title, String dateHighlight, String subtitle}) {
+    return Padding(
+      padding: const EdgeInsets.all(15),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          RichText(
+            text: TextSpan(
+              // Note: Styles for TextSpans must be explicitly defined.
+              // Child text spans will inherit styles from parent
+              style: textStyleTodoTitle(_darkTheme),
+              children: <TextSpan>[
+                TextSpan(text: title),
+                TextSpan(
+                    text: dateHighlight,
+                    style: textStyleTodoTitleHighlight(_darkTheme)),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text(
+              subtitle,
+              style: Theme.of(context).textTheme.subtitle2,
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBoxAdaptorForTodoListTitle() {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    return SliverToBoxAdapter(
+      child: titleAndSubtitle(
+        _darkTheme,
+        title: 'Task list on ',
+        dateHighlight: _titleDateString,
+        subtitle: _selectedList.isEmpty ||
+                (DateFormat('M/d/y')
+                        .format(_firstCalendarController.selectedDay) ==
+                    DateFormat('M/d/y').format(DateTime.now()))
+            ? '${_todayNotDoneList.length.toString()} / ${_todayList.length.toString()} tasks'
+            : '${_selectedNotDoneList.length.toString()} / ${_selectedList.length.toString()} tasks',
+      ),
+    );
+  }
+
   Widget _bottomRow(Database database) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
@@ -457,11 +505,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                 child: FlatButton(
                   child: Text(
                     'Show Tips',
-                    style: TextStyle(
-                        fontSize: 15,
-                        color: _darkTheme
-                            ? darkThemeButton.withOpacity(0.9)
-                            : lightThemeButton.withOpacity(0.9)),
+                    style: textStyleShowTip(_darkTheme),
                   ),
                   onPressed: _showTipDialog,
                 ),
@@ -494,51 +538,6 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
         child: Visibility(
           visible: _addButtonVisible,
           child: MyFAB(heroTag: "btn1", onPressed: () => _add(database)),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBoxAdaptorForTodoListTitle() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 15),
-        child: Column(
-          children: <Widget>[
-            RichText(
-              text: TextSpan(
-                // Note: Styles for TextSpans must be explicitly defined.
-                // Child text spans will inherit styles from parent
-                style: TextStyle(
-                    fontSize: 22.0,
-                    color: _darkTheme ? darkThemeWords : lightThemeWords),
-                children: <TextSpan>[
-                  TextSpan(text: 'Task list on '),
-                  TextSpan(
-                    text: _titleDateString,
-                    style: TextStyle(
-                      fontSize: 22,
-                      color: _darkTheme ? darkThemeWords : lightThemeWords,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-                padding: const EdgeInsets.only(top: 8.0, bottom: 8),
-                child: Text(
-                  _selectedList.isEmpty ||
-                          (DateFormat('M/d/y').format(
-                                  _firstCalendarController.selectedDay) ==
-                              DateFormat('M/d/y').format(DateTime.now()))
-                      ? '${_todayNotDoneList.length.toString()} / ${_todayList.length.toString()} tasks'
-                      : '${_selectedNotDoneList.length.toString()} / ${_selectedList.length.toString()} tasks',
-                  style: Theme.of(context).textTheme.subtitle2,
-                )),
-          ],
         ),
       ),
     );
@@ -593,7 +592,6 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
       actions: <Widget>[
         // difference.inDays > 0 || difference.inDays == 0
         //     ?
-
         IconSlideAction(
 
             ///this is not necessary, but previously many todos were added without hasReminder property, so to prevent error, we add this
@@ -732,43 +730,13 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.all(15),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            RichText(
-              text: TextSpan(
-                // Note: Styles for TextSpans must be explicitly defined.
-                // Child text spans will inherit styles from parent
-                style: TextStyle(
-                    fontSize: 22.0,
-                    color: _darkTheme ? Colors.white : lightThemeWords),
-                children: <TextSpan>[
-                  TextSpan(text: 'Focused Time on '),
-                  TextSpan(
-                    text: _titleDateStringPieChart,
-                    style: TextStyle(
-                        fontSize: 22,
-                        color: _darkTheme ? Colors.white : lightThemeWords,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: Text(
-                _selectedDataMap.isEmpty
-                    ? 'Total ${Format.minutes(_todayDuration)}'
-                    : 'Total ${Format.minutes(_selectedDuration)}',
-                style: Theme.of(context).textTheme.subtitle2,
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ],
-        ),
+      child: titleAndSubtitle(
+        _darkTheme,
+        title: 'Focused Time on ',
+        dateHighlight: _titleDateStringPieChart,
+        subtitle: _selectedDataMap.isEmpty
+            ? 'Total ${Format.minutes(_todayDuration)}'
+            : 'Total ${Format.minutes(_selectedDuration)}',
       ),
     );
   }
@@ -812,20 +780,11 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                 child: FlatButton(
                   child: Text(
                     'Show Tips',
-                    style: TextStyle(
-                        fontSize: 15,
-                        color: _darkTheme
-                            ? darkThemeButton.withOpacity(0.9)
-                            : lightThemeButton.withOpacity(0.9)),
+                    style: textStyleShowTip(_darkTheme),
                   ),
                   onPressed: _showTipDialogSecondTab,
                 ),
               ),
-              // Padding(
-              //   padding: const EdgeInsets.only(bottom: 3.0, right: 15),
-              //   child: MyFAB(onPressed: () => _add(database)),
-              // ),
-              // todoAddButton(database),
             ],
           ),
         ),
@@ -841,11 +800,33 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
     ).show(context);
   }
 
+  TextStyle textStyleShowTip(bool _darkTheme) {
+    return TextStyle(
+        fontSize: 15,
+        color: _darkTheme
+            ? darkThemeButton.withOpacity(0.9)
+            : lightThemeButton.withOpacity(0.9));
+  }
+
+  TextStyle textStyleTodoTitle(bool _darkTheme) {
+    return TextStyle(
+        fontSize: 19.0, color: _darkTheme ? darkThemeWords : lightThemeWords);
+  }
+
+  TextStyle textStyleTodoTitleHighlight(bool _darkTheme) {
+    return TextStyle(
+      fontSize: 19,
+      color: _darkTheme ? darkThemeWords : lightThemeWords,
+      fontWeight: FontWeight.w600,
+    );
+  }
+
   /// all functions for first Tab
   void _showAddReminderScreen(Todo todo, Database database) async {
-    setState(() {
-      _listVisible = false;
-    });
+    // setState(() {
+    //   _listVisible = false;
+    //   _calendarOpacity = 0.0;
+    // });
 
     await showModalBottomSheet(
         context: context,
@@ -854,9 +835,10 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
               todo: todo,
               database: database,
             ));
-    setState(() {
-      _listVisible = true;
-    });
+    // setState(() {
+    //   _listVisible = true;
+    //   _calendarOpacity = 1.0;
+    // });
   }
 
   Future<void> _delete(BuildContext context, List<Todo> _selectedList,
@@ -946,14 +928,11 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
     }
   }
 
-  bool _listVisible = true;
-  final DateFormat _dateFormatter = DateFormat('M/d/y');
-
   Future<void> _add(Database database) async {
-    setState(() {
-      _listVisible = false;
-      _calendarOpacity = 0.0;
-    });
+    // setState(() {
+    //   _listVisible = false;
+    //   _calendarOpacity = 0.0;
+    // });
     var _typedTitleAndComment = await showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -1052,18 +1031,18 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
         ).show(context);
       }
     }
-    setState(() {
-      _listVisible = true;
-      _calendarOpacity = 1.0;
-    });
+    // setState(() {
+    //   _listVisible = true;
+    //   _calendarOpacity = 1.0;
+    // });
   }
 
   /// update & at the same time update _selectedList
   void _update(Database database, List<Todo> todos, Todo todo) async {
-    setState(() {
-      _listVisible = false;
-      _calendarOpacity = 0.0;
-    });
+    // setState(() {
+    //   _listVisible = false;
+    //   _calendarOpacity = 0.0;
+    // });
     var _typedTitleAndComment = await showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -1199,10 +1178,10 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
       }
     }
 
-    setState(() {
-      _listVisible = true;
-      _calendarOpacity = 1.0;
-    });
+    // setState(() {
+    //   _listVisible = true;
+    //   _calendarOpacity = 1.0;
+    // });
   }
 
   @override

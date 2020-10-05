@@ -4,12 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iMomentum/app/common_widgets/avatar.dart';
-import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
-import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_go_back_icon.dart';
 import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
-import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/sign_in/firebase_auth_service_new.dart';
 import 'package:progress_dialog/progress_dialog.dart';
@@ -135,7 +132,7 @@ class _UserScreenState extends State<UserScreen> {
         ),
         IconButton(
           icon: Icon(
-            EvaIcons.edit2Outline,
+            _nameVisible ? EvaIcons.edit2Outline : Icons.clear,
             size: 26,
             color: _darkTheme ? darkThemeButton : lightThemeButton,
           ),
@@ -206,21 +203,32 @@ class _UserScreenState extends State<UserScreen> {
                           fontStyle: FontStyle.italic)),
                 ],
               )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            : Column(
                 children: [
-                  Text('Email not verified',
-                      style: TextStyle(
-                          color: _darkTheme ? darkThemeWords : lightThemeWords,
-                          fontSize: 16,
-                          fontStyle: FontStyle.italic)),
-                  FlatButton(
-                    onPressed: _verifyEmail,
-                    child: Text('Verify email address',
-                        style: TextStyle(
-                            color:
-                                _darkTheme ? darkThemeButton : lightThemeButton,
-                            fontSize: 18)),
+                  Row(
+                    children: [
+                      Text('Email not verified',
+                          style: TextStyle(
+                              color:
+                                  _darkTheme ? darkThemeWords : lightThemeWords,
+                              fontSize: 16,
+                              fontStyle: FontStyle.italic)),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      InkWell(
+                        onTap: _verifyEmail,
+                        child: Text('Verify email address',
+                            style: TextStyle(
+                                color: _darkTheme
+                                    ? darkThemeButton
+                                    : lightThemeButton,
+                                fontSize: 18,
+                                fontStyle: FontStyle.italic)),
+                      )
+                    ],
                   )
                 ],
               );

@@ -15,7 +15,6 @@ import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/constants/strings_sign_in.dart';
 import 'package:iMomentum/app/sign_in/apple_sign_in_available.dart';
 import 'package:iMomentum/app/sign_in/firebase_auth_service_new.dart';
-import 'package:iMomentum/app/sign_in/not_in_use/sign_in_view_model.dart';
 import 'package:iMomentum/app/sign_in/sign_in_teddy/teddy_controller.dart';
 import 'package:iMomentum/app/sign_in/sign_in_teddy/tracking_text_input.dart';
 import 'package:iMomentum/app/utils/pages_routes.dart';
@@ -41,25 +40,27 @@ class StartScreen3 extends StatelessWidget {
   Widget build(BuildContext context) {
     final FirebaseAuthService firebaseAuthService =
         Provider.of<FirebaseAuthService>(context, listen: false);
-    return ChangeNotifierProvider<SignInViewModel>(
-        create: (_) =>
-            SignInViewModel(firebaseAuthService: firebaseAuthService),
-        child: Consumer<SignInViewModel>(
-            builder: (_, viewModel, __) =>
-                ChangeNotifierProvider<EmailPasswordSignInModel>(
-                    create: (_) => EmailPasswordSignInModel(
-                        firebaseAuthService: firebaseAuthService, name: name),
-                    child: Consumer<EmailPasswordSignInModel>(
-                        builder: (_, EmailPasswordSignInModel model, __) =>
-                            KeyboardDismissOnTap(
-                              child: KeyboardVisibilityProvider(
-                                child: EmailSignInScreenNew._(
-                                  // viewModel: viewModel,
-                                  userName: name,
-                                  model: model,
-                                ),
-                              ),
-                            )))));
+    return
+        // ChangeNotifierProvider<SignInViewModel>(
+        //   create: (_) =>
+        //       SignInViewModel(firebaseAuthService: firebaseAuthService),
+        //   child: Consumer<SignInViewModel>(
+        //       builder: (_, viewModel, __) =>
+        ChangeNotifierProvider<EmailPasswordSignInModel>(
+            create: (_) => EmailPasswordSignInModel(
+                firebaseAuthService: firebaseAuthService, name: name),
+            child: Consumer<EmailPasswordSignInModel>(
+                builder: (_, EmailPasswordSignInModel model, __) =>
+                    KeyboardDismissOnTap(
+                      child: KeyboardVisibilityProvider(
+                        child: EmailSignInScreenNew._(
+                          // viewModel: viewModel,
+                          userName: name,
+                          model: model,
+                        ),
+                      ),
+                    )));
+    // ));
   }
 }
 
@@ -143,12 +144,15 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
             key: _scaffoldKey,
             appBar: AppBar(
               backgroundColor: Colors.transparent,
-              leading: IconButton(
-                  icon: Icon(Icons.arrow_back_ios, color: Colors.white),
-                  onPressed: () => Navigator.of(context).pushReplacement(
-                        PageRoutes.fade(
-                            () => StartScreen2(name: userNameFinal)),
-                      )),
+              leading: Padding(
+                padding: const EdgeInsets.only(left: 30.0),
+                child: IconButton(
+                    icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+                    onPressed: () => Navigator.of(context).pushReplacement(
+                          PageRoutes.fade(
+                              () => StartScreen2(name: userNameFinal)),
+                        )),
+              ),
               elevation: 0.0,
               actions: [
                 FlatButton.icon(
@@ -176,12 +180,15 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
     //   ));
     // }
     return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _firstPart(),
-          _secondPart(),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _firstPart(),
+            _secondPart(),
+          ],
+        ),
       ),
     );
   }
@@ -192,71 +199,39 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
         KeyboardVisibilityProvider.isKeyboardVisible(context);
     return Column(
       children: [
-        Visibility(
-          visible: isKeyboardVisible ? false : true,
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 15.0),
-            decoration: shapeDecoration(),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                  '${Strings.hi} ${userNameFinal.firstCaps}, '
-                  '${Strings.teddy}',
-                  style: teddyStyle()),
-            ),
-          ),
-        ),
+        teddyGreetingContainer(isKeyboardVisible),
         teddyContainer(height),
         mySignInContainer(),
       ],
     );
   }
 
-  MySignInContainer mySignInContainer() {
-    return MySignInContainer(
-      child: FocusScope(
-        node: _node,
-        child: Column(
-          children: <Widget>[
-            _buildEmailField(),
-            if (model.formType !=
-                EmailPasswordSignInFormType.forgotPassword) ...<Widget>[
-              SizedBox(height: 5.0),
-              _buildPasswordField(),
-            ],
-            SizedBox(height: 10.0),
-            MyFlatButton(
-              text: model.primaryButtonText,
-              onPressed: () => _submit(context),
-              color: lightThemeButton,
-              bkgdColor: lightThemeAppBar,
-            ),
-            Row(
-              children: [
-                FlatButton(
-                  key: Key('secondary-button'),
-                  child: Text(model.secondaryButtonText,
-                      style: KSignInSecondButtonL),
-                  onPressed: () =>
-                      _updateFormType(model.secondaryActionFormType),
-                ),
-              ],
-            ),
-            if (model.formType == EmailPasswordSignInFormType.signIn)
-              Row(
-                children: [
-                  FlatButton(
-                    key: Key('tertiary-button'),
-                    child: Text(StringsSignIn.forgotPasswordQuestion,
-                        style: KSignInSecondButtonL),
-                    onPressed: () => _updateFormType(
-                        EmailPasswordSignInFormType.forgotPassword),
-                  ),
-                ],
-              ),
-          ],
+  Visibility teddyGreetingContainer(bool isKeyboardVisible) {
+    return Visibility(
+      visible: isKeyboardVisible ? false : true,
+      child: Container(
+        margin: const EdgeInsets.symmetric(
+            horizontal: 15.0), //same as sign in container
+        decoration: shapeDecoration(),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+              '${Strings.hi} ${userNameFinal.firstCaps}, '
+              '${Strings.teddy}',
+              style: teddyStyle()),
         ),
       ),
+    );
+  }
+
+  ShapeDecoration shapeDecoration() {
+    return ShapeDecoration(
+      color: lightThemeAppBar,
+      shape: TooltipShapeBorder(arrowArc: 0.5),
+      shadows: [
+        BoxShadow(
+            color: lightThemeAppBar, blurRadius: 4.0, offset: Offset(2, 2))
+      ],
     );
   }
 
@@ -273,23 +248,58 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
     );
   }
 
-  TextStyle teddyStyle() {
-    return GoogleFonts.getFont(
-      'Architects Daughter',
-      fontSize: 14,
-      color: lightThemeWords,
-      fontWeight: FontWeight.w400,
-    );
-  }
-
-  ShapeDecoration shapeDecoration() {
-    return ShapeDecoration(
-      color: lightThemeAppBar,
-      shape: TooltipShapeBorder(arrowArc: 0.5),
-      shadows: [
-        BoxShadow(
-            color: lightThemeAppBar, blurRadius: 4.0, offset: Offset(2, 2))
-      ],
+  MySignInContainer mySignInContainer() {
+    return MySignInContainer(
+      child: FocusScope(
+        node: _node,
+        child: Column(
+          children: <Widget>[
+            _buildEmailField(),
+            if (model.formType !=
+                EmailPasswordSignInFormType.forgotPassword) ...<Widget>[
+              _buildPasswordField(),
+            ],
+            SizedBox(height: 10.0),
+            MyFlatButton(
+              text: model.primaryButtonText,
+              onPressed: () => _submit(context),
+              color: lightThemeButton,
+              bkgdColor: lightThemeAppBar,
+            ),
+            Row(
+              children: [
+                Flexible(
+                  child: FlatButton(
+                    key: Key('secondary-button'),
+                    child: Text(model.secondaryButtonText,
+                        style: KSignInSecondButton),
+                    onPressed: () =>
+                        _updateFormType(model.secondaryActionFormType),
+                  ),
+                ),
+              ],
+            ),
+            if (model.formType == EmailPasswordSignInFormType.signIn)
+              Row(
+                children: [
+                  Flexible(
+                    child: FlatButton(
+                      key: Key('tertiary-button'),
+                      child: Text(StringsSignIn.forgotPasswordQuestion,
+                          style: KSignInSecondButton),
+                      onPressed: () => _updateFormType(
+                          EmailPasswordSignInFormType.forgotPassword),
+                    ),
+                  ),
+                ],
+              ),
+            // if (model.formType !=
+            //     EmailPasswordSignInFormType.forgotPassword) ...<Widget>[
+            //   // _termPolicy(),
+            // ],
+          ],
+        ),
+      ),
     );
   }
 
@@ -305,7 +315,7 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
                   MySignInContainer(
                     child: Column(
                       children: [
-                        textSignInWith(),
+                        textSignUPWith(),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
@@ -328,7 +338,7 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
                   MySignInContainer(
                     child: Column(
                       children: [
-                        textSignInWith(),
+                        textSignUPWith(),
                         flatButtonGoogle(),
                       ],
                     ),
@@ -340,20 +350,20 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
     );
   }
 
-  SizedBox sizedBox(double height) => SizedBox(height: height > 700 ? 25 : 15);
+  SizedBox sizedBox(double height) => SizedBox(height: height > 700 ? 25 : 10);
 
-  Text textSignInWith() => Text('Or Sign In with: ', style: KSignInButtonOrL);
+  Text textSignUPWith() => Text('Or Sign up with: ', style: KSignUpOr);
 
   MySignInContainer mySignInContainerJustExplore() {
     return MySignInContainer(
       child: Column(
         children: [
-          Text('Or Stay signed out', style: KSignInButtonOrL),
+          Text('Or stay signed out', style: KSignUpOr),
           InkWell(
             onTap: _showAlert,
             child: Text(
-              'Just explore',
-              style: KSignInButtonTextL,
+              'Just Explore',
+              style: KSignInButton,
             ),
           ),
         ],
@@ -370,7 +380,7 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
         ),
         label: Text(
           'Apple',
-          style: KSignInButtonTextL,
+          style: KSignInButton,
         ));
   }
 
@@ -381,12 +391,21 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
           FontAwesomeIcons.google,
           color: lightThemeButton,
         ),
-        label: Text('Google', style: KSignInButtonTextL));
+        label: Text('Google', style: KSignInButton));
   }
 
   UnderlineInputBorder underlineInputBorder() {
     return UnderlineInputBorder(
         borderSide: BorderSide(color: lightThemeDivider));
+  }
+
+  TextStyle teddyStyle() {
+    return GoogleFonts.getFont(
+      'Architects Daughter',
+      fontSize: 14,
+      color: lightThemeWords,
+      fontWeight: FontWeight.w400,
+    );
   }
 
   TextStyle textStyleHintAndLabel() =>

@@ -107,9 +107,9 @@ class TodoListTile extends StatelessWidget {
         children: <Widget>[
           Expanded(
             child: AutoSizeText(todo.title,
-                maxLines: 3,
+                maxLines: 5,
                 maxFontSize: 18,
-                minFontSize: 18,
+                minFontSize: 15,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: _darkTheme ? darkThemeWords : lightThemeWords,
@@ -155,10 +155,10 @@ class TodoListTile extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: _darkTheme ? darkThemeHint : lightThemeHint,
-                          decoration:
-                              todo.isDone ? TextDecoration.lineThrough : null,
-                        )),
+                            color: _darkTheme ? darkThemeHint : lightThemeHint,
+                            decoration:
+                                todo.isDone ? TextDecoration.lineThrough : null,
+                            fontSize: 14)),
                   )
                 ],
               ),

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
 import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/utils/pages_routes.dart';
+import 'package:iMomentum/screens/landing_and_signIn/page_container.dart';
 import 'package:iMomentum/screens/landing_and_signIn/start_screen1.dart';
 import 'package:iMomentum/screens/landing_and_signIn/start_screen3_(signIn).dart';
 import 'dart:math';
@@ -24,11 +24,11 @@ class StartScreen2 extends StatefulWidget {
 
 class _StartScreen2State extends State<StartScreen2> {
   String userName;
-  LiquidController liquidController;
+  // LiquidController liquidController;
   @override
   void initState() {
     userName = widget.name;
-    liquidController = LiquidController();
+    // liquidController = LiquidController();
     super.initState();
   }
 
@@ -47,6 +47,8 @@ class _StartScreen2State extends State<StartScreen2> {
       title3: Strings.intro3,
       title4: Strings.intro4,
       title5: Strings.intro5,
+      // title6: Strings.intro6,
+      // title7: Strings.intro7,
     ),
     MyPageContainer(
       imageURL: ImagePath.startImage1,
@@ -134,18 +136,51 @@ class _StartScreen2State extends State<StartScreen2> {
     );
   }
 
-  Padding bottomDots() {
-    return Padding(
-      padding: EdgeInsets.all(20),
+  Positioned topColumn(double height, BuildContext context) {
+    return Positioned(
+      left: 30,
+      right: 30,
+      top: height * 0.06, // 50/896
       child: Column(
-        children: <Widget>[
-          Expanded(child: SizedBox()),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List<Widget>.generate(pages.length, _buildDot),
+            children: [
+              InkWell(
+                child: Icon(Icons.arrow_back_ios, color: Colors.white),
+                onTap: () =>
+                    Navigator.of(context).pushReplacement(PageRoutes.fade(
+                  () => StartScreen(),
+                )),
+              )
+            ],
           ),
           SizedBox(height: 20),
+          Text('${Strings.welcome}${userName.firstCaps}.', style: KWelcome),
         ],
+      ),
+    );
+  }
+
+  Padding swipeButton() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 30.0),
+      child: Container(
+        decoration: BoxDecoration(
+            color: darkThemeAppBar,
+            borderRadius: BorderRadius.all(Radius.circular(20.0))),
+        child: Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.arrow_back_ios, color: Colors.white),
+              SizedBox(width: 2),
+              Text(Strings.introSwipe, style: KSwipeButton)
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -172,200 +207,17 @@ class _StartScreen2State extends State<StartScreen2> {
     );
   }
 
-  Positioned topColumn(double height, BuildContext context) {
-    return Positioned(
-      left: 30,
-      right: 30,
-      top: height * 0.06, // 50/896
+  Padding bottomDots() {
+    return Padding(
+      padding: EdgeInsets.all(20),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+        children: <Widget>[
+          Expanded(child: SizedBox()),
           Row(
-            children: [
-              InkWell(
-                child: Icon(Icons.arrow_back_ios, color: Colors.white),
-                onTap: () =>
-                    Navigator.of(context).pushReplacement(PageRoutes.fade(
-                  () => StartScreen(),
-                )),
-              )
-            ],
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List<Widget>.generate(pages.length, _buildDot),
           ),
           SizedBox(height: 20),
-          Text('${Strings.welcome} ${userName.firstCaps}.', style: KWelcome),
-        ],
-      ),
-    );
-  }
-
-  Padding swipeButton() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 30.0),
-      child: Container(
-        decoration: BoxDecoration(
-            color: darkThemeAppBar,
-            borderRadius: BorderRadius.all(Radius.circular(20.0))),
-        child: Padding(
-          padding: const EdgeInsets.all(5.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.arrow_back_ios, color: Colors.white),
-              SizedBox(width: 2),
-              Text(Strings.introSwipe, style: KSignInButtonTextD)
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class MyIntroPageContainer extends StatelessWidget {
-  const MyIntroPageContainer(
-      {Key key,
-      @required this.imageURL,
-      @required this.title1,
-      this.title2,
-      this.title3,
-      this.title4,
-      this.title5})
-      : super(key: key);
-
-  final String imageURL;
-  final String title1;
-  final String title2;
-  final String title3;
-  final String title4;
-  final String title5;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(imageURL),
-            fit: BoxFit.cover,
-          ),
-          gradient: KBackgroundGradient),
-      constraints: BoxConstraints.expand(),
-      child: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: MySignInContainer(
-                child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 15),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                      style: KLandingTitleL,
-                      children: [
-                        TextSpan(text: title1),
-                        TextSpan(text: title2, style: KLandingTitleHighlight),
-                        TextSpan(text: title3),
-                        TextSpan(text: title4, style: KLandingTitleHighlight),
-                        TextSpan(text: title5),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            )),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class MyPageContainer extends StatelessWidget {
-  const MyPageContainer(
-      {Key key,
-      @required this.imageURL,
-      @required this.title,
-      this.subtitle = '',
-      this.feature1 = '',
-      this.feature2 = '',
-      this.feature3 = '',
-      this.icon1,
-      this.icon2,
-      this.icon3})
-      : super(key: key);
-
-  final String imageURL;
-  final String title;
-  final String subtitle;
-  final String feature1;
-  final String feature2;
-  final String feature3;
-  final IconData icon1;
-  final IconData icon2;
-  final IconData icon3;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(imageURL),
-            fit: BoxFit.cover,
-          ),
-          gradient: KBackgroundGradient),
-      constraints: BoxConstraints.expand(),
-      child: SafeArea(
-        child: Center(
-          //without this Center MySignInContainer will expand the screen
-          child: Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: MySignInContainer(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              // crossAxisAlignment: CrossAxisAlignment.center, //default
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(title, style: KLandingTitleL, textAlign: TextAlign.center),
-                SizedBox(height: 8),
-                Text(subtitle,
-                    style: KLandingSubtitleL, textAlign: TextAlign.center),
-                SizedBox(height: 15),
-                buildListTile(icon1, feature1),
-                buildListTile(icon2, feature2),
-                buildListTile(icon3, feature3),
-              ],
-            )),
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// list tile tend to expand and take all screen width and does not look good on wide screen like iPad or web
-  ListTile buildListTile(IconData icon, String text) {
-    return ListTile(
-      leading: Icon(icon, //  FontAwesomeIcons.images,
-          color: lightThemeButton),
-      title: Text(text, style: KFeatureL),
-    );
-  }
-
-  /// tried to make it a row, but then on mobile it can run out of space
-  Padding iconAndWordsRow(IconData icon, String text) {
-    return Padding(
-      padding: const EdgeInsets.all(15.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, //  FontAwesomeIcons.images,
-              color: lightThemeButton),
-          SizedBox(width: 30),
-          Text(text, style: KFeatureL)
         ],
       ),
     );

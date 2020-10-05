@@ -17,6 +17,8 @@ class Strings {
   static const intro3 = " and keeps you ";
   static const intro4 = "focus";
   static const intro5 = " on what's most important.";
+  // static const intro6 = "customization";
+  // static const intro7 = " features.";
 
   /// Part 2
   static const title1 = 'Inspiration';
@@ -35,43 +37,45 @@ class Strings {
 
   /// Part 4
   static const title3 = 'Customization';
-  static const subtitle3 = 'Make it your own App.';
+  static const subtitle3 = 'Personalize your experience.';
   static const customizationFeature1 = 'Add your own photo.';
   static const customizationFeature2 = 'Add your own mantras.';
   static const customizationFeature3 = 'Add your own quotes.';
 
   // StartScreen3 (sign in)
-  // I will need to change this to why join iMomentum Plus (or other words like upgrade or membership)
-  static const whySignIn = 'Why Sign In';
-  static const whySignInTitle = 'Why sign in to use iMomentum?';
+  // todo: I will need to change this to why join iMomentum Plus (or other words like upgrade or membership)
+  static const whySignIn = 'Why Signing Up?';
+  static const whySignInTitle = 'Why signing up to use iMomentum?';
+
   static const signInReason1 = 'Secure all of your data.';
   static const signInReason1detail =
-      'If you change your device or delete the app, you will not loose your data.';
-  static const signInReason2 = 'Access your data from multi device';
-  static const signInReason2detail =
-      'iMomentum Web version will be available soon and you will be able to access your account on web browser.';
-  static const signInReason3 = 'Personalize your experience';
-  static const signInReason3detail =
-      'By signing in, you can access your account and update your information.';
+      'When you create an account, you will not loose your data'
+      ' when you sign out, change your device or delete the app.';
 
-  // here I will need to add term and private policy
+  static const signInReason2 =
+      'Access your data from multi devices and platform.';
+  static const signInReason2detail =
+      'Your data will be automatically sync with a '
+      'cloud based storage, which allows you to access your data from anywhere at anytime.';
+  // 'iMomentum Web version will be available soon and you will be able to access your account on web browser.';
+
+  //todo: here I will need to add term and private policy
   static const privacy =
       'Your privacy is important. iMomentum will not share any of your data with '
       'any third party. Learn more about how we‘re protecting your privacy in our ';
   static const privacyTap = ' Terms and Privacy Policy.';
 
   static const signInAnonymouslyWarning =
-      'Not sure whether to sign in? No problem, you can stay signed out and just explore! '
+      'Not sure whether to sign up? No problem, you can stay signed out and just explore! '
       '\n'
       '\n'
       'iMomentum kindly reminds you that when you choose Just Explore, you will '
-      'not have a user account, and that means when you log out, or when you '
-      'delete the app, or change device, you can not access your account again. '
-      'You will also lose the benefit of syncing your data across multi platform, '
-      'including iMomentum web version.';
+      'not have a user account, which means when you log out, or when you '
+      'delete the app, or change device, you can not access your data again. '
+      'You will also lose the benefit of syncing your data across multi platform.';
 
   static const hi = 'Hi, ';
-  static const teddy = 'I am Teddy. I am here to sign in with you.';
+  static const teddy = 'I am Teddy. I am here to sign up with you.';
 
   // Home screen tip on showcase
   static const first = 'Tap on weather information to show details.';
@@ -98,7 +102,7 @@ class Strings {
       'You can also tap on any date on calendar and long press on the date to add a task on a specific day.'
       "\n"
       "\n"
-      ' After entering a task, you can add a reminder by swiping right on the task item.';
+      ' After entering a task, you can add a reminder by swiping right on the task item, and delete a task by swiping left.';
 
   static const String emptyPieChart =
       'You have not done any focused task on this day.';

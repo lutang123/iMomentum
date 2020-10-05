@@ -19,29 +19,24 @@ class ClockTimer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    return Container(
-      height: size.height / 2,
-      width: size.height / 2,
-      child: Stack(
-        alignment: Alignment.center,
-        children: <Widget>[
-          SizedBox.expand(
-            child: CountdownCircle(
-              duration: duration,
-              animationController: animationController,
-            ),
+    return Stack(
+      alignment: Alignment.center,
+      children: <Widget>[
+        SizedBox.expand(
+          child: CountdownCircle(
+            duration: duration,
+            animationController: animationController,
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(text1, style: KTimer),
-              SizedBox(height: 20),
-              Text(text2, style: KTimerSubtitle),
-            ],
-          ),
-        ],
-      ),
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(text1, style: KTimer),
+            SizedBox(height: 20),
+            Text(text2, style: KTimerSubtitle),
+          ],
+        ),
+      ],
     );
   }
 }

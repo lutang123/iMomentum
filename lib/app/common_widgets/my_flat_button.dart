@@ -20,11 +20,11 @@ class MyFlatButton extends StatelessWidget {
     return FlatButton(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(68.0),
-          side: BorderSide(color: color, width: 2.0)),
+          side: BorderSide(color: color, width: 1.5)),
       color: bkgdColor,
       onPressed: onPressed,
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(5.0),
         child: Text(
           text,
           style: GoogleFonts.varelaRound(

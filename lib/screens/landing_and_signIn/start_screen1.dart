@@ -57,6 +57,7 @@ class _StartScreenState extends State<StartScreen> {
     );
   }
 
+  //added this but still can't validate when input is over mas length
   bool _validateAndSaveForm() {
     final form = _formKey.currentState;
     //validate

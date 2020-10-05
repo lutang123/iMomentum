@@ -16,18 +16,23 @@ class RestScreenBottomQuote extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(15.0),
-      child: _state == QuoteLoadingState.FINISHED_DOWNLOADING
+    return Column(
+      children: [
+        SizedBox(height: 40),
+        Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: _state == QuoteLoadingState.FINISHED_DOWNLOADING
 
-          /// Same as Daily, but different Global key on show more
-          ? RestQuoteUI(
-              title: dailyQuote,
-              author: author,
-            )
-          : _state == QuoteLoadingState.DOWNLOADING
-              ? Center(child: CircularProgressIndicator())
-              : Container(),
+              /// Same as Daily, but different Global key on show more
+              ? RestQuoteUI(
+                  title: dailyQuote,
+                  author: author,
+                )
+              : _state == QuoteLoadingState.DOWNLOADING
+                  ? Center(child: CircularProgressIndicator())
+                  : Container(),
+        ),
+      ],
     );
   }
 }

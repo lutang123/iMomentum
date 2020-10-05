@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 
 /// Gradient
@@ -15,7 +14,7 @@ const KBackgroundGradient = LinearGradient(
 );
 
 /// InputDecoration
-//in HomeTextField (home and name)
+///in HomeTextField (home and name)
 const KHomeTextFieldInputDecoration = InputDecoration(
   focusedBorder: UnderlineInputBorder(
     borderSide: BorderSide(color: Colors.white),
@@ -29,7 +28,7 @@ const KHomeTextFieldInputDecoration = InputDecoration(
   // counterText: "",
 );
 
-//in AddTodo calendar
+///in AddTodo date
 const KTransparentInputDecoration = InputDecoration(
   focusedBorder:
       UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
@@ -37,7 +36,7 @@ const KTransparentInputDecoration = InputDecoration(
       UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
 );
 
-//in pomodoro screen
+///in pomodoro screen
 const KTextFieldInputDecorationLight = InputDecoration(
   focusedBorder: UnderlineInputBorder(
     borderSide: BorderSide(color: lightThemeDivider),
@@ -60,9 +59,90 @@ const KTextFieldInputDecorationDark = InputDecoration(
 );
 
 /// TextStyle
-// Home and Pomodoro Screen
-const KHomeToday =
-    TextStyle(color: Colors.white, fontSize: 25.0, fontWeight: FontWeight.bold);
+///
+/// for landing screen
+const KWelcome = TextStyle(
+  fontSize: 30,
+  fontFamily: "Billy",
+  color: Colors.white,
+  fontWeight: FontWeight.w600,
+);
+
+const KIntro = TextStyle(
+  fontSize: 22,
+  color: lightThemeWords,
+  fontWeight: FontWeight.w400,
+);
+const KIntroHighlight = TextStyle(
+  fontSize: 22,
+  color: lightThemeButton,
+  fontWeight: FontWeight.w400,
+);
+
+const KLandingTitle = TextStyle(
+  fontSize: 22,
+  color: lightThemeButton,
+  fontWeight: FontWeight.w600,
+);
+const KLandingSubtitle = TextStyle(
+  fontSize: 20,
+  color: lightThemeWords,
+  fontStyle: FontStyle.italic,
+  fontWeight: FontWeight.w400,
+);
+const KLandingFeature =
+    TextStyle(color: lightThemeWords, fontWeight: FontWeight.w400);
+
+const KSwipeButton = TextStyle(
+  fontSize: 16,
+  color: Colors.white,
+);
+
+/// sign in screen
+// google, apple, explore
+const KSignInButton = TextStyle(
+  fontSize: 18,
+  color: lightThemeWords,
+  fontWeight: FontWeight.w500,
+);
+
+const KSignInSecondButton = TextStyle(
+    fontSize: 16,
+    color: Color(0xf01a1a2e),
+    fontWeight: FontWeight.w400,
+    fontStyle: FontStyle.italic,
+    decoration: TextDecoration.underline);
+
+const KSignUpOr = TextStyle(
+    fontSize: 14,
+    color: signInOr,
+    fontWeight: FontWeight.w400,
+    fontStyle: FontStyle.italic);
+
+const KTopFlatButtonText =
+    TextStyle(color: topFlatButton, fontStyle: FontStyle.italic);
+
+///why sign in
+const KWhySignUpTitle = TextStyle(
+    fontSize: 18, color: lightThemeWords, fontWeight: FontWeight.w600);
+
+const KSignUpReason = TextStyle(
+    color: lightThemeWords, fontSize: 16, fontWeight: FontWeight.w500);
+
+const KSignInReasonDetail = TextStyle(
+    color: Color(0xf01a1a2e), fontSize: 15, fontStyle: FontStyle.italic);
+
+const KPrivacyL = TextStyle(fontSize: 14, color: lightThemeHint2);
+
+const KPrivacyTapL = TextStyle(
+  color: lightThemeHint2,
+  fontSize: 14,
+  decoration: TextDecoration.underline,
+);
+
+/// Home and Pomodoro Screen
+const KHomeGreeting =
+    TextStyle(fontSize: 33.0, color: Colors.white, fontWeight: FontWeight.bold);
 
 const KHomeDate = TextStyle(
   color: Colors.white,
@@ -73,12 +153,16 @@ const KHomeDate = TextStyle(
 const KHomeQuestion =
     TextStyle(color: Colors.white, fontSize: 33.0, fontWeight: FontWeight.bold);
 
-const KHomeQuestion2 =
+const KHomeGoodNight =
     TextStyle(color: Colors.white, fontSize: 30.0, fontWeight: FontWeight.bold);
 
-const KHomeGreeting =
-    TextStyle(fontSize: 33.0, color: Colors.white, fontWeight: FontWeight.bold);
+const KHomeTextField =
+    TextStyle(color: Colors.white, fontSize: 25.0, fontFamily: "varelaRound");
 
+const KHomeToday =
+    TextStyle(color: Colors.white, fontSize: 25.0, fontWeight: FontWeight.bold);
+
+/// Pomodoro screen
 const KTimer = TextStyle(
   fontSize: 55.0,
   color: Colors.white,
@@ -110,25 +194,26 @@ const KPomodoroSubtitle = TextStyle(
   fontFamily: "varelaRound",
 );
 
+const KPomodoroBottomTitle =
+    TextStyle(color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.bold);
+
+const KPomodoroBottomSubtitle = TextStyle(
+  fontSize: 18.0,
+  color: Colors.white,
+);
+
 /// for all dialog:
 const KDialogTitle =
-    TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20);
-
-const KDialogContent = TextStyle(color: Colors.white, fontSize: 18);
-
+    TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 18);
+const KDialogContent = TextStyle(color: Colors.white, fontSize: 16);
 const KDialogButton =
-    TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20);
+    TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 17);
 
 const KDialogTitleLight = TextStyle(
-    color: lightThemeWords, fontWeight: FontWeight.w600, fontSize: 20);
-
-const KDialogContentLight = TextStyle(color: lightThemeWords, fontSize: 18);
-
+    color: lightThemeWords, fontWeight: FontWeight.w600, fontSize: 18);
+const KDialogContentLight = TextStyle(color: lightThemeWords, fontSize: 16);
 const KDialogButtonLight = TextStyle(
-    color: lightThemeWords, fontWeight: FontWeight.w600, fontSize: 20);
-
-//    //Const variables must be initialized with a constant value
-// GoogleFonts.varelaRound(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20);
+    color: lightThemeWords, fontWeight: FontWeight.w600, fontSize: 17);
 
 const KFlushBarTitle = TextStyle(
     fontWeight: FontWeight.w600,
@@ -136,11 +221,11 @@ const KFlushBarTitle = TextStyle(
     color: Colors.white,
     fontFamily: "ShadowsIntoLightTwo");
 
-const KFlushBarEmphasis = TextStyle(
+const KFlushBarTitleHighlight = TextStyle(
     fontWeight: FontWeight.bold,
     fontSize: 16.0,
-    fontStyle: FontStyle.italic,
     color: Colors.white,
+    fontStyle: FontStyle.italic,
     fontFamily: "ShadowsIntoLightTwo");
 
 const KFlushBarMessage = TextStyle(
@@ -153,12 +238,12 @@ const KFlushBarGradient =
     LinearGradient(colors: [Color(0xF00f4c75), Color(0xF03282b8)]);
 
 // const KTextButton ('Learn more') = used google font varelaRound
-const KTextButton = TextStyle(
-    fontSize: 16.0,
-    color: Colors.white,
-    fontStyle: FontStyle.italic,
-    decoration: TextDecoration.underline,
-    fontFamily: "varelaRound");
+// const KTextButton = TextStyle(
+//     fontSize: 16.0,
+//     color: Colors.white,
+//     fontStyle: FontStyle.italic,
+//     decoration: TextDecoration.underline,
+//     fontFamily: "varelaRound");
 
 const KQuote = TextStyle(
     color: Colors.white,
@@ -171,99 +256,3 @@ const KQuoteDot = TextStyle(
 
 const KEmptyContent = TextStyle(
     fontSize: 18, fontStyle: FontStyle.italic, fontWeight: FontWeight.w400);
-
-/// for start screen
-const KWelcome = TextStyle(
-  fontSize: 30,
-  fontFamily: "Billy",
-  color: Colors.white,
-  fontWeight: FontWeight.w600,
-);
-
-///in landing swipe
-const KLandingTitleD = TextStyle(
-  fontSize: 25,
-  color: darkThemeWords,
-  fontWeight: FontWeight.w600,
-);
-
-const KLandingTitleL = TextStyle(
-  fontSize: 25,
-  color: lightThemeWords,
-  fontWeight: FontWeight.w600,
-);
-
-const KLandingTitleHighlight = TextStyle(
-  fontSize: 25,
-  color: lightThemeButton,
-  fontWeight: FontWeight.w600,
-);
-
-const KLandingSubtitleD = TextStyle(
-  fontSize: 20,
-  color: darkThemeWords,
-  fontStyle: FontStyle.italic,
-  fontWeight: FontWeight.w400,
-);
-
-const KLandingSubtitleL = TextStyle(
-  fontSize: 20,
-  color: lightThemeWords,
-  fontStyle: FontStyle.italic,
-  fontWeight: FontWeight.w400,
-);
-
-const KFeatureL =
-    TextStyle(color: lightThemeWords, fontWeight: FontWeight.w400);
-
-const KSignInButtonTextD = TextStyle(
-  fontSize: 18,
-  color: darkThemeWords,
-  fontWeight: FontWeight.w500,
-);
-
-const KSignInButtonTextL = TextStyle(
-  fontSize: 18,
-  color: lightThemeWords,
-  fontWeight: FontWeight.w500,
-);
-
-const KSignInSecondButtonD = TextStyle(
-    fontSize: 18,
-    color: Color(0xf0fafafa),
-    fontWeight: FontWeight.w400,
-    fontStyle: FontStyle.italic,
-    decoration: TextDecoration.underline);
-
-const KSignInSecondButtonL = TextStyle(
-    fontSize: 18,
-    color: Color(0xf01a1a2e),
-    fontWeight: FontWeight.w400,
-    fontStyle: FontStyle.italic,
-    decoration: TextDecoration.underline);
-
-const KSignInButtonOrL = TextStyle(
-    fontSize: 14,
-    color: signInOr,
-    fontWeight: FontWeight.w400,
-    fontStyle: FontStyle.italic);
-
-const KTopFlatButtonText =
-    TextStyle(color: topFlatButton, fontStyle: FontStyle.italic);
-
-///why sign in
-const KWhySignInTitleL = TextStyle(
-    fontSize: 22, color: lightThemeWords, fontWeight: FontWeight.w600);
-
-const KSignInReason = TextStyle(color: lightThemeWords, fontSize: 17);
-
-const KSignInReasonDetail = TextStyle(
-    color: Color(0xf01a1a2e), fontSize: 15, fontStyle: FontStyle.italic);
-
-const KPrivacyL = TextStyle(fontSize: 14, color: lightThemeHint2);
-
-const KPrivacyTapL = TextStyle(
-  color: lightThemeHint2,
-  fontSize: 14,
-  decoration: TextDecoration.underline,
-);

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:iMomentum/app/common_widgets/add_screen_top_row.dart';
-import 'package:iMomentum/app/common_widgets/date_time_picker.dart';
+import 'package:iMomentum/app/common_widgets/reminder_date_time_picker.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
@@ -113,39 +113,44 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
             ),
             SizedBox(height: 20),
             todo.hasReminder == null || todo.hasReminder == false
-                ? buildMyFlatButtonSave(_darkTheme)
+                ? buildMyFlatButton(_darkTheme, 'Add', _scheduleNotification)
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       //add SizedBox to make sure this row and the above row has same position
-                      SizedBox(
-                        width: 150,
-                        child: FlatButton(
-                          child: Text('Cancel Reminder',
-                              style: TextStyle(
-                                  fontSize: 20, color: Colors.redAccent)),
-                          onPressed: () => _cancelReminder(todo),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 150,
-                        child: buildMyFlatButtonSave(_darkTheme),
-                      )
+                      buildMyFlatButtonDelete(
+                          _darkTheme, 'Delete', () => _cancelReminder(todo)),
+                      buildMyFlatButton(
+                          _darkTheme, 'Change', _scheduleNotification),
                     ],
                   ),
-            SizedBox(height: 130)
+            SizedBox(height: 100)
           ],
         ),
       ),
     );
   }
 
-  MyFlatButton buildMyFlatButtonSave(bool _darkTheme) {
-    return MyFlatButton(
-        onPressed: _scheduleNotification,
-        text: 'SAVE',
-        bkgdColor: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
-        color: _darkTheme ? Colors.white : lightThemeButton);
+  SizedBox buildMyFlatButton(bool _darkTheme, title, onPressed) {
+    return SizedBox(
+      width: 130,
+      child: MyFlatButton(
+          onPressed: onPressed,
+          text: title,
+          bkgdColor: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
+          color: _darkTheme ? Colors.white : lightThemeButton),
+    );
+  }
+
+  SizedBox buildMyFlatButtonDelete(bool _darkTheme, title, onPressed) {
+    return SizedBox(
+      width: 130,
+      child: MyFlatButton(
+          onPressed: onPressed,
+          text: title,
+          bkgdColor: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
+          color: Colors.red),
+    );
   }
 
   Widget _buildReminderDate(Todo todo) {

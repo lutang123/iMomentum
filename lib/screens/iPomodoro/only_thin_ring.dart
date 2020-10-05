@@ -50,7 +50,7 @@ class CircleCountdownPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = size.center(Offset.zero);
-    final radius = (size.shortestSide * 0.45);
+    final radius = (size.shortestSide * 0.47);
 
     // Draw the thin ring
     canvas.drawCircle(

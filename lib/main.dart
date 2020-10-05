@@ -360,33 +360,6 @@ class _MyAppState extends State<MyApp> {
           // create: widget.authServiceBuilder,
           create: (_) => FirebaseAuthService(),
         ),
-
-        ///todo: how to use Logger
-        // Provider<Logger>(
-        //   create: (_) => Logger(
-        //     printer: PrettyPrinter(
-        //       methodCount: 1,
-        //       printEmojis: false,
-        //     ),
-        //   ),
-        // ),
-        /// didn't use this either
-        // Provider<EmailSecureStore>(
-        //   create: (_) => EmailSecureStore(
-        //     flutterSecureStorage: FlutterSecureStorage(),
-        //   ),
-        // ),
-        // ProxyProvider2<FirebaseAuthService, EmailSecureStore,
-        //     FirebaseEmailLinkHandler>(
-        //   update: (_, FirebaseAuthService authService, EmailSecureStore storage,
-        //           __) =>
-        //       FirebaseEmailLinkHandler(
-        //     auth: authService,
-        //     emailStore: storage,
-        //     firebaseDynamicLinks: FirebaseDynamicLinks.instance,
-        //   )..init(),
-        //   dispose: (_, linkHandler) => linkHandler.dispose(),
-        // ),
       ],
 
       ///this is the previous version that directly to Landing page but not working when sign in after the start screen
@@ -410,6 +383,7 @@ class _MyAppState extends State<MyApp> {
               ],
           // final Widget Function(BuildContext, AsyncSnapshot<User>)
           builder: (context, userSnapshot) {
+            ///
             return MaterialApp(
                 debugShowCheckedModeBanner: false,
                 title: 'iMomentum',
@@ -480,18 +454,17 @@ class _MyAppState extends State<MyApp> {
                 /// lookup an app’s current locale: Locale myLocale = Localizations.localeOf(context);
 
                 home: AuthWidget(
-                  /// this AuthWidget checks if (userSnapshot.connectionState == ConnectionState.active) {
-                  /// return userSnapshot.hasData
-                  //           ? signedInBuilder(context)
-                  //           : nonSignedInBuilder(context);
-                  ///it also checks error or waiting
-                  userSnapshot: userSnapshot,
-                  nonSignedInBuilder: (_) => StartScreen(),
-                  signedInBuilder: (_) => ShowCaseWidget(
-                    builder: Builder(builder: (context) => TabPage()),
-                  ),
-                  // onGenerateRoute: AppRouter.onGenerateRoute, ///in Andrea's code
-                ));
+
+                    /// this AuthWidget checks if (userSnapshot.connectionState == ConnectionState.active) {
+                    /// return userSnapshot.hasData
+                    //           ? signedInBuilder(context)
+                    //           : nonSignedInBuilder(context);
+                    ///it also checks error or waiting
+                    userSnapshot: userSnapshot,
+                    nonSignedInBuilder: (_) => StartScreen(),
+                    signedInBuilder: (_) => TabPage()
+                    // onGenerateRoute: AppRouter.onGenerateRoute, ///in Andrea's code
+                    ));
           }),
     );
   }

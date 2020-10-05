@@ -64,8 +64,8 @@ class MyCalendar extends StatelessWidget {
             // markersColor: _darkTheme ? Colors.white70 : Colors.black54,
             // outsideDaysVisible: true, //default
             weekdayStyle: Theme.of(context).textTheme.bodyText1, //16
-            weekendStyle: Theme.of(context).textTheme.bodyText1,
-            outsideWeekendStyle: Theme.of(context).textTheme.bodyText1,
+            weekendStyle: Theme.of(context).textTheme.bodyText1, //16
+            outsideWeekendStyle: Theme.of(context).textTheme.bodyText1, //16
             // outsideHolidayStyle: const TextStyle(color: const Color(0xFFEF9A9A)),
 
             // weekendStyle: TextStyle(
@@ -89,12 +89,12 @@ class MyCalendar extends StatelessWidget {
             leftChevronIcon: Icon(
               FontAwesomeIcons.chevronLeft,
               color: _darkTheme ? Color(0xFFE7E7E8) : Colors.black38,
-              size: 25,
+              size: 22,
             ),
             rightChevronIcon: Icon(
               FontAwesomeIcons.chevronRight,
               color: _darkTheme ? Color(0xFFE7E7E8) : Colors.black38,
-              size: 25,
+              size: 22,
             ),
             centerHeaderTitle: true,
             formatButtonVisible: true,

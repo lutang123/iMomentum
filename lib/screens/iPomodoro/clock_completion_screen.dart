@@ -1,11 +1,7 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
-import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
-import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
 import 'package:iMomentum/app/common_widgets/my_tooltip.dart';
-import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/utils/format.dart';
 import 'package:iMomentum/app/common_widgets/my_round_button.dart';
@@ -17,8 +13,7 @@ import 'package:iMomentum/app/services/calendar_bloc.dart';
 import 'package:iMomentum/app/services/daily_todos_details.dart';
 import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
-import 'package:iMomentum/app/utils/top_sheet.dart';
-import 'package:iMomentum/screens/iPomodoro/today_line_chart.dart';
+import 'package:iMomentum/screens/iPomodoro/pomodoro_base_screen.dart';
 import 'package:provider/provider.dart';
 import '../../app/utils/pages_routes.dart';
 import 'clock_bottom.dart';
@@ -46,9 +41,7 @@ class CompletionScreen extends StatefulWidget {
 
 class _CompletionScreenState extends State<CompletionScreen> {
   final String _congrats = CongratsList().getCongrats().body;
-
   int _restDurationInMin;
-
   double _topOpacity = 1.0;
   double _todayDuration = 0; //this is just inital value
 
@@ -56,6 +49,50 @@ class _CompletionScreenState extends State<CompletionScreen> {
   void initState() {
     _restDurationInMin = widget.restDuration.inMinutes;
     super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bloc = Provider.of<CalendarBloc>(context, listen: false);
+    return PomodoroBaseScreen(
+      topRow: Opacity(
+        opacity: _topOpacity,
+        child: topRow(bloc),
+      ),
+      titleWidget: Opacity(
+        opacity: _topOpacity,
+        child: PomodoroTitle(
+            title: _congrats,
+            subtitle:
+                'Your have stayed focused for ${widget.duration.inMinutes} minutes.'),
+      ),
+      bigCircle: ClockStart(
+        text1: Duration(minutes: _restDurationInMin).clockFmt(),
+        text2: 'Take a break',
+        height: 15,
+        onPressed: _play,
+        onPressedEdit: () => showEditDialog(),
+      ),
+      timerButton: Container(),
+      bottomWidget: ClockBottomToday(text: '${widget.todo.title}'),
+    );
+  }
+
+  Padding topRow(CalendarBloc bloc) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          IconButton(
+            onPressed: _clearButton,
+            icon: Icon(Icons.arrow_back_ios, size: 30),
+            color: Colors.white,
+          ),
+          buildStreamBuilder(bloc),
+        ],
+      ),
+    );
   }
 
   void _play() {
@@ -78,58 +115,6 @@ class _CompletionScreenState extends State<CompletionScreen> {
               todo: widget.todo,
             ),
         milliseconds: 450));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final bloc = Provider.of<CalendarBloc>(context, listen: false);
-    return MyStackScreen(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SingleChildScrollView(
-          child: SafeArea(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Opacity(
-                  opacity: _topOpacity,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        IconButton(
-                          onPressed: _clearButton,
-                          icon: Icon(Icons.arrow_back_ios, size: 30),
-                          color: Colors.white,
-                        ),
-                        buildStreamBuilder(bloc),
-                      ],
-                    ),
-                  ),
-                ),
-                Opacity(
-                  opacity: _topOpacity,
-                  child: PomodoroTitle(
-                      title: _congrats,
-                      subtitle:
-                          'Your have stayed focused for ${widget.duration.inMinutes} minutes.'),
-                ), //clear button
-                ClockStart(
-                  text1: Duration(minutes: _restDurationInMin).clockFmt(),
-                  text2: 'Take a break',
-                  height: 15,
-                  onPressed: _play,
-                  onPressedEdit: () => showEditDialog(),
-                ),
-                SizedBox(height: 15),
-                ClockBottomToday(text: '${widget.todo.title}'),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
   }
 
   StreamBuilder<List<TodoDuration>> buildStreamBuilder(CalendarBloc bloc) {
@@ -203,113 +188,104 @@ class _CompletionScreenState extends State<CompletionScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Text('Rest length',
-                          style: _darkTheme
-                              ? KDialogContent
-                              : KDialogContentLight),
-                      Row(
-                        children: <Widget>[
-                          Container(
-                            width: 70,
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 15),
-                              child: TextFormField(
-                                initialValue: _restDurationInMin.toString(),
-                                keyboardType: TextInputType.number,
-                                validator: (value) =>
-                                    (value.isNotEmpty) && (int.parse(value) > 0)
-                                        ? null
-                                        : 'error',
-                                onChanged: (value) {
-                                  setState(() {
-                                    _restDurationInMin != int.parse(value)
-                                        ? _isDifferentLength = true
-                                        : _isDifferentLength = false;
-                                  });
-                                },
-                                onSaved: (value) =>
-                                    _restDurationInMin = int.parse(value),
-                                style: _darkTheme
-                                    ? KDialogContent
-                                    : KDialogContentLight,
-                                autofocus: true,
-                                cursorColor: _darkTheme
-                                    ? darkThemeWords
-                                    : lightThemeWords,
-                                decoration: _darkTheme
-                                    ? KTextFieldInputDecorationDark
-                                    : KTextFieldInputDecorationLight,
-                              ),
-                            ),
-                          ),
-                          Text('min',
-                              style: _darkTheme
-                                  ? KDialogContent
-                                  : KDialogContentLight),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        FlatButton(
-                            child: Text(
-                              'Cancel',
-                              style: _darkTheme
-                                  ? KDialogButton
-                                  : KDialogButtonLight,
-                            ),
-                            shape: _isDifferentLength
-                                ? null
-                                : RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(68.0),
-                                    side: BorderSide(
-                                        color: _darkTheme
-                                            ? darkThemeHint
-                                            : lightThemeHint,
-                                        width: 1.0)),
-                            onPressed: () {
-                              setState(() {
-                                _topOpacity = 1.0;
-                              });
-                              Navigator.of(context).pop();
-                            }),
-                        FlatButton(
-                            child: Text(
-                              'Done',
-                              style: _darkTheme
-                                  ? KDialogButton
-                                  : KDialogButtonLight,
-                            ),
-                            shape: _isDifferentLength
-                                ? RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(68.0),
-                                    side: BorderSide(
-                                        color: _darkTheme
-                                            ? darkThemeHint
-                                            : lightThemeHint,
-                                        width: 1.0))
-                                : null,
-
-                            ///_done must have a BuildContext, so that it will
-                            ///use the same context as cancel button, which is all from StatefulBuilder
-                            onPressed: () => _done(context)),
-                      ],
-                    ),
-                  ),
+                  rowRestLength(_darkTheme, setState),
+                  rowButton(_darkTheme, setState, context),
                 ],
               ),
             ),
           );
         });
       },
+    );
+  }
+
+  Padding rowButton(
+      bool _darkTheme, StateSetter setState, BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          FlatButton(
+              child: Text(
+                'Cancel',
+                style: _darkTheme ? KDialogButton : KDialogButtonLight,
+              ),
+              shape: _isDifferentLength
+                  ? null
+                  : RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(68.0),
+                      side: BorderSide(
+                          color: _darkTheme ? darkThemeHint : lightThemeHint,
+                          width: 1.0)),
+              onPressed: () {
+                setState(() {
+                  _topOpacity = 1.0;
+                });
+                Navigator.of(context).pop();
+              }),
+          FlatButton(
+              child: Text(
+                'Done',
+                style: _darkTheme ? KDialogButton : KDialogButtonLight,
+              ),
+              shape: _isDifferentLength
+                  ? RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(68.0),
+                      side: BorderSide(
+                          color: _darkTheme ? darkThemeHint : lightThemeHint,
+                          width: 1.0))
+                  : null,
+
+              ///_done must have a BuildContext, so that it will
+              ///use the same context as cancel button, which is all from StatefulBuilder
+              onPressed: () => _done(context)),
+        ],
+      ),
+    );
+  }
+
+  Row rowRestLength(bool _darkTheme, StateSetter setState) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Text('Rest length',
+            style: _darkTheme ? KDialogContent : KDialogContentLight),
+        Row(
+          children: <Widget>[
+            SizedBox(
+              width: 70,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: TextFormField(
+                  initialValue: _restDurationInMin.toString(),
+                  keyboardType: TextInputType.number,
+                  validator: (value) =>
+                      (value.isNotEmpty) && (int.parse(value) > 0)
+                          ? null
+                          : 'error',
+                  onChanged: (value) {
+                    setState(() {
+                      _restDurationInMin != int.parse(value)
+                          ? _isDifferentLength = true
+                          : _isDifferentLength = false;
+                    });
+                  },
+                  onSaved: (value) => _restDurationInMin = int.parse(value),
+                  style: _darkTheme ? KDialogContent : KDialogContentLight,
+                  autofocus: true,
+                  cursorColor: _darkTheme ? darkThemeWords : lightThemeWords,
+                  decoration: _darkTheme
+                      ? KTextFieldInputDecorationDark
+                      : KTextFieldInputDecorationLight,
+                ),
+              ),
+            ),
+            Text('min',
+                style: _darkTheme ? KDialogContent : KDialogContentLight),
+          ],
+        ),
+      ],
     );
   }
 
@@ -337,17 +313,11 @@ class _CompletionScreenState extends State<CompletionScreen> {
     setState(() {
       _topOpacity = 0.0;
     });
-    //
-    // TopSheet.show(
-    //   context: context,
-    //   // child: SimpleTimeSeriesChart(),
-    //   child: TodayLineChart(),
-    //   direction: TopSheetDirection.TOP,
-    // ).then((value) => setState(() {
-    //       _topOpacity = 1.0;
-    //     }));
-    //
-    Flushbar(
+    flushbar(todayDuration);
+  }
+
+  Flushbar flushbar(double todayDuration) {
+    return Flushbar(
       ///must remove
       // mainButton: FlatButton(
       //   onPressed: () {
@@ -364,7 +334,7 @@ class _CompletionScreenState extends State<CompletionScreen> {
       flushbarPosition: FlushbarPosition.TOP,
       flushbarStyle: FlushbarStyle.FLOATING,
       backgroundGradient: KFlushBarGradient,
-      duration: Duration(seconds: 4),
+      duration: Duration(seconds: 6),
       titleText: RichText(
         text: TextSpan(
           style: KFlushBarTitle,
@@ -372,13 +342,8 @@ class _CompletionScreenState extends State<CompletionScreen> {
             TextSpan(text: 'Your total focused time for today is: '),
             TextSpan(
                 text: '${Format.minutes(todayDuration)} so far.',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16.0,
-                    color: Colors.white,
-                    fontStyle: FontStyle.italic,
-                    fontFamily: "ShadowsIntoLightTwo")),
-            TextSpan(text: 'Keep Going!')
+                style: KFlushBarTitleHighlight),
+            TextSpan(text: ' Keep Going!')
           ],
         ),
       ),

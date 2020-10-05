@@ -38,7 +38,10 @@ class _MyStackScreenState extends State<MyStackScreen> {
               _randomOn ? ImagePath.randomImageUrl : imageNotifier.getImage(),
         ),
         ContainerLinearGradient(),
-        GestureDetector(onDoubleTap: _onDoubleTap, child: widget.child),
+        GestureDetector(
+          onDoubleTap: _onDoubleTap,
+          child: widget.child,
+        ),
       ],
     );
   }

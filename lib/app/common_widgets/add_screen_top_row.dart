@@ -23,15 +23,18 @@ class AddScreenTopRow extends StatelessWidget {
           Spacer(),
           Text(title,
               style: TextStyle(
-                fontSize: 23,
+                fontSize: 20,
                 color: _darkTheme ? darkThemeWords : lightThemeWords,
                 fontWeight: FontWeight.w600,
               )),
           Spacer(),
-          IconButton(
-              onPressed: () => Navigator.of(context).pop(),
-              icon: Icon(Icons.clear),
-              color: _darkTheme ? darkThemeHint : lightThemeHint),
+          Opacity(
+            opacity: 0.0,
+            child: IconButton(
+                onPressed: () => Navigator.of(context).pop(),
+                icon: Icon(Icons.clear),
+                color: _darkTheme ? darkThemeHint : lightThemeHint),
+          ),
         ],
       ),
     );

@@ -61,7 +61,7 @@ class CircleCountdownPainter extends CustomPainter {
       : fillerPaint = Paint()
           ..color = Colors.white
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 15.0
+          ..strokeWidth = 12.0
           ..strokeCap = StrokeCap.round,
         super(repaint: animation);
 
@@ -82,7 +82,7 @@ class CircleCountdownPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = size.center(Offset.zero);
-    final radius = (size.shortestSide * 0.45);
+    final radius = (size.shortestSide * 0.47);
     final rect = Rect.fromCircle(center: center, radius: radius);
 
     // Draw the thin ring

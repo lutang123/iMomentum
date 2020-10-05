@@ -1,8 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:iMomentum/app/constants/constants_style.dart';
 
 class ClockBottomToday extends StatelessWidget {
-  const ClockBottomToday({Key key, @required this.text, this.maxLines = 3})
+  const ClockBottomToday({Key key, @required this.text, this.maxLines = 4})
       : super(key: key);
 
   final String text;
@@ -16,25 +17,17 @@ class ClockBottomToday extends StatelessWidget {
         children: <Widget>[
           Text(
             'Focused Task',
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold),
+            style: KPomodoroBottomTitle,
           ),
           Padding(
             padding: const EdgeInsets.all(15.0),
-            child: AutoSizeText(
-              text,
-              maxLines: maxLines,
-              minFontSize: 16,
-              maxFontSize: 18,
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 18.0,
-                color: Colors.white,
-              ),
-            ),
+            child: AutoSizeText(text,
+                maxLines: maxLines,
+                minFontSize: 16,
+                maxFontSize: 18,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                style: KPomodoroBottomSubtitle),
           ),
         ],
       ),

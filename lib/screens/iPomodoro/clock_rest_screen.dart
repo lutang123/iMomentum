@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
-import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_round_button.dart';
 import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
-import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/models/data/rest_quote.dart';
 import 'package:iMomentum/app/models/todo.dart';
 import 'package:iMomentum/app/utils/extension_clockFmt.dart';
 import 'package:iMomentum/app/services/firestore_service/database.dart';
-import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/utils/pages_routes.dart';
 import 'package:iMomentum/screens/home_screen/daily_quote.dart';
+import 'package:iMomentum/screens/iPomodoro/pomodoro_base_screen.dart';
 import 'package:iMomentum/screens/iPomodoro/rest_screen_bottom_quote.dart';
 import 'package:iMomentum/screens/iPomodoro/top_trans_row.dart';
-import 'package:provider/provider.dart';
 import 'clock_begin_screen.dart';
 import 'clock_timer.dart';
 import 'clock_mantra_quote_title.dart';
@@ -40,13 +36,10 @@ class RestScreen extends StatefulWidget {
 class _RestScreenState extends State<RestScreen>
     with SingleTickerProviderStateMixin {
   AnimationController _animationController;
-
   Stopwatch _stopwatch;
   Timer _timer;
-
   // This string that is displayed as the countdown timer
   String _display = '';
-
   Duration _restDuration;
 
   @override
@@ -62,6 +55,58 @@ class _RestScreenState extends State<RestScreen>
     _start();
     _fetchQuote();
     super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PomodoroBaseScreen(
+        topRow: PomodoroTopTransRow(),
+        titleWidget: PomodoroTitle(
+          title: 'Time to Rest',
+          subtitle: 'Come back in ${widget.restDuration.inMinutes} minutes',
+        ), //clear button//begin title
+        bigCircle: ClockTimer(
+          duration: _restDuration,
+          animationController: _animationController,
+          text1: _display,
+          text2: 'Rest',
+        ),
+        timerButton: timerButtonRow(),
+        bottomWidget: RestScreenBottomQuote(
+            state: _state, dailyQuote: dailyQuote, author: author));
+  }
+
+  Padding timerButtonRow() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          RoundTextButton(
+            text: 'Cancel',
+            textColor: Colors.white70,
+            onPressed: _end,
+            circleColor: Colors.white70,
+            fillColor: Colors.black12,
+          ),
+          _stopwatch.isRunning
+              ? RoundTextButton(
+                  text: 'Pause',
+                  textColor: Colors.white,
+                  onPressed: _pause,
+                  circleColor: Colors.white,
+                  fillColor: Colors.deepOrange.withOpacity(0.3),
+                )
+              : RoundTextButton(
+                  text: 'Resume',
+                  textColor: Colors.white,
+                  onPressed: _resume,
+                  circleColor: Colors.white,
+                  fillColor: Colors.lightGreenAccent.withOpacity(0.3),
+                ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -158,74 +203,6 @@ class _RestScreenState extends State<RestScreen>
         milliseconds: 450));
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return MyStackScreen(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SingleChildScrollView(
-          child: SafeArea(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                PomodoroTopTransRow(),
-                PomodoroTitle(
-                  title: 'Time to Rest',
-                  subtitle:
-                      'Come back in ${widget.restDuration.inMinutes} minutes',
-                ), //clear button//begin title
-                ClockTimer(
-                  duration: _restDuration,
-                  animationController: _animationController,
-                  text1: _display,
-                  text2: 'Rest',
-                ),
-                timerButtonRow(),
-                SizedBox(height: 15),
-                RestScreenBottomQuote(
-                    state: _state, dailyQuote: dailyQuote, author: author),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Padding timerButtonRow() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          RoundTextButton(
-            text: 'Cancel',
-            textColor: Colors.white70,
-            onPressed: _end,
-            circleColor: Colors.white70,
-            fillColor: Colors.black12,
-          ),
-          _stopwatch.isRunning
-              ? RoundTextButton(
-                  text: 'Pause',
-                  textColor: Colors.white,
-                  onPressed: _pause,
-                  circleColor: Colors.white,
-                  fillColor: Colors.deepOrange.withOpacity(0.3),
-                )
-              : RoundTextButton(
-                  text: 'Resume',
-                  textColor: Colors.white,
-                  onPressed: _resume,
-                  circleColor: Colors.white,
-                  fillColor: Colors.lightGreenAccent.withOpacity(0.3),
-                ),
-        ],
-      ),
-    );
-  }
-
   QuoteLoadingState _state = QuoteLoadingState.NOT_DOWNLOADED;
   String dailyQuote;
   String author;
@@ -245,7 +222,6 @@ class _RestScreenState extends State<RestScreen>
         var quoteData = json.decode(response.body)['quote'];
         setState(() {
           dailyQuote = quoteData['body'];
-
           author = quoteData['author'];
         });
       } else {

@@ -26,8 +26,6 @@ import '../../app/constants/constants_style.dart';
 import '../../app/constants/theme.dart';
 import 'about_screen.dart';
 import 'package:iMomentum/app/utils/extension_firstCaps.dart';
-import 'dart:io' show Platform;
-
 import 'more_settings_NotUse.dart';
 
 class MyDrawer extends StatefulWidget {

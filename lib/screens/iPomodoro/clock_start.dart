@@ -22,38 +22,33 @@ class ClockStart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    return Container(
-      height: size.height / 2,
-      width: size.height / 2,
-      child: Stack(
-        alignment: Alignment.center,
-        children: <Widget>[
-          SizedBox.expand(
-            child: OnlyThinRing(),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              firstRow(),
-              //add SizedBox to make the layout consistent.
-              SizedBox(
-                height: 25,
-                child: Center(
-                  child: Text(text2, //can be '' or 'Take a break'
-                      style: KTimerBeginSubtitle),
-                ),
+    return Stack(
+      alignment: Alignment.center,
+      children: <Widget>[
+        SizedBox.expand(
+          child: OnlyThinRing(),
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            firstRow(),
+            //add SizedBox to make the layout consistent.
+            SizedBox(
+              height: 25,
+              child: Center(
+                child: Text(text2, //can be '' or 'Take a break'
+                    style: KTimerBeginSubtitle),
               ),
-              SizedBox(height: height), //SizedBox(height: 15),
-              RoundIconButton(
-                icon: FontAwesomeIcons.play,
-                onPressed: onPressed,
-                color: Colors.white,
-              )
-            ],
-          ),
-        ],
-      ),
+            ),
+            SizedBox(height: height), //SizedBox(height: 15),
+            RoundIconButton(
+              icon: FontAwesomeIcons.play,
+              onPressed: onPressed,
+              color: Colors.white,
+            )
+          ],
+        ),
+      ],
     );
   }
 

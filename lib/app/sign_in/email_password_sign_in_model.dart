@@ -109,7 +109,7 @@ class EmailPasswordSignInModel with EmailAndPasswordValidators, ChangeNotifier {
   // Getters
   String get primaryButtonText {
     return <EmailPasswordSignInFormType, String>{
-      EmailPasswordSignInFormType.register: StringsSignIn.createAnAccount,
+      EmailPasswordSignInFormType.register: StringsSignIn.signUp,
       EmailPasswordSignInFormType.signIn: StringsSignIn.signIn,
       EmailPasswordSignInFormType.forgotPassword: StringsSignIn.sendResetLink,
     }[formType];

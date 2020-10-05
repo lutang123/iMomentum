@@ -37,7 +37,7 @@ class HomeTodoListTile extends StatelessWidget {
           )),
       title: AutoSizeText(
         todo.title,
-        maxLines: 4,
+        maxLines: 5,
         maxFontSize: 25,
         overflow: TextOverflow.ellipsis,
         minFontSize: 20,
@@ -88,10 +88,6 @@ class FolderListTile extends StatelessWidget {
         ),
       ),
       onTap: onTap,
-      // trailing: IconButton(
-      // icon: Icon(EvaIcons.edit2Outline,
-      // color: _darkTheme ? darkThemeButton : lightThemeButton),
-      // onPressed: onPressed),
     );
   }
 }
@@ -115,7 +111,7 @@ class HomeMantraListTile extends StatelessWidget {
         mantra.title,
         maxLines: 3,
         maxFontSize: 33,
-        minFontSize: 33,
+        minFontSize: 24,
         overflow: TextOverflow.ellipsis,
         textAlign: TextAlign.center,
         style: TextStyle(
@@ -148,7 +144,7 @@ class MantraListTile extends StatelessWidget {
       title: AutoSizeText(mantra.title,
           maxLines: 3,
           maxFontSize: 20,
-          minFontSize: 20,
+          minFontSize: 18,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             color: _darkTheme ? darkThemeWords : lightThemeWords,

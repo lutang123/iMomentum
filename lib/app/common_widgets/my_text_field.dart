@@ -33,7 +33,7 @@ class HomeTextField extends StatelessWidget {
       child: TextFormField(
         onChanged: onChanged,
         autofocus: autofocus,
-        style: GoogleFonts.varelaRound(fontSize: 25.0, color: Colors.white),
+        style: KHomeTextField,
         textAlign: TextAlign.center,
         onFieldSubmitted: onSubmitted,
         validator: (value) {

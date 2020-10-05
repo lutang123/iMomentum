@@ -23,9 +23,9 @@ class StringsSignIn {
   static const String register = 'Register';
   static const String forgotPassword = 'Forgot password';
   static const String forgotPasswordQuestion = 'Forgot password?';
-  static const String createAnAccount = 'Create an account';
+  static const String signUp = 'Sign Up';
   static const String needAnAccount = 'Need an account? Register';
-  static const String haveAnAccount = 'Already have an account? Sign in';
+  static const String haveAnAccount = 'Already have an account? Sign In.';
   static const String signInFailed = 'Sign in failed';
   static const String registrationFailed = 'Registration failed';
   static const String passwordResetFailed = 'Password reset failed';
