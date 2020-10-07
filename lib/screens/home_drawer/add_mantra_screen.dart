@@ -8,7 +8,6 @@ import 'package:iMomentum/app/models/mantra_model.dart';
 import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/constants/theme.dart';
-import 'package:iMomentum/screens/todo_screen/add_todo_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:iMomentum/app/utils/extension_firstCaps.dart';
 

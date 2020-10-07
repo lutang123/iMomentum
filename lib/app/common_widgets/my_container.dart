@@ -44,33 +44,6 @@ class FlushBarButtonChild extends StatelessWidget {
   }
 }
 
-// for PINNED/OTHERS No theme
-class ContainerOnlyText extends StatelessWidget {
-  final String text;
-
-  const ContainerOnlyText({Key key, this.text}) : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        child: Row(
-      children: [
-        Container(
-            decoration: BoxDecoration(
-                color: darkThemeAppBar,
-                borderRadius: BorderRadius.all(Radius.circular(10.0))),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(text,
-                  style: TextStyle(
-                    color: darkThemeWords,
-                    fontWeight: FontWeight.bold,
-                  )),
-            ))
-      ],
-    ));
-  }
-}
-
 class ContainerOnlyTextPhotoSearch extends StatelessWidget {
   final String text;
 
@@ -265,7 +238,7 @@ class SmallContainerFolderName extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 3),
       decoration: BoxDecoration(
         color: _darkTheme ? darkThemeDrawer : lightThemeDrawer,
-        borderRadius: BorderRadius.all(Radius.circular(10.0)),
+        borderRadius: BorderRadius.all(Radius.circular(5.0)),
         border: Border.all(
             color: _darkTheme ? darkThemeDivider : lightThemeDivider, width: 1),
       ),

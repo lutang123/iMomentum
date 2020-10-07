@@ -9,9 +9,11 @@ class ImagePath {
   static String randomImageUrlFirstPart =
       'https://source.unsplash.com/random?nature&wallpaper&travel&landscape&mountain&ocean/';
 
-  // static String fixedImageUrl =
-  //     'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2706&q=80';
-  static String fixedImageUrl = 'assets/images/main5.jpg';
+  // the two are the same
+  static String fixedImageUrl =
+      'https://images.unsplash.com/photo-1582108529822-5258e7be743f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2775&q=80';
+  static String fixedImagePath = 'assets/images/main5.jpg';
+
   static String startImage = 'assets/images/main5.jpg';
   static String introImage = 'assets/images/main5.jpg';
   static String startImage1 = 'assets/images/landscape.jpg';

@@ -242,6 +242,37 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
     );
   }
 
+  Row buildDateRowText(double width, bool _darkTheme) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: width * 0.15, //width / 6,
+          child: Center(
+            child: TextFormField(
+              controller: _dateController, //this is TextEditingController
+              focusNode: _dateFocusNode,
+              readOnly: true,
+              style: TextStyle(
+                fontSize: 17,
+                fontStyle: FontStyle.italic,
+                color: _darkTheme ? darkThemeWords : lightThemeWords,
+                // fontWeight: FontWeight.w600,
+              ),
+              decoration: KTransparentInputDecoration,
+              onTap: _handleDatePicker,
+            ),
+          ),
+        ),
+        InkWell(
+          onTap: _handleDatePicker,
+          child: Icon(EvaIcons.calendarOutline,
+              color: _darkTheme ? darkThemeButton : lightThemeButton),
+        ),
+      ],
+    );
+  }
+
   SizedBox buildSizedBoxCategory(bool _darkTheme, BuildContext context) {
     return SizedBox(
       width: 350,
@@ -262,12 +293,14 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                     canvasColor: lightThemeNoPhotoColor,
                   ),
             child: DropdownButton(
-              value: _currentCategory,
-              items: _dropDownMenuItems,
-              onChanged: changedDropDownItem,
-              // dropdownColor: darkThemeAdd,
+                value: _currentCategory,
+                items: _dropDownMenuItems,
+                onChanged: changedDropDownItem,
+                iconEnabledColor:
+                    _darkTheme ? darkThemeButton : lightThemeButton
+                // dropdownColor: darkThemeAdd,
 //                          focusColor: Colors.orangeAccent,
-            ),
+                ),
           ),
         ],
       ),

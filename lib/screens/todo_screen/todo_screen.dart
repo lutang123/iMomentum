@@ -804,7 +804,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
     return TextStyle(
         fontSize: 15,
         color: _darkTheme
-            ? darkThemeButton.withOpacity(0.9)
+            ? darkThemeWords.withOpacity(0.8)
             : lightThemeButton.withOpacity(0.9));
   }
 
@@ -896,13 +896,13 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
         flushbarPosition: FlushbarPosition.BOTTOM,
         flushbarStyle: FlushbarStyle.FLOATING,
         backgroundGradient: KFlushBarGradient,
-        duration: Duration(seconds: 3),
+        duration: Duration(seconds: 4),
         icon: Icon(
           EvaIcons.trash2Outline,
           color: Colors.white,
         ),
         titleText: Text(
-          'Deleted',
+          Strings.deleteTaskWarning,
           style: KFlushBarTitle,
         ),
         messageText: Text(todo.title,

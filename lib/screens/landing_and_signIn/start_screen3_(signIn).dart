@@ -4,7 +4,6 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
@@ -325,89 +324,72 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
     return Column(
       children: [
         sizedBox(height),
-        (appleSignInAvailable.isAvailable)
-            ? Column(
-                children: [
-                  MySignInContainer(
-                    child: Column(
-                      children: [
-                        textSignUPWith(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            flatButtonGoogle(),
-                            if (appleSignInAvailable.isAvailable) ...[
-                              flatButtonApple(),
-                            ],
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  sizedBox(height),
-                  mySignInContainerJustExplore(),
-                ],
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  MySignInContainer(
-                    child: Column(
-                      children: [
-                        textSignUPWith(),
-                        flatButtonGoogle(),
-                      ],
-                    ),
-                  ),
-                  mySignInContainerJustExplore()
-                ],
-              ),
+        mySignInContainerSocial(
+            'Sign up with Google', _signInWithGoogle, height),
+        if (appleSignInAvailable.isAvailable) ...[
+          mySignInContainerSocial(
+              'Sign up with Apple', _signInWithApple, height)
+        ],
+        mySignInContainerJustExplore(),
       ],
     );
   }
 
-  SizedBox sizedBox(double height) => SizedBox(height: height > 700 ? 25 : 10);
+  Column mySignInContainerSocial(text, onTap, height) {
+    return Column(
+      children: [
+        MySignInContainer(
+          child: InkWell(
+            onTap: onTap,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  text,
+                  style: KSignInButton,
+                )
+              ],
+            ),
+          ),
+        ),
+        sizedBox(height),
+      ],
+    );
+  }
 
-  Text textSignUPWith() => Text('Or Sign up with: ', style: KSignUpOr);
+  SizedBox sizedBox(double height) => SizedBox(height: height > 700 ? 25 : 15);
 
   MySignInContainer mySignInContainerJustExplore() {
     return MySignInContainer(
-      child: Column(
-        children: [
-          Text('Or stay signed out', style: KSignUpOr),
-          InkWell(
-            onTap: _showAlert,
-            child: Text(
+      child: InkWell(
+        onTap: _showAlert,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Or stay signed out: ', style: KSignUpOr),
+            SizedBox(width: 3),
+            Text(
               'Just Explore',
               style: KSignInButton,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  FlatButton flatButtonApple() {
-    return FlatButton.icon(
-        onPressed: _signInWithApple,
-        icon: Icon(
-          FontAwesomeIcons.apple,
-          color: lightThemeButton,
-        ),
-        label: Text(
-          'Apple',
-          style: KSignInButton,
-        ));
-  }
-
-  FlatButton flatButtonGoogle() {
-    return FlatButton.icon(
-        onPressed: _signInWithGoogle,
-        icon: Icon(
-          FontAwesomeIcons.google,
-          color: lightThemeButton,
-        ),
-        label: Text('Google', style: KSignInButton));
+  ///this one no padding
+  Widget rowFlatButtonIcon(icon, text, onTap) {
+    return InkWell(
+      onTap: onTap,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // s
+          Text(text, style: KSignInButton)
+        ],
+      ),
+    );
   }
 
   UnderlineInputBorder underlineInputBorder() {

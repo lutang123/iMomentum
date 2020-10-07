@@ -57,6 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
   double _wholeBodyOpacity = 1.0; //used when edit or show top sheet
   bool _nameVisible = true; //used when edit name
   bool _questionVisible = true; //used when changing question
+  bool _visibleWhenEdit = true;
 
   CurrentWeatherState _state = CurrentWeatherState.NOT_DOWNLOADED;
   int temperature;
@@ -357,11 +358,14 @@ class _HomeScreenState extends State<HomeScreen> {
               _buildMantraStream(),
               Visibility(
                 visible: _focusModeOn ? true : false,
-                child: Column(
-                  children: <Widget>[
-                    MyHomeMiddleSpaceSizedBox(), //space between mantra and Today's Todos
-                    _buildTaskCarouselSlider(database, todayTodosNotDone),
-                  ],
+                child: Visibility(
+                  visible: _visibleWhenEdit,
+                  child: Column(
+                    children: <Widget>[
+                      MyHomeMiddleSpaceSizedBox(), //space between mantra and Today's Todos
+                      _buildTaskCarouselSlider(database, todayTodosNotDone),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -797,7 +801,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _showNoActionFlushbar(
         icon: EvaIcons.moon,
         title: 'Task has been added to calendar.',
-        subtitle: 'Have a good evening.');
+        subtitle: 'Have a good evening, .');
   }
 
   Future<void> _delete(Database database, Todo todo) async {
@@ -838,6 +842,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void _onTapTodo(Database database, Todo todo) async {
     setState(() {
       _wholeBodyOpacity = 0.0;
+      _visibleWhenEdit =
+          false; //to prevent not enough space when keyboard is up when edit
     });
 
     var _typedTitleAndComment = await showModalBottomSheet(
@@ -880,12 +886,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() {
       _wholeBodyOpacity = 1.0;
+      _visibleWhenEdit = true;
     });
   }
 
   void _onTapMantra(Database database, MantraModel mantra) async {
     setState(() {
       _wholeBodyOpacity = 0.0;
+      _visibleWhenEdit = false;
     });
     await showModalBottomSheet(
         context: context,
@@ -896,12 +904,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ));
     setState(() {
       _wholeBodyOpacity = 1.0;
+      _visibleWhenEdit = true;
     });
   }
 
   void _onTapQuote(Database database, QuoteModel quote) async {
     setState(() {
       _wholeBodyOpacity = 0.0;
+      _visibleWhenEdit = false;
     });
     await showModalBottomSheet(
         context: context,
@@ -912,12 +922,39 @@ class _HomeScreenState extends State<HomeScreen> {
             ));
     setState(() {
       _wholeBodyOpacity = 1.0;
+      _visibleWhenEdit = true;
     });
+  }
+
+  String getUserFirstName(User user) {
+    String userFirstName;
+    if (user.displayName != null && user.displayName.isNotEmpty) {
+      user.displayName.contains(' ')
+          ? userFirstName = user.displayName
+              .substring(0, user.displayName.indexOf(' '))
+              .firstCaps
+          : userFirstName = user.displayName.firstCaps;
+    }
+    return userFirstName;
+  }
+
+  int nameLengthLimit;
+  void getNameLengthLimit(double height) {
+    if (height >= 850) {
+      nameLengthLimit = 7;
+    } else if ((height < 850) && (height > 700)) {
+      nameLengthLimit = 6;
+    } else if (height < 700) {
+      nameLengthLimit = 4;
+    }
   }
 
   /// first Greetings
   get getFirstGreetings {
     final User user = FirebaseAuth.instance.currentUser;
+    double height = MediaQuery.of(context).size.height;
+    getNameLengthLimit(height);
+
     // user.reload();
     // String userName;
     if (user.displayName != null && user.displayName.isNotEmpty) {
@@ -927,7 +964,7 @@ class _HomeScreenState extends State<HomeScreen> {
       //         .firstCaps
       //     :
       final userName = user.displayName.firstCaps;
-      if (userName.length < 5) {
+      if (userName.length < nameLengthLimit) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -938,34 +975,19 @@ class _HomeScreenState extends State<HomeScreen> {
                 ///AutoSizeText not useful here
                 Text('${FirstGreetings().showGreetings()}, ',
                     style: KHomeGreeting),
-                Showcase(
-                    key: _third,
-                    description: Strings.third,
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-                    child: name(userName)),
+                name(userName),
               ],
             ),
             nameTextField()
           ],
         );
-      } else if (userName.length > 4) {
+      } else if (userName.length > nameLengthLimit - 1) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text('${FirstGreetings().showGreetings()}',
                 style: KHomeGreeting, textAlign: TextAlign.center),
-            Visibility(
-              visible: _nameVisible,
-              child: GestureDetector(
-                onTap: _onTapName,
-                child: Text(
-                  '$userName',
-                  style: KHomeGreeting,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ),
+            name(userName),
             nameTextField()
           ],
         );
@@ -977,15 +999,20 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Visibility name(String userName) {
-    return Visibility(
-      visible: _nameVisible,
-      child: GestureDetector(
-        onTap: _onTapName,
-        child: Text(
-          '$userName',
-          style: KHomeGreeting,
-          overflow: TextOverflow.ellipsis,
+  Showcase name(String userName) {
+    return Showcase(
+      key: _third,
+      description: Strings.third,
+      contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+      child: Visibility(
+        visible: _nameVisible,
+        child: GestureDetector(
+          onTap: _onTapName,
+          child: Text(
+            '$userName',
+            style: KHomeGreeting,
+            overflow: TextOverflow.ellipsis,
+          ),
         ),
       ),
     );
@@ -1100,12 +1127,12 @@ class _HomeScreenState extends State<HomeScreen> {
       flushbarPosition: FlushbarPosition.BOTTOM,
       flushbarStyle: FlushbarStyle.FLOATING,
       backgroundGradient: KFlushBarGradient,
-      duration: Duration(seconds: 3),
+      duration: Duration(seconds: 4),
       icon: Icon(
         EvaIcons.trash2Outline,
         color: Colors.white,
       ),
-      titleText: Text('Deleted', style: KFlushBarTitle),
+      titleText: Text(Strings.deleteTaskWarning, style: KFlushBarTitle),
       messageText: Text(todo.title,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,

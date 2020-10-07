@@ -103,7 +103,7 @@ const KHomeTextField =
     TextStyle(color: Colors.white, fontSize: 25.0, fontFamily: "varelaRound");
 
 const KHomeToday =
-    TextStyle(color: Colors.white, fontSize: 25.0, fontWeight: FontWeight.bold);
+    TextStyle(color: Colors.white, fontSize: 23.0, fontWeight: FontWeight.bold);
 
 /// Pomodoro screen
 const KTimer = TextStyle(
@@ -160,19 +160,19 @@ const KDialogButtonLight = TextStyle(
 
 const KFlushBarTitle = TextStyle(
     fontWeight: FontWeight.w600,
-    fontSize: 15.0,
+    fontSize: 14.0,
     color: Colors.white,
     fontFamily: "ShadowsIntoLightTwo");
 
 const KFlushBarTitleHighlight = TextStyle(
     fontWeight: FontWeight.bold,
-    fontSize: 16.0,
+    fontSize: 15.0,
     color: Colors.white,
     fontStyle: FontStyle.italic,
     fontFamily: "ShadowsIntoLightTwo");
 
 const KFlushBarMessage = TextStyle(
-    fontSize: 15.0,
+    fontSize: 13.0,
     color: Colors.white,
     fontStyle: FontStyle.italic,
     fontFamily: "ShadowsIntoLightTwo");

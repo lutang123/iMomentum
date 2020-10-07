@@ -6,9 +6,9 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
+import 'package:iMomentum/app/common_widgets/my_sizedbox.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
-import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/models/folder.dart';
 import 'package:iMomentum/app/services/firestore_service/database.dart';
@@ -116,124 +116,105 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
     return pinnedNotes;
   }
 
-  // int counter = 0;
-  // void _onDoubleTap() {
-  //   setState(() {
-  //     ImagePath.randomImageUrl = '${ImagePath.randomImageUrlFirstPart}$counter';
-  //     counter++;
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
-    // final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
-    // bool _randomOn = (randomNotifier.getRandom() == true);
-    // final imageNotifier = Provider.of<ImageNotifier>(context, listen: false);
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    return Stack(
-      fit: StackFit.expand,
-      children: <Widget>[
-        Scaffold(
-          // backgroundColor: Colors.transparent,
-          backgroundColor:
-              _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
-          body: SafeArea(
-            top: false,
-            child: StreamBuilder<List<Note>>(
-              stream: database
-                  .notesStream(), // print(database.todosStream());//Instance of '_MapStream<QuerySnapshot, List<TodoModel>>'
-              builder: (con, snapshot) {
-                if (snapshot.hasData) {
-                  final List<Note> allNotes = snapshot.data;
-                  final List<Note> pinnedNotes = _getPinnedNote(allNotes);
-                  final List<Note> notPinnedNotes = _getNotPinnedNote(allNotes);
+    return Scaffold(
+      backgroundColor:
+          _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
+      body: SafeArea(
+        top: false,
+        child: StreamBuilder<List<Note>>(
+          stream: database
+              .notesStream(), // print(database.todosStream());//Instance of '_MapStream<QuerySnapshot, List<TodoModel>>'
+          builder: (con, snapshot) {
+            if (snapshot.hasData) {
+              final List<Note> allNotes = snapshot.data;
+              final List<Note> pinnedNotes = _getPinnedNote(allNotes);
+              final List<Note> notPinnedNotes = _getNotPinnedNote(allNotes);
 
-                  final List<Note> allNotesInThisFolder =
-                      _getNotesInThisFolder(allNotes, folder);
+              final List<Note> allNotesInThisFolder =
+                  _getNotesInThisFolder(allNotes, folder);
 
-                  final _pinnedNotesInThisFolder =
-                      _getNotesInThisFolder(pinnedNotes, folder);
+              final _pinnedNotesInThisFolder =
+                  _getNotesInThisFolder(pinnedNotes, folder);
 
-                  final _notPinnedNotesInThisFolder =
-                      _getNotesInThisFolder(notPinnedNotes, folder);
+              final _notPinnedNotesInThisFolder =
+                  _getNotesInThisFolder(notPinnedNotes, folder);
 
-                  if (_notPinnedNotesInThisFolder.isNotEmpty ||
-                      _pinnedNotesInThisFolder.isNotEmpty) {
-                    return Stack(
-                      alignment: Alignment.bottomCenter,
+              if (_notPinnedNotesInThisFolder.isNotEmpty ||
+                  _pinnedNotesInThisFolder.isNotEmpty) {
+                return Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    Column(children: [
+                      _topRow(allNotesInThisFolder),
+                      buildExpandedCustomScrollView(_pinnedNotesInThisFolder,
+                          _darkTheme, _notPinnedNotesInThisFolder)
+                    ]),
+                    _bottomRow(),
+                  ],
+                );
+              } else {
+                //if notes are empty
+                return Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    Column(
                       children: [
-                        Column(
-                          children: [
-                            _topRow(allNotesInThisFolder),
-                            Expanded(
-                              child: Opacity(
-                                opacity: _notesOpacity,
-                                child: CustomScrollView(
-                                  controller: _hideButtonController,
-                                  slivers: <Widget>[
-                                    _buildBoxAdaptorForPinned(
-                                        _pinnedNotesInThisFolder),
-                                    //this is for pinned notes
-                                    _buildNotesGrid(_pinnedNotesInThisFolder),
-                                    //this is just for the word 'OTHERS'
-                                    _pinnedNotesInThisFolder.length > 0
-                                        ? _buildBoxAdaptorForOthers(
-                                            _notPinnedNotesInThisFolder)
-                                        : SliverToBoxAdapter(
-                                            child: Container()),
-                                    //this is for not pinned notes.
-                                    _buildNotesGrid(
-                                        _notPinnedNotesInThisFolder),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        _bottomRow(),
+                        _topRow(allNotesInThisFolder),
+                        Spacer(),
+                        Center(child: EmptyOrError(text: Strings.emptyNote)),
+                        Spacer() //empty content
                       ],
-                    );
-                  } else {
-                    //if notes are empty
-                    return Stack(
-                      alignment: Alignment.bottomCenter,
-                      children: [
-                        Column(
-                          children: [
-                            _topRow(allNotesInThisFolder),
-                            Spacer(),
-                            Center(
-                                child: EmptyOrError(text: Strings.emptyNote)),
-                            Spacer() //empty content
-                          ],
-                        ),
-                        _bottomRow(),
-                      ],
-                    );
-                  }
-                } else if (snapshot.hasError) {
-                  print(
-                      'snapshot.hasError in notes stream: ${snapshot.error.toString()}');
-                  return Column(
-                    children: [
-                      //this must include, it shows folder name and go back button, only not include toggle button
-                      _topErrorRow(),
-                      Expanded(
-                          child: EmptyOrError(
-                              tips: Strings.textError,
-                              textTap: Strings.textErrorOnTap,
-                              //Todo contact us
-                              onTap: null)),
-                    ],
-                  );
-                }
-                return Center(child: CircularProgressIndicator());
-              },
-            ),
-          ),
+                    ),
+                    _bottomRow(),
+                  ],
+                );
+              }
+            } else if (snapshot.hasError) {
+              print(
+                  'snapshot.hasError in notes stream: ${snapshot.error.toString()}');
+              return Column(
+                children: [
+                  //this must include, it shows folder name and go back button, only not include toggle button
+                  _topErrorRow(),
+                  Expanded(
+                      child: EmptyOrError(
+                          tips: Strings.textError,
+                          textTap: Strings.textErrorOnTap,
+                          //Todo contact us
+                          onTap: null)),
+                ],
+              );
+            }
+            return Center(child: CircularProgressIndicator());
+          },
         ),
-      ],
+      ),
+    );
+  }
+
+  Expanded buildExpandedCustomScrollView(List<Note> _pinnedNotesInThisFolder,
+      bool _darkTheme, List<Note> _notPinnedNotesInThisFolder) {
+    return Expanded(
+      child: CustomScrollView(
+        controller: _hideButtonController,
+        slivers: <Widget>[
+          //this is just for the word 'PINNED'
+          _buildBoxAdaptorForPinned(_pinnedNotesInThisFolder, _darkTheme),
+          //this is for pinned notes
+          _buildNotesGrid(_pinnedNotesInThisFolder),
+          //this is just for the word 'OTHERS'
+          _pinnedNotesInThisFolder.length > 0
+              ? _buildBoxAdaptorForOthers(
+                  _notPinnedNotesInThisFolder, _darkTheme)
+              : SliverToBoxAdapter(child: Container()),
+          //this is for not pinned notes.
+          _buildNotesGrid(_notPinnedNotesInThisFolder),
+        ],
+      ),
     );
   }
 
@@ -255,23 +236,14 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
       child: Column(
         children: <Widget>[
           //this is to make top bar color cover all
+          MyTopSizedBox(),
           SizedBox(
-            height: 30,
-            child: Container(
-              // color: _darkTheme ? darkThemeDrawer : lightThemeAppBar,
-              color:
-                  _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
-            ),
-          ),
-          Container(
             height: 50,
-            // color: _darkTheme ? darkThemeDrawer : lightThemeAppBar,
-            color: _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 IconButton(
-                    icon: Icon(Icons.arrow_back_ios),
+                    icon: Icon(Icons.arrow_back_ios, size: 30),
                     onPressed: () => Navigator.pop(context)),
                 Text(folder.title,
                     style: Theme.of(context).textTheme.headline6),
@@ -284,7 +256,7 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
                         axisCount == 2
                             ? MyCustomIcon.menu_outline
                             : MyCustomIcon.th_large_outline,
-                        size: 20,
+                        size: 22,
                         color: _darkTheme ? darkThemeButton : lightThemeButton,
                       ),
                       onPressed: () {
@@ -352,25 +324,38 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
 
   int axisCount = 2;
 
-  Widget _buildBoxAdaptorForPinned(List<Note> notes) {
+  Widget _buildBoxAdaptorForPinned(List<Note> notes, bool _darkTheme) {
     return SliverToBoxAdapter(
       child: notes.length == 0
           ? Container()
           : Padding(
               padding: const EdgeInsets.only(left: 10.0, top: 10),
-              child: ContainerOnlyText(text: 'PINNED'),
+              child: Row(
+                children: [
+                  Text('PINNED',
+                      style: TextStyle(
+                        color: _darkTheme ? darkThemeWords : lightThemeWords,
+                      ))
+                ],
+              ),
             ),
     );
   }
 
-  Widget _buildBoxAdaptorForOthers(List<Note> notes) {
+  Widget _buildBoxAdaptorForOthers(List<Note> notes, bool _darkTheme) {
     return SliverToBoxAdapter(
       child: notes.length == 0
           ? Container()
           : Padding(
               padding: const EdgeInsets.only(left: 10.0),
-              child: ContainerOnlyText(text: 'OTHERS'),
-            ),
+              child: Row(
+                children: [
+                  Text('OTHERS',
+                      style: TextStyle(
+                        color: _darkTheme ? darkThemeWords : lightThemeWords,
+                      ))
+                ],
+              )),
     );
   }
 
@@ -446,14 +431,7 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Visibility(
       visible: _addButtonVisible,
-      child: Container(
-        // decoration: BoxDecoration(
-        //   color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
-        //   borderRadius: BorderRadius.only(
-        //     topLeft: Radius.circular(20.0),
-        //     topRight: Radius.circular(20.0),
-        //   ),
-        // ),
+      child: SizedBox(
         height: 60,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -502,10 +480,10 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
   double _notesOpacity = 1.0;
 
   void _move(Note note, BuildContext context) async {
-    setState(() {
-      _notesOpacity = 0.0;
-      _addButtonVisible = false;
-    });
+    // setState(() {
+    //   _notesOpacity = 0.0;
+    //   _addButtonVisible = false;
+    // });
     await showCupertinoModalBottomSheet(
         expand: true,
         context: context,
@@ -514,11 +492,11 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
               database: database,
               note: note,
             ));
-
-    setState(() {
-      _notesOpacity = 1.0;
-      _addButtonVisible = true;
-    });
+    //
+    // setState(() {
+    //   _notesOpacity = 1.0;
+    //   _addButtonVisible = true;
+    // });
   }
 
   ///https://stackoverflow.com/questions/54617432/looking-up-a-deactivated-widgets-ancestor-is-unsafe

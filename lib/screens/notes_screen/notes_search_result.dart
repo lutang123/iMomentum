@@ -103,12 +103,13 @@ class NotesSearchResultState extends State<NotesSearchResult> {
                         child: CustomScrollView(
                           slivers: <Widget>[
                             //this is just for the word 'PINNED'
-                            _buildBoxAdaptorForPinned(pinnedNotes),
+                            _buildBoxAdaptorForPinned(pinnedNotes, _darkTheme),
                             //this is for pinned notes
                             _buildNotesGrid(pinnedNotes),
                             //this is just for the word 'OTHERS'
                             pinnedNotes.length > 0
-                                ? _buildBoxAdaptorForOthers(notPinnedNotes)
+                                ? _buildBoxAdaptorForOthers(
+                                    notPinnedNotes, _darkTheme)
                                 : SliverToBoxAdapter(child: Container()),
                             //this is for not pinned notes
                             _buildNotesGrid(notPinnedNotes),
@@ -135,24 +136,38 @@ class NotesSearchResultState extends State<NotesSearchResult> {
     );
   }
 
-  Widget _buildBoxAdaptorForPinned(List<Note> notes) {
+  Widget _buildBoxAdaptorForPinned(List<Note> notes, bool _darkTheme) {
     return SliverToBoxAdapter(
       child: notes.length == 0
           ? Container()
           : Padding(
-              padding: const EdgeInsets.only(left: 25.0, right: 25, top: 10),
-              child: ContainerOnlyText(text: 'PINNED'),
+              padding: const EdgeInsets.only(left: 10, top: 10),
+              child: Row(
+                children: [
+                  Text('PINNED',
+                      style: TextStyle(
+                        color: _darkTheme ? darkThemeWords : lightThemeWords,
+                      ))
+                ],
+              ),
             ),
     );
   }
 
-  Widget _buildBoxAdaptorForOthers(List<Note> notes) {
+  Widget _buildBoxAdaptorForOthers(List<Note> notes, bool _darkTheme) {
     return SliverToBoxAdapter(
       child: notes.length == 0
           ? Container()
           : Padding(
-              padding: const EdgeInsets.only(left: 25.0, right: 25),
-              child: ContainerOnlyText(text: 'OTHERS'),
+              padding: const EdgeInsets.only(left: 10),
+              child: Row(
+                children: [
+                  Text('OTHERS',
+                      style: TextStyle(
+                        color: _darkTheme ? darkThemeWords : lightThemeWords,
+                      ))
+                ],
+              ),
             ),
     );
   }

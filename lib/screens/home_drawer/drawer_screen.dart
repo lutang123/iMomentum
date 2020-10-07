@@ -218,6 +218,7 @@ class MyHomeDrawer extends StatelessWidget {
     ///this one listen to false or not does not seem to matter, but why??
     final randomNotifier = Provider.of<RandomNotifier>(context);
     bool _randomOn = randomNotifier.getRandom();
+
     double height = MediaQuery.of(context).size.height;
     return SizedBox(
       width: 300,
@@ -235,9 +236,7 @@ class MyHomeDrawer extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                height > 700
-                    ? settingTitle(context, title: 'Settings')
-                    : settingTitle(context, title: 'Settings'),
+                settingTitle(context, title: 'Settings'),
                 SettingSwitch(
                   size: 23,
                   icon: FontAwesomeIcons.adjust,

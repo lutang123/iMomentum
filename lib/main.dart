@@ -9,7 +9,6 @@ import 'package:iMomentum/screens/landing_and_signIn/auth_widget_(landing).dart'
 import 'package:iMomentum/screens/landing_and_signIn/start_screen1.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:showcaseview/showcase_widget.dart';
 import 'app/constants/image_path.dart';
 import 'app/services/firestore_service/database.dart';
 import 'app/sign_in/firebase_auth_service_new.dart';

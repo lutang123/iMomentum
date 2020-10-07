@@ -234,16 +234,6 @@ class FolderScreenState extends State<FolderScreen> {
                       ),
                     ),
                   ),
-                  // FlatButton.icon(
-                  //   icon: Icon(EvaIcons.folderAddOutline,
-                  //       size: 25,
-                  //       color: _darkTheme ? darkThemeButton : lightThemeButton),
-                  //   label: Text(
-                  //     'Create Folder',
-                  //     style: textStyleCreateFolder(_darkTheme),
-                  //   ),
-                  //   onPressed: () => _showAddDialog(database),
-                  // ),
                 ],
               ),
             ),
@@ -690,7 +680,7 @@ class FolderScreenState extends State<FolderScreen> {
                                 : _isFolderNameEmpty = false;
                           });
                         },
-                        maxLength: 20,
+                        maxLength: 15,
                         maxLines: 1, //limit only one line
                         initialValue: _newFolderName,
                         validator: (value) => (value.isNotEmpty)
@@ -890,7 +880,7 @@ class FolderScreenState extends State<FolderScreen> {
                           });
                         },
                         maxLines: 1,
-                        maxLength: 20,
+                        maxLength: 15,
                         initialValue: folder.title,
                         validator: (value) => (value.isNotEmpty)
                             ? null

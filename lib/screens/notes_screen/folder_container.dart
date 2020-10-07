@@ -28,7 +28,7 @@ class FolderContainer extends StatelessWidget {
 
     return Center(
       child: Container(
-        height: height * 0.20,
+        height: height * 0.18,
         width: width * 0.32,
         margin: EdgeInsets.only(left: 8.0, right: 8),
         decoration: BoxDecoration(

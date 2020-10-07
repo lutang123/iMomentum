@@ -4,7 +4,7 @@ import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:provider/provider.dart';
 
-//folderScreen, NotesInFolder and NotesSearch, and other
+//folderScreen, NotesInFolder and NotesSearch, and staggeredView, and moveFolder
 class EmptyOrError extends StatelessWidget {
   final String text;
   final String tips;
@@ -29,7 +29,7 @@ class EmptyOrError extends StatelessWidget {
         child: Container(
       margin: const EdgeInsets.all(15.0),
       decoration: BoxDecoration(
-          color: _darkTheme ? darkThemeDrawer : lightThemeDrawer,
+          color: Colors.transparent,
           borderRadius: BorderRadius.all(Radius.circular(10.0))),
       child: Padding(
         padding: const EdgeInsets.all(15.0),
@@ -42,9 +42,6 @@ class EmptyOrError extends StatelessWidget {
                     text,
                     style: Theme.of(context).textTheme.bodyText2,
                   )
-                //tips only used for error now
-                // tips.isEmpty
-                //     ? Container()
                 : Padding(
                     padding: const EdgeInsets.only(left: 15.0),
                     child: RichText(
@@ -70,7 +67,6 @@ class EmptyOrError extends StatelessWidget {
                                 fontStyle: FontStyle.italic,
                                 fontSize: 16),
                           ),
-                          // TextSpan(text: text2),
                         ],
                       ),
                     ),

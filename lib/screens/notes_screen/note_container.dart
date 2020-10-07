@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
@@ -33,7 +34,6 @@ class NoteContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-//    print('note.colorIndex: ${note.colorIndex}'); //null?
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return GestureDetector(
@@ -45,9 +45,12 @@ class NoteContainer extends StatelessWidget {
                 ? _darkTheme
                     ? colorsDark[note.colorIndex]
                     : colorsLight[note.colorIndex]
-                : _darkTheme ? colorsDark[0] : colorsLight[0],
+                : _darkTheme
+                    ? colorsDark[0]
+                    : colorsLight[0],
             border: Border.all(
-                width: 2, color: _darkTheme ? Colors.white54 : Colors.black54),
+                width: 1.5,
+                color: _darkTheme ? Colors.white54 : Colors.black38),
             borderRadius: BorderRadius.circular(10.0)),
         child: Column(
           children: <Widget>[
@@ -57,13 +60,17 @@ class NoteContainer extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                       Expanded(
-                        child: Text(note.title,
+                        child: AutoSizeText(note.title,
+                            maxFontSize: 18,
+                            minFontSize: 16,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
                             style: GoogleFonts.getFont(note.fontFamily,
                                 color: _darkTheme
                                     ? darkThemeWords
                                     : lightThemeWords,
                                 fontSize: 18,
-                                fontWeight: FontWeight.w600)),
+                                fontWeight: FontWeight.w500)),
                       ),
                     ],
                   ),
@@ -73,17 +80,18 @@ class NoteContainer extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: <Widget>[
                       Expanded(
-                        child: Text(
+                        child: AutoSizeText(
                           note.description,
+                          maxFontSize: 16,
+                          minFontSize: 14,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 8,
                           style: GoogleFonts.getFont(
-                            // e.g. 'Crafty Girls',
                             note.fontFamily,
                             color:
                                 _darkTheme ? darkThemeWords : lightThemeWords,
                             fontSize: 16,
                           ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 7,
                         ),
                       ),
                       //visible: _showAll,
@@ -101,7 +109,6 @@ class NoteContainer extends StatelessWidget {
                       ],
                     ),
                   )
-//                : folder == null || folder.id == note.folderId
                 : Container(),
           ],
         ),

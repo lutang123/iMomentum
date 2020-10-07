@@ -25,7 +25,7 @@ class Strings {
   static const subtitle1 = 'Breathe life into your device.';
   static const inspirationFeature1 =
       'Inspiring photography with dynamic display.';
-  static const inspirationFeature2 = 'Positive concept with mantras';
+  static const inspirationFeature2 = 'Positive concept with mantras.';
   static const inspirationFeature3 = 'Timeless wisdom with daily quote.';
 
   /// Part 3
@@ -66,11 +66,11 @@ class Strings {
   static const privacyTap = ' Terms and Privacy Policy.';
 
   static const signInAnonymouslyWarning =
-      'Not sure whether to sign up? No problem, you can stay signed out and just explore! '
+      'Not sure whether to sign up? No problem, you can just explore! '
       '\n'
       '\n'
       'iMomentum kindly reminds you that when you choose Just Explore, you will '
-      'not have a user account, which means when you log out, or when you '
+      'not have a user account, which means when you log out, '
       'delete the app, or change device, you can not access your data again. '
       'You will also lose the benefit of syncing your data across multi platform.';
 
@@ -85,6 +85,8 @@ class Strings {
   static const fourth = "Add your today's focus here.";
   static const focusButtonTip =
       'Press here to start working on your task with our customizable Pomodoro Timer.';
+  static const deleteTaskWarning =
+      'Focus time associated with this task will also be deleted.';
 
   // TodoScreen when user haven't added any data
   static const String emptyTodoList =

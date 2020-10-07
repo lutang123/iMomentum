@@ -25,6 +25,12 @@ const Color lightThemeWords = Colors.black87;
 const Color darkThemeDivider = Colors.white38;
 const Color lightThemeDivider = Colors.black45;
 
+//calendar, todoList and pie chart,
+final Color darkThemeSurface = darkThemeNoPhotoColor.withOpacity(0.3);
+// final Color darkThemeSurface = Colors.black26;
+//used in TodoScreen for calendar and list, MyMantra and MyQuote
+final Color lightThemeSurface = Colors.white.withOpacity(0.7);
+
 // app bar
 const Color darkThemeAppBar = Colors.transparent;
 final Color lightThemeAppBar = lightThemeSurface;
@@ -38,12 +44,6 @@ final Color darkThemeDrawer = darkThemeSurface;
 // const Color darkThemeDrawer = Colors.black26;
 //used in EmptyContent in folder and notes screen, folder search bar and folder bottom row and folder container
 final Color lightThemeDrawer = lightThemeSurface;
-
-//calendar, todoList and pie chart,
-final Color darkThemeSurface = Colors.black.withOpacity(0.3);
-// final Color darkThemeSurface = Colors.black26;
-//used in TodoScreen for calendar and list, MyMantra and MyQuote
-final Color lightThemeSurface = Colors.white.withOpacity(0.7);
 
 ///use in all modal bottom
 const Color darkThemeAdd =

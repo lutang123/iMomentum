@@ -462,12 +462,12 @@ class _ImageGalleryState extends State<ImageGallery> {
 //    final appliedOwnPhotoNotifier =
 //        Provider.of<AppliedOwnPhotoNotifier>(context, listen: false);
     //save image changes
-    imageNotifier.setImage(ImagePath.fixedImageUrl);
+    imageNotifier.setImage(ImagePath.fixedImagePath);
     //change the randomOn value to false at the same time
     randomNotifier.setRandom(true);
 //    appliedOwnPhotoNotifier.setBoolOwnPhoto(true);
     //then save in shared preference
-    prefs.setString('imageUrl', ImagePath.fixedImageUrl);
+    prefs.setString('imageUrl', ImagePath.fixedImagePath);
     //save settings
     prefs.setBool('randomOn', true);
 

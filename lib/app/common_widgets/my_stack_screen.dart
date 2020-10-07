@@ -32,8 +32,10 @@ class _MyStackScreenState extends State<MyStackScreen> {
   Widget build(BuildContext context) {
     final randomNotifier = Provider.of<RandomNotifier>(context);
     bool _randomOn = (randomNotifier.getRandom() == true);
+
     final imageNotifier = Provider.of<ImageNotifier>(context);
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(

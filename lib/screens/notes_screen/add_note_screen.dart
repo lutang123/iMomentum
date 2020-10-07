@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/utils/format.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/models/folder.dart';
@@ -20,6 +19,7 @@ import 'package:share/share.dart';
 import 'package:flutter/widgets.dart';
 import 'font_picker.dart';
 import 'my_custom_icon.dart';
+import 'package:iMomentum/app/utils/extension_firstCaps.dart';
 
 class AddNoteScreen extends StatefulWidget {
   const AddNoteScreen({this.database, this.note, this.folder, this.folders});
@@ -46,6 +46,8 @@ class AddNoteScreenState extends State<AddNoteScreen> {
   bool isPinned;
   //must give an initial value
   Icon pinIcon = Icon(MyCustomIcon.pin_outline);
+
+  final FocusNode _node = FocusNode();
 
   Note get note => widget.note;
   Database get database => widget.database;
@@ -109,6 +111,12 @@ class AddNoteScreenState extends State<AddNoteScreen> {
   }
 
   @override
+  void dispose() {
+    _node.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
@@ -144,7 +152,6 @@ class AddNoteScreenState extends State<AddNoteScreen> {
   AppBar _buildAppBar() {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-
     return AppBar(
       backgroundColor: _darkTheme ? colorsDark[color] : colorsLight[color],
       automaticallyImplyLeading: false,
@@ -210,6 +217,41 @@ class AddNoteScreenState extends State<AddNoteScreen> {
     );
   }
 
+  TextFormField textFormFieldTitle(bool _darkTheme) {
+    return TextFormField(
+      initialValue: title,
+      focusNode: _node,
+      onEditingComplete: () => _node.nextFocus(),
+      keyboardType: TextInputType.multiline,
+      keyboardAppearance: _darkTheme ? Brightness.dark : Brightness.light,
+      maxLines: null,
+      // maxLength: 100,
+      style: titleStyle(_darkTheme),
+      onChanged: (value) {
+        if (note == null) {
+          if (value.isNotEmpty) {
+            setState(() {
+              _isEdited = true;
+            });
+            title = value.firstCaps; //we should add here
+          }
+        }
+        if (note != null) {
+          if (value != note.title && value.isNotEmpty) {
+            setState(() {
+              _isEdited = true;
+            });
+            title = value.firstCaps; //we should add here
+          }
+        }
+      },
+      // onSaved: (value) => title = value.firstCaps,
+      cursorColor: _darkTheme ? darkThemeButton : lightThemeButton,
+      decoration: InputDecoration.collapsed(
+          hintText: 'Title', hintStyle: titleHintStyle(_darkTheme)),
+    );
+  }
+
   TextFormField textFormFieldNote(bool _darkTheme) {
     return TextFormField(
       initialValue: description,
@@ -219,26 +261,31 @@ class AddNoteScreenState extends State<AddNoteScreen> {
       keyboardAppearance: _darkTheme ? Brightness.dark : Brightness.light,
       maxLines: null,
       style: noteStyle(_darkTheme),
-      onChanged: onChangedNote,
+
+      ///moved this into a function onChangedNote, it's not working
+      onChanged: (value) {
+        if (note == null) {
+          if (value.isNotEmpty) {
+            setState(() {
+              _isEdited = true;
+            });
+            description = value.firstCaps; //we should add here
+          }
+        }
+        if (note != null) {
+          if (value != note.description && value.isNotEmpty) {
+            setState(() {
+              _isEdited = true;
+            });
+            description = value.firstCaps; //we should add here
+          }
+        }
+      },
+      // onSaved: (value) => description = value.firstCaps,
       decoration: InputDecoration.collapsed(
         hintText: 'Note',
         hintStyle: noteHintStyle(_darkTheme),
       ),
-    );
-  }
-
-  TextFormField textFormFieldTitle(bool _darkTheme) {
-    return TextFormField(
-      initialValue: title,
-      keyboardType: TextInputType.multiline,
-      keyboardAppearance: _darkTheme ? Brightness.dark : Brightness.light,
-      maxLines: null,
-      style: titleStyle(_darkTheme),
-      onChanged: onChangedTitle,
-      // onSaved: (value) => title = value.firstCaps,
-      cursorColor: _darkTheme ? darkThemeButton : lightThemeButton,
-      decoration: InputDecoration.collapsed(
-          hintText: 'Title', hintStyle: titleHintStyle(_darkTheme)),
     );
   }
 
@@ -281,7 +328,6 @@ class AddNoteScreenState extends State<AddNoteScreen> {
   Widget _bottomRow() {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-
     return Container(
       margin: const EdgeInsets.only(top: 5.0),
       decoration: BoxDecoration(
@@ -379,45 +425,9 @@ class AddNoteScreenState extends State<AddNoteScreen> {
     );
   }
 
-  void onChangedTitle(value) {
-    if (note == null) {
-      if (value.isNotEmpty) {
-        setState(() {
-          _isEdited = true;
-        });
-        title = value.firstCaps; //we should add here
-      }
-    }
-
-    if (note != null) {
-      if (value != note.title && value.isNotEmpty) {
-        setState(() {
-          _isEdited = true;
-        });
-        title = value.firstCaps; //we should add here
-      }
-    }
-  }
-
-  void onChangedNote(value) {
-    if (note == null) {
-      if (value.isNotEmpty) {
-        setState(() {
-          _isEdited = true;
-        });
-        description = value.firstCaps; //we should add here
-      }
-    }
-
-    if (note != null) {
-      if (value != note.description && value.isNotEmpty) {
-        setState(() {
-          _isEdited = true;
-        });
-        description = value.firstCaps; //we should add here
-      }
-    }
-  }
+  ///this will not work
+  void onChangedTitle(value) {}
+  void onChangedNote(value) {}
 
   bool _pickerVisible = false;
   void _showPicker() {
@@ -468,9 +478,11 @@ class AddNoteScreenState extends State<AddNoteScreen> {
             fontFamily: fontFamily,
             isPinned: isPinned,
           );
+          print('hello note');
           //add newTodo to database
           // print('newNote.folderId in Add Note: ${newNote.folderId}'); //newNote.folderId in Add Note: 2020-09-27T16:07:31.578943
           await database.setNote(newNote);
+          print('saved');
         } on PlatformException catch (e) {
           PlatformExceptionAlertDialog(
             title: 'Operation failed',
