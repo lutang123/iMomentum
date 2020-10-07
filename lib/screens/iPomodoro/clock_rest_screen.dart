@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:iMomentum/app/common_widgets/my_round_button.dart';
-import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
 import 'package:iMomentum/app/models/data/rest_quote.dart';
 import 'package:iMomentum/app/models/todo.dart';
 import 'package:iMomentum/app/utils/extension_clockFmt.dart';
@@ -11,7 +10,6 @@ import 'package:iMomentum/app/utils/pages_routes.dart';
 import 'package:iMomentum/screens/home_screen/daily_quote.dart';
 import 'package:iMomentum/screens/iPomodoro/pomodoro_base_screen.dart';
 import 'package:iMomentum/screens/iPomodoro/rest_screen_bottom_quote.dart';
-import 'package:iMomentum/screens/iPomodoro/top_trans_row.dart';
 import 'clock_begin_screen.dart';
 import 'clock_timer.dart';
 import 'clock_mantra_quote_title.dart';
@@ -60,20 +58,23 @@ class _RestScreenState extends State<RestScreen>
   @override
   Widget build(BuildContext context) {
     return PomodoroBaseScreen(
-        topRow: PomodoroTopTransRow(),
-        titleWidget: PomodoroTitle(
-          title: 'Time to Rest',
-          subtitle: 'Come back in ${widget.restDuration.inMinutes} minutes',
-        ), //clear button//begin title
-        bigCircle: ClockTimer(
-          duration: _restDuration,
-          animationController: _animationController,
-          text1: _display,
-          text2: 'Rest',
-        ),
-        timerButton: timerButtonRow(),
-        bottomWidget: RestScreenBottomQuote(
-            state: _state, dailyQuote: dailyQuote, author: author));
+      leadingWidget: Container(),
+      actionWidget: Container(),
+      titleWidget: PomodoroTitle(
+        title: 'Time to Rest',
+        subtitle: 'Come back in ${widget.restDuration.inMinutes} minutes',
+      ), //clear button//begin title
+      bigCircle: ClockTimer(
+        duration: _restDuration,
+        animationController: _animationController,
+        text1: _display,
+        text2: 'Rest',
+      ),
+      timerButton: timerButtonRow(),
+      bottomWidget: Container(),
+      // RestScreenBottomQuote(
+      //     state: _state, dailyQuote: dailyQuote, author: author),
+    );
   }
 
   Padding timerButtonRow() {
@@ -137,7 +138,7 @@ class _RestScreenState extends State<RestScreen>
       if (_timer.isActive) return;
     }
     _timer = Timer.periodic(Duration(milliseconds: 10), (Timer t) {
-      // update display
+      /// update display
       if (mounted) {
         setState(() {
           var diff = (widget.restDuration - _stopwatch.elapsed);

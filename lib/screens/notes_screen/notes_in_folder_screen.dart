@@ -116,13 +116,13 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
     return pinnedNotes;
   }
 
-  int counter = 0;
-  void _onDoubleTap() {
-    setState(() {
-      ImagePath.randomImageUrl = '${ImagePath.randomImageUrlFirstPart}$counter';
-      counter++;
-    });
-  }
+  // int counter = 0;
+  // void _onDoubleTap() {
+  //   setState(() {
+  //     ImagePath.randomImageUrl = '${ImagePath.randomImageUrlFirstPart}$counter';
+  //     counter++;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -134,111 +134,102 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
-        // BuildPhotoView(
-        //   imageUrl:
-        //       _randomOn ? ImageUrl.randomImageUrl : imageNotifier.getImage(),
-        // ),
-        // ContainerLinearGradient(),
-        GestureDetector(
-          onDoubleTap: _onDoubleTap,
-          child: Scaffold(
-            // backgroundColor: Colors.transparent,
-            backgroundColor:
-                _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
-            body: SafeArea(
-              top: false,
-              child: StreamBuilder<List<Note>>(
-                stream: database
-                    .notesStream(), // print(database.todosStream());//Instance of '_MapStream<QuerySnapshot, List<TodoModel>>'
-                builder: (con, snapshot) {
-                  if (snapshot.hasData) {
-                    final List<Note> allNotes = snapshot.data;
-                    final List<Note> pinnedNotes = _getPinnedNote(allNotes);
-                    final List<Note> notPinnedNotes =
-                        _getNotPinnedNote(allNotes);
+        Scaffold(
+          // backgroundColor: Colors.transparent,
+          backgroundColor:
+              _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
+          body: SafeArea(
+            top: false,
+            child: StreamBuilder<List<Note>>(
+              stream: database
+                  .notesStream(), // print(database.todosStream());//Instance of '_MapStream<QuerySnapshot, List<TodoModel>>'
+              builder: (con, snapshot) {
+                if (snapshot.hasData) {
+                  final List<Note> allNotes = snapshot.data;
+                  final List<Note> pinnedNotes = _getPinnedNote(allNotes);
+                  final List<Note> notPinnedNotes = _getNotPinnedNote(allNotes);
 
-                    final List<Note> allNotesInThisFolder =
-                        _getNotesInThisFolder(allNotes, folder);
+                  final List<Note> allNotesInThisFolder =
+                      _getNotesInThisFolder(allNotes, folder);
 
-                    final _pinnedNotesInThisFolder =
-                        _getNotesInThisFolder(pinnedNotes, folder);
+                  final _pinnedNotesInThisFolder =
+                      _getNotesInThisFolder(pinnedNotes, folder);
 
-                    final _notPinnedNotesInThisFolder =
-                        _getNotesInThisFolder(notPinnedNotes, folder);
+                  final _notPinnedNotesInThisFolder =
+                      _getNotesInThisFolder(notPinnedNotes, folder);
 
-                    if (_notPinnedNotesInThisFolder.isNotEmpty ||
-                        _pinnedNotesInThisFolder.isNotEmpty) {
-                      return Stack(
-                        alignment: Alignment.bottomCenter,
-                        children: [
-                          Column(
-                            children: [
-                              _topRow(allNotesInThisFolder),
-                              Expanded(
-                                child: Opacity(
-                                  opacity: _notesOpacity,
-                                  child: CustomScrollView(
-                                    controller: _hideButtonController,
-                                    slivers: <Widget>[
-                                      _buildBoxAdaptorForPinned(
-                                          _pinnedNotesInThisFolder),
-                                      //this is for pinned notes
-                                      _buildNotesGrid(_pinnedNotesInThisFolder),
-                                      //this is just for the word 'OTHERS'
-                                      _pinnedNotesInThisFolder.length > 0
-                                          ? _buildBoxAdaptorForOthers(
-                                              _notPinnedNotesInThisFolder)
-                                          : SliverToBoxAdapter(
-                                              child: Container()),
-                                      //this is for not pinned notes.
-                                      _buildNotesGrid(
-                                          _notPinnedNotesInThisFolder),
-                                    ],
-                                  ),
+                  if (_notPinnedNotesInThisFolder.isNotEmpty ||
+                      _pinnedNotesInThisFolder.isNotEmpty) {
+                    return Stack(
+                      alignment: Alignment.bottomCenter,
+                      children: [
+                        Column(
+                          children: [
+                            _topRow(allNotesInThisFolder),
+                            Expanded(
+                              child: Opacity(
+                                opacity: _notesOpacity,
+                                child: CustomScrollView(
+                                  controller: _hideButtonController,
+                                  slivers: <Widget>[
+                                    _buildBoxAdaptorForPinned(
+                                        _pinnedNotesInThisFolder),
+                                    //this is for pinned notes
+                                    _buildNotesGrid(_pinnedNotesInThisFolder),
+                                    //this is just for the word 'OTHERS'
+                                    _pinnedNotesInThisFolder.length > 0
+                                        ? _buildBoxAdaptorForOthers(
+                                            _notPinnedNotesInThisFolder)
+                                        : SliverToBoxAdapter(
+                                            child: Container()),
+                                    //this is for not pinned notes.
+                                    _buildNotesGrid(
+                                        _notPinnedNotesInThisFolder),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
-                          _bottomRow(),
-                        ],
-                      );
-                    } else {
-                      //if notes are empty
-                      return Stack(
-                        alignment: Alignment.bottomCenter,
-                        children: [
-                          Column(
-                            children: [
-                              _topRow(allNotesInThisFolder),
-                              Spacer(),
-                              Center(
-                                  child: EmptyOrError(text: Strings.emptyNote)),
-                              Spacer() //empty content
-                            ],
-                          ),
-                          _bottomRow(),
-                        ],
-                      );
-                    }
-                  } else if (snapshot.hasError) {
-                    print(
-                        'snapshot.hasError in notes stream: ${snapshot.error.toString()}');
-                    return Column(
+                            ),
+                          ],
+                        ),
+                        _bottomRow(),
+                      ],
+                    );
+                  } else {
+                    //if notes are empty
+                    return Stack(
+                      alignment: Alignment.bottomCenter,
                       children: [
-                        //this must include, it shows folder name and go back button, only not include toggle button
-                        _topErrorRow(),
-                        Expanded(
-                            child: EmptyOrError(
-                                tips: Strings.textError,
-                                textTap: Strings.textErrorOnTap,
-                                //Todo contact us
-                                onTap: null)),
+                        Column(
+                          children: [
+                            _topRow(allNotesInThisFolder),
+                            Spacer(),
+                            Center(
+                                child: EmptyOrError(text: Strings.emptyNote)),
+                            Spacer() //empty content
+                          ],
+                        ),
+                        _bottomRow(),
                       ],
                     );
                   }
-                  return Center(child: CircularProgressIndicator());
-                },
-              ),
+                } else if (snapshot.hasError) {
+                  print(
+                      'snapshot.hasError in notes stream: ${snapshot.error.toString()}');
+                  return Column(
+                    children: [
+                      //this must include, it shows folder name and go back button, only not include toggle button
+                      _topErrorRow(),
+                      Expanded(
+                          child: EmptyOrError(
+                              tips: Strings.textError,
+                              textTap: Strings.textErrorOnTap,
+                              //Todo contact us
+                              onTap: null)),
+                    ],
+                  );
+                }
+                return Center(child: CircularProgressIndicator());
+              },
             ),
           ),
         ),
@@ -265,7 +256,7 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
         children: <Widget>[
           //this is to make top bar color cover all
           SizedBox(
-            height: 35,
+            height: 30,
             child: Container(
               // color: _darkTheme ? darkThemeDrawer : lightThemeAppBar,
               color:
@@ -294,7 +285,7 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
                             ? MyCustomIcon.menu_outline
                             : MyCustomIcon.th_large_outline,
                         size: 20,
-                        color: _darkTheme ? Colors.white : lightThemeButton,
+                        color: _darkTheme ? darkThemeButton : lightThemeButton,
                       ),
                       onPressed: () {
                         setState(() {

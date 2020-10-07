@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'dart:async';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:iMomentum/app/common_widgets/my_round_button.dart';
-import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/models/duration_model.dart';
 import 'package:iMomentum/app/models/todo.dart';
@@ -12,7 +11,6 @@ import 'package:iMomentum/app/services/calendar_bloc.dart';
 import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/utils/pages_routes.dart';
 import 'package:iMomentum/screens/iPomodoro/pomodoro_base_screen.dart';
-import 'package:iMomentum/screens/iPomodoro/top_trans_row.dart';
 import 'package:provider/provider.dart';
 import 'clock_bottom.dart';
 import 'clock_completion_screen.dart';
@@ -40,10 +38,8 @@ class ClockTimerScreen extends StatefulWidget {
 class _ClockTimerScreenState extends State<ClockTimerScreen>
     with SingleTickerProviderStateMixin {
   AnimationController _animationController;
-
   Stopwatch _stopwatch;
   Timer _timer;
-
   // This string that is displayed as the countdown timer
   String _display = '';
 
@@ -63,7 +59,8 @@ class _ClockTimerScreenState extends State<ClockTimerScreen>
   @override
   Widget build(BuildContext context) {
     return PomodoroBaseScreen(
-      topRow: PomodoroTopTransRow(),
+      leadingWidget: Container(),
+      actionWidget: Container(),
       titleWidget: PomodoroTitle(
         title: 'Time to focus',
         subtitle: 'Break your work into intervals',
@@ -75,7 +72,8 @@ class _ClockTimerScreenState extends State<ClockTimerScreen>
         text2: 'Focus',
       ),
       timerButton: timerButtonRow(),
-      bottomWidget: ClockBottomToday(text: '${widget.todo.title}'),
+      // bottomWidget: ClockBottomToday(text: '${widget.todo.title}'),
+      bottomWidget: Container(),
     );
   }
 

@@ -149,7 +149,7 @@ class _UserScreenState extends State<UserScreen> {
       onFieldSubmitted: _onSubmittedName,
       keyboardAppearance: _darkTheme ? Brightness.dark : Brightness.light,
       cursorColor: _darkTheme ? darkThemeWords : lightThemeWords,
-      maxLength: 20,
+      maxLength: 15,
       decoration: InputDecoration(
         focusedBorder: UnderlineInputBorder(
           borderSide: BorderSide(

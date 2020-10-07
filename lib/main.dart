@@ -194,6 +194,7 @@ void main() async {
 // 2. Transparant Statusbar
   //TODO
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    systemNavigationBarColor: Colors.transparent, // navigation bar color
     statusBarColor: Colors.transparent,
   ));
 //3. Show Statusbar

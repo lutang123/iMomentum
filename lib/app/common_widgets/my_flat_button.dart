@@ -7,7 +7,7 @@ class MyFlatButton extends StatelessWidget {
     @required this.text,
     //this is the design that can be best used on image
     this.color = Colors.white,
-    this.bkgdColor = Colors.black12,
+    this.bkgdColor = Colors.transparent,
   });
 
   final VoidCallback onPressed;
@@ -24,7 +24,7 @@ class MyFlatButton extends StatelessWidget {
       color: bkgdColor,
       onPressed: onPressed,
       child: Padding(
-        padding: const EdgeInsets.all(5.0),
+        padding: const EdgeInsets.all(8.0),
         child: Text(
           text,
           style: GoogleFonts.varelaRound(

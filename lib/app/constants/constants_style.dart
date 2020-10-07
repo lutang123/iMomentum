@@ -1,63 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 
-/// Gradient
-const KBackgroundGradient = LinearGradient(
-  colors: [
-    Colors.transparent, //we can not add with opacity
-    Colors.black12,
-  ],
-  stops: [0.5, 1.0],
-  begin: Alignment.topCenter,
-  end: Alignment.bottomCenter,
-  tileMode: TileMode.repeated,
-);
-
-/// InputDecoration
-///in HomeTextField (home and name)
-const KHomeTextFieldInputDecoration = InputDecoration(
-  focusedBorder: UnderlineInputBorder(
-    borderSide: BorderSide(color: Colors.white),
-  ),
-  enabledBorder: UnderlineInputBorder(
-      borderSide: BorderSide(
-    color: Colors.white,
-  )),
-
-  ///validator can't show when over the max length
-  // counterText: "",
-);
-
-///in AddTodo date
-const KTransparentInputDecoration = InputDecoration(
-  focusedBorder:
-      UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
-  enabledBorder:
-      UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
-);
-
-///in pomodoro screen
-const KTextFieldInputDecorationLight = InputDecoration(
-  focusedBorder: UnderlineInputBorder(
-    borderSide: BorderSide(color: lightThemeDivider),
-  ),
-  enabledBorder: UnderlineInputBorder(
-      borderSide: BorderSide(
-    color: lightThemeDivider,
-  )),
-  // counterText: "",
-);
-const KTextFieldInputDecorationDark = InputDecoration(
-  focusedBorder: UnderlineInputBorder(
-    borderSide: BorderSide(color: darkThemeDivider),
-  ),
-  enabledBorder: UnderlineInputBorder(
-      borderSide: BorderSide(
-    color: darkThemeDivider,
-  )),
-  // counterText: "",
-);
-
 /// TextStyle
 ///
 /// for landing screen
@@ -154,7 +97,7 @@ const KHomeQuestion =
     TextStyle(color: Colors.white, fontSize: 33.0, fontWeight: FontWeight.bold);
 
 const KHomeGoodNight =
-    TextStyle(color: Colors.white, fontSize: 30.0, fontWeight: FontWeight.bold);
+    TextStyle(color: Colors.white, fontSize: 28.0, fontWeight: FontWeight.bold);
 
 const KHomeTextField =
     TextStyle(color: Colors.white, fontSize: 25.0, fontFamily: "varelaRound");
@@ -256,3 +199,71 @@ const KQuoteDot = TextStyle(
 
 const KEmptyContent = TextStyle(
     fontSize: 18, fontStyle: FontStyle.italic, fontWeight: FontWeight.w400);
+
+/// Gradient
+const KBackgroundGradient = LinearGradient(
+  colors: [
+    Colors.transparent, //we can not add with opacity
+    Colors.black12,
+  ],
+  stops: [0.5, 1.0],
+  begin: Alignment.topCenter,
+  end: Alignment.bottomCenter,
+  tileMode: TileMode.repeated,
+);
+
+const KBackgroundGradientDark = LinearGradient(
+  colors: [
+    Colors.black12, //we can not add with opacity
+    Colors.black26,
+  ],
+  stops: [0.5, 1.0],
+  begin: Alignment.topCenter,
+  end: Alignment.bottomCenter,
+  tileMode: TileMode.repeated,
+);
+
+/// InputDecoration
+///in HomeTextField (home and name)
+const KHomeTextFieldInputDecoration = InputDecoration(
+  focusedBorder: UnderlineInputBorder(
+    borderSide: BorderSide(color: Colors.white),
+  ),
+  enabledBorder: UnderlineInputBorder(
+      borderSide: BorderSide(
+    color: Colors.white,
+  )),
+
+  ///validator can't show when over the max length
+  // counterText: "",
+);
+
+///in AddTodo date
+const KTransparentInputDecoration = InputDecoration(
+  focusedBorder:
+      UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
+  enabledBorder:
+      UnderlineInputBorder(borderSide: BorderSide(color: Colors.transparent)),
+);
+
+///in pomodoro screen
+const KTextFieldInputDecorationLight = InputDecoration(
+  focusedBorder: UnderlineInputBorder(
+    borderSide: BorderSide(color: lightThemeDivider),
+  ),
+  enabledBorder: UnderlineInputBorder(
+      borderSide: BorderSide(
+    color: lightThemeDivider,
+  )),
+  // counterText: "",
+);
+const KTextFieldInputDecorationDark = InputDecoration(
+  focusedBorder: UnderlineInputBorder(
+    borderSide: BorderSide(color: darkThemeDivider),
+  ),
+  enabledBorder: UnderlineInputBorder(
+      borderSide: BorderSide(
+    color: darkThemeDivider,
+  )),
+  // counterText: "",
+);

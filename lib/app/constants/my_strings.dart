@@ -80,7 +80,7 @@ class Strings {
   // Home screen tip on showcase
   static const first = 'Tap on weather information to show details.';
   static const second =
-      'Double tap anywhere on the screen to change the photo.';
+      'Double tap anywhere on the screen to change the photo. You can also change photo from settings.';
   static const third = 'Tap on your name to edit.';
   static const fourth = "Add your today's focus here.";
   static const focusButtonTip =
@@ -115,7 +115,10 @@ class Strings {
 
   // Folder/Note Screen
   static const emptyNoteAndFolder =
-      'Any thoughts or new ideas you want to write? Tap on the plus button to add a new note, or create a folder to add note in a specific folder.';
+      'Any thoughts or new ideas you want to write? '
+      '\n'
+      '\n'
+      'Tap on the plus button to add a new note, or create a folder to add note in a specific folder.';
 
   static const tipsOnFolderScreen =
       'The plus button on Folders screen will add note to the default "Notes" folder. You can also create your own folders and tap on the folder to read or add notes. '
@@ -144,7 +147,7 @@ class Strings {
       'When you add your own mantras, your mantras will show on Home screen every time after you enter a focused task. '
       '\n'
       '\n'
-      'Your most recently added/edited one will show first, and you can swipe right or left to view different ones from Home screen, and tap on the mantra to edit.';
+      'Your most recently added/edited one will show as the first one, and you can swipe right or left to view different ones from Home screen, and tap on the mantra to edit.';
 
   // Quote Screen
   static const textQuote1 = 'Get inspired with timeless wisdom.'
@@ -156,10 +159,10 @@ class Strings {
       'Personalize your experience by adding your own quotes.';
 
   static const tipsOnQuoteScreen =
-      'When you add your own quotes, your quotes will show on Home screen. '
+      'When you add your own quotes, your quotes will replace default daily quote on Home screen. '
       '\n'
       '\n'
-      'Your most recently added/edited one will show first, and you can swipe right or left  to view different ones from Home screen, and tap on the quote to edit.';
+      'Your most recently added/edited one will show as the first one, and you can swipe right or left to view different ones from Home screen, and tap on the quote to edit.';
 
   // For all error:
   ///Todo: add contact us

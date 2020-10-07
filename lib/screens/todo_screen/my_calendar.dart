@@ -120,20 +120,20 @@ class MyCalendar extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: _darkTheme
                         ? calendarController.isSelected(today)
-                            ? darkThemeCalendarSelectedDay
-                            : darkThemeCalendarSelectedDay
+                            ? darkThemeButton
+                            : darkThemeButton
                         : calendarController.isSelected(today)
-                            ? lightThemeCalendarSelectedDay
-                            : lightThemeCalendarSelectedDay,
+                            ? lightThemeButton
+                            : lightThemeButton,
                     borderRadius: BorderRadius.circular(50.0),
                     border: Border.all(
                       color: _darkTheme
                           ? calendarController.isSelected(today)
-                              ? darkThemeCalendarSelectedDay
-                              : darkThemeCalendarSelectedDay
+                              ? darkThemeButton
+                              : darkThemeButton
                           : calendarController.isSelected(today)
-                              ? lightThemeCalendarSelectedDay
-                              : lightThemeCalendarSelectedDay,
+                              ? lightThemeButton
+                              : lightThemeButton,
                       width: 2.0,
                     ),
                   ),
@@ -152,9 +152,7 @@ class MyCalendar extends StatelessWidget {
                     color: Colors.transparent,
                     borderRadius: BorderRadius.circular(50.0),
                     border: Border.all(
-                      color: _darkTheme
-                          ? darkThemeCalendarSelectedDay
-                          : lightThemeCalendarSelectedDay,
+                      color: _darkTheme ? darkThemeButton : lightThemeButton,
                       width: 2.0,
                     ),
                   ),
@@ -164,9 +162,8 @@ class MyCalendar extends StatelessWidget {
                       '${date.day}',
                       style: TextStyle(
                           fontSize: 16,
-                          color: _darkTheme
-                              ? darkThemeCalendarSelectedDay
-                              : lightThemeCalendarSelectedDay),
+                          color:
+                              _darkTheme ? darkThemeButton : lightThemeButton),
                     ),
                   ));
             },
@@ -174,13 +171,7 @@ class MyCalendar extends StatelessWidget {
               final children = <Widget>[];
 
               if (events.isNotEmpty || holidays.isNotEmpty) {
-                children.add(
-//
-//                calendarController.isSelected(date)
-//                ? Positioned(right: 1, bottom: 1, child: Container())
-//                :
-//
-                    Positioned(
+                children.add(Positioned(
                   bottom: 5, //widget.calendarStyle.markersPositionBottom
                   ///doesn't have to be this complicated, just to leave as notes on how to build a list
                   child: Row(mainAxisSize: MainAxisSize.min, children: [
@@ -189,13 +180,17 @@ class MyCalendar extends StatelessWidget {
                         ? holidays
                             .take(1) //widget.calendarStyle.markersMaxAmount
                             .map((event) => _buildDefaultNotDoneMarker(
-                                date, holidays, calendarController, context))
+                                _darkTheme,
+                                date,
+                                holidays,
+                                calendarController,
+                                context))
                             .toList()[0]
                         //And if all done, and we have a list, we show done marker only, and if nothing, we show nothing.
                         : events.length > 0
                             ? events
                                 .take(1) //widget.calendarStyle.markersMaxAmount
-                                .map((event) => _buildDefaultMarker(
+                                .map((event) => _buildDefaultMarker(_darkTheme,
                                     date, events, calendarController, context))
                                 .toList()[0]
                             : Container(),
@@ -212,10 +207,8 @@ class MyCalendar extends StatelessWidget {
     );
   }
 
-  Widget _buildDefaultMarker(DateTime date, List events,
+  Widget _buildDefaultMarker(bool _darkTheme, DateTime date, List events,
       CalendarController calendarController, BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Container(
       width: 8.0,
       height: 8.0,
@@ -227,10 +220,8 @@ class MyCalendar extends StatelessWidget {
     );
   }
 
-  Widget _buildDefaultNotDoneMarker(DateTime date, List events,
+  Widget _buildDefaultNotDoneMarker(bool _darkTheme, DateTime date, List events,
       CalendarController calendarController, BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Container(
       width: 8.0,
       height: 8.0,
@@ -241,62 +232,4 @@ class MyCalendar extends StatelessWidget {
       ),
     );
   }
-
-//  Widget _buildDoneMarker(DateTime date, List events,
-//      CalendarController calendarController, BuildContext context) {
-//    return AnimatedContainer(
-//      duration: const Duration(milliseconds: 300),
-//      decoration: BoxDecoration(
-//          shape: BoxShape.circle,
-//          color:
-////        calendarController.isSelected(date)
-////            ?
-////            :
-//
-//              calendarController.isToday(date)
-//                  ? Colors.brown[300]
-//                  : Colors.brown[500]),
-//      width: 16.0,
-//      height: 16.0,
-//      child: Center(
-//        child: Text(
-//          '${events.length}',
-//          style: TextStyle().copyWith(
-//            color: Colors.white,
-//            fontSize: 12.0,
-//          ),
-//        ),
-//      ),
-//    );
-//  }
-//
-//  Widget _buildNotDoneMarker(
-//      DateTime date, List events, CalendarController calendarController) {
-//    return AnimatedContainer(
-//      duration: const Duration(milliseconds: 300),
-//      decoration: BoxDecoration(
-//          shape: BoxShape.circle,
-//          color:
-////        calendarController.isSelected(date)
-////            ?
-////            :
-//
-//              calendarController.isToday(date)
-//                  ? Colors.deepOrange[300]
-//                  : Colors.deepOrange[500]),
-//      width: 16.0,
-//      height: 16.0,
-//      child: Center(
-//        child: Text(
-//          '${events.length}',
-//          style: TextStyle().copyWith(
-//            color: Colors.white,
-//            fontSize: 12.0,
-//          ),
-//        ),
-//      ),
-//    );
-//  }
-
-//
 }

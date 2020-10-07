@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'animated_line_chart/animated_line_chart.dart';
-import 'animated_line_chart/line_chart.dart';
+import 'animated_line_chart.dart';
+import 'line_chart.dart';
 
 class TodayLineChart extends StatefulWidget {
   @override

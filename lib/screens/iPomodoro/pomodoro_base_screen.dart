@@ -1,25 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:iMomentum/app/common_widgets/my_sizedbox.dart';
 import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
-import 'package:iMomentum/app/constants/constants_style.dart';
-import 'package:iMomentum/app/constants/theme.dart';
-import 'package:iMomentum/app/models/todo.dart';
-import 'package:iMomentum/app/utils/extension_clockFmt.dart';
-import 'package:iMomentum/app/services/firestore_service/database.dart';
-import 'package:iMomentum/app/services/multi_notifier.dart';
-import 'package:iMomentum/app/utils/pages_routes.dart';
-import 'package:iMomentum/app/utils/top_sheet.dart';
-import 'package:iMomentum/screens/iPomodoro/top_sheet_pomodoro_info.dart';
-import 'package:provider/provider.dart';
-import 'clock_bottom.dart';
-import 'clock_start.dart';
-import 'clock_timer_screen.dart';
-import 'clock_mantra_quote_title.dart';
 
 //https://momentumdash.com/blog/pomodoro-timer
 
 class PomodoroBaseScreen extends StatelessWidget {
-  final Widget topRow;
+  final bool hasLeading;
+  final Widget leadingWidget;
+  final Widget actionWidget;
   final Widget titleWidget;
   final Widget bigCircle;
   final Widget timerButton;
@@ -27,7 +17,9 @@ class PomodoroBaseScreen extends StatelessWidget {
 
   const PomodoroBaseScreen(
       {Key key,
-      this.topRow,
+      this.hasLeading = false,
+      this.leadingWidget,
+      this.actionWidget,
       this.titleWidget,
       this.bigCircle,
       this.timerButton,
@@ -40,30 +32,41 @@ class PomodoroBaseScreen extends StatelessWidget {
     return MyStackScreen(
       child: Scaffold(
         backgroundColor: Colors.transparent,
+        appBar: buildAppBar(),
         body: SingleChildScrollView(
           child: SafeArea(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                SizedBox(
-                  height: 40,
-                  child: Center(child: topRow),
-                ),
-                SizedBox(height: 20),
+                PomodoroTopSizedBox(), // 10 : 0
                 titleWidget,
+                PomodoroMiddleSizedBox(), // 30 : 20 : 10
                 Container(
                   height: width,
                   width: width,
                   child: bigCircle,
                 ),
                 timerButton,
-                SizedBox(height: 10),
-                bottomWidget,
+                PomodoroBottomSizedBox(), // 30 : 15 : 0
+                bottomWidget, //this already has 15 padding
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  AppBar buildAppBar() {
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0.0,
+      brightness: Brightness.dark,
+      automaticallyImplyLeading: hasLeading,
+      leading: leadingWidget,
+      actions: [
+        actionWidget,
+      ],
     );
   }
 }

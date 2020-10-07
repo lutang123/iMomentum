@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
-import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
+import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
 import 'package:iMomentum/app/common_widgets/setting_switch.dart';
 import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/constants/theme.dart';
@@ -11,11 +10,9 @@ import 'package:iMomentum/app/models/quote_model.dart';
 import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/home_drawer/top_title.dart';
-import 'package:iMomentum/screens/iPomodoro/clock_mantra_quote_title.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:iMomentum/app/constants/theme.dart';
 
 class MoreSettingScreen extends StatefulWidget {
   final Database database;
@@ -67,109 +64,93 @@ class _MoreSettingScreenState extends State<MoreSettingScreen> {
     final quoteNotifier = Provider.of<QuoteNotifier>(context);
     bool _quoteOn = quoteNotifier.getQuote();
 
-    return Stack(
-      fit: StackFit.expand,
-      children: <Widget>[
-        BuildPhotoView(
-          imageUrl:
-              _randomOn ? ImagePath.randomImageUrl : imageNotifier.getImage(),
-        ),
-        ContainerLinearGradient(),
-        GestureDetector(
-          onDoubleTap: _onDoubleTap,
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: SafeArea(
-              bottom: false,
-              child: Column(
-                children: [
-                  Expanded(
-                    child: CustomizedContainerNew(
-                      color: _darkTheme ? darkThemeSurface : lightThemeSurface,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: <Widget>[
-                            _topRow(),
-                            SettingSwitch(
-                              size: 20,
-                              icon: FontAwesomeIcons.adjust,
-                              title: 'Dark Theme',
-                              value: _darkTheme,
-                              onChanged: (val) {
-                                _darkTheme = val;
-                                _onThemeChanged(val, themeNotifier);
-                              },
-                            ),
-                            StreamBuilder<List<MantraModel>>(
-                                stream: widget.database
-                                    .mantrasStream(), //print: flutter: Instance of '_MapStream<List<TodoDuration>, dynamic>'
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasData) {
-                                    final List<MantraModel> mantras = snapshot
-                                        .data; //print('x: $entries'); //x: [Instance of 'TodoDuration', Instance of 'TodoDuration']
-                                    return Column(
-                                      children: [
-                                        SettingSwitch(
-                                            size: 20,
-                                            icon: FontAwesomeIcons.user,
-                                            title: 'Apply Your Own Mantras',
-                                            // isThreeLine: true,
-                                            // subtitle:
-                                            //     'Only available after adding your own mantras.',
-                                            value: mantras.length > 0
-                                                ? _mantraOn
-                                                : false,
-                                            onChanged: (val) {
-                                              _mantraOn = val;
-                                              onMantraChanged(
-                                                  val, mantraNotifier);
-                                            }),
-                                        // Text(
-                                        //     'Only available after adding your own mantras.')
-                                      ],
-                                    );
-                                  } else if (snapshot.hasError) {
-                                    return Container();
-                                  }
-                                  return Center(
-                                      child: CircularProgressIndicator());
-                                }),
-                            StreamBuilder<List<QuoteModel>>(
-                                stream: widget.database
-                                    .quotesStream(), //print: flutter: Instance of '_MapStream<List<TodoDuration>, dynamic>'
-                                builder: (context, snapshot) {
-                                  if (snapshot.hasData) {
-                                    final List<QuoteModel> quotes = snapshot
-                                        .data; //print('x: $entries'); //x: [Instance of 'TodoDuration', Instance of 'TodoDuration']
-                                    return SettingSwitch(
+    return MyStackScreen(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          bottom: false,
+          child: Column(
+            children: [
+              Expanded(
+                child: CustomizedContainerNew(
+                  color: _darkTheme ? darkThemeSurface : lightThemeSurface,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: <Widget>[
+                        _topRow(),
+                        SettingSwitch(
+                          size: 20,
+                          icon: FontAwesomeIcons.adjust,
+                          title: 'Dark Theme',
+                          value: _darkTheme,
+                          onChanged: (val) {
+                            _darkTheme = val;
+                            _onThemeChanged(val, themeNotifier);
+                          },
+                        ),
+                        StreamBuilder<List<MantraModel>>(
+                            stream: widget.database
+                                .mantrasStream(), //print: flutter: Instance of '_MapStream<List<TodoDuration>, dynamic>'
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                final List<MantraModel> mantras = snapshot
+                                    .data; //print('x: $entries'); //x: [Instance of 'TodoDuration', Instance of 'TodoDuration']
+                                return Column(
+                                  children: [
+                                    SettingSwitch(
                                         size: 20,
                                         icon: FontAwesomeIcons.user,
-                                        title: 'Apply Your Own Quote',
-                                        value: quotes.length > 0
-                                            ? _quoteOn
+                                        title: 'Apply Your Own Mantras',
+                                        // isThreeLine: true,
+                                        // subtitle:
+                                        //     'Only available after adding your own mantras.',
+                                        value: mantras.length > 0
+                                            ? _mantraOn
                                             : false,
                                         onChanged: (val) {
-                                          _quoteOn = val;
-                                          onQuoteChanged(val, quoteNotifier);
-                                        });
-                                  } else if (snapshot.hasError) {
-                                    return Container();
-                                  }
-                                  return Center(
-                                      child: CircularProgressIndicator());
-                                }),
-                          ],
-                        ),
-                      ),
+                                          _mantraOn = val;
+                                          onMantraChanged(val, mantraNotifier);
+                                        }),
+                                    // Text(
+                                    //     'Only available after adding your own mantras.')
+                                  ],
+                                );
+                              } else if (snapshot.hasError) {
+                                return Container();
+                              }
+                              return Center(child: CircularProgressIndicator());
+                            }),
+                        StreamBuilder<List<QuoteModel>>(
+                            stream: widget.database
+                                .quotesStream(), //print: flutter: Instance of '_MapStream<List<TodoDuration>, dynamic>'
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                final List<QuoteModel> quotes = snapshot
+                                    .data; //print('x: $entries'); //x: [Instance of 'TodoDuration', Instance of 'TodoDuration']
+                                return SettingSwitch(
+                                    size: 20,
+                                    icon: FontAwesomeIcons.user,
+                                    title: 'Apply Your Own Quote',
+                                    value: quotes.length > 0 ? _quoteOn : false,
+                                    onChanged: (val) {
+                                      _quoteOn = val;
+                                      onQuoteChanged(val, quoteNotifier);
+                                    });
+                              } else if (snapshot.hasError) {
+                                return Container();
+                              }
+                              return Center(child: CircularProgressIndicator());
+                            }),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
-        )
-      ],
+        ),
+      ),
     );
   }
 

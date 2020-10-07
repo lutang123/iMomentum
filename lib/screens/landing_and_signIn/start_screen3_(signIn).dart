@@ -144,22 +144,19 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
             key: _scaffoldKey,
             appBar: AppBar(
               backgroundColor: Colors.transparent,
-              leading: Padding(
-                padding: const EdgeInsets.only(left: 30.0),
-                child: IconButton(
-                    icon: Icon(Icons.arrow_back_ios, color: Colors.white),
-                    onPressed: () => Navigator.of(context).pushReplacement(
-                          PageRoutes.fade(
-                              () => StartScreen2(name: userNameFinal)),
-                        )),
-              ),
+              leading: IconButton(
+                  icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+                  onPressed: () => Navigator.of(context).pushReplacement(
+                        PageRoutes.fade(
+                            () => StartScreen2(name: userNameFinal)),
+                      )),
               elevation: 0.0,
               actions: [
-                FlatButton.icon(
-                    label: Text(
-                      Strings.whySignIn,
-                      style: KTopFlatButtonText,
-                    ),
+                IconButton(
+                    // label: Text(
+                    //   Strings.whySignIn,
+                    //   style: KTopFlatButtonText,
+                    // ),
                     icon: Icon(Icons.info_outline, color: topFlatButton),
                     onPressed: _showTopSheet),
               ],
@@ -264,18 +261,27 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
               text: model.primaryButtonText,
               onPressed: () => _submit(context),
               color: lightThemeButton,
-              bkgdColor: lightThemeAppBar,
+              // bkgdColor: lightThemeAppBar,
             ),
             Row(
               children: [
                 Flexible(
-                  child: FlatButton(
-                    key: Key('secondary-button'),
-                    child: Text(model.secondaryButtonText,
-                        style: KSignInSecondButton),
-                    onPressed: () =>
-                        _updateFormType(model.secondaryActionFormType),
+                  child:
+                      // FlatButton(
+                      //   key: Key('secondary-button'),
+                      //   child:
+
+                      InkWell(
+                    onTap: () => _updateFormType(model.secondaryActionFormType),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Text(model.secondaryButtonText,
+                          style: KSignInSecondButton),
+                    ),
                   ),
+                  //   onPressed: () =>
+                  //       _updateFormType(model.secondaryActionFormType),
+                  // ),
                 ),
               ],
             ),
@@ -283,13 +289,23 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
               Row(
                 children: [
                   Flexible(
-                    child: FlatButton(
-                      key: Key('tertiary-button'),
-                      child: Text(StringsSignIn.forgotPasswordQuestion,
-                          style: KSignInSecondButton),
-                      onPressed: () => _updateFormType(
+                    child:
+                        // FlatButton(
+                        //   key: Key('tertiary-button'),
+                        //   child:
+                        InkWell(
+                      onTap: () => _updateFormType(
                           EmailPasswordSignInFormType.forgotPassword),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Text(StringsSignIn.forgotPasswordQuestion,
+                            style: KSignInSecondButton),
+                      ),
                     ),
+
+                    //   onPressed: () => _updateFormType(
+                    //       EmailPasswordSignInFormType.forgotPassword),
+                    // ),
                   ),
                 ],
               ),

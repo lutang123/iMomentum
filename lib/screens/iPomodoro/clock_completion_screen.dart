@@ -3,6 +3,7 @@ import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/my_tooltip.dart';
 import 'package:iMomentum/app/constants/theme.dart';
+import 'package:iMomentum/app/models/data/rest_quote.dart';
 import 'package:iMomentum/app/utils/format.dart';
 import 'package:iMomentum/app/common_widgets/my_round_button.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
@@ -13,14 +14,17 @@ import 'package:iMomentum/app/services/calendar_bloc.dart';
 import 'package:iMomentum/app/services/daily_todos_details.dart';
 import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
+import 'package:iMomentum/screens/home_screen/daily_quote.dart';
 import 'package:iMomentum/screens/iPomodoro/pomodoro_base_screen.dart';
+import 'package:iMomentum/screens/iPomodoro/rest_screen_bottom_quote.dart';
 import 'package:provider/provider.dart';
 import '../../app/utils/pages_routes.dart';
-import 'clock_bottom.dart';
 import 'clock_rest_screen.dart';
 import 'clock_begin_screen.dart';
 import 'clock_start.dart';
 import 'clock_mantra_quote_title.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class CompletionScreen extends StatefulWidget {
   CompletionScreen(
@@ -48,34 +52,55 @@ class _CompletionScreenState extends State<CompletionScreen> {
   @override
   void initState() {
     _restDurationInMin = widget.restDuration.inMinutes;
+    _fetchQuote();
     super.initState();
+  }
+
+  int lengthLimit;
+  void getLengthLimit(double height) {
+    if (height >= 850) {
+      lengthLimit = 140;
+    } else if ((height < 850) && (height > 700)) {
+      lengthLimit = 120;
+    } else if (height < 700) {
+      lengthLimit = 100;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final bloc = Provider.of<CalendarBloc>(context, listen: false);
+    double height = MediaQuery.of(context).size.height;
+    getLengthLimit(height);
+
     return PomodoroBaseScreen(
-      topRow: Opacity(
-        opacity: _topOpacity,
-        child: topRow(bloc),
-      ),
-      titleWidget: Opacity(
-        opacity: _topOpacity,
-        child: PomodoroTitle(
-            title: _congrats,
-            subtitle:
-                'Your have stayed focused for ${widget.duration.inMinutes} minutes.'),
-      ),
-      bigCircle: ClockStart(
-        text1: Duration(minutes: _restDurationInMin).clockFmt(),
-        text2: 'Take a break',
-        height: 15,
-        onPressed: _play,
-        onPressedEdit: () => showEditDialog(),
-      ),
-      timerButton: Container(),
-      bottomWidget: ClockBottomToday(text: '${widget.todo.title}'),
-    );
+        leadingWidget: IconButton(
+          onPressed: _clearButton,
+          icon: Icon(Icons.arrow_back_ios, size: 30),
+          color: Colors.white,
+        ),
+        actionWidget: buildStreamBuilder(bloc),
+        titleWidget: Opacity(
+          opacity: _topOpacity,
+          child: PomodoroTitle(
+              title: _congrats,
+              subtitle:
+                  'Your have stayed focused for ${widget.duration.inMinutes} minutes.'),
+        ),
+        bigCircle: ClockStart(
+          text1: Duration(minutes: _restDurationInMin).clockFmt(),
+          text2: 'Take a break',
+          height: 15,
+          onPressed: _play,
+          onPressedEdit: () => showEditDialog(),
+        ),
+        timerButton: Container(),
+        bottomWidget: RestScreenBottomQuote(
+          state: _state,
+          dailyQuote: dailyQuote,
+          author: author,
+          lengthLimit: lengthLimit,
+        ));
   }
 
   Padding topRow(CalendarBloc bloc) {
@@ -164,6 +189,7 @@ class _CompletionScreenState extends State<CompletionScreen> {
 
   final _formKey = GlobalKey<FormState>();
   bool _isDifferentLength = false;
+
   void showEditDialog() async {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
@@ -356,5 +382,45 @@ class _CompletionScreenState extends State<CompletionScreen> {
     )..show(context).then((value) => setState(() {
           _topOpacity = 1.0;
         }));
+  }
+
+  QuoteLoadingState _state = QuoteLoadingState.NOT_DOWNLOADED;
+  String dailyQuote;
+  String author;
+
+//http://quotes.rest/qod/categories.json
+  Future<void> _fetchQuote() async {
+    setState(() {
+      _state = QuoteLoadingState.DOWNLOADING;
+    });
+    try {
+      final response = await http
+
+          ///this link can only use 10 times/hours
+//          .get('http://quotes.rest/qod.json?maxlength=100&category=life&love');
+          .get('https://favqs.com/api/qotd');
+      if (response.statusCode == 200) {
+        var quoteData = json.decode(response.body)['quote'];
+        setState(() {
+          dailyQuote = quoteData['body'];
+          author = quoteData['author'];
+        });
+      } else {
+        setState(() {
+          dailyQuote = RestQuoteList().getRestQuote().body;
+          author = RestQuoteList().getRestQuote().author;
+        });
+        //        throw Exception('Failed to load quote');
+      }
+    } catch (e) {
+      setState(() {
+        dailyQuote = RestQuoteList().getRestQuote().body;
+        author = RestQuoteList().getRestQuote().author;
+      });
+      print('error in fetching rest quote: $e');
+    }
+    setState(() {
+      _state = QuoteLoadingState.FINISHED_DOWNLOADING;
+    });
   }
 }

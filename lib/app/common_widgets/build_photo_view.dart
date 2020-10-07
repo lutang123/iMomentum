@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:photo_view/photo_view.dart';
 
 // //HTTP request failed, statusCode: 503, https://source.unsplash.com/random?nature
@@ -24,7 +25,7 @@ class BuildPhotoView extends StatelessWidget {
       loadFailedChild: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/start_photo.jpg'),
+            image: AssetImage(ImagePath.fixedImageUrl),
             fit: BoxFit.cover,
 //            colorFilter: ColorFilter.mode(
 //                Colors.white.withOpacity(0.8), BlendMode.dstATop),
@@ -39,7 +40,7 @@ class BuildPhotoView extends StatelessWidget {
         return Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('assets/images/cloud.jpg'),
+              image: AssetImage(ImagePath.loadingImage),
               fit: BoxFit.cover,
 //            colorFilter: ColorFilter.mode(
 //                Colors.white.withOpacity(0.8), BlendMode.dstATop),

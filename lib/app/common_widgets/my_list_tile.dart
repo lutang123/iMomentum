@@ -37,10 +37,10 @@ class HomeTodoListTile extends StatelessWidget {
           )),
       title: AutoSizeText(
         todo.title,
-        maxLines: 5,
+        maxLines: 4, // do not chang this
         maxFontSize: 25,
         overflow: TextOverflow.ellipsis,
-        minFontSize: 20,
+        minFontSize: 18,
         textAlign: TextAlign.center,
         style: GoogleFonts.varelaRound(
           color: Colors.white,
@@ -51,7 +51,7 @@ class HomeTodoListTile extends StatelessWidget {
       ),
       trailing: IconButton(
         color: Colors.grey[200],
-        iconSize: 18,
+        // iconSize: 18,
         icon: Icon(Icons.clear),
         onPressed: onPressed,
         tooltip: 'Delete Task',

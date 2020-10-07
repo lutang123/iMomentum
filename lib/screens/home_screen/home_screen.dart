@@ -5,15 +5,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
-import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
-import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
+import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
 import 'package:iMomentum/app/common_widgets/my_text_field.dart';
 import 'package:iMomentum/app/common_widgets/my_tooltip.dart';
 import 'package:iMomentum/app/common_widgets/my_sizedbox.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
-import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/services/network_service/weather_service.dart';
 import 'package:iMomentum/app/sign_in/firebase_auth_service_new.dart';
@@ -106,15 +104,12 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Widget _getWeatherIconImage(String weatherIcon, {double size = 20}) {
+  Widget _getWeatherIconImage(String weatherIcon, {double size = 18}) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     if (weatherIcon == '01n') {
       return Icon(EvaIcons.moonOutline,
-          color: _darkTheme
-              ? darkThemeWords.withOpacity(0.7)
-              : lightThemeWords.withOpacity(0.7),
-          size: size);
+          color: _darkTheme ? darkThemeWords : lightThemeWords, size: size);
     } else {
       return Image(
         image: NetworkImage(
@@ -165,14 +160,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
   }
 
-  int counter = 0;
-  void _onDoubleTap() {
-    setState(() {
-      ImagePath.randomImageUrl = '${ImagePath.randomImageUrlFirstPart}$counter';
-      counter++;
-    });
-  }
-
   ///notes on showcase view
   BuildContext myContext;
   GlobalKey _first = GlobalKey();
@@ -204,11 +191,6 @@ class _HomeScreenState extends State<HomeScreen> {
               .startShowCase([_first, _second, _third, _fourth]);
       });
     });
-
-    /// in homepage this can not have listen to false (same as HomeDrawer) otherwise the screen photo not immediately updates, but in other screen it can have listen to false
-    final randomNotifier = Provider.of<RandomNotifier>(context);
-    bool _randomOn = (randomNotifier.getRandom() == true);
-    final imageNotifier = Provider.of<ImageNotifier>(context);
     final bool isKeyboardVisible =
         KeyboardVisibilityProvider.isKeyboardVisible(context);
 
@@ -218,49 +200,38 @@ class _HomeScreenState extends State<HomeScreen> {
     ///https://stackoverflow.com/questions/60930636/how-can-i-use-show-case-view-in-flutter
     return ShowCaseWidget(builder: Builder(builder: (context) {
       myContext = context;
-      return Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          BuildPhotoView(
-            imageUrl:
-                _randomOn ? ImagePath.randomImageUrl : imageNotifier.getImage(),
-          ),
-          ContainerLinearGradient(),
-          GestureDetector(
-            onDoubleTap: _onDoubleTap,
-            onTap: () => FocusScope.of(context).unfocus(),
-            child: Scaffold(
-              backgroundColor: Colors.transparent,
-              body: SafeArea(
-                  top: false,
-                  child: Opacity(
-                    opacity: _wholeBodyOpacity,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _topBar(),
-                        Showcase(
-                            key: _second,
-                            description: Strings.second,
-                            contentPadding: const EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 15),
-                            child: Container()), //for weather
-                        _middleContent(), //Expanded
-                        !isKeyboardVisible
-                            ? Visibility(
-                                visible: _nameVisible,
-                                //this opacity is used when flushbar comes from bottom
-                                child: Opacity(
-                                    opacity: _quoteOpacity,
-                                    child: _buildQuoteStream()))
-                            : Container(),
-                      ],
-                    ),
-                  )),
-            ),
-          )
-        ],
+      return MyStackScreen(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          body: SafeArea(
+              top: false,
+              child: Opacity(
+                opacity: _wholeBodyOpacity,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _topBar(),
+                    Showcase(
+                        key: _second,
+                        description: Strings.second,
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 5, horizontal: 15),
+                        child: Container()), //for weather
+                    _middleContent(), //Expanded
+                    !isKeyboardVisible
+                        ? Visibility(
+                            visible: _nameVisible,
+                            //this opacity is used when flushbar comes from bottom
+                            child: Opacity(
+                                opacity: _quoteOpacity,
+                                child: _buildQuoteStream()))
+                        : Container(),
+                  ],
+                ),
+              )),
+        ),
       );
     }));
   }
@@ -311,33 +282,35 @@ class _HomeScreenState extends State<HomeScreen> {
       contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Row(children: [
-            Container(
-              decoration: BoxDecoration(
-                  color: _darkTheme ? Colors.transparent : Colors.transparent,
-                  shape: BoxShape.circle),
-              height: 30,
-              width: 30,
+            SizedBox(
+              // decoration: BoxDecoration(
+              //     color: _darkTheme ? Colors.transparent : Colors.transparent,
+              //     shape: BoxShape.circle),
+              height: 25,
+              width: 25,
               child: _getWeatherIconImage(weatherIcon),
             ),
             SizedBox(width: 3.0),
             Text(
               _metricUnitOn ? '$temperature°C' : '$temperature°F',
-              style: TextStyle(
-                  color: _darkTheme ? darkThemeWords : lightThemeWords,
-                  fontSize: 15.0),
+              style: textStyleWeatherText(_darkTheme),
             ),
           ]),
           Text(
             '$cityName',
-            style: TextStyle(
-                color: _darkTheme ? darkThemeWords : lightThemeWords,
-                fontSize: 15.0),
+            style: textStyleWeatherText(_darkTheme),
           ),
         ],
       ),
     );
+  }
+
+  TextStyle textStyleWeatherText(bool _darkTheme) {
+    return TextStyle(
+        color: _darkTheme ? darkThemeWords : Colors.black, fontSize: 15.0);
   }
 
   /// middle content
@@ -496,6 +469,7 @@ class _HomeScreenState extends State<HomeScreen> {
         KeyboardVisibilityProvider.isKeyboardVisible(context);
     return Column(
       children: <Widget>[
+        // when keyboard is up, we can not hide greeting otherwise we can't edit name
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: getFirstGreetings,
@@ -560,14 +534,21 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
     } else //after 11pm
-      return ShowUp(
-        delay: 500,
+      return showUpGoodNight();
+  }
+
+  ShowUp showUpGoodNight() {
+    return ShowUp(
+      delay: 500,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
         child: Text(
           'Have a good night sleep.',
           style: KHomeGoodNight,
           textAlign: TextAlign.center,
         ),
-      );
+      ),
+    );
   }
 
   Widget _buildHomeTextField() {
@@ -577,10 +558,13 @@ class _HomeScreenState extends State<HomeScreen> {
     } //8pm
     else if ((hour >= 20) & (hour < 23)) {
       // 8pm-11pm
-      return Visibility(
-          //after submitTomorrow,  _questionVisible is false;
-          visible: _questionVisible,
-          child: HomeTextField(onSubmitted: _onSubmittedTomorrow));
+      return Column(
+        children: [
+          _questionVisible
+              ? HomeTextField(onSubmitted: _onSubmittedTomorrow)
+              : showUpGoodNight(),
+        ],
+      );
     } else //after 11pm, and on question will becomes good night
       return Container();
   }
@@ -643,7 +627,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: CarouselSlider(
         options: CarouselOptions(
           height:
-              120.0, //if we don't give it a height, it will set as default height which is higher
+              130.0, //if we don't give it a height, it will set as default height which is higher
           viewportFraction: 1,
         ),
         items: mantras.map((mantra) {
@@ -703,7 +687,20 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  int lengthLimit = 80;
+  void getLengthLimit(double height) {
+    if (height >= 850) {
+      lengthLimit = 100;
+    } else if ((height < 850) && (height > 700)) {
+      lengthLimit = 90;
+    } else if (height < 700) {
+      lengthLimit = 80;
+    }
+  }
+
   CarouselSlider _quoteCarousel(List<QuoteModel> quotes, Database database) {
+    double height = MediaQuery.of(context).size.height;
+    getLengthLimit(height);
     return CarouselSlider(
       options: CarouselOptions(
         height: 50.0,
@@ -715,7 +712,8 @@ class _HomeScreenState extends State<HomeScreen> {
             return InkWell(
               onTap: () => _onTapQuote(database, quote),
               child: Center(
-                child: QuoteUI(
+                child: DailyQuoteUI(
+                  lengthLimit: lengthLimit,
                   title: quote.title,
                   author: quote.author,
                   key: GlobalKey(),
@@ -783,6 +781,7 @@ class _HomeScreenState extends State<HomeScreen> {
         await database.setTodo(todo);
         setState(() {
           _questionVisible = false;
+          _quoteOpacity = 0.0;
         });
         _showGoodNightFlushBar();
       } on PlatformException catch (e) {
@@ -1001,7 +1000,7 @@ class _HomeScreenState extends State<HomeScreen> {
           HomeTextField(
             onSubmitted: _editName,
             width: 200,
-            max: 20,
+            max: 15,
             autofocus: true,
           ),
           InkWell(

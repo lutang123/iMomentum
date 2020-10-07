@@ -74,6 +74,7 @@ class _ImagePageState extends State<ImagePage> {
     return AppBar(
       elevation: 0.0,
       backgroundColor: _darkTheme ? darkThemeDrawer : lightThemeAppBar,
+      brightness: _darkTheme ? Brightness.dark : Brightness.light,
       leading:
           // back button
           IconButton(

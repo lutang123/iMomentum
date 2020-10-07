@@ -24,6 +24,7 @@ class SearchPhotos extends SearchDelegate<Container> {
         // cursorColor:
         //     _darkTheme ? darkThemeHint : lightThemeHint, //seems didn't change
         hintColor: _darkTheme ? darkThemeHint : lightThemeHint,
+        brightness: _darkTheme ? Brightness.dark : Brightness.light,
         primaryColor: _darkTheme
             ? darkThemeNoPhotoColor
             : lightThemeNoPhotoColor, //no change

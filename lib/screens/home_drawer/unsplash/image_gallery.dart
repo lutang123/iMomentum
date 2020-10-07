@@ -86,6 +86,7 @@ class _ImageGalleryState extends State<ImageGallery> {
           appBar: AppBar(
             backgroundColor:
                 _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
+            brightness: _darkTheme ? Brightness.dark : Brightness.light,
             leading: IconButton(
               icon: Icon(
                 Icons.arrow_back_ios,
@@ -122,7 +123,7 @@ class _ImageGalleryState extends State<ImageGallery> {
                 tabs: [
                   ///when use text, instead of child, the text color is white when in light theme
                   Tab(
-                    child: Text('Choose from our gallery',
+                    child: Text('Choose from gallery',
                         style: TextStyle(
                             color:
                                 _darkTheme ? Colors.white : lightThemeWords)),

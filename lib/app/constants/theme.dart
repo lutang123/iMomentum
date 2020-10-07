@@ -13,24 +13,6 @@ const Color lightThemeButton = Color(0xFF006a71); //button. icon
 const Color switchActiveColorDark = darkThemeButton; //Color(0xFF206a5d);
 const Color switchActiveColorLight = lightThemeButton; //Color(0xFF206a5d);
 
-const Color themeColor0 = Color(0xf000b7c2);
-const Color themeColor = Color(0xf01aa6b7);
-const Color themeColor2 = Color(0xf0ffcb74);
-
-const Color themeColor3 = Color(0xf000bcd4);
-const Color themeColor4 = Color(0xf000b7c2);
-const Color themeColor5 = Color(0xf001a9b4);
-const Color themeColor6 = Color(0xf05fdde5);
-
-const Color themeColor7 = Color(0xf040bad5);
-const Color themeColor8 = Color(0xf0fcbf1e);
-
-const Color themeColor9 = Color(0xf05fdde5);
-const Color themeColor10 = Color(0xf0c);
-
-const Color themeColor11 = Color(0xf000b7c2);
-const Color themeColor12 = Color(0xf0fdcb9e);
-
 const Color darkThemeHint = Colors.white60;
 const Color lightThemeHint = Colors.black54;
 
@@ -44,21 +26,21 @@ const Color darkThemeDivider = Colors.white38;
 const Color lightThemeDivider = Colors.black45;
 
 // app bar
-const Color darkThemeAppBar = Colors.black12;
-final Color lightThemeAppBar = Colors.white.withOpacity(0.5);
+const Color darkThemeAppBar = Colors.transparent;
+final Color lightThemeAppBar = lightThemeSurface;
 
 //drawer and NoteFolder
 //also in photo Preview and ImagePage,
 // and NotesInFolderScreen as AppBar color
 
-final Color darkThemeDrawer = Colors.black.withOpacity(0.4);
+final Color darkThemeDrawer = darkThemeSurface;
 
 // const Color darkThemeDrawer = Colors.black26;
 //used in EmptyContent in folder and notes screen, folder search bar and folder bottom row and folder container
-final Color lightThemeDrawer = Colors.white.withOpacity(0.7);
+final Color lightThemeDrawer = lightThemeSurface;
 
 //calendar, todoList and pie chart,
-final Color darkThemeSurface = Colors.black.withOpacity(0.4);
+final Color darkThemeSurface = Colors.black.withOpacity(0.3);
 // final Color darkThemeSurface = Colors.black26;
 //used in TodoScreen for calendar and list, MyMantra and MyQuote
 final Color lightThemeSurface = Colors.white.withOpacity(0.7);
@@ -74,18 +56,16 @@ final Color lightThemeAdd = lightThemeNoPhotoColor;
 const Color darkThemeNoPhotoColor = Color(0xFF2D2F41); //f4f9f4
 const Color lightThemeNoPhotoColor = Color(0xfff4f9f4); //Color(0xfffffafa)
 
-///calendar
-const Color darkThemeCalendarSelectedDay = darkThemeButton;
-// Color(0xFF40a8c4); //Color(0xFF3282b8);
-const Color lightThemeCalendarSelectedDay = lightThemeButton;
-
 ///Light theme
 final ThemeData lightTheme = ThemeData.light().copyWith(
   // textSelectionColor:
   // This makes the visual density adapt to the platform that you run
   // the app on. For desktop platforms, the controls will be smaller and
   // closer together (more dense) than on mobile platforms.
-  appBarTheme: AppBarTheme(color: lightThemeAppBar),
+  appBarTheme: AppBarTheme(
+    color: lightThemeAppBar,
+    brightness: Brightness.light,
+  ),
   visualDensity: VisualDensity.adaptivePlatformDensity,
   unselectedWidgetColor: Colors.black54,
 //  disabledColor: Color(0xFFd0d0d1),
@@ -135,6 +115,7 @@ final ThemeData lightTheme = ThemeData.light().copyWith(
     bodyText2:
         TextStyle(color: Colors.black87.withOpacity(0.8), fontSize: 18), //14
   ),
+
   dialogBackgroundColor: lightThemeNoPhotoColor,
   dialogTheme: DialogTheme(
       shape: const RoundedRectangleBorder(
@@ -152,7 +133,8 @@ final ThemeData darkTheme = ThemeData.dark().copyWith(
   accentColor: Colors.transparent, //e.g. container box decoration
   canvasColor: Colors.transparent, //e.g. button color
   iconTheme: IconThemeData(color: darkThemeButton),
-  appBarTheme: AppBarTheme(color: darkThemeNoPhotoColor),
+  appBarTheme:
+      AppBarTheme(color: darkThemeNoPhotoColor, brightness: Brightness.dark),
   textTheme: TextTheme(
     ///todoList title, add todo title
     headline5: TextStyle(
@@ -211,3 +193,21 @@ final ThemeData darkTheme = ThemeData.dark().copyWith(
 //button       14.0  medium   1.25
 //caption      12.0  regular  0.4
 //overline     10.0  regular  1.5
+
+const Color themeColor0 = Color(0xf000b7c2);
+const Color themeColor = Color(0xf01aa6b7);
+const Color themeColor2 = Color(0xf0ffcb74);
+
+const Color themeColor3 = Color(0xf000bcd4);
+const Color themeColor4 = Color(0xf000b7c2);
+const Color themeColor5 = Color(0xf001a9b4);
+const Color themeColor6 = Color(0xf05fdde5);
+
+const Color themeColor7 = Color(0xf040bad5);
+const Color themeColor8 = Color(0xf0fcbf1e);
+
+const Color themeColor9 = Color(0xf05fdde5);
+const Color themeColor10 = Color(0xf0c);
+
+const Color themeColor11 = Color(0xf000b7c2);
+const Color themeColor12 = Color(0xf0fdcb9e);

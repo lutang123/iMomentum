@@ -22,20 +22,21 @@ class FolderContainer extends StatelessWidget {
     double height = MediaQuery.of(context)
         .size
         .height; //iPhone large: height: 180/896 = 0.2
-    double width =
-        MediaQuery.of(context).size.width; //iPhone large: width: 414,
+    double width = MediaQuery.of(context)
+        .size
+        .width; //iPhone large: width: 414, // 132/414 = 0.32
 
     return Center(
       child: Container(
-        height: height * 0.2,
-        width: width * 0.4,
+        height: height * 0.20,
+        width: width * 0.32,
         margin: EdgeInsets.only(left: 8.0, right: 8),
         decoration: BoxDecoration(
           color: _darkTheme ? darkThemeDrawer : lightThemeDrawer,
           borderRadius: BorderRadius.all(Radius.circular(20.0)),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(15.0),
+          padding: const EdgeInsets.all(8.0),
           child: InkWell(
             onTap: onTap,
             child: Column(
@@ -48,18 +49,18 @@ class FolderContainer extends StatelessWidget {
                       Icon(EvaIcons.bookOutline,
                           size: height > 700 ? 50 : 40,
                           color:
-                              _darkTheme ? darkThemeButton : lightThemeButton),
-                      // SizedBox(height: 8),
+                              _darkTheme ? darkThemeWords : lightThemeButton),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding:
+                            const EdgeInsets.only(top: 6.0, left: 3, right: 3),
                         child: AutoSizeText(
                           folder.title ?? '',
                           textAlign: TextAlign.center,
                           maxLines: 2,
-                          minFontSize: 18,
+                          minFontSize: 15,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                              fontSize: 20,
+                              fontSize: 18,
                               color:
                                   _darkTheme ? Colors.white : lightThemeWords,
                               fontFamily: 'OpenSans'),
@@ -74,7 +75,13 @@ class FolderContainer extends StatelessWidget {
                   children: [
                     Text(
                       '${notesNumber.toString()}',
-                      style: Theme.of(context).textTheme.subtitle2,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          color: _darkTheme
+                              ? darkThemeWords.withOpacity(0.7)
+                              : Colors.black87.withOpacity(0.7),
+                          fontStyle: FontStyle.italic,
+                          fontSize: 15),
                     ),
                   ],
                 )

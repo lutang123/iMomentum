@@ -21,7 +21,6 @@ import 'package:iMomentum/screens/home_drawer/unsplash/image_gallery.dart';
 import 'package:iMomentum/screens/home_drawer/user_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../app/common_widgets/container_linear_gradient.dart';
 import '../../app/constants/constants_style.dart';
 import '../../app/constants/theme.dart';
 import 'about_screen.dart';
@@ -96,7 +95,11 @@ class MyDrawerState extends State<MyDrawer>
                     ? ImagePath.randomImageUrl
                     : imageNotifier.getImage(),
               ),
-              ContainerLinearGradient(),
+              Container(
+                  decoration: BoxDecoration(
+                      gradient: _darkTheme
+                          ? KBackgroundGradientDark
+                          : KBackgroundGradient)),
               Material(
                 color: Colors.transparent,
                 child: Stack(
@@ -126,14 +129,9 @@ class MyDrawerState extends State<MyDrawer>
                     Positioned(
                       top: height > 700
                           ? MediaQuery.of(context).padding.top - 10
-                          : MediaQuery.of(context).padding.top + 5,
+                          : MediaQuery.of(context).padding.top,
                       left: 5 + animationController.value * maxSlide,
-                      child: IconButton(
-                          iconSize: 28,
-                          icon: FaIcon(FontAwesomeIcons.bars),
-                          onPressed: toggle,
-                          color:
-                              _darkTheme ? darkThemeButton : lightThemeButton),
+                      child: buildIconButtonDrawer(_darkTheme),
                     ),
 //                    Positioned(
 //                      top: 16.0 + MediaQuery.of(context).padding.top,
@@ -154,6 +152,14 @@ class MyDrawerState extends State<MyDrawer>
         },
       ),
     );
+  }
+
+  IconButton buildIconButtonDrawer(bool _darkTheme) {
+    return IconButton(
+        iconSize: 28,
+        icon: FaIcon(FontAwesomeIcons.bars),
+        onPressed: toggle,
+        color: _darkTheme ? darkThemeWords : lightThemeButton);
   }
 
   void _onDragStart(DragStartDetails details) {
@@ -199,7 +205,7 @@ class MyHomeDrawer extends StatelessWidget {
 
     ///this will get error because user name might be null
 //    final String firstName =
-//        user.displayName.substring(0, user.displayName.indexOf(' '));
+//    user.displayName.substring(0, user.displayName.indexOf(' '));
 
     /// do not set listen to false here
     final themeNotifier = Provider.of<ThemeNotifier>(context);
@@ -229,7 +235,9 @@ class MyHomeDrawer extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                settingTitle(context, title: 'Settings'),
+                height > 700
+                    ? settingTitle(context, title: 'Settings')
+                    : settingTitle(context, title: 'Settings'),
                 SettingSwitch(
                   size: 23,
                   icon: FontAwesomeIcons.adjust,
@@ -265,7 +273,9 @@ class MyHomeDrawer extends StatelessWidget {
                   ),
                 ),
                 settingDivider(context),
-                settingTitle(context, title: 'Customizations'),
+                height > 700
+                    ? settingTitle(context, title: 'Customizations')
+                    : Container(),
                 settingListTile(
                   context,
                   icon: EvaIcons.imageOutline,

@@ -7,14 +7,11 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:iMomentum/app/common_widgets/build_photo_view.dart';
-import 'package:iMomentum/app/common_widgets/container_linear_gradient.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_sizedbox.dart';
 import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
 import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
-import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/models/folder.dart';
 import 'package:iMomentum/app/models/note.dart';
@@ -82,6 +79,9 @@ class FolderScreenState extends State<FolderScreen> {
     super.dispose();
   }
 
+  List<Note> allNotes = [];
+  List<Folder> folders = [];
+
   @override
   Widget build(BuildContext context) {
     final database = Provider.of<Database>(context, listen: false);
@@ -93,14 +93,14 @@ class FolderScreenState extends State<FolderScreen> {
           top: false,
           child: Column(
             children: <Widget>[
-              _topRow(), //this is just for the words 'Folders'.
+              _topRow(database), //this is just for the words 'Folders'.
               // nested StreamBuilder for Note and Folder
               //this StreamBuilder is only to find out how many notes in a folder
               StreamBuilder<List<Note>>(
                   stream: database.notesStream(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      final List<Note> allNotes = snapshot.data;
+                      allNotes = snapshot.data;
                       if (allNotes.isNotEmpty) {
                         return _folderStream(database, allNotes);
                       } else {
@@ -114,27 +114,31 @@ class FolderScreenState extends State<FolderScreen> {
                       print(
                           'snapshot.hasError in note stream: ${snapshot.error.toString()}');
                       //no access on  allNotes, so we can not use _noAddedFolderContent
-                      return Expanded(
-                          child: Column(
-                        children: [
-                          Spacer(),
-                          EmptyOrError(
-                              text: '',
-                              tips: Strings.textError,
-                              textTap: 'Or contact us.',
-                              onTap: null),
-                          Spacer(),
-                        ],
-                      ));
+                      return notesErrorContent();
                     }
                     return Center(child: CircularProgressIndicator());
                   }),
-              _bottomRow(database),
+              _bottomRow(database)
             ],
           ),
         ),
       ),
     );
+  }
+
+  Expanded notesErrorContent() {
+    return Expanded(
+        child: Column(
+      children: [
+        Spacer(),
+        EmptyOrError(
+            text: '',
+            tips: Strings.textError,
+            textTap: 'Or contact us.',
+            onTap: null),
+        Spacer(),
+      ],
+    ));
   }
 
   Widget _folderStream(Database database, List<Note> allNotes) {
@@ -144,7 +148,7 @@ class FolderScreenState extends State<FolderScreen> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           //this is a list of folder use has added.
-          final List<Folder> folders = snapshot.data;
+          folders = snapshot.data;
           // print('folders.length: ${folders.length}');
           if (folders.isNotEmpty) {
             ///when move this list outside of StreamBuilder as a constant, it keeps showing repeated folders on screen.
@@ -154,21 +158,11 @@ class FolderScreenState extends State<FolderScreen> {
             ];
             // we always have two default folders on the screen.
             final List<Folder> finalFolders = defaultFolders..addAll(folders);
-            return Expanded(
-              child: CustomScrollView(
-                shrinkWrap: true,
-                controller: _hideButtonController,
-                slivers: <Widget>[
-                  _buildBoxAdaptorForSearch(database, allNotes, finalFolders),
-                  _buildFolderGrid(database, allNotes, finalFolders),
-                  //filter null views
-                ],
-              ),
-            );
+            return expandedFolderGrid(database, allNotes, finalFolders);
           }
           //this is for if no added folder, but may have notes
           else {
-            return _noAddedFolderContent(
+            return expandedNoAddedFolderContent(
                 database,
                 allNotes,
                 // if notes.isNotEmpty ? return Container()
@@ -176,20 +170,18 @@ class FolderScreenState extends State<FolderScreen> {
                 Strings.emptyNoteAndFolder,
                 '', //text
                 '', //textTap
-                null //onTap
-                );
+                null);
           }
         } else if (snapshot.hasError) {
           print(
               'snapshot.hasError in folder stream: ${snapshot.error.toString()}');
           //this is for if folder StreamBuilder has error
-          return _noAddedFolderContent(
+          return expandedNoAddedFolderContent(
               database,
               allNotes,
               '', //text
               Strings.textError, //tips
               'Or contact us.', //textTap
-              /// TODO contact us.
               null //onTap
               );
         }
@@ -198,49 +190,79 @@ class FolderScreenState extends State<FolderScreen> {
     );
   }
 
-  Widget _topRow() {
+  Expanded expandedFolderGrid(
+      Database database, List<Note> allNotes, List<Folder> finalFolders) {
+    return Expanded(
+      child: CustomScrollView(
+        shrinkWrap: true,
+        controller: _hideButtonController,
+        slivers: <Widget>[
+          _buildBoxAdaptorForSearch(database, allNotes, finalFolders),
+          _buildFolderGrid(database, allNotes, finalFolders),
+          //filter null views
+        ],
+      ),
+    );
+  }
+
+  Widget _topRow(Database database) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Container(
       color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           MyTopSizedBox(),
           SizedBox(
             height: 50,
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 20.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  // textBaseline: TextBaseline.ideographic,
-                  // crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text('Folders',
-                        style: TextStyle(
-                            color:
-                                _darkTheme ? darkThemeWords : lightThemeWords,
-                            fontSize: 33,
-                            fontWeight: FontWeight.w600)),
-                    FlatButton(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 20.0, right: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                textBaseline: TextBaseline.ideographic,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text('Folders', style: textStyleFolder(_darkTheme)),
+                  InkWell(
+                    onTap: _showTipDialog,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
                       child: Text(
                         'Show Tips',
-                        style: TextStyle(
-                            fontSize: 15,
-                            color: _darkTheme
-                                ? darkThemeButton.withOpacity(0.9)
-                                : lightThemeButton.withOpacity(0.9)),
+                        style: textStyleShowTip(_darkTheme),
                       ),
-                      onPressed: _showTipDialog,
                     ),
-                  ],
-                ),
+                  ),
+                  // FlatButton.icon(
+                  //   icon: Icon(EvaIcons.folderAddOutline,
+                  //       size: 25,
+                  //       color: _darkTheme ? darkThemeButton : lightThemeButton),
+                  //   label: Text(
+                  //     'Create Folder',
+                  //     style: textStyleCreateFolder(_darkTheme),
+                  //   ),
+                  //   onPressed: () => _showAddDialog(database),
+                  // ),
+                ],
               ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  TextStyle textStyleShowTip(bool _darkTheme) {
+    return TextStyle(
+        fontSize: 15, color: _darkTheme ? darkThemeWords : lightThemeButton);
+  }
+
+  TextStyle textStyleFolder(bool _darkTheme) {
+    return TextStyle(
+        color: _darkTheme ? darkThemeWords : lightThemeWords,
+        fontSize: 33,
+        fontWeight: FontWeight.w600);
   }
 
   Future<void> _showTipDialog() async {
@@ -258,7 +280,13 @@ class FolderScreenState extends State<FolderScreen> {
       visible: _addButtonVisible,
       child: Container(
         decoration: BoxDecoration(
-          color: _darkTheme ? darkThemeDrawer : lightThemeDrawer,
+          color:
+              // folders.length > 4
+              //     ? _darkTheme
+              //         ? darkThemeDrawer
+              //         : lightThemeNoPhotoColor
+              //     :
+              _darkTheme ? darkThemeDrawer : lightThemeDrawer,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20.0),
             topRight: Radius.circular(20.0),
@@ -272,50 +300,15 @@ class FolderScreenState extends State<FolderScreen> {
             children: <Widget>[
               FlatButton.icon(
                 icon: Icon(EvaIcons.folderAddOutline,
-                    size: 30,
+                    size: 25,
                     color: _darkTheme ? darkThemeButton : lightThemeButton),
                 label: Text(
                   'Create Folder',
-                  style: TextStyle(
-                      fontSize: 18,
-                      color: _darkTheme
-                          ? darkThemeWords.withOpacity(0.7)
-                          : lightThemeWords.withOpacity(0.7)),
+                  style: textStyleCreateFolder(_darkTheme),
                 ),
                 onPressed: () => _showAddDialog(database),
               ),
-              OpenContainer(
-                useRootNavigator: true,
-                transitionType: _transitionType,
-                openElevation: 0.0,
-                openColor: Colors.transparent,
-                openBuilder: (BuildContext context, VoidCallback _) {
-                  return AddNoteScreen(database: database);
-                },
-                closedElevation: 0.0,
-                closedColor: Colors.transparent,
-                closedShape: RoundedRectangleBorder(
-                  side: BorderSide(
-                      color: _darkTheme ? darkThemeButton : lightThemeButton,
-                      width: 2.0),
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(_fabDimension / 2),
-                  ),
-                ),
-                closedBuilder:
-                    (BuildContext context, VoidCallback openContainer) {
-                  return SizedBox(
-                      height: _fabDimension,
-                      width: _fabDimension,
-                      child: Center(
-                        child: Icon(Icons.add,
-                            size: 30,
-                            color: _darkTheme
-                                ? darkThemeButton
-                                : lightThemeButton),
-                      ));
-                },
-              ),
+              openContainerAddButton(database),
             ],
           ),
         ),
@@ -323,7 +316,49 @@ class FolderScreenState extends State<FolderScreen> {
     );
   }
 
-  Widget _noAddedFolderContent(Database database, List<Note> notes,
+  OpenContainer<Object> openContainerAddButton(Database database) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    return OpenContainer(
+      useRootNavigator: true,
+      transitionType: _transitionType,
+      openElevation: 0.0,
+      openColor: Colors.transparent,
+      openBuilder: (BuildContext context, VoidCallback _) {
+        return AddNoteScreen(database: database);
+      },
+      closedElevation: 0.0,
+      closedColor: Colors.transparent,
+      // closedColor: _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
+      closedShape: RoundedRectangleBorder(
+        side: BorderSide(
+            color: _darkTheme ? darkThemeButton : lightThemeButton, width: 2.0),
+        borderRadius: BorderRadius.all(
+          Radius.circular(_fabDimension / 2),
+        ),
+      ),
+      closedBuilder: (BuildContext context, VoidCallback openContainer) {
+        return SizedBox(
+            height: _fabDimension,
+            width: _fabDimension,
+            child: Center(
+              child: Icon(Icons.add,
+                  size: 30,
+                  color: _darkTheme ? darkThemeButton : lightThemeButton),
+            ));
+      },
+    );
+  }
+
+  TextStyle textStyleCreateFolder(bool _darkTheme) {
+    return TextStyle(
+        fontSize: 16,
+        color: _darkTheme
+            ? darkThemeWords.withOpacity(0.7)
+            : lightThemeWords.withOpacity(0.7));
+  }
+
+  Expanded expandedNoAddedFolderContent(Database database, List<Note> notes,
       String text1, String tips, String textTap, Function onTap) {
     final List<Folder> defaultFolders = [
       Folder(id: 0.toString(), title: 'All Notes'),
@@ -371,29 +406,8 @@ class FolderScreenState extends State<FolderScreen> {
     );
   }
 
-  int _getNotesNumber(List<Note> allNotes, Folder folder) {
-    ///when write List<Note> notesList; get error saying .add is wrong,
-    ///must give an initial value
-    List<Note> notesList = [];
-
-    if (allNotes.isNotEmpty) {
-      if (folder.id == 0.toString()) {
-        return allNotes.length; //return all notes
-      } else {
-        for (Note note in allNotes) {
-          if (note.folderId == folder.id) {
-            notesList.add(note);
-          }
-        }
-        return notesList.length;
-      }
-    }
-    return 0;
-  }
-
   //https://medium.com/@lets4r/flutorial-create-a-staggered-gridview-9c881a9b0b98
   int axisCount = 2;
-
   Widget _buildFolderGrid(
       Database database, List<Note> notes, List<Folder> folders) {
     return SliverPadding(
@@ -498,6 +512,26 @@ class FolderScreenState extends State<FolderScreen> {
         //the vertical space
       ),
     );
+  }
+
+  int _getNotesNumber(List<Note> allNotes, Folder folder) {
+    ///when write List<Note> notesList; get error saying .add is wrong,
+    ///must give an initial value
+    List<Note> notesList = [];
+
+    if (allNotes.isNotEmpty) {
+      if (folder.id == 0.toString()) {
+        return allNotes.length; //return all notes
+      } else {
+        for (Note note in allNotes) {
+          if (note.folderId == folder.id) {
+            notesList.add(note);
+          }
+        }
+        return notesList.length;
+      }
+    }
+    return 0;
   }
 
   ///todo: change

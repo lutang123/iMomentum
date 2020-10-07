@@ -82,6 +82,7 @@ class _PreviewFileState extends State<PreviewFile>
                 elevation: 0.0,
                 backgroundColor:
                     _darkTheme ? darkThemeDrawer : lightThemeAppBar,
+                brightness: _darkTheme ? Brightness.dark : Brightness.light,
                 title: Text(
                   'Preview',
                   style: Theme.of(context).textTheme.headline5,

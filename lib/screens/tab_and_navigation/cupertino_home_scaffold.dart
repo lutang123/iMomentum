@@ -5,6 +5,7 @@ import 'package:iMomentum/screens/tab_and_navigation/tab_item.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:provider/provider.dart';
+import 'dart:io';
 
 @immutable
 class CupertinoHomeScaffold extends StatelessWidget {
@@ -29,7 +30,13 @@ class CupertinoHomeScaffold extends StatelessWidget {
       backgroundColor: Colors.transparent,
       tabBar: CupertinoTabBar(
         key: const Key(Keys.tabBar),
-        backgroundColor: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
+        backgroundColor: Platform.isIOS
+            ? _darkTheme
+                ? darkThemeAppBar
+                : lightThemeAppBar
+            : _darkTheme
+                ? darkThemeNoPhotoColor
+                : lightThemeNoPhotoColor,
         items: [
           _buildItem(context, TabItem.home),
           _buildItem(context, TabItem.todo),
@@ -69,6 +76,7 @@ class CupertinoHomeScaffold extends StatelessWidget {
           color: color,
         ),
       ),
+      // label: itemData.title,
       title: Padding(
         padding: const EdgeInsets.only(top: 3.0),
         child: Text(

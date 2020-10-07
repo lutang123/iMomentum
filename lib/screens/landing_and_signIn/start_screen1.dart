@@ -48,7 +48,7 @@ class _StartScreenState extends State<StartScreen> {
                 padding: const EdgeInsets.all(15.0),
                 child: Form(
                     key: _formKey,
-                    child: HomeTextField(onSubmitted: _onSubmitted, max: 20)),
+                    child: HomeTextField(onSubmitted: _onSubmitted, max: 15)),
               ),
             ],
           )),

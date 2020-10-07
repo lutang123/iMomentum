@@ -17,7 +17,6 @@ import 'package:iMomentum/screens/notes_screen/color_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
-import 'package:iMomentum/app/utils/extension_firstCaps.dart';
 import 'package:flutter/widgets.dart';
 import 'font_picker.dart';
 import 'my_custom_icon.dart';
@@ -283,7 +282,19 @@ class AddNoteScreenState extends State<AddNoteScreen> {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
 
-    return MyBottomContainer(
+    return Container(
+      margin: const EdgeInsets.only(top: 5.0),
+      decoration: BoxDecoration(
+        color: _darkTheme ? colorsDark[color] : colorsLight[color],
+        borderRadius: BorderRadius.circular(5.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black54,
+            offset: Offset(0.0, 1.0), //(x,y)
+            blurRadius: 4.0,
+          ),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.only(left: 10.0, right: 10, top: 10),
         child: Column(

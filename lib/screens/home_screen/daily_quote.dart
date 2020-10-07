@@ -38,10 +38,25 @@ class _APIQuoteState extends State<APIQuote> {
     super.initState();
   }
 
+  int lengthLimit = 80;
+  void getLengthLimit(double height) {
+    if (height >= 850) {
+      lengthLimit = 120;
+    } else if ((height < 850) && (height > 700)) {
+      lengthLimit = 100;
+    } else if (height < 700) {
+      lengthLimit = 80;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    getLengthLimit(height);
+
     return _state == QuoteLoadingState.FINISHED_DOWNLOADING
-        ? QuoteUI(
+        ? DailyQuoteUI(
+            lengthLimit: lengthLimit,
             title: dailyQuote,
             author: author,
             key: GlobalKey(),
@@ -50,7 +65,8 @@ class _APIQuoteState extends State<APIQuote> {
             ? Center(child: CircularProgressIndicator())
 
             ///if error we return default;
-            : QuoteUI(
+            : DailyQuoteUI(
+                lengthLimit: lengthLimit,
                 title: DefaultQuoteList().getQuote().body,
                 author: DefaultQuoteList().getQuote().author,
                 key: GlobalKey(),
@@ -97,124 +113,13 @@ class _APIQuoteState extends State<APIQuote> {
   }
 }
 
-// class DailyQuote extends StatelessWidget {
-//   DailyQuote({Key key, @required this.title, this.author}) : super(key: key);
-//
-//   final String title;
-//   final String author;
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     print('title.length: ${title.length}');
-//     return Align(
-//       alignment: Alignment.bottomCenter,
-//       child: Padding(
-//           padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
-//           child: author == null || author == ''
-//               ? (title.length) < 75
-//                   ? Text(
-//                       '"$title"',
-//                       textAlign: TextAlign.center,
-//                       maxLines: 2,
-//                       style: KQuote,
-//                     )
-//                   : _richTextWithoutAuthor(context)
-//               : (title.length + 2 + author.length) < 75
-//                   ? Text(
-//                       '"$title -- $author"',
-//                       textAlign: TextAlign.center,
-//                       maxLines: 2,
-//                       style: KQuote,
-//                     )
-//                   : _richText(context)),
-//     );
-//   }
-//
-//   Widget _richTextWithoutAuthor(BuildContext context) {
-//     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-//     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-//     print('hello');
-//     return RichText(
-//       maxLines: 2,
-//       textAlign: TextAlign.center,
-//       text: TextSpan(
-//         style: KQuote, //fontSize: 16,
-//         children: <TextSpan>[
-//           TextSpan(text: '"${title.substring(0, 70)}'),
-//           TextSpan(
-//               text: '...',
-//               style: TextStyle(
-//                   color: _darkTheme ? darkThemeButton : Colors.lightBlueAccent,
-//                   fontSize: 18,
-//                   fontStyle: FontStyle.italic),
-//               recognizer: TapGestureRecognizer()
-//                 ..onTap = () {
-//                   _showMoreText(context: context, text: '"$title"');
-//                 }),
-//           TextSpan(text: '"'),
-//         ],
-//       ),
-//     );
-//   }
-//
-//   Widget _richText(BuildContext context) {
-//     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-//     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-//     return RichText(
-//       maxLines: 2,
-//       textAlign: TextAlign.center,
-//       text: TextSpan(
-//         style: KQuote, //fontSize: 16,
-//         children: <TextSpan>[
-//           TextSpan(text: '"${title.substring(0, 69)}'),
-//           TextSpan(
-//               text: '...',
-//               style: TextStyle(
-//                   color: _darkTheme ? darkThemeButton : Colors.lightBlueAccent,
-//                   fontSize: 18,
-//                   fontStyle: FontStyle.italic),
-//               recognizer: TapGestureRecognizer()
-//                 ..onTap = () {
-//                   _showMoreText(
-//                     context: context,
-//                     text: '"$title -- $author"',
-//                   );
-//                 }),
-//           TextSpan(text: '"'),
-//         ],
-//       ),
-//     );
-//   }
-//
-//   ///we can not put this inside the function.
-//   final GlobalKey key = MyGlobalKeys.dailyQuoteKey;
-//   void _showMoreText({@required BuildContext context, @required String text}) {
-//     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-//     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-//     ShowMoreTextPopup popup = ShowMoreTextPopup(context,
-//         text: text,
-//         textStyle:
-//             TextStyle(color: _darkTheme ? darkThemeWords : lightThemeWords),
-//         height: 95,
-//         width: 280,
-//         backgroundColor:
-//             _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
-//         padding: EdgeInsets.all(6.0),
-//         borderRadius: BorderRadius.circular(10.0));
-//
-//     /// show the popup for specific widget
-//     popup.show(
-//       widgetKey: key,
-//     );
-//   }
-// }
-
-class QuoteUI extends StatelessWidget {
-  QuoteUI({@required this.title, this.author, this.key});
+class DailyQuoteUI extends StatelessWidget {
+  DailyQuoteUI({@required this.title, this.author, this.key, this.lengthLimit});
 
   final String title;
   final String author;
   final GlobalKey key;
+  final int lengthLimit;
 
   @override
   Widget build(BuildContext context) {
@@ -223,7 +128,7 @@ class QuoteUI extends StatelessWidget {
       alignment: Alignment.bottomCenter,
       child: Padding(
           padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
-          child: (title.length) < 75
+          child: (title.length) < lengthLimit
               ? Text(
                   author == null || author == ''
                       ? '"$title"'
@@ -245,7 +150,7 @@ class QuoteUI extends StatelessWidget {
       text: TextSpan(
         style: KQuote, //fontSize: 16,
         children: <TextSpan>[
-          TextSpan(text: '"${title.substring(0, 69)}'),
+          TextSpan(text: '"${title.substring(0, lengthLimit - 5)}'),
           TextSpan(
               text: '...',
               style: TextStyle(
@@ -303,18 +208,24 @@ class QuoteUI extends StatelessWidget {
 
 ///changed to adding key as a property, use key: GlobalKey(), then it works
 class RestQuoteUI extends StatelessWidget {
-  RestQuoteUI({Key key, @required this.title, this.author}) : super(key: key);
+  RestQuoteUI(
+      {Key key, @required this.title, this.author, @required this.lengthLimit})
+      : super(key: key);
 
   final String title;
   final String author;
 
+  final int lengthLimit;
+
   @override
   Widget build(BuildContext context) {
+    // double height = MediaQuery.of(context).size.height;
+    // getLengthLimit(height);
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(
-        padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10.0),
-        child: (title.length) < 75
+        padding: const EdgeInsets.only(left: 15, right: 15, bottom: 15.0),
+        child: (title.length) < lengthLimit
             ? Text(
                 author == null || author == ''
                     ? '"$title"'
@@ -331,13 +242,14 @@ class RestQuoteUI extends StatelessWidget {
   Widget _richText(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    // double height = MediaQuery.of(context).size.height;
+    // getLengthLimit(height);
     return RichText(
-      // maxLines: 2,
       textAlign: TextAlign.center,
       text: TextSpan(
         style: KQuote,
         children: <TextSpan>[
-          TextSpan(text: '"${title.substring(0, 69)}'),
+          TextSpan(text: '"${title.substring(0, lengthLimit - 5)}'),
           TextSpan(
               text: '...',
               style: TextStyle(

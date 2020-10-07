@@ -16,7 +16,7 @@ class MyDotContainer extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
+      margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
       decoration: BoxDecoration(shape: BoxShape.circle, color: color),
     );
   }
@@ -100,9 +100,11 @@ class ContainerOnlyTextPhotoSearch extends StatelessWidget {
 }
 
 class MySignInContainer extends StatelessWidget {
-  const MySignInContainer({Key key, this.child, this.height}) : super(key: key);
+  const MySignInContainer({Key key, this.child, this.height, this.padding = 15})
+      : super(key: key);
   final Widget child;
   final double height;
+  final double padding;
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +112,7 @@ class MySignInContainer extends StatelessWidget {
     // bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 15.0),
-      padding: EdgeInsets.all(15),
+      padding: EdgeInsets.all(padding),
       decoration: BoxDecoration(
           color: lightThemeSurface, borderRadius: BorderRadius.circular(20.0)),
       height: height,
@@ -205,8 +207,8 @@ class NoteSearchBar extends StatelessWidget {
                 onPressed: onPressed,
                 icon: Icon(Icons.search,
                     color: _darkTheme
-                        ? darkThemeButton.withOpacity(0.7)
-                        : lightThemeButton.withOpacity(0.7)),
+                        ? darkThemeButton.withOpacity(0.9)
+                        : lightThemeButton.withOpacity(0.9)),
                 label: Text(
                   'Search your notes',
                   style: TextStyle(

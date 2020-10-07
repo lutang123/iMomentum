@@ -439,7 +439,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
   Padding titleAndSubtitle(bool _darkTheme,
       {String title, String dateHighlight, String subtitle}) {
     return Padding(
-      padding: const EdgeInsets.all(15),
+      padding: const EdgeInsets.only(top: 15),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,

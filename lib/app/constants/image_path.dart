@@ -18,4 +18,6 @@ class ImagePath {
   static String startImage2 = 'assets/images/waterfall.jpg';
   static String startImage3 = 'assets/images/landscape2.jpg';
   static String signInImage = 'assets/images/mountain_new.jpg';
+
+  static String loadingImage = 'assets/images/cloud.jpg';
 }

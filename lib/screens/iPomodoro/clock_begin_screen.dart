@@ -45,16 +45,16 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
   @override
   Widget build(BuildContext context) {
     return PomodoroBaseScreen(
-      topRow: Opacity(
-        opacity: _topOpacity,
-        child: topRow(context),
+      leadingWidget: IconButton(
+        /// go back to HomeScreen
+        onPressed: () => Navigator.of(context).pop(),
+        icon: Icon(Icons.clear, size: 30),
+        color: Colors.white,
       ),
-      titleWidget: Opacity(
-        opacity: _topOpacity,
-        child: PomodoroTitle(
-          title: 'Time to focus',
-          subtitle: 'Break your work into intervals',
-        ),
+      actionWidget: Container(),
+      titleWidget: PomodoroTitle(
+        title: 'Time to focus',
+        subtitle: 'Break your work into intervals',
       ),
       bigCircle: ClockStart(
         text1: Duration(minutes: _durationInMin).clockFmt(),
@@ -65,28 +65,6 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
       ),
       timerButton: Container(),
       bottomWidget: ClockBottomToday(text: '${widget.todo.title}'),
-    );
-  }
-
-  Padding topRow(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          IconButton(
-            /// go back to HomeScreen
-            onPressed: () => Navigator.of(context).pop(),
-            icon: Icon(Icons.clear, size: 30),
-            color: Colors.white,
-          ),
-          // IconButton(
-          //   onPressed: () => _showFlushBar(),
-          //   icon: Icon(Icons.info_outline, color: Colors.white, size: 32),
-          //   color: Colors.white,
-          // )
-        ],
-      ),
     );
   }
 
@@ -352,7 +330,7 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
   void _done(BuildContext context) {
     if (_validateAndSaveForm()) {
       setState(() {
-        _topOpacity = 1.0;
+        // _topOpacity = 1.0;
         _durationInMin = _durationInMin;
       });
       _restInMin = _restInMin;
@@ -360,7 +338,7 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
     }
   }
 
-  double _topOpacity = 1.0;
+  // double _topOpacity = 1.0;
 
   // void _showFlushBar() async {
   //   setState(() {

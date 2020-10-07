@@ -8,7 +8,6 @@ import 'package:iMomentum/app/models/quote_model.dart';
 import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/constants/theme.dart';
-import 'package:iMomentum/screens/todo_screen/add_todo_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:iMomentum/app/utils/extension_firstCaps.dart';
 
@@ -79,7 +78,7 @@ class _AddQuoteScreenState extends State<AddQuoteScreen> {
           initialValue: author,
           onSaved: (value) => author = value,
           onEditingComplete: _save,
-          maxLength: 20,
+          maxLength: 15,
           style: buildTextStyleQuote(_darkTheme),
           cursorColor: _darkTheme ? darkThemeButton : lightThemeButton,
           keyboardAppearance: _darkTheme ? Brightness.dark : Brightness.light,
@@ -101,6 +100,8 @@ class _AddQuoteScreenState extends State<AddQuoteScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 15),
         child: TextFormField(
           initialValue: title,
+
+          ///remove this to allow no quote (we can't because user can still enter a space)
           validator: (value) =>
               value.isNotEmpty ? null : 'Quote can\'t be empty',
           onSaved: (value) => title = value.firstCaps, //for save button
@@ -108,7 +109,7 @@ class _AddQuoteScreenState extends State<AddQuoteScreen> {
             title = value.firstCaps;
             _save();
           },
-          maxLength: 120,
+          maxLength: 100,
           style: buildTextStyleQuote(_darkTheme),
           autofocus: true,
           cursorColor: _darkTheme ? darkThemeButton : lightThemeButton,
@@ -137,7 +138,7 @@ class _AddQuoteScreenState extends State<AddQuoteScreen> {
 
   TextStyle buildTextStyleQuote(bool _darkTheme) {
     return TextStyle(
-        color: _darkTheme ? darkThemeWords : lightThemeWords, fontSize: 18.0);
+        fontSize: 18.0, color: _darkTheme ? darkThemeWords : lightThemeWords);
   }
 
   bool _validateAndSaveForm() {

@@ -10,7 +10,7 @@ class StringsSignIn {
   static const String logoutFailed = 'Logout failed';
 
   // Sign In Page
-  static const String signIn = 'Sign in';
+  static const String signIn = 'Sign In';
   static const String signInWithEmailPassword =
       'Sign in with email and password';
   static const String signInWithEmailLink = 'Sign in with email link';
