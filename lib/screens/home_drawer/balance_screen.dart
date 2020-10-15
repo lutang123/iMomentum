@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
+import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 import 'package:iMomentum/app/common_widgets/setting_switch.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
+import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/home_drawer/mantra_top_title.dart';
@@ -67,8 +69,7 @@ class _ScheduleFocusTimeState extends State<ScheduleFocusTime> {
                         title: 'Balance',
                         subtitle:
                             'Balance your day with periods of uptime and downtime.',
-                        flatButtonText: '',
-                        onPressed: null,
+                        onPressed: _showTipDialog,
                         darkTheme: _darkTheme,
                       ),
                       buildContent(_darkTheme),
@@ -188,6 +189,14 @@ class _ScheduleFocusTimeState extends State<ScheduleFocusTime> {
         ],
       ),
     );
+  }
+
+  Future<void> _showTipDialog() async {
+    await PlatformAlertDialog(
+      title: 'Tips',
+      content: Strings.tipsOnQuoteScreen,
+      defaultActionText: 'OK.',
+    ).show(context);
   }
 
   // TextStyle isWeekDayStyle(bool _darkTheme, bool isWeekDay) {

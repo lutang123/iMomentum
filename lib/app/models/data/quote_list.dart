@@ -72,7 +72,7 @@ class DefaultQuoteList {
     DefaultQuote(
       author: 'Unknown',
       body:
-          'stop being afraid of what could go wrong and start being positive about what could go right.',
+          'Stop being afraid of what could go wrong and start being positive about what could go right.',
     ),
     DefaultQuote(
       author: 'Dr Roopleen',
@@ -121,7 +121,7 @@ class DefaultQuoteList {
     DefaultQuote(
         author: 'Dalai Lama',
         body:
-            "emember that not getting what you want is sometimes a wonderful stroke of luck."),
+            "Remember that not getting what you want is sometimes a wonderful stroke of luck."),
     DefaultQuote(
         author: 'Unknown',
         body:

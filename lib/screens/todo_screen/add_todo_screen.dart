@@ -119,27 +119,49 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
 
   ///Todo: change design
   Future<void> _handleDatePicker() async {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     final DateTime date = await showDatePicker(
         context: context,
         initialDate: dateNew,
         firstDate: DateTime(DateTime.now().year - 1),
         lastDate: DateTime(DateTime.now().year + 5),
         builder: (BuildContext context, Widget child) {
-          return Theme(
-            data: ThemeData.dark().copyWith(
-              backgroundColor: darkThemeNoPhotoColor,
-              dialogBackgroundColor: darkThemeNoPhotoColor,
+          return _darkTheme
+              ? Theme(
+                  data: ThemeData.dark().copyWith(
+                    backgroundColor: darkThemeNoPhotoColor,
+                    dialogBackgroundColor: darkThemeNoPhotoColor,
 
-              primaryColor: const Color(0xFF0f4c75), //header, no chang
-              accentColor: const Color(0xFFbbe1fa), //selection color
+                    primaryColor: const Color(0xFF0f4c75), //header, no chang
+                    accentColor: const Color(0xFFbbe1fa), //selection color
 //              colorScheme: ColorScheme.light(primary: const Color(0xFF0f4c75)),
-              buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.accent),
-              dialogTheme: DialogTheme(
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(20.0)))),
-            ),
-            child: child,
-          );
+                    buttonTheme:
+                        ButtonThemeData(textTheme: ButtonTextTheme.accent),
+                    dialogTheme: DialogTheme(
+                        shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(20.0)))),
+                  ),
+                  child: child,
+                )
+              : Theme(
+                  data: ThemeData.light().copyWith(
+                    backgroundColor: lightThemeNoPhotoColor,
+                    dialogBackgroundColor: lightThemeNoPhotoColor,
+
+                    primaryColor: const Color(0xFF0f4c75), //header, no change
+                    accentColor: const Color(0xFFbbe1fa), //selection color
+//              colorScheme: ColorScheme.light(primary: const Color(0xFF0f4c75)), //not sure what is this, but no changes
+                    buttonTheme:
+                        ButtonThemeData(textTheme: ButtonTextTheme.accent),
+                    dialogTheme: DialogTheme(
+                        shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(20.0)))),
+                  ),
+                  child: child,
+                );
         });
     if (date != null && date != dateNew) {
       setState(() {

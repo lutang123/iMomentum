@@ -173,6 +173,14 @@ class Strings {
       '\n'
       'Your most recently added/edited one will show as the first one, and you can swipe right or left to view different ones from Home screen, and tap on the quote to edit.';
 
+  static const tipsOnBalanceScreen =
+      'Default uptime schedule is 6am to 6pm, this means when you open your App during this time, the Home screen will show you what is your main focus question, and in the '
+      'next 3 hours after uptime, the Home screen will show what is your plan tomorrow question, and in other time it will only show mantra. If you have a task that you '
+      'have not completed on that day, Home screen will show your task and the mantra.'
+      '\n'
+      '\n'
+      'Restart the app after changing schedule if you want to see an immediate change.';
+
   // For all error:
   ///Todo: add contact us
   static const String streamErrorMessage =

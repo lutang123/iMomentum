@@ -49,7 +49,15 @@ class _MyQuotesState extends State<MyQuotes> {
           bottom: false,
           child: CustomizedContainerNew(
             color: _darkTheme ? darkThemeSurface : lightThemeSurface,
-            child: Padding(
+            child:
+
+                ///doesn't work when children is expended
+                // CustomScrollView(
+                //   slivers: [
+                //     SliverToBoxAdapter(
+                //       child:
+                //
+                Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
@@ -124,6 +132,9 @@ class _MyQuotesState extends State<MyQuotes> {
                 ],
               ),
             ),
+            //     )
+            //   ],
+            // ),
           ),
         ),
         floatingActionButton: Visibility(

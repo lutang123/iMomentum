@@ -213,7 +213,7 @@ void main() async {
 
       bool isBalanceOn = prefs.getBool('isBalance') ?? true;
       bool isWeekDay = prefs.getBool('isWeekDay') ?? false;
-      int startHour = prefs.getInt('startHour') ?? 9;
+      int startHour = prefs.getInt('startHour') ?? 6;
       int endHour = prefs.getInt('endHour') ?? 6;
 
       final appleSignInAvailable = await AppleSignInAvailable.check();

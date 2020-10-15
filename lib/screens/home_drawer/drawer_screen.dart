@@ -17,7 +17,7 @@ import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/home_drawer/mantras_screen.dart';
 import 'package:iMomentum/screens/home_drawer/quote_screen.dart';
-import 'package:iMomentum/screens/home_drawer/schedule_focus_time_screen.dart';
+import 'package:iMomentum/screens/home_drawer/balance_screen.dart';
 import 'package:iMomentum/screens/home_drawer/unsplash/image_gallery.dart';
 import 'package:iMomentum/screens/home_drawer/user_screen.dart';
 import 'package:provider/provider.dart';
@@ -320,7 +320,7 @@ class MyHomeDrawer extends StatelessWidget {
                 settingListTile(
                   context,
                   icon: EvaIcons.clockOutline,
-                  title: 'Schedule Focus Mode display time',
+                  title: 'Schedule Focus Mode displaying time',
                   onTap: () {
                     final route = SharedAxisPageRoute(
                         page: ScheduleFocusTime(),
