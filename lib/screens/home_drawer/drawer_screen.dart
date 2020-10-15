@@ -17,6 +17,7 @@ import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/screens/home_drawer/mantras_screen.dart';
 import 'package:iMomentum/screens/home_drawer/quote_screen.dart';
+import 'package:iMomentum/screens/home_drawer/schedule_focus_time_screen.dart';
 import 'package:iMomentum/screens/home_drawer/unsplash/image_gallery.dart';
 import 'package:iMomentum/screens/home_drawer/user_screen.dart';
 import 'package:provider/provider.dart';
@@ -319,37 +320,23 @@ class MyHomeDrawer extends StatelessWidget {
                 settingListTile(
                   context,
                   icon: EvaIcons.clockOutline,
-                  title: 'Schedule focus time',
+                  title: 'Schedule Focus Mode display time',
                   onTap: () {
                     final route = SharedAxisPageRoute(
-                        page: MoreSettingScreen(
-                          database: database,
-                        ),
+                        page: ScheduleFocusTime(),
                         transitionType: _transitionType);
                     Navigator.of(context, rootNavigator: true).push(route);
                   },
                 ),
                 settingDivider(context),
-                height > 700
-                    ? settingTitle(context, title: 'Others')
-                    : Container(),
-                settingListTile(
-                  context,
-                  icon: FontAwesomeIcons.directions,
-                  title: 'Guided Tour / FAQ',
-                  onTap: () {
-                    final route = SharedAxisPageRoute(
-                        page: AboutScreen(), transitionType: _transitionType);
-                    Navigator.of(context, rootNavigator: true).push(route);
-                  },
-                ),
                 ListTile(
                   leading: Avatar(
                     photoUrl: user.photoURL,
                     radius: 13,
                   ),
                   title: user.displayName == null || user.displayName.isEmpty
-                      ? Text('Profile', style: _listTitleTextStyle(_darkTheme))
+                      ? Text('User Profile',
+                          style: _listTitleTextStyle(_darkTheme))
                       : Text(user.displayName.firstCaps,
                           style: _listTitleTextStyle(_darkTheme)),
                   trailing: Icon(Icons.chevron_right,
@@ -360,6 +347,26 @@ class MyHomeDrawer extends StatelessWidget {
                     Navigator.of(context, rootNavigator: true).push(route);
                   },
                 ),
+                settingListTile(
+                  context,
+                  icon: FontAwesomeIcons.directions,
+                  title: 'Contact Us',
+                  onTap: () {
+                    final route = SharedAxisPageRoute(
+                        page: AboutScreen(), transitionType: _transitionType);
+                    Navigator.of(context, rootNavigator: true).push(route);
+                  },
+                ),
+                // settingListTile(
+                //   context,
+                //   icon: FontAwesomeIcons.directions,
+                //   title: 'Contact Us',
+                //   onTap: () {
+                //     final route = SharedAxisPageRoute(
+                //         page: AboutScreen(), transitionType: _transitionType);
+                //     Navigator.of(context, rootNavigator: true).push(route);
+                //   },
+                // ),
               ],
             ),
           ),
@@ -370,7 +377,7 @@ class MyHomeDrawer extends StatelessWidget {
 
   TextStyle _listTitleTextStyle(bool _darkTheme) {
     return TextStyle(
-        fontSize: 15, color: _darkTheme ? darkThemeWords : lightThemeWords);
+        fontSize: 16, color: _darkTheme ? darkThemeWords : lightThemeWords);
   }
 
   /// this is StatelessWidget, all the method outside of build do not have context, so we need to add BuildContext context
@@ -471,10 +478,17 @@ class MyHomeDrawer extends StatelessWidget {
       flushbarPosition: FlushbarPosition.BOTTOM,
       flushbarStyle: FlushbarStyle.FLOATING,
       backgroundGradient: KFlushBarGradient,
-      duration: Duration(seconds: 4),
-      titleText: Text(title, style: KFlushBarTitle),
+      duration: Duration(seconds: 5),
+      icon: Icon(
+        EvaIcons.infoOutline,
+        color: Colors.white,
+      ),
+      titleText: Padding(
+        padding: const EdgeInsets.all(3.0),
+        child: Text(title, style: KFlushBarTitle),
+      ),
       messageText: Padding(
-        padding: const EdgeInsets.only(top: 3),
+        padding: const EdgeInsets.only(left: 3),
         child: Text(
           message,
           style: KFlushBarMessage,

@@ -274,8 +274,8 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
     return TabBarView(
       children: <Widget>[
         ///Todo, contact us
-        firstTabNoDataContent(
-            database, _eventNoData, '', Strings.textError, 'Or contact us'),
+        firstTabNoDataContent(database, _eventNoData, '',
+            Strings.streamErrorMessage, 'Or contact us'),
         secondTabNoDataContent(database, _eventNoData),
       ],
     );
@@ -301,12 +301,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
                   DateTime.now(), entries);
 //                                            print(_todayDuration); // if no data, it will show null, not 0
               ///moved StreamBuilder up above TabBarView, otherwise we got error: Bad state: Stream has already been listened to
-              return TabBarView(
-                children: <Widget>[
-                  firstTab(database, todos, _events, _notDoneEvents),
-                  secondTab(entries, _eventsNew),
-                ],
-              );
+              return buildTabBarViewMainContent(database, todos, entries);
             } else {
               ///the problem is if no data on pie chart, it always shows nothing on task list,
               ///that's why if no data on pie chart, we return the whole first tab column
@@ -320,6 +315,16 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
           }
           return Center(child: CircularProgressIndicator());
         });
+  }
+
+  TabBarView buildTabBarViewMainContent(
+      Database database, List<Todo> todos, List<TodoDuration> entries) {
+    return TabBarView(
+      children: <Widget>[
+        firstTab(database, todos, _events, _notDoneEvents),
+        secondTab(entries, _eventsNew),
+      ],
+    );
   }
 
   TabBarView buildTabBarViewDurationEmptyAndError(
@@ -495,28 +500,25 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
       visible: _listVisible,
       child: Visibility(
         visible: _addButtonVisible,
-        child: SizedBox(
-          height: 60,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(left: 25.0),
-                child: FlatButton(
-                  child: Text(
-                    'Show Tips',
-                    style: textStyleShowTip(_darkTheme),
-                  ),
-                  onPressed: _showTipDialog,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(left: 25.0),
+              child: FlatButton(
+                child: Text(
+                  'Show Tips',
+                  style: textStyleShowTip(_darkTheme),
                 ),
+                onPressed: _showTipDialog,
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 3.0, right: 15),
-                child: MyFAB(onPressed: () => _add(database)),
-              ),
-              // todoAddButton(database),
-            ],
-          ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 15.0, right: 15),
+              child: MyFAB(onPressed: () => _add(database)),
+            ),
+            // todoAddButton(database),
+          ],
         ),
       ),
     );
@@ -901,14 +903,20 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
           EvaIcons.trash2Outline,
           color: Colors.white,
         ),
-        titleText: Text(
-          Strings.deleteTaskWarning,
-          style: KFlushBarTitle,
+        titleText: Padding(
+          padding: const EdgeInsets.all(3.0),
+          child: Text(
+            Strings.deleteTaskWarning,
+            style: KFlushBarTitle,
+          ),
         ),
-        messageText: Text(todo.title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: KFlushBarMessage))
+        messageText: Padding(
+          padding: const EdgeInsets.only(left: 3.0),
+          child: Text(todo.title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: KFlushBarMessage),
+        ))
       ..show(context).then((value) => setState(() {
             _addButtonVisible = true;
           }));

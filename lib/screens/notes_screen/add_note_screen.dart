@@ -122,20 +122,20 @@ class AddNoteScreenState extends State<AddNoteScreen> {
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Scaffold(
       backgroundColor: _darkTheme ? colorsDark[color] : colorsLight[color],
-      appBar: _buildAppBar(),
+      appBar: _buildAppBar(_darkTheme),
       body: Column(
         children: <Widget>[
           Expanded(
             child: CustomScrollView(
               shrinkWrap: true,
               slivers: <Widget>[
-                SliverToBoxAdapter(child: _buildMiddleContent()),
+                SliverToBoxAdapter(child: _buildMiddleContent(_darkTheme)),
               ],
             ),
           ),
           Align(
             alignment: Alignment.bottomCenter,
-            child: _bottomRow(), // Your footer widget
+            child: _bottomRow(_darkTheme), // Your footer widget
           ),
         ],
       ),
@@ -149,9 +149,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
     });
   }
 
-  AppBar _buildAppBar() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+  AppBar _buildAppBar(bool _darkTheme) {
     return AppBar(
       backgroundColor: _darkTheme ? colorsDark[color] : colorsLight[color],
       automaticallyImplyLeading: false,
@@ -163,7 +161,6 @@ class AddNoteScreenState extends State<AddNoteScreen> {
       title: note != null
           ? Text(_getFolderTitle(folders),
               style: Theme.of(context).textTheme.headline6)
-          //if note is null
           : Text(folderTitle, style: Theme.of(context).textTheme.headline6),
       centerTitle: false,
       actions: [
@@ -179,10 +176,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
           ),
         ),
         Visibility(
-          visible:
-              //isKeyboardVisible is to make sure if user just the button not show before edit
-//              (isKeyboardVisible == false || _isEdited == false) ? false : true,
-              (_isEdited) ? true : false,
+          visible: (_isEdited) ? true : false,
           child: FlatButton(
               child: Padding(
                 padding: const EdgeInsets.only(right: 5.0),
@@ -200,9 +194,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
     );
   }
 
-  Column _buildMiddleContent() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+  Column _buildMiddleContent(bool _darkTheme) {
     return Column(
       children: <Widget>[
         Padding(
@@ -325,9 +317,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
     return TextStyle(color: _darkTheme ? darkThemeHint : lightThemeHint);
   }
 
-  Widget _bottomRow() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+  Widget _bottomRow(bool _darkTheme) {
     return Container(
       margin: const EdgeInsets.only(top: 5.0),
       decoration: BoxDecoration(

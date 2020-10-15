@@ -54,10 +54,12 @@ enum CurrentWeatherState { NOT_DOWNLOADED, DOWNLOADING, FINISHED_DOWNLOADING }
 
 class _HomeScreenState extends State<HomeScreen> {
   double _quoteOpacity = 1.0; //used when showing flush bar
-  double _wholeBodyOpacity = 1.0; //used when edit or show top sheet
+  double _wholeBodyOpacity =
+      1.0; //used when edit or show top sheet, used with _visibleWhenEdit
   bool _nameVisible = true; //used when edit name
   bool _questionVisible = true; //used when changing question
-  bool _visibleWhenEdit = true;
+  bool _visibleWhenEdit =
+      true; ////to prevent not enough space when keyboard is up when edit
 
   CurrentWeatherState _state = CurrentWeatherState.NOT_DOWNLOADED;
   int temperature;
@@ -158,6 +160,19 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     _defaultMantra = DefaultMantraList().showMantra().body;
     _fetchWeather();
+    final startHourNotifier =
+        Provider.of<StartHourNotifier>(context, listen: false);
+    startHour = startHourNotifier.getStartHour();
+    final endHourNotifier =
+        Provider.of<EndHourNotifier>(context, listen: false);
+    endHour = endHourNotifier.getEndHour();
+    finalEndHour = endHour + 12;
+    final balanceNotifier =
+        Provider.of<BalanceNotifier>(context, listen: false);
+    isBalance = balanceNotifier.getBalance();
+    final weekdayNotifier =
+        Provider.of<WeekDayNotifier>(context, listen: false);
+    isWeekDay = weekdayNotifier.getWeekDay();
     super.initState();
   }
 
@@ -167,6 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
   GlobalKey _second = GlobalKey();
   GlobalKey _third = GlobalKey();
   GlobalKey _fourth = GlobalKey();
+  GlobalKey _fifth = GlobalKey();
 
   Future<bool> _isFirstLaunch() async {
     final sharedPreferences = await SharedPreferences.getInstance();
@@ -189,7 +205,7 @@ class _HomeScreenState extends State<HomeScreen> {
         // // print('second');
         if (result)
           ShowCaseWidget.of(myContext)
-              .startShowCase([_first, _second, _third, _fourth]);
+              .startShowCase([_first, _second, _third, _fourth, _fifth]);
       });
     });
     final bool isKeyboardVisible =
@@ -328,16 +344,16 @@ class _HomeScreenState extends State<HomeScreen> {
             if (todayTodosNotDone.length > 0) {
               return _todoItemContent(database, todayTodosNotDone); //Expanded
             } else {
-              return _emptyListQuestionContent(); //if todayTodosNotDone is empty //Expanded
+              return _emptyListQuestionContent(); //Expanded //if todayTodosNotDone is empty
             }
           } else {
-            return _emptyListQuestionContent(); // if todos is empty //Expanded
+            return _emptyListQuestionContent(); //Expanded //if todos is empty
           }
         } else if (snapshot.hasError) {
           ///Todo: onTap contact us
           return _errorScreen(
-              text: Strings.textError,
-              textTap: 'Or contact us'); //if error  //Expanded
+              text: Strings.streamErrorMessage,
+              textTap: ''); //Expanded //if error
         }
         return Center(child: CircularProgressIndicator());
       },
@@ -459,118 +475,151 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           Spacer(),
-          _focusModeOn
-              ? _buildGreetingAndQuestionColumn()
-              : _buildMantraStream(),
+          _focusModeOn ? _questionAndTextField() : _buildMantraStream(),
           Spacer(),
         ],
       ),
     );
   }
 
-  Column _buildGreetingAndQuestionColumn() {
+  Column _questionAndTextField() {
     final bool isKeyboardVisible =
         KeyboardVisibilityProvider.isKeyboardVisible(context);
     return Column(
-      children: <Widget>[
-        // when keyboard is up, we can not hide greeting otherwise we can't edit name
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: getFirstGreetings,
-        ), //first greetings
-        !isKeyboardVisible //this is to prevent no space when adding task
-            ? Visibility(
-                //this is to edit name without running out of space, add this visibility, including quote
-                visible: _nameVisible,
-                child: MyHomeMiddleSpaceSizedBox())
-            : SizedBox(height: 10),
-        Visibility(
-          visible: _nameVisible,
-          child: _questionAndTextField(),
-        ),
+      children: [
+        Showcase(
+          key: _fourth,
+          description: Strings.fourth,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: isBalance
+                ? _buildScheduledQuestion(isKeyboardVisible)
+                : mainContentWhenTaskEmpty(isKeyboardVisible),
+          ),
+        ), //33
+        Showcase(
+            key: _fifth,
+            description: Strings.fifth,
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+            child: isBalance
+                ? _buildScheduledHomeTextField()
+                : nameVisibilityHomeTextField(_onSubmitted)),
       ],
     );
   }
 
-  Column _questionAndTextField() {
-    return Column(
-      children: <Widget>[
-        Text('$dayOfWeek, $formattedDate ', style: KHomeDate),
-        SizedBox(height: 15),
-        Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: _buildQuestion(),
-            ), //33
-            Showcase(
-                key: _fourth,
-                description: Strings.fourth,
-                contentPadding:
-                    const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-                child: _buildHomeTextField()),
-          ],
-        ),
-      ],
-    );
-  }
+  // // todo: make user schedule
+  // int startFocus = 9;
+  // int endFocus = 17;
+  // int startSleep = 23;
 
-  // todo: make user schedule
-  Widget _buildQuestion() {
+  int startHour;
+  int endHour;
+  int finalEndHour;
+  bool isBalance;
+  bool isWeekDay;
+
+  Widget _buildScheduledQuestion(bool isKeyboardVisible) {
     final int hour = int.parse(DateFormat('kk').format(DateTime.now()));
-    if ((hour >= 6) & (hour < 20)) {
-      return TypewriterAnimatedTextKit(
-        isRepeatingAnimation: false,
-        text: ['What is your main focus today?'],
-        textAlign: TextAlign.center,
-        textStyle: KHomeQuestion,
-      );
+    // final int dayOfWeek = DateTime.now().weekday;
+    // isWeekDay //if this is true
+    // ? if ((dayOfWeek <= 5) & (dayOfWeek >= 0)) {
+    if ((hour >= startHour) & (hour < finalEndHour)) {
+      return mainContentWhenTaskEmpty(isKeyboardVisible);
     } //8pm
-    else if ((hour >= 20) & (hour < 23)) {
+    else if ((hour >= finalEndHour) & (hour < finalEndHour + 3)) {
       return Visibility(
         //after submitTomorrow,  _questionVisible is false;
         visible: _questionVisible,
-        child: TypewriterAnimatedTextKit(
-          isRepeatingAnimation: false,
-          text: ['What is your plan tomorrow?'],
-          textAlign: TextAlign.center,
-          textStyle: KHomeQuestion,
+        child: Column(
+          children: [
+            greetingsAndSpace(isKeyboardVisible), //first greetings
+            nameVisibilityTomorrowQuestion(),
+          ],
         ),
       );
-    } else //after 11pm
-      return showUpGoodNight();
+    } else
+      return _buildMantraStream();
   }
 
-  ShowUp showUpGoodNight() {
-    return ShowUp(
-      delay: 500,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text(
-          'Have a good night sleep.',
-          style: KHomeGoodNight,
-          textAlign: TextAlign.center,
+  Column mainContentWhenTaskEmpty(bool isKeyboardVisible) {
+    return Column(
+      children: [
+        // when keyboard is up, we can not hide greeting otherwise we can't edit name
+        greetingsAndSpace(isKeyboardVisible), //first greetings
+        nameVisibilityMainQuestion(),
+      ],
+    );
+  }
+
+  Column greetingsAndSpace(bool isKeyboardVisible) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: getFirstGreetings,
         ),
+        !isKeyboardVisible //this is to prevent no space when adding task
+            ? MyHomeMiddleSpaceSizedBox()
+            : SizedBox(height: 10),
+      ],
+    );
+  }
+
+  Visibility nameVisibilityTomorrowQuestion() {
+    return Visibility(
+      visible: _nameVisible,
+      child: Column(
+        children: [
+          Text('$dayOfWeek, $formattedDate ', style: KHomeDate),
+          SizedBox(height: 15),
+          TypewriterAnimatedTextKit(
+            isRepeatingAnimation: false,
+            text: ['What is your plan tomorrow?'],
+            textAlign: TextAlign.center,
+            textStyle: KHomeQuestion,
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildHomeTextField() {
-    final int hour = int.parse(DateFormat('kk').format(DateTime.now()));
-    if ((hour >= 6) & (hour < 20)) {
-      return HomeTextField(onSubmitted: _onSubmitted);
-    } //8pm
-    else if ((hour >= 20) & (hour < 23)) {
-      // 8pm-11pm
-      return Column(
+  Visibility nameVisibilityMainQuestion() {
+    return Visibility(
+      visible: _nameVisible,
+      child: Column(
         children: [
-          _questionVisible
-              ? HomeTextField(onSubmitted: _onSubmittedTomorrow)
-              : showUpGoodNight(),
+          Text('$dayOfWeek, $formattedDate ', style: KHomeDate),
+          SizedBox(height: 15),
+          TypewriterAnimatedTextKit(
+            isRepeatingAnimation: false,
+            text: ['What is your main focus today?'],
+            textAlign: TextAlign.center,
+            textStyle: KHomeQuestion,
+          ),
         ],
-      );
+      ),
+    );
+  }
+
+  Widget _buildScheduledHomeTextField() {
+    final int hour = int.parse(DateFormat('kk').format(DateTime.now()));
+    if ((hour >= startHour) & (hour < finalEndHour)) {
+      return nameVisibilityHomeTextField(_onSubmitted);
+    } //8pm
+    else if ((hour >= finalEndHour) & (hour < finalEndHour + 2)) {
+      // 8pm-11pm
+      return _questionVisible
+          ? nameVisibilityHomeTextField(_onSubmittedTomorrow)
+          : _buildMantraStream();
     } else //after 11pm, and on question will becomes good night
       return Container();
+  }
+
+  Visibility nameVisibilityHomeTextField(_onSubmitted) {
+    return Visibility(
+        visible: _nameVisible, child: HomeTextField(onSubmitted: _onSubmitted));
   }
 
   ///error screen
@@ -582,15 +631,13 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           Spacer(),
-          _focusModeOn
-              ? Column(
-                  children: [
-                    _buildGreetingAndQuestionColumn(),
-                    SizedBox(height: 10),
-                    HomeErrorMessage(text: text, textTap: textTap, onTap: onTap)
-                  ],
-                )
-              : _buildMantraStream(),
+          Column(
+            children: [
+              _focusModeOn ? _questionAndTextField() : _buildMantraStream(),
+              SizedBox(height: 10),
+              HomeErrorMessage(text: text, textTap: textTap, onTap: onTap)
+            ],
+          ),
           Spacer(),
         ],
       ),
@@ -691,14 +738,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  int lengthLimit = 80;
+  int lengthLimit = 65;
   void getLengthLimit(double height) {
     if (height >= 850) {
-      lengthLimit = 100;
+      lengthLimit = 75;
     } else if ((height < 850) && (height > 700)) {
-      lengthLimit = 90;
+      lengthLimit = 70;
     } else if (height < 700) {
-      lengthLimit = 80;
+      lengthLimit = 65;
     }
   }
 
@@ -1087,16 +1134,22 @@ class _HomeScreenState extends State<HomeScreen> {
       flushbarPosition: FlushbarPosition.BOTTOM,
       flushbarStyle: FlushbarStyle.FLOATING,
       backgroundGradient: KFlushBarGradient,
-      duration: Duration(seconds: 3),
+      duration: Duration(seconds: 4),
       icon: Icon(
         icon,
         color: Colors.white,
       ),
-      titleText: Text(title, style: KFlushBarTitle),
-      messageText: Text(subtitle,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: KFlushBarMessage),
+      titleText: Padding(
+        padding: const EdgeInsets.all(3.0),
+        child: Text(title, style: KFlushBarTitle),
+      ),
+      messageText: Padding(
+        padding: const EdgeInsets.only(left: 3.0),
+        child: Text(subtitle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: KFlushBarMessage),
+      ),
     )..show(context).then((value) => setState(() {
           _quoteOpacity = 1.0;
         }));
@@ -1132,11 +1185,17 @@ class _HomeScreenState extends State<HomeScreen> {
         EvaIcons.trash2Outline,
         color: Colors.white,
       ),
-      titleText: Text(Strings.deleteTaskWarning, style: KFlushBarTitle),
-      messageText: Text(todo.title,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: KFlushBarMessage),
+      titleText: Padding(
+        padding: const EdgeInsets.all(3.0),
+        child: Text(Strings.deleteTaskWarning, style: KFlushBarTitle),
+      ),
+      messageText: Padding(
+        padding: const EdgeInsets.only(left: 3.0),
+        child: Text(todo.title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: KFlushBarMessage),
+      ),
     )..show(context).then((value) => setState(() {
           _quoteOpacity = 1.0;
         }));

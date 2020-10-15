@@ -8,7 +8,6 @@ class TodoScreenEmptyOrError extends StatelessWidget {
   final String text1;
   final String tips;
   final String textTap;
-  // final String text2;
   final Function onTap;
 
   const TodoScreenEmptyOrError({
@@ -27,6 +26,7 @@ class TodoScreenEmptyOrError extends StatelessWidget {
       padding: const EdgeInsets.all(15.0),
       child: Column(
         children: [
+          SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.only(left: 15.0),
             child: Text(

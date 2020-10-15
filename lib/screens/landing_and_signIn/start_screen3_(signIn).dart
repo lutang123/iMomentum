@@ -95,11 +95,13 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
   EmailPasswordSignInModel get model => widget.model;
 
   String userNameFinal;
+  String fileName;
 
   @override
   void initState() {
     userNameFinal = widget.userName;
     _teddyController = TeddyController();
+    fileName = "assets/Teddy.flr";
     super.initState();
   }
 
@@ -235,7 +237,7 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
     return Container(
       height: height * 0.14,
       child: FlareActor(
-        "assets/Teddy.flr",
+        fileName,
         shouldClip: false,
         alignment: Alignment.bottomCenter,
         fit: BoxFit.contain,

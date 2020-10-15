@@ -15,6 +15,7 @@ import 'package:iMomentum/app/constants/theme.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:iMomentum/app/utils/extension_firstCaps.dart';
+import 'dart:io';
 
 class AddReminderScreen extends StatefulWidget {
   const AddReminderScreen({
@@ -95,7 +96,6 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                   fontSize: 16,
                   color: _darkTheme ? Colors.white60 : Colors.black54,
                   fontStyle: FontStyle.italic),
-//                  style: Theme.of(context).textTheme.subtitle2,
             ),
             SizedBox(height: 20),
             _buildReminderDate(todo),
@@ -124,7 +124,9 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
                           _darkTheme, 'Change', _scheduleNotification),
                     ],
                   ),
-            SizedBox(height: 100)
+
+            ///in Android, it doesn't go down when no keyboard.
+            Platform.isIOS ? SizedBox(height: 100) : SizedBox(height: 20),
           ],
         ),
       ),
@@ -154,15 +156,7 @@ class _AddReminderScreenState extends State<AddReminderScreen> {
   }
 
   Widget _buildReminderDate(Todo todo) {
-    return
-        // DateFormat('M/d/y').format(todo.date) == formattedToday
-        //   ? TimePicker(
-        //       selectedTime: _reminderTime,
-        //       onSelectedTime: (time) => setState(() => _reminderTime = time),
-        //     )
-        //   :
-
-        DateTimePicker(
+    return ReminderTimePicker(
       selectedDate: _reminderDate,
       selectedTime: _reminderTime,
       onSelectedDate: (date) => setState(() => _reminderDate = date),

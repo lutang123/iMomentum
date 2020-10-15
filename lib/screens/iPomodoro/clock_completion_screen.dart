@@ -356,25 +356,28 @@ class _CompletionScreenState extends State<CompletionScreen> {
       // ),
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(10),
-      borderRadius: 10,
+      borderRadius: 15,
       flushbarPosition: FlushbarPosition.TOP,
       flushbarStyle: FlushbarStyle.FLOATING,
       backgroundGradient: KFlushBarGradient,
-      duration: Duration(seconds: 6),
-      titleText: RichText(
-        text: TextSpan(
-          style: KFlushBarTitle,
-          children: <TextSpan>[
-            TextSpan(text: 'Your total focused time for today is: '),
-            TextSpan(
-                text: '${Format.minutes(todayDuration)} so far.',
-                style: KFlushBarTitleHighlight),
-            TextSpan(text: ' Keep Going!')
-          ],
+      duration: Duration(seconds: 5),
+      titleText: Padding(
+        padding: const EdgeInsets.all(3.0),
+        child: RichText(
+          text: TextSpan(
+            style: KFlushBarTitle,
+            children: <TextSpan>[
+              TextSpan(text: 'Your total focused time for today is: '),
+              TextSpan(
+                  text: '${Format.minutes(todayDuration)} so far.',
+                  style: KFlushBarTitleHighlight),
+              TextSpan(text: ' Keep Going!')
+            ],
+          ),
         ),
       ),
       messageText: Padding(
-        padding: const EdgeInsets.only(top: 5),
+        padding: const EdgeInsets.only(left: 3),
         child: Text(
             'You can find detailed daily focus summary from Todo screen.',
             style: KFlushBarMessage),

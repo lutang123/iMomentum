@@ -38,14 +38,14 @@ class _APIQuoteState extends State<APIQuote> {
     super.initState();
   }
 
-  int lengthLimit = 80;
+  int lengthLimit = 65;
   void getLengthLimit(double height) {
     if (height >= 850) {
-      lengthLimit = 120;
+      lengthLimit = 75;
     } else if ((height < 850) && (height > 700)) {
-      lengthLimit = 100;
+      lengthLimit = 70;
     } else if (height < 700) {
-      lengthLimit = 80;
+      lengthLimit = 65;
     }
   }
 

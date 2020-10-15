@@ -9,7 +9,7 @@ import 'package:iMomentum/app/models/mantra_model.dart';
 import 'package:iMomentum/app/models/quote_model.dart';
 import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
-import 'package:iMomentum/screens/home_drawer/top_title.dart';
+import 'package:iMomentum/screens/home_drawer/mantra_top_title.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/cupertino.dart';
@@ -38,23 +38,10 @@ class _MoreSettingScreenState extends State<MoreSettingScreen> {
   //   }
   // }
 
-  int counter = 0;
-
-  void _onDoubleTap() {
-    setState(() {
-      ImagePath.randomImageUrl =
-          'https://source.unsplash.com/random?nature/$counter';
-      counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    final randomNotifier = Provider.of<RandomNotifier>(context, listen: false);
-    bool _randomOn = (randomNotifier.getRandom() == true);
-    final imageNotifier = Provider.of<ImageNotifier>(context, listen: false);
 
     ///for mantra
     final mantraNotifier = Provider.of<MantraNotifier>(context);
@@ -78,7 +65,13 @@ class _MoreSettingScreenState extends State<MoreSettingScreen> {
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       children: <Widget>[
-                        _topRow(),
+                        MantraTopTitle(
+                          title: 'More Settings',
+                          subtitle: '',
+                          onPressed: null,
+                          flatButtonText: '',
+                          darkTheme: _darkTheme,
+                        ),
                         SettingSwitch(
                           size: 20,
                           icon: FontAwesomeIcons.adjust,
@@ -102,9 +95,6 @@ class _MoreSettingScreenState extends State<MoreSettingScreen> {
                                         size: 20,
                                         icon: FontAwesomeIcons.user,
                                         title: 'Apply Your Own Mantras',
-                                        // isThreeLine: true,
-                                        // subtitle:
-                                        //     'Only available after adding your own mantras.',
                                         value: mantras.length > 0
                                             ? _mantraOn
                                             : false,
@@ -112,8 +102,6 @@ class _MoreSettingScreenState extends State<MoreSettingScreen> {
                                           _mantraOn = val;
                                           onMantraChanged(val, mantraNotifier);
                                         }),
-                                    // Text(
-                                    //     'Only available after adding your own mantras.')
                                   ],
                                 );
                               } else if (snapshot.hasError) {

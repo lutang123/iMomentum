@@ -160,19 +160,19 @@ const KDialogButtonLight = TextStyle(
 
 const KFlushBarTitle = TextStyle(
     fontWeight: FontWeight.w600,
-    fontSize: 14.0,
+    fontSize: 16.0,
     color: Colors.white,
     fontFamily: "ShadowsIntoLightTwo");
 
 const KFlushBarTitleHighlight = TextStyle(
     fontWeight: FontWeight.bold,
-    fontSize: 15.0,
+    fontSize: 16.0,
     color: Colors.white,
     fontStyle: FontStyle.italic,
     fontFamily: "ShadowsIntoLightTwo");
 
 const KFlushBarMessage = TextStyle(
-    fontSize: 13.0,
+    fontSize: 15.0,
     color: Colors.white,
     fontStyle: FontStyle.italic,
     fontFamily: "ShadowsIntoLightTwo");

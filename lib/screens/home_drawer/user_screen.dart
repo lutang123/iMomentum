@@ -136,7 +136,7 @@ class _UserScreenState extends State<UserScreen> {
             size: 26,
             color: _darkTheme ? darkThemeButton : lightThemeButton,
           ),
-          onPressed: _updateName,
+          onPressed: _toggleVisibility,
         )
       ],
     );
@@ -264,7 +264,7 @@ class _UserScreenState extends State<UserScreen> {
   }
 
   bool _nameVisible = true;
-  void _updateName() {
+  void _toggleVisibility() {
     setState(() {
       _nameVisible = !_nameVisible;
     });

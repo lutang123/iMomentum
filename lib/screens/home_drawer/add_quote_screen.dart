@@ -109,6 +109,9 @@ class _AddQuoteScreenState extends State<AddQuoteScreen> {
             title = value.firstCaps;
             _save();
           },
+          // do not remove this
+          keyboardType: TextInputType.multiline,
+          maxLines: null,
           maxLength: 100,
           style: buildTextStyleQuote(_darkTheme),
           autofocus: true,

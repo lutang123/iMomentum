@@ -78,11 +78,15 @@ class Strings {
   static const teddy = 'I am Teddy. I am here to sign up with you.';
 
   // Home screen tip on showcase
-  static const first = 'Tap on weather information to show details.';
+  static const first =
+      'Tap on weather information to show detailed weather forecast for your current location.';
   static const second =
-      'Double tap anywhere on the screen to change the photo. You can also change photo from settings.';
+      'Double tap anywhere on the screen to change the background photo. You can also change to your favourite photo from settings.';
   static const third = 'Tap on your name to edit.';
-  static const fourth = "Add your today's focus here.";
+  static const fourth =
+      "Question will show on a default 9am - 5pm schedule. You can change the schedule in settings.";
+  static const fifth = "Add your focused task here.";
+
   static const focusButtonTip =
       'Press here to start working on your task with our customizable Pomodoro Timer.';
   static const deleteTaskWarning =
@@ -95,7 +99,7 @@ class Strings {
       "\n"
       "Tap on the plus button to enter your first task today!";
 
-  static const String tipsOnTodoListScreen = "You can choose from 5 categories "
+  static const String tipsOnTodoListScreen = "There are 5 categories "
       "(Focus, Work, Home, Shopping and Others) "
       "to organize your daily tasks. Tasks in Focus category will show "
       "on Home screen to enable Focus Mode for these tasks. "
@@ -126,7 +130,10 @@ class Strings {
       'The plus button on Folders screen will add note to the default "Notes" folder. You can also create your own folders and tap on the folder to read or add notes. '
       '\n'
       '\n'
-      'After creating your own folder, you can edit folder name by swiping right on the folder, and delete folder by swiping left.';
+      'After creating your own folder, you can edit folder name by swiping right on the folder, and delete folder by swiping left.'
+      '\n'
+      '\n'
+      'After you add a note, you can swipe right to move note to other folder, and swipe left to delete note.';
 
   static const emptyNote =
       'No notes in this folder yet. Tap the plus button to add a new note.';
@@ -168,9 +175,9 @@ class Strings {
 
   // For all error:
   ///Todo: add contact us
-  static const String textError =
+  static const String streamErrorMessage =
       'Oops! Something went wrong, please try again later.';
-  static const String textErrorOnTap = 'Or contact us';
+  static const String textErrorOnTap = '';
 
   static const String over100MaxWarning =
       'For screen design reason, we have set maximum character for as 100. You can add comment if you need, and there is no limited characters for comment.';
@@ -189,15 +196,15 @@ class Strings {
 
   //focus switch on
   static const String focusSwitchOnTitle =
-      'Focus mode button will show on Home screen after you add a focused task.';
+      'Focus mode button will show on Home screen after adding a focused task.';
   static const String focusSwitchOnSubTitle =
       'Focus on what is the most important to us.';
 
   //photo switch off
   static const String focusSwitchOffTitle =
-      'Focus mode will be hidden from home screen.';
+      'Productivity features will be hidden from home screen.';
   static const String focusSwitchOFFSubTitle =
-      'We all need some downtime in a day.';
+      'Home Screen will only show mantra.';
 
   //photo switch on
   static const String shufflePhotoSwitchOnTitle =

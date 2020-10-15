@@ -31,10 +31,6 @@ class BuildPhotoView extends StatelessWidget {
 //                Colors.white.withOpacity(0.8), BlendMode.dstATop),
           ),
         ),
-        // child: Center(
-        //     child: CircularProgressIndicator(
-        //   valueColor: AlwaysStoppedAnimation<Color>(Colors.white70),
-        // )),
       ),
       loadingBuilder: (BuildContext context, ImageChunkEvent event) {
         return Container(

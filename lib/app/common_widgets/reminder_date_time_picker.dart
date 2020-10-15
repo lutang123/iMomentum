@@ -5,8 +5,8 @@ import 'package:iMomentum/app/utils/format.dart';
 
 import 'input_dropdown.dart';
 
-class DateTimePicker extends StatelessWidget {
-  const DateTimePicker({
+class ReminderTimePicker extends StatelessWidget {
+  const ReminderTimePicker({
     Key key,
     this.labelText,
     this.selectedDate,
@@ -46,7 +46,6 @@ class DateTimePicker extends StatelessWidget {
     final valueStyle = Theme.of(context).textTheme.subtitle1;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      // crossAxisAlignment: CrossAxisAlignment.end,
       children: <Widget>[
         SizedBox(
           width: 150,
@@ -69,15 +68,32 @@ class DateTimePicker extends StatelessWidget {
   }
 }
 
-class TimePicker extends StatelessWidget {
-  const TimePicker({
+class DateTimePicker extends StatelessWidget {
+  const DateTimePicker({
     Key key,
+    this.labelTextStart,
+    this.selectedTimeStart,
+    this.onSelectedTimeStart,
+    this.labelText,
     this.selectedTime,
     this.onSelectedTime,
   }) : super(key: key);
 
+  final String labelTextStart;
+  final TimeOfDay selectedTimeStart;
+  final ValueChanged<TimeOfDay> onSelectedTimeStart;
+
+  final String labelText;
   final TimeOfDay selectedTime;
   final ValueChanged<TimeOfDay> onSelectedTime;
+
+  Future<void> _selectTimeStart(BuildContext context) async {
+    final pickedTime =
+        await showTimePicker(context: context, initialTime: selectedTimeStart);
+    if (pickedTime != null && pickedTime != selectedTimeStart) {
+      onSelectedTimeStart(pickedTime);
+    }
+  }
 
   Future<void> _selectTime(BuildContext context) async {
     final pickedTime =
@@ -89,20 +105,24 @@ class TimePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final valueStyle = Theme.of(context).textTheme.subtitle1;
+    final valueStyle = Theme.of(context).textTheme.headline6;
     return Row(
-      // crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         SizedBox(
-            width: 150,
-            child: Center(
-                child: Text('Today',
-                    style: Theme.of(context).textTheme.headline6))),
-        // SizedBox(width: 12.0),
-        SizedBox(
-          width: 150,
+          width: 300,
           child: InputDropdown(
+            labelText: labelTextStart,
+            valueText: selectedTimeStart.format(context),
+            valueStyle: valueStyle,
+            onPressed: () => _selectTimeStart(context),
+          ),
+        ),
+        SizedBox(
+          width: 300,
+          child: InputDropdown(
+            labelText: labelText,
             valueText: selectedTime.format(context),
             valueStyle: valueStyle,
             onPressed: () => _selectTime(context),

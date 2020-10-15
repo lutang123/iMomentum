@@ -1,10 +1,8 @@
+import 'package:contactus/contactus.dart';
 import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
-import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:flutter/cupertino.dart';
-import '../../app/constants/constants_style.dart';
 
 class AboutScreen extends StatelessWidget {
   final Uri _emailLaunchUri = Uri(
@@ -41,42 +39,29 @@ class AboutScreen extends StatelessWidget {
           ),
         ),
         body: Center(
-            child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Text(
-                "xxxxxx",
-                style: KIntro,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Text(
-                "xxxxxx",
-                style: KIntro,
-              ),
-            ),
-            SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-//                MyFlatButton(
-//                  text: 'Our Website',
-//                  color: Colors.white,
-//                  onPressed: () async => _launchWebsite(),
-//                ),
-                MyFlatButton(
-                  text: 'Email Us',
-                  color: Colors.white,
-                  onPressed: () async => _launchEmailClient(),
-                ),
-              ],
-            ),
-          ],
-        )),
+          child: ContactUs(
+            cardColor: Colors.white60,
+            companyColor: Color(0xf01aa6b7),
+            taglineColor: Colors.black87,
+            textColor: Colors.black87,
+            logo: AssetImage('assets/logo2.png'),
+            email: 'lutang908@gmail.com',
+            companyName: 'iMomentum',
+            phoneNumber: '+01 604 500 8822',
+            website: 'https://abhishekdoshi.godaddysites.com',
+            githubUserName: 'lutang123',
+            linkedinURL: 'https://www.linkedin.com/in/lutang123/',
+            // tagLine: 'Flutter Developer',
+            twitterHandle: 'AbhishekDoshi26',
+            instagram: '_abhishek_doshi',
+          ),
+        ),
+        bottomNavigationBar: ContactUsBottomAppBar(
+          companyName: 'iMomentum',
+          textColor: Colors.white,
+          backgroundColor: Colors.teal.shade300,
+          email: 'adoshi26.ad@gmail.com',
+        ),
       ),
     );
   }

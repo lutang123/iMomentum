@@ -68,21 +68,42 @@ class SettingSwitchNoIcon extends StatelessWidget {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
 
-    return ListTile(
-      title: Text(title,
-          style: TextStyle(
-              fontSize: 15,
-              color: _darkTheme ? darkThemeWords : lightThemeWords)),
-      trailing: Transform.scale(
-        scale: 0.9,
-        child: CupertinoSwitch(
-          activeColor:
-              _darkTheme ? switchActiveColorDark : switchActiveColorLight,
-          trackColor: Colors.grey,
-          value: value,
-          onChanged: onChanged,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(title,
+            style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: _darkTheme ? darkThemeWords : lightThemeWords)),
+        Transform.scale(
+          scale: 0.9,
+          child: CupertinoSwitch(
+            activeColor:
+                _darkTheme ? switchActiveColorDark : switchActiveColorLight,
+            trackColor: Colors.grey,
+            value: value,
+            onChanged: onChanged,
+          ),
         ),
-      ),
+      ],
     );
+
+    //   ListTile(
+    //   title: Text(title,
+    //       style: TextStyle(
+    //           fontSize: 15,
+    //           color: _darkTheme ? darkThemeWords : lightThemeWords)),
+    //   trailing: Transform.scale(
+    //     scale: 0.9,
+    //     child: CupertinoSwitch(
+    //       activeColor:
+    //           _darkTheme ? switchActiveColorDark : switchActiveColorLight,
+    //       trackColor: Colors.grey,
+    //       value: value,
+    //       onChanged: onChanged,
+    //     ),
+    //   ),
+    // );
   }
 }

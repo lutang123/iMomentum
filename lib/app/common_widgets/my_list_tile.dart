@@ -50,7 +50,7 @@ class HomeTodoListTile extends StatelessWidget {
         ),
       ),
       trailing: IconButton(
-        color: Colors.grey[200],
+        color: Colors.white60,
         // iconSize: 18,
         icon: Icon(Icons.clear),
         onPressed: onPressed,
@@ -125,65 +125,33 @@ class HomeMantraListTile extends StatelessWidget {
   }
 }
 
-class MantraListTile extends StatelessWidget {
-  const MantraListTile({
+class MantraList extends StatelessWidget {
+  const MantraList({
     Key key,
-    @required this.mantra,
+    @required this.text,
     this.onTap,
-    this.onPressed,
   }) : super(key: key);
-  final MantraModel mantra;
+  final String text;
   final VoidCallback onTap;
-  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    return ListTile(
-      title: AutoSizeText(mantra.title,
-          maxLines: 3,
-          maxFontSize: 20,
-          minFontSize: 18,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: _darkTheme ? darkThemeWords : lightThemeWords,
-            fontSize: 20.0,
-          )),
+    return InkWell(
       onTap: onTap,
-    );
-  }
-}
-
-class QuoteListTile extends StatelessWidget {
-  const QuoteListTile({
-    Key key,
-    @required this.quote,
-    this.onTap,
-    this.onPressed,
-  }) : super(key: key);
-  final QuoteModel quote;
-  final VoidCallback onTap;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    return ListTile(
-      title: AutoSizeText(
-          quote.author == null || quote.author == ''
-              ? '"${quote.title}"'
-              : '"${quote.title} -- ${quote.author}"',
-          maxLines: 4,
-          maxFontSize: 18,
-          minFontSize: 17,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10.0),
+        child: AutoSizeText(text,
+            maxLines: 3,
+            maxFontSize: 18,
+            minFontSize: 16,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
               color: _darkTheme ? darkThemeWords : lightThemeWords,
               fontSize: 18.0,
-              fontStyle: FontStyle.italic)),
-      onTap: onTap,
+            )),
+      ),
     );
   }
 }

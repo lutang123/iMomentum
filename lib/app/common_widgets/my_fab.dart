@@ -16,19 +16,19 @@ class MyFAB extends StatelessWidget {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return FloatingActionButton(
-        elevation: 0.0,
-        heroTag: heroTag,
-        onPressed: onPressed,
-        shape: CircleBorder(
-            side: BorderSide(
-                color: _darkTheme ? darkThemeButton : lightThemeButton,
-                width: 2.0)),
-        child: Icon(Icons.add,
-            size: 30, color: _darkTheme ? darkThemeButton : lightThemeButton),
-        // child: child,
-        backgroundColor: Colors.transparent
-        // backgroundColor:
-        //     _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
-        );
+      // elevation: 0.0,
+      heroTag: heroTag,
+      onPressed: onPressed,
+      shape: CircleBorder(
+          side: BorderSide(
+              color: _darkTheme ? darkThemeButton : lightThemeButton,
+              width: 2.0)),
+      child: Icon(Icons.add,
+          size: 30, color: _darkTheme ? darkThemeButton : lightThemeButton),
+      // child: child,
+      // backgroundColor: Colors.transparent
+      backgroundColor:
+          _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
+    );
   }
 }

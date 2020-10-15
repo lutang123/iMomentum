@@ -129,7 +129,7 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     rowFocusLength(_darkTheme, setState),
-                    rowReastLength(_darkTheme, setState),
+                    rowRestLength(_darkTheme, setState),
                     SizedBox(height: 5),
                     rowPlaySounds(_darkTheme, setState),
                     rowButton(_darkTheme, context),
@@ -218,7 +218,7 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
     );
   }
 
-  Row rowReastLength(bool _darkTheme, StateSetter setState) {
+  Row rowRestLength(bool _darkTheme, StateSetter setState) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
@@ -319,7 +319,6 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
   bool _validateAndSaveForm() {
     final form = _formKey.currentState; //validate
     if (form.validate()) {
-      //save
       form.save();
       return true;
     }
@@ -330,7 +329,6 @@ class _ClockBeginScreenState extends State<ClockBeginScreen> {
   void _done(BuildContext context) {
     if (_validateAndSaveForm()) {
       setState(() {
-        // _topOpacity = 1.0;
         _durationInMin = _durationInMin;
       });
       _restInMin = _restInMin;

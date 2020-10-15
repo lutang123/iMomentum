@@ -93,9 +93,7 @@ class _ImageGalleryState extends State<ImageGallery> {
                 color: _darkTheme ? darkThemeButton : lightThemeButton,
                 size: 30,
               ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              onPressed: () => Navigator.of(context).pop(),
             ),
             title: Text('Photos', style: Theme.of(context).textTheme.headline5
                 // TextStyle(
@@ -174,20 +172,20 @@ class _ImageGalleryState extends State<ImageGallery> {
                               child: Image.network(_appliedImageUrl,
                                   fit: BoxFit.cover))),
                     ),
-                    MyBottomContainer(
+                    MyBottomContainerInImage(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: <Widget>[
-                          myFlatIconButton(
-                            Icons.clear,
-                            'Change',
-                            onPressed: _deleteApplied,
-                          ),
-                          myFlatIconButton(
-                            Icons.check,
-                            'Apply Again',
-                            onPressed: () => _applyAgain(_appliedImageUrl),
-                          ),
+                          MyFlatIconButton(
+                              isDarkTheme: _darkTheme,
+                              icon: Icons.clear,
+                              text: 'Change',
+                              onPressed: _deleteApplied),
+                          MyFlatIconButton(
+                              isDarkTheme: _darkTheme,
+                              icon: Icons.check,
+                              text: 'Apply Again',
+                              onPressed: () => _applyAgain(_appliedImageUrl)),
                         ],
                       ),
                     ),
@@ -246,18 +244,27 @@ class _ImageGalleryState extends State<ImageGallery> {
                     ),
                   ),
                 ),
-                MyBottomContainer(
+                MyBottomContainerInImage(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: <Widget>[
-                          myFlatIconButton(Icons.crop, 'Crop',
+                          MyFlatIconButton(
+                              isDarkTheme: _darkTheme,
+                              icon: Icons.crop,
+                              text: 'Crop',
                               onPressed: _cropImage),
-                          myFlatIconButton(Icons.remove_red_eye, 'Preview',
+                          MyFlatIconButton(
+                              isDarkTheme: _darkTheme,
+                              icon: Icons.remove_red_eye,
+                              text: 'Preview',
                               onPressed: _preview),
-                          myFlatIconButton(Icons.clear, 'Cancel',
+                          MyFlatIconButton(
+                              isDarkTheme: _darkTheme,
+                              icon: Icons.clear,
+                              text: 'Cancel',
                               onPressed: _cancel),
                         ],
                       ),
@@ -285,30 +292,6 @@ class _ImageGalleryState extends State<ImageGallery> {
           )
         ]
       ],
-    );
-  }
-
-  Padding myFlatIconButton(IconData icon, String text,
-      {@required VoidCallback onPressed}) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: FlatButton.icon(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            side: BorderSide(
-                color: _darkTheme ? darkThemeHint : lightThemeHint,
-                width: 1.0)),
-        icon:
-            Icon(icon, color: _darkTheme ? darkThemeButton : lightThemeButton),
-        onPressed: onPressed,
-        label: Text(
-          text,
-          style:
-              TextStyle(color: _darkTheme ? darkThemeWords : lightThemeWords),
-        ),
-      ),
     );
   }
 

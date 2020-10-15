@@ -106,12 +106,7 @@ class _MoveFolderScreenState extends State<MoveFolderScreen> {
         } else if (snapshot.hasError) {
           print(
               'snapshot.hasError in folder stream: ${snapshot.error.toString()}');
-          return EmptyOrError(
-              text: '',
-              tips: Strings.textError,
-              textTap: Strings.textErrorOnTap,
-              // Todo contact us
-              onTap: null);
+          return EmptyOrError(text: '', error: Strings.streamErrorMessage);
         }
         return Center(child: CircularProgressIndicator());
       },

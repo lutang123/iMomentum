@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iMomentum/app/constants/theme.dart';
 
 class InputDropdown extends StatelessWidget {
   const InputDropdown({
@@ -32,8 +33,10 @@ class InputDropdown extends StatelessWidget {
               Text(valueText, style: valueStyle),
               Icon(Icons.arrow_drop_down,
                   color: Theme.of(context).brightness == Brightness.light
-                      ? Colors.grey.shade700
-                      : Colors.white70),
+                      // ? Colors.grey.shade700
+                      // : Colors.white70,
+                      ? lightThemeButton
+                      : darkThemeButton),
             ],
           ),
         ),

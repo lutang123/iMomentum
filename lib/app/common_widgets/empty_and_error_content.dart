@@ -4,22 +4,21 @@ import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:provider/provider.dart';
 
-//folderScreen, NotesInFolder and NotesSearch, and staggeredView, and moveFolder
+//folderScreen, moveFolder, NotesInFolder and NotesSearch, and staggeredView,
 class EmptyOrError extends StatelessWidget {
   final String text;
-  final String tips;
+  final String error;
   final String textTap;
-  // final String text2;
   final Function onTap;
+  final Color color;
 
   const EmptyOrError({
     Key key,
-    this.text,
-    this.tips, //textError,
-    this.textTap, //textErrorOnTap 'Or contact us'
-    /// //Todo contact us
+    this.text = '',
+    this.error = '', //textError,
+    this.textTap = '', //textErrorOnTap 'Or contact us'
     this.onTap,
-    // this.text2,
+    this.color = Colors.transparent,
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -29,8 +28,7 @@ class EmptyOrError extends StatelessWidget {
         child: Container(
       margin: const EdgeInsets.all(15.0),
       decoration: BoxDecoration(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.all(Radius.circular(10.0))),
+          color: color, borderRadius: BorderRadius.all(Radius.circular(20.0))),
       child: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Column(
@@ -53,7 +51,7 @@ class EmptyOrError extends StatelessWidget {
                         children: [
                           //we can show tips
                           TextSpan(
-                            text: tips,
+                            text: error,
                           ),
                           //this is for tap
                           TextSpan(

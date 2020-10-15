@@ -18,11 +18,11 @@ import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/models/quote_model.dart';
 import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
-import 'package:iMomentum/screens/home_drawer/top_title.dart';
+import 'package:iMomentum/screens/home_drawer/mantra_top_title.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'add_quote_screen.dart';
-import 'empty_or_error_mantra.dart';
+import 'mantra_empty_or_error.dart';
 
 class MyQuotes extends StatefulWidget {
   final Database database;
@@ -76,11 +76,12 @@ class _MyQuotesState extends State<MyQuotes> {
                             // Consider setting mainAxisSize to MainAxisSize.min and using FlexFit.loose fits for the flexible children (using Flexible rather than Expanded). This will allow the flexible children to size themselves to less than the infinite remaining space they would otherwise be forced to take, and then will cause the RenderFlex to shrink-wrap the children rather than expanding to fit the maximum constraints provided by the parent.
                             return Expanded(
                               //need to wrap this column with an Expanded, because the whole thing is in another column
-                              child: Column(
-                                children: <Widget>[
-                                  SizedBox(
-                                    width: 320,
-                                    child: SettingSwitchNoIcon(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20.0),
+                                child: Column(
+                                  children: <Widget>[
+                                    SettingSwitchNoIcon(
                                       title: 'Apply Your Own Quotes',
                                       value:
                                           quotes.length > 0 ? _quoteOn : false,
@@ -89,17 +90,18 @@ class _MyQuotesState extends State<MyQuotes> {
                                         onQuoteChanged(val, quoteNotifier);
                                       },
                                     ),
-                                  ),
-                                  Visibility(
-                                    visible: _quoteVisible,
-                                    child: Expanded(
-                                      child: buildListView(
-                                        widget.database,
-                                        quotes,
+                                    SizedBox(height: 15),
+                                    Visibility(
+                                      visible: _quoteVisible,
+                                      child: Expanded(
+                                        child: buildListView(
+                                          widget.database,
+                                          quotes,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             );
                           } else {
@@ -114,7 +116,7 @@ class _MyQuotesState extends State<MyQuotes> {
                           return EmptyOrErrorMantra(
                             hideEmptyMessage: _hideEmptyMessage,
                             text1: Strings.textQuote1,
-                            text2: Strings.textError,
+                            text2: Strings.streamErrorMessage,
                           );
                         }
                         return Center(child: CircularProgressIndicator());
@@ -153,9 +155,7 @@ class _MyQuotesState extends State<MyQuotes> {
     return ListView.separated(
         itemCount: quotes.length + 2,
         separatorBuilder: (context, index) => Divider(
-              indent: 15,
-              endIndent: 15,
-              height: 0.5,
+              height: 1,
               color: _darkTheme ? Colors.white70 : Colors.black38,
             ),
         itemBuilder: (context, index) {
@@ -167,8 +167,11 @@ class _MyQuotesState extends State<MyQuotes> {
             closeOnScroll: true,
             actionPane: SlidableDrawerActionPane(),
             actionExtentRatio: 0.25,
-            child: QuoteListTile(
-              quote: quotes[index - 1],
+            child: MantraList(
+              text: quotes[index - 1].author == null ||
+                      quotes[index - 1].author == ''
+                  ? '"${quotes[index - 1].title}"'
+                  : '"${quotes[index - 1].title} -- ${quotes[index - 1].author}"',
               onTap: () => _update(database, quotes[index - 1]),
             ),
             actions: <Widget>[
@@ -234,18 +237,30 @@ class _MyQuotesState extends State<MyQuotes> {
       ),
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(8),
-      borderRadius: 10,
+      borderRadius: 15,
       flushbarPosition: FlushbarPosition.BOTTOM,
       flushbarStyle: FlushbarStyle.FLOATING,
       backgroundGradient: KFlushBarGradient,
-      duration: Duration(seconds: 3),
-      titleText: Text(
-        'Deleted',
-        style: KFlushBarTitle,
+      duration: Duration(seconds: 4),
+      icon: Icon(
+        EvaIcons.trash2Outline,
+        color: Colors.white,
       ),
-      messageText: Text(
-        quote.title,
-        style: KFlushBarMessage,
+      titleText: Padding(
+        padding: const EdgeInsets.all(3.0),
+        child: Text(
+          'Deleted: ',
+          style: KFlushBarTitle,
+        ),
+      ),
+      messageText: Padding(
+        padding: const EdgeInsets.only(left: 3.0),
+        child: Text(
+          quote.title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: KFlushBarMessage,
+        ),
       ),
     )..show(context).then((value) => setState(() => _fabVisible = true));
   }

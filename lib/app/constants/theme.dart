@@ -26,13 +26,13 @@ const Color darkThemeDivider = Colors.white38;
 const Color lightThemeDivider = Colors.black45;
 
 //calendar, todoList and pie chart,
-final Color darkThemeSurface = darkThemeNoPhotoColor.withOpacity(0.3);
+final Color darkThemeSurface = Colors.black.withOpacity(0.4);
 // final Color darkThemeSurface = Colors.black26;
 //used in TodoScreen for calendar and list, MyMantra and MyQuote
-final Color lightThemeSurface = Colors.white.withOpacity(0.7);
+final Color lightThemeSurface = Colors.white.withOpacity(0.85);
 
 // app bar
-const Color darkThemeAppBar = Colors.transparent;
+const Color darkThemeAppBar = Colors.black12;
 final Color lightThemeAppBar = lightThemeSurface;
 
 //drawer and NoteFolder
@@ -103,17 +103,17 @@ final ThemeData lightTheme = ThemeData.light().copyWith(
     ///Empty message, Used in mantra/todos empty message 2
     subtitle2: TextStyle(
         fontWeight: FontWeight.w400,
-        color: Colors.black87.withOpacity(0.7),
+        color: lightThemeWords.withOpacity(0.7),
         fontStyle: FontStyle.italic,
         fontSize: 17),
 
     ///calendar date
     bodyText1:
-        TextStyle(color: Colors.black87.withOpacity(0.7), fontSize: 16), //16
+        TextStyle(color: Colors.black87.withOpacity(0.8), fontSize: 16), //16
 
     ///  Used in mantra/todos empty message 1
     bodyText2:
-        TextStyle(color: Colors.black87.withOpacity(0.8), fontSize: 18), //14
+        TextStyle(color: lightThemeWords.withOpacity(0.8), fontSize: 18), //14
   ),
 
   dialogBackgroundColor: lightThemeNoPhotoColor,
@@ -139,7 +139,7 @@ final ThemeData darkTheme = ThemeData.dark().copyWith(
     ///todoList title, add todo title
     headline5: TextStyle(
       //24
-      color: Colors.white,
+      color: darkThemeWords,
       fontWeight: FontWeight.w400,
     ),
 
@@ -147,32 +147,33 @@ final ThemeData darkTheme = ThemeData.dark().copyWith(
     // can not have GoogleFonts.varelaRound this as const
     headline6: GoogleFonts.varelaRound(
       //20
-      color: Colors.white,
-//      color: Color(0xF0323232),
+      color: darkThemeWords,
       fontWeight: FontWeight.w600,
     ),
 
     ///calendar month
     subtitle1: TextStyle(
       fontWeight: FontWeight.w400,
-      color: Colors.white,
+      color: darkThemeWords.withOpacity(0.8),
       fontSize: 18.0,
     ),
 
     ///Empty message
     subtitle2: TextStyle(
         fontWeight: FontWeight.w400,
-        color: Colors.white.withOpacity(0.75),
+        color: darkThemeWords.withOpacity(0.7),
         fontStyle: FontStyle.italic,
         fontSize: 17),
 
     ///calendar date
-    bodyText1: TextStyle(fontSize: 16, color: Colors.white), //16
+    bodyText1:
+        TextStyle(fontSize: 16, color: darkThemeWords.withOpacity(0.8)), //16
 
     /// empty message
     bodyText2:
-        TextStyle(fontSize: 18, color: Colors.white.withOpacity(0.85)), //14
+        TextStyle(fontSize: 18, color: darkThemeWords.withOpacity(0.8)), //14
   ),
+
   dialogBackgroundColor: darkThemeNoPhotoColor,
   dialogTheme: DialogTheme(
       shape: const RoundedRectangleBorder(

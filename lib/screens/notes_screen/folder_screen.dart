@@ -27,6 +27,8 @@ import '../../app/common_widgets/empty_and_error_content.dart';
 import 'folder_container.dart';
 import 'package:iMomentum/app/utils/extension_firstCaps.dart';
 
+import 'open_container_add_note.dart';
+
 class FolderScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -34,18 +36,13 @@ class FolderScreen extends StatefulWidget {
   }
 }
 
-const double _fabDimension = 56.0;
-
 class FolderScreenState extends State<FolderScreen> {
   bool _addButtonVisible = true;
   ScrollController _hideButtonController;
 
   TextEditingController searchController = TextEditingController();
-
+  ContainerTransitionType _transitionType = ContainerTransitionType.fade;
   bool isSearchEmpty = true;
-
-//  bool isMobile = true;
-//  Device device;
 
   @override
   void initState() {
@@ -85,40 +82,28 @@ class FolderScreenState extends State<FolderScreen> {
   @override
   Widget build(BuildContext context) {
     final database = Provider.of<Database>(context, listen: false);
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return MyStackScreen(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        // appBar: _buildAppBar(), //created another appBar because default one is too high
+        // appBar: _buildAppBar(database, _darkTheme),
         body: SafeArea(
           top: false,
-          child: Column(
+          // when remove SafeArea the _botttomRow not show?
+          child: Stack(
+            alignment: Alignment.bottomCenter,
+            //when change Column to Stack, add button not align to bottom, not sure why
             children: <Widget>[
-              _topRow(database), //this is just for the words 'Folders'.
-              // nested StreamBuilder for Note and Folder
-              //this StreamBuilder is only to find out how many notes in a folder
-              StreamBuilder<List<Note>>(
-                  stream: database.notesStream(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      allNotes = snapshot.data;
-                      if (allNotes.isNotEmpty) {
-                        return _folderStream(database, allNotes);
-                      } else {
-                        //this is for the very beginning, and when no notes,
-                        // we do not have folder stream too, it's all empty,
-                        // and once we add folder or add notes, we no longer use this one.
-                        ///but if notes are empty, we want to show folders too
-                        return _folderStream(database, allNotes);
-                      }
-                    } else if (snapshot.hasError) {
-                      print(
-                          'snapshot.hasError in note stream: ${snapshot.error.toString()}');
-                      //no access on  allNotes, so we can not use _noAddedFolderContent
-                      return notesErrorContent();
-                    }
-                    return Center(child: CircularProgressIndicator());
-                  }),
-              _bottomRow(database)
+              Column(
+                children: [
+                  _topRow(database, _darkTheme),
+                  // nested StreamBuilder for Note and Folder, this notes StreamBuilder is only to find out how many notes in a folder
+                  _buildStreamBuilderNotes(
+                      database, _darkTheme), //Expanded CustomScrollView
+                ],
+              ),
+              _bottomRow(database, _darkTheme)
             ],
           ),
         ),
@@ -126,88 +111,7 @@ class FolderScreenState extends State<FolderScreen> {
     );
   }
 
-  Expanded notesErrorContent() {
-    return Expanded(
-        child: Column(
-      children: [
-        Spacer(),
-        EmptyOrError(
-            text: '',
-            tips: Strings.textError,
-            textTap: 'Or contact us.',
-            onTap: null),
-        Spacer(),
-      ],
-    ));
-  }
-
-  Widget _folderStream(Database database, List<Note> allNotes) {
-    return StreamBuilder<List<Folder>>(
-      stream: database
-          .foldersStream(), // print(database.todosStream());//Instance of '_MapStream<QuerySnapshot, List<TodoModel>>'
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          //this is a list of folder use has added.
-          folders = snapshot.data;
-          // print('folders.length: ${folders.length}');
-          if (folders.isNotEmpty) {
-            ///when move this list outside of StreamBuilder as a constant, it keeps showing repeated folders on screen.
-            final List<Folder> defaultFolders = [
-              Folder(id: 0.toString(), title: 'All Notes'),
-              Folder(id: 1.toString(), title: 'Notes'),
-            ];
-            // we always have two default folders on the screen.
-            final List<Folder> finalFolders = defaultFolders..addAll(folders);
-            return expandedFolderGrid(database, allNotes, finalFolders);
-          }
-          //this is for if no added folder, but may have notes
-          else {
-            return expandedNoAddedFolderContent(
-                database,
-                allNotes,
-                // if notes.isNotEmpty ? return Container()
-                // only if no added folder and no notes, we show the message
-                Strings.emptyNoteAndFolder,
-                '', //text
-                '', //textTap
-                null);
-          }
-        } else if (snapshot.hasError) {
-          print(
-              'snapshot.hasError in folder stream: ${snapshot.error.toString()}');
-          //this is for if folder StreamBuilder has error
-          return expandedNoAddedFolderContent(
-              database,
-              allNotes,
-              '', //text
-              Strings.textError, //tips
-              'Or contact us.', //textTap
-              null //onTap
-              );
-        }
-        return Center(child: CircularProgressIndicator());
-      },
-    );
-  }
-
-  Expanded expandedFolderGrid(
-      Database database, List<Note> allNotes, List<Folder> finalFolders) {
-    return Expanded(
-      child: CustomScrollView(
-        shrinkWrap: true,
-        controller: _hideButtonController,
-        slivers: <Widget>[
-          _buildBoxAdaptorForSearch(database, allNotes, finalFolders),
-          _buildFolderGrid(database, allNotes, finalFolders),
-          //filter null views
-        ],
-      ),
-    );
-  }
-
-  Widget _topRow(Database database) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+  Container _topRow(Database database, bool _darkTheme) {
     return Container(
       color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
       child: Column(
@@ -243,62 +147,41 @@ class FolderScreenState extends State<FolderScreen> {
     );
   }
 
-  TextStyle textStyleShowTip(bool _darkTheme) {
-    return TextStyle(
-        fontSize: 15, color: _darkTheme ? darkThemeWords : lightThemeButton);
-  }
-
-  TextStyle textStyleFolder(bool _darkTheme) {
-    return TextStyle(
-        color: _darkTheme ? darkThemeWords : lightThemeWords,
-        fontSize: 33,
-        fontWeight: FontWeight.w600);
-  }
-
-  Future<void> _showTipDialog() async {
-    await PlatformAlertDialog(
-      title: 'Tips',
-      content: Strings.tipsOnFolderScreen,
-      defaultActionText: 'OK.',
-    ).show(context);
-  }
-
-  Widget _bottomRow(Database database) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+  Widget _bottomRow(Database database, bool _darkTheme) {
     return Visibility(
       visible: _addButtonVisible,
       child: Container(
         decoration: BoxDecoration(
-          color:
-              // folders.length > 4
-              //     ? _darkTheme
-              //         ? darkThemeDrawer
-              //         : lightThemeNoPhotoColor
-              //     :
-              _darkTheme ? darkThemeDrawer : lightThemeDrawer,
+          color: _darkTheme ? darkThemeSurface : lightThemeSurface,
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20.0),
-            topRight: Radius.circular(20.0),
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
           ),
         ),
-        height: 60,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
+          padding:
+              const EdgeInsets.only(top: 10.0, left: 15, right: 15, bottom: 15),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               FlatButton.icon(
-                icon: Icon(EvaIcons.folderAddOutline,
-                    size: 25,
-                    color: _darkTheme ? darkThemeButton : lightThemeButton),
                 label: Text(
                   'Create Folder',
-                  style: textStyleCreateFolder(_darkTheme),
+                  style: TextStyle(
+                      fontSize: 15,
+                      color: _darkTheme ? darkThemeWords : lightThemeWords),
+                ),
+                icon: Icon(
+                  EvaIcons.folderAddOutline,
+                  color: _darkTheme ? darkThemeButton : lightThemeButton,
+                  size: 33,
                 ),
                 onPressed: () => _showAddDialog(database),
               ),
-              openContainerAddButton(database),
+              OpenContainerAddNotes(
+                context: context,
+                openWidget: AddNoteScreen(database: database),
+              ),
             ],
           ),
         ),
@@ -306,50 +189,119 @@ class FolderScreenState extends State<FolderScreen> {
     );
   }
 
-  OpenContainer<Object> openContainerAddButton(Database database) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    return OpenContainer(
-      useRootNavigator: true,
-      transitionType: _transitionType,
-      openElevation: 0.0,
-      openColor: Colors.transparent,
-      openBuilder: (BuildContext context, VoidCallback _) {
-        return AddNoteScreen(database: database);
-      },
-      closedElevation: 0.0,
-      closedColor: Colors.transparent,
-      // closedColor: _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
-      closedShape: RoundedRectangleBorder(
-        side: BorderSide(
-            color: _darkTheme ? darkThemeButton : lightThemeButton, width: 2.0),
-        borderRadius: BorderRadius.all(
-          Radius.circular(_fabDimension / 2),
-        ),
+  StreamBuilder<List<Note>> _buildStreamBuilderNotes(
+      Database database, bool _darkTheme) {
+    return StreamBuilder<List<Note>>(
+        stream: database.notesStream(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            allNotes = snapshot.data;
+            if (allNotes.isNotEmpty) {
+              return _foldersStream(database, allNotes);
+            } else {
+              //this is for the very beginning, and when no notes,
+              // we do not have folder stream too, it's all empty,
+              // and once we add folder or add notes, we no longer use this one.
+              ///but if notes are empty, we want to show folders too
+              return _foldersStream(database, allNotes);
+            }
+          } else if (snapshot.hasError) {
+            print(
+                'snapshot.hasError in note stream: ${snapshot.error.toString()}');
+            //no access on  allNotes, so we can not use _noAddedFolderContent
+            return _notesStreamErrorContent(_darkTheme);
+          }
+          return Center(child: CircularProgressIndicator());
+        });
+  }
+
+  Expanded _notesStreamErrorContent(bool _darkTheme) {
+    // if we don't add Expanded, it will not show in center
+    return Expanded(
+        child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 30),
+      child: Column(
+        children: [
+          Spacer(),
+          EmptyOrError(
+            text: '',
+            error: Strings.streamErrorMessage,
+            color: _darkTheme ? darkThemeSurface : lightThemeSurface,
+          ),
+          Spacer(),
+        ],
       ),
-      closedBuilder: (BuildContext context, VoidCallback openContainer) {
-        return SizedBox(
-            height: _fabDimension,
-            width: _fabDimension,
-            child: Center(
-              child: Icon(Icons.add,
-                  size: 30,
-                  color: _darkTheme ? darkThemeButton : lightThemeButton),
-            ));
+    ));
+  }
+
+  Widget _emptyMessage(String text, bool _darkTheme) {
+    //this is after the two default folder, we can not add Expanded
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 30),
+      child: EmptyOrError(
+        text: text,
+        color: _darkTheme ? darkThemeSurface : lightThemeSurface,
+      ),
+    );
+  }
+
+  StreamBuilder<List<Folder>> _foldersStream(
+      Database database, List<Note> allNotes) {
+    return StreamBuilder<List<Folder>>(
+      stream: database
+          .foldersStream(), // print(database.todosStream());//Instance of '_MapStream<QuerySnapshot, List<TodoModel>>'
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          //this is a list of folder use has added.
+          folders = snapshot.data;
+          // print('folders.length: ${folders.length}');
+          if (folders.isNotEmpty) {
+            ///when move this list outside of StreamBuilder as a constant, it keeps showing repeated folders on screen.
+            final List<Folder> defaultFolders = [
+              Folder(id: 0.toString(), title: 'All Notes'),
+              Folder(id: 1.toString(), title: 'Notes'),
+            ];
+            // we always have two default folders on the screen.
+            final List<Folder> finalFolders = defaultFolders..addAll(folders);
+            return expandedFolderGrid(database, allNotes, finalFolders);
+          }
+          //this is for if no added folder, but may have notes
+          else {
+            return expandedNoAddedFolderContent(
+                database, allNotes, Strings.emptyNoteAndFolder);
+          }
+        } else if (snapshot.hasError) {
+          print(
+              'snapshot.hasError in folder stream: ${snapshot.error.toString()}');
+          //this is for if folder StreamBuilder has error
+          return expandedNoAddedFolderContent(
+            database,
+            allNotes, //text
+            Strings.streamErrorMessage, //tips
+          );
+        }
+        return Center(child: CircularProgressIndicator());
       },
     );
   }
 
-  TextStyle textStyleCreateFolder(bool _darkTheme) {
-    return TextStyle(
-        fontSize: 16,
-        color: _darkTheme
-            ? darkThemeWords.withOpacity(0.7)
-            : lightThemeWords.withOpacity(0.7));
+  Expanded expandedFolderGrid(
+      Database database, List<Note> allNotes, List<Folder> finalFolders) {
+    return Expanded(
+      child: CustomScrollView(
+        shrinkWrap: true,
+        controller: _hideButtonController,
+        slivers: <Widget>[
+          _buildBoxAdaptorForSearch(database, allNotes, finalFolders),
+          _buildFolderGrid(database, allNotes, finalFolders),
+          //filter null views
+        ],
+      ),
+    );
   }
 
-  Expanded expandedNoAddedFolderContent(Database database, List<Note> notes,
-      String text1, String tips, String textTap, Function onTap) {
+  Expanded expandedNoAddedFolderContent(
+      Database database, List<Note> notes, String text) {
     final List<Folder> defaultFolders = [
       Folder(id: 0.toString(), title: 'All Notes'),
       Folder(id: 1.toString(), title: 'Notes'),
@@ -361,23 +313,23 @@ class FolderScreenState extends State<FolderScreen> {
         slivers: <Widget>[
           _buildBoxAdaptorForSearch(database, notes, defaultFolders),
           _buildDefaultFolderGrid(database, notes, defaultFolders),
-          SliverToBoxAdapter(
-              child: notes.isNotEmpty
-                  ? Container()
-                  : Container(
-                      margin: const EdgeInsets.only(left: 30.0, right: 30),
-                      child: EmptyOrError(
-                          text: text1,
-                          tips: tips,
-                          textTap: textTap,
-                          onTap: onTap),
-                    )),
+          _noAddedFolderOrNotesMessage(notes, text),
         ],
       ),
     );
   }
 
-  ContainerTransitionType _transitionType = ContainerTransitionType.fade;
+  SliverToBoxAdapter _noAddedFolderOrNotesMessage(
+      List<Note> notes, String text) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    return SliverToBoxAdapter(
+        child:
+            // notes.isNotEmpty
+            //     ? Container()
+            //     :
+            _emptyMessage(text, _darkTheme));
+  }
 
   Widget _buildBoxAdaptorForSearch(
       Database database, List<Note> allNotes, List<Folder> folders) {
@@ -398,7 +350,7 @@ class FolderScreenState extends State<FolderScreen> {
 
   //https://medium.com/@lets4r/flutorial-create-a-staggered-gridview-9c881a9b0b98
   int axisCount = 2;
-  Widget _buildFolderGrid(
+  SliverPadding _buildFolderGrid(
       Database database, List<Note> notes, List<Folder> folders) {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 30),
@@ -414,14 +366,14 @@ class FolderScreenState extends State<FolderScreen> {
         ///_showEditDialog and _showDeleteDialog all get context from here
         itemBuilder: (BuildContext context, int index) {
           final folder = folders[index];
-          return slidableItem(database, notes, folders, folder);
+          return _slidableItem(database, notes, folders, folder);
         },
       ),
     );
   }
 
-  Widget slidableItem(Database database, List<Note> notes, List<Folder> folders,
-      Folder folder) {
+  Slidable _slidableItem(Database database, List<Note> notes,
+      List<Folder> folders, Folder folder) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Slidable(
@@ -429,7 +381,7 @@ class FolderScreenState extends State<FolderScreen> {
         closeOnScroll: true,
         actionPane: SlidableDrawerActionPane(),
         actionExtentRatio: 0.25,
-        child: openContainerFolder(database, notes, folders, folder),
+        child: _openContainerFolder(database, notes, folders, folder),
         actions: <Widget>[
           (folder.id != 0.toString()) && (folder.id != 1.toString())
               ? IconSlideAction(
@@ -457,8 +409,8 @@ class FolderScreenState extends State<FolderScreen> {
         ]);
   }
 
-  Widget openContainerFolder(Database database, List<Note> notes,
-      List<Folder> folders, Folder folder) {
+  OpenContainer<Object> _openContainerFolder(Database database,
+      List<Note> notes, List<Folder> folders, Folder folder) {
     return OpenContainer(
       transitionType: _transitionType,
       closedElevation: 0,
@@ -481,7 +433,7 @@ class FolderScreenState extends State<FolderScreen> {
   }
 
   // with default folder
-  Widget _buildDefaultFolderGrid(
+  SliverPadding _buildDefaultFolderGrid(
       Database database, List<Note> notes, List<Folder> folders) {
     final List<Folder> defaultFolders = [
       Folder(id: 0.toString(), title: 'All Notes'),
@@ -497,11 +449,39 @@ class FolderScreenState extends State<FolderScreen> {
         itemCount: defaultFolders.length,
         itemBuilder: (BuildContext context, int index) {
           final folder = defaultFolders[index];
-          return openContainerFolder(database, notes, folders, folder);
+          return _openContainerFolder(database, notes, folders, folder);
         },
         //the vertical space
       ),
     );
+  }
+
+  TextStyle textStyleShowTip(bool _darkTheme) {
+    return TextStyle(
+        fontSize: 15, color: _darkTheme ? darkThemeWords : lightThemeButton);
+  }
+
+  TextStyle textStyleFolder(bool _darkTheme) {
+    return TextStyle(
+        color: _darkTheme ? darkThemeWords : lightThemeWords,
+        fontSize: 33,
+        fontWeight: FontWeight.w600);
+  }
+
+  Future<void> _showTipDialog() async {
+    await PlatformAlertDialog(
+      title: 'Tips',
+      content: Strings.tipsOnFolderScreen,
+      defaultActionText: 'OK.',
+    ).show(context);
+  }
+
+  TextStyle textStyleCreateFolder(bool _darkTheme) {
+    return TextStyle(
+        fontSize: 16,
+        color: _darkTheme
+            ? darkThemeWords.withOpacity(0.7)
+            : lightThemeWords.withOpacity(0.7));
   }
 
   int _getNotesNumber(List<Note> allNotes, Folder folder) {
@@ -524,7 +504,7 @@ class FolderScreenState extends State<FolderScreen> {
     return 0;
   }
 
-  ///todo: change
+  ///todo: refactor dialog
   void _showDeleteDialog(Database database, Folder folder) async {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
@@ -1014,3 +994,32 @@ class FolderScreenState extends State<FolderScreen> {
     }
   }
 }
+
+///original, build appbar
+///created another appBar because default one is too high
+/// if using default appBar, can't make two words align together
+//   AppBar _buildAppBar(Database database, bool _darkTheme) {
+//     return AppBar(
+//       elevation: 0.0,
+//       backgroundColor: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
+//       automaticallyImplyLeading: false,
+//       title: Padding(
+//         padding: const EdgeInsets.only(left: 15.0),
+//         child: Text('Folders', style: textStyleFolder(_darkTheme)),
+//       ),
+//       titleSpacing: 0.0,
+//       centerTitle: false,
+//       actions: [
+//         InkWell(
+//           onTap: _showTipDialog,
+//           child: Padding(
+//             padding: const EdgeInsets.only(right: 8.0),
+//             child: Text(
+//               'Show Tips',
+//               style: textStyleShowTip(_darkTheme),
+//             ),
+//           ),
+//         ),
+//       ],
+//     );
+//   }

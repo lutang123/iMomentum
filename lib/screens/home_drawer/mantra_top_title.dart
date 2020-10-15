@@ -8,18 +8,22 @@ class MantraTopTitle extends StatelessWidget {
     @required this.subtitle,
     this.onPressed,
     @required this.darkTheme,
+    this.flatButtonText = 'Show Tips',
+    this.titleSize = 30,
+    this.subtitleSize = 18,
     Key key,
   }) : super(key: key);
   final String title;
   final String subtitle;
   final Function onPressed;
   final bool darkTheme;
+  final String flatButtonText;
+  final double titleSize;
+  final double subtitleSize;
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         SizedBox(height: 5),
         Row(
@@ -32,9 +36,9 @@ class MantraTopTitle extends StatelessWidget {
             ),
             FlatButton(
               child: Text(
-                'Show Tips',
+                flatButtonText,
                 style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 14,
                     color: darkTheme
                         ? darkThemeButton.withOpacity(0.9)
                         : lightThemeButton.withOpacity(0.9)),
@@ -43,22 +47,30 @@ class MantraTopTitle extends StatelessWidget {
             ),
           ],
         ),
-        Text(title,
-            style: TextStyle(
-                fontSize: 30,
-                color: darkTheme ? darkThemeWords : lightThemeWords,
-                fontWeight: FontWeight.bold)),
-        SizedBox(height: 15),
-        Text(
-          subtitle,
-          textAlign: TextAlign.center,
-          style: GoogleFonts.varelaRound(
-              fontWeight: FontWeight.w600,
-              fontSize: 17,
-              color: darkTheme ? darkThemeWords : lightThemeWords,
-              fontStyle: FontStyle.italic),
+        Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title,
+                  style: TextStyle(
+                      fontSize: titleSize,
+                      color: darkTheme ? darkThemeWords : lightThemeWords,
+                      fontWeight: FontWeight.bold)),
+              SizedBox(height: 15),
+              Text(
+                subtitle,
+                style: GoogleFonts.varelaRound(
+                  fontSize: subtitleSize,
+                  color: darkTheme
+                      ? darkThemeWords.withOpacity(0.9)
+                      : lightThemeWords.withOpacity(0.9),
+                  // fontStyle: FontStyle.italic,
+                ),
+              ),
+            ],
+          ),
         ),
-        SizedBox(height: 15),
       ],
     );
   }

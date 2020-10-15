@@ -81,57 +81,42 @@ class NotesSearchResultState extends State<NotesSearchResult> {
     return Scaffold(
       backgroundColor:
           _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
-      body: SafeArea(
-        top: false,
-        child: StreamBuilder<List<Note>>(
-          stream: database
-              .notesStream(), // print(database.todosStream());//Instance of '_MapStream<QuerySnapshot, List<TodoModel>>'
-          builder: (con, snapshot) {
-            if (snapshot.hasData) {
-              final List<Note> allNotes = snapshot.data;
-              filteredNotes = _getFilteredNotes(allNotes);
-              final List<Note> pinnedNotes = _getPinnedNote(filteredNotes);
-              final List<Note> notPinnedNotes =
-                  _getNotPinnedNote(filteredNotes);
+      body: StreamBuilder<List<Note>>(
+        stream: database
+            .notesStream(), // print(database.todosStream());//Instance of '_MapStream<QuerySnapshot, List<TodoModel>>'
+        builder: (con, snapshot) {
+          if (snapshot.hasData) {
+            final List<Note> allNotes = snapshot.data;
+            filteredNotes = _getFilteredNotes(allNotes);
+            final List<Note> pinnedNotes = _getPinnedNote(filteredNotes);
+            final List<Note> notPinnedNotes = _getNotPinnedNote(filteredNotes);
 
-              if (pinnedNotes.isNotEmpty || notPinnedNotes.isNotEmpty) {
-                return Column(
-                  children: [
-                    Expanded(
-                      child: Opacity(
-                        opacity: _notesOpacity,
-                        child: CustomScrollView(
-                          slivers: <Widget>[
-                            //this is just for the word 'PINNED'
-                            _buildBoxAdaptorForPinned(pinnedNotes, _darkTheme),
-                            //this is for pinned notes
-                            _buildNotesGrid(pinnedNotes),
-                            //this is just for the word 'OTHERS'
-                            pinnedNotes.length > 0
-                                ? _buildBoxAdaptorForOthers(
-                                    notPinnedNotes, _darkTheme)
-                                : SliverToBoxAdapter(child: Container()),
-                            //this is for not pinned notes
-                            _buildNotesGrid(notPinnedNotes),
-                          ],
-                        ),
-                      ),
-                    ),
+            if (pinnedNotes.isNotEmpty || notPinnedNotes.isNotEmpty) {
+              return Expanded(
+                child: CustomScrollView(
+                  slivers: <Widget>[
+                    //this is just for the word 'PINNED'
+                    _buildBoxAdaptorForPinned(pinnedNotes, _darkTheme),
+                    //this is for pinned notes
+                    _buildNotesGrid(pinnedNotes),
+                    //this is just for the word 'OTHERS'
+                    pinnedNotes.length > 0
+                        ? _buildBoxAdaptorForOthers(notPinnedNotes, _darkTheme)
+                        : SliverToBoxAdapter(child: Container()),
+                    //this is for not pinned notes
+                    _buildNotesGrid(notPinnedNotes),
                   ],
-                );
-              } else {
-                return EmptyOrError(text: 'No result found.');
-              }
-            } else if (snapshot.hasError) {
-              //Todo contact us
-              return EmptyOrError(
-                  tips: Strings.textError,
-                  textTap: Strings.textErrorOnTap,
-                  onTap: null);
+                ),
+              );
+            } else {
+              return EmptyOrError(text: 'No result found.');
             }
-            return Center(child: CircularProgressIndicator());
-          },
-        ),
+          } else if (snapshot.hasError) {
+            //Todo contact us
+            return EmptyOrError(error: Strings.streamErrorMessage);
+          }
+          return Center(child: CircularProgressIndicator());
+        },
       ),
     );
   }
@@ -241,13 +226,7 @@ class NotesSearchResultState extends State<NotesSearchResult> {
     );
   }
 
-  double _notesOpacity = 1.0;
-
   void _move(Note note) async {
-    setState(() {
-      _notesOpacity = 0.0;
-      // _addButtonVisible = false;
-    });
     await showModalBottomSheet(
         context: context,
 
@@ -258,11 +237,6 @@ class NotesSearchResultState extends State<NotesSearchResult> {
               // folders: folders,
               note: note,
             ));
-
-    setState(() {
-      _notesOpacity = 1.0;
-      // _addButtonVisible = true;
-    });
   }
 
   ///https://stackoverflow.com/questions/54617432/looking-up-a-deactivated-widgets-ancestor-is-unsafe

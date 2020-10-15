@@ -4,20 +4,24 @@ import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:provider/provider.dart';
 
-// in home screen
-class MyDotContainer extends StatelessWidget {
-  final Color color;
-  final double size;
-
-  const MyDotContainer({Key key, this.color, this.size = 8.0})
+class MySignInContainer extends StatelessWidget {
+  const MySignInContainer({Key key, this.child, this.height, this.padding = 15})
       : super(key: key);
+  final Widget child;
+  final double height;
+  final double padding;
+
   @override
   Widget build(BuildContext context) {
+    // final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    // bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Container(
-      width: size,
-      height: size,
-      margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
-      decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+      margin: EdgeInsets.symmetric(horizontal: 15.0),
+      padding: EdgeInsets.all(padding),
+      decoration: BoxDecoration(
+          color: lightThemeSurface, borderRadius: BorderRadius.circular(20.0)),
+      height: height,
+      child: child,
     );
   }
 }
@@ -44,62 +48,31 @@ class FlushBarButtonChild extends StatelessWidget {
   }
 }
 
-class ContainerOnlyTextPhotoSearch extends StatelessWidget {
-  final String text;
+// in home screen
+class MyDotContainer extends StatelessWidget {
+  final Color color;
+  final double size;
 
-  const ContainerOnlyTextPhotoSearch({Key key, this.text}) : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    return Container(
-        child: Row(
-      children: [
-        Container(
-            decoration: BoxDecoration(
-                color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
-                borderRadius: BorderRadius.all(Radius.circular(10.0))),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(text,
-                  style: TextStyle(
-                    color: _darkTheme ? darkThemeWords : lightThemeWords,
-                    fontWeight: FontWeight.bold,
-                  )),
-            ))
-      ],
-    ));
-  }
-}
-
-class MySignInContainer extends StatelessWidget {
-  const MySignInContainer({Key key, this.child, this.height, this.padding = 15})
+  const MyDotContainer({Key key, this.color, this.size = 8.0})
       : super(key: key);
-  final Widget child;
-  final double height;
-  final double padding;
-
   @override
   Widget build(BuildContext context) {
-    // final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    // bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 15.0),
-      padding: EdgeInsets.all(padding),
-      decoration: BoxDecoration(
-          color: lightThemeSurface, borderRadius: BorderRadius.circular(20.0)),
-      height: height,
-      child: child,
+      width: size,
+      height: size,
+      margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 5.0),
+      decoration: BoxDecoration(shape: BoxShape.circle, color: color),
     );
   }
 }
 
-// in home screen error
+// in home screen error, user screen, folder screen
 class MyContainerWithDarkMode extends StatelessWidget {
-  const MyContainerWithDarkMode({Key key, this.child, this.height})
-      : super(key: key);
+  const MyContainerWithDarkMode({
+    Key key,
+    this.child,
+  }) : super(key: key);
   final Widget child;
-  final double height;
 
   @override
   Widget build(BuildContext context) {
@@ -111,8 +84,7 @@ class MyContainerWithDarkMode extends StatelessWidget {
       decoration: BoxDecoration(
           color: _darkTheme ? darkThemeSurface : lightThemeSurface,
           borderRadius: BorderRadius.circular(20.0)),
-      height: height,
-      child: child,
+      child: Center(child: child),
     );
   }
 }
@@ -253,10 +225,38 @@ class SmallContainerFolderName extends StatelessWidget {
   }
 }
 
-class MyBottomContainer extends StatelessWidget {
+class ContainerOnlyTextPhotoSearch extends StatelessWidget {
+  final String text;
+
+  const ContainerOnlyTextPhotoSearch({Key key, this.text}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+    return Container(
+        child: Row(
+      children: [
+        Container(
+            decoration: BoxDecoration(
+                color: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
+                borderRadius: BorderRadius.all(Radius.circular(10.0))),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(text,
+                  style: TextStyle(
+                    color: _darkTheme ? darkThemeWords : lightThemeWords,
+                    fontWeight: FontWeight.bold,
+                  )),
+            ))
+      ],
+    ));
+  }
+}
+
+class MyBottomContainerInImage extends StatelessWidget {
   final Widget child;
 
-  const MyBottomContainer({Key key, this.child}) : super(key: key);
+  const MyBottomContainerInImage({Key key, this.child}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
@@ -277,38 +277,6 @@ class MyBottomContainer extends StatelessWidget {
         child: Center(child: child));
   }
 }
-
-///not used yet
-// class SmallContainerForReminder extends StatelessWidget {
-//   SmallContainerForReminder({this.text = '', this.bkgdColor = Colors.black38});
-//   final String text;
-//   final Color bkgdColor;
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       padding: EdgeInsets.symmetric(horizontal: 3),
-//       decoration: BoxDecoration(
-//         color: bkgdColor,
-//         borderRadius: BorderRadius.all(Radius.circular(20.0)),
-//         border: Border.all(color: Colors.white54, width: 1),
-//       ),
-//       child: Padding(
-//         padding: const EdgeInsets.all(3.0),
-//         child: Row(
-//           mainAxisSize: MainAxisSize.min,
-//           children: [
-//             Icon(Icons.alarm, color: Colors.yellow, size: 18),
-//             SizedBox(width: 3),
-//             Flexible(
-//                 child: Text(text,
-//                     style: TextStyle(color: Colors.white70, fontSize: 10))),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 ///all add screen
 class CustomizedBottomSheet extends StatelessWidget {

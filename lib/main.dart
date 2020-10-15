@@ -211,6 +211,11 @@ void main() async {
       int index = prefs.getInt('indexMantra') ?? 0;
       bool useMyQuote = prefs.getBool('useMyQuote') ?? true;
 
+      bool isBalanceOn = prefs.getBool('isBalance') ?? true;
+      bool isWeekDay = prefs.getBool('isWeekDay') ?? false;
+      int startHour = prefs.getInt('startHour') ?? 9;
+      int endHour = prefs.getInt('endHour') ?? 6;
+
       final appleSignInAvailable = await AppleSignInAvailable.check();
 
       ///then runApp
@@ -242,6 +247,16 @@ void main() async {
             ///for quote
             ChangeNotifierProvider<QuoteNotifier>(
                 create: (_) => QuoteNotifier(useMyQuote)),
+
+            ///for Balance
+            ChangeNotifierProvider<BalanceNotifier>(
+                create: (_) => BalanceNotifier(isBalanceOn)),
+            ChangeNotifierProvider<WeekDayNotifier>(
+                create: (_) => WeekDayNotifier(isWeekDay)),
+            ChangeNotifierProvider<StartHourNotifier>(
+                create: (_) => StartHourNotifier(startHour)),
+            ChangeNotifierProvider<EndHourNotifier>(
+                create: (_) => EndHourNotifier(endHour)),
           ],
           child: MyApp(
               // authServiceBuilder: (_) =>

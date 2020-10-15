@@ -18,11 +18,11 @@ import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/models/mantra_model.dart';
 import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
-import 'package:iMomentum/screens/home_drawer/top_title.dart';
+import 'package:iMomentum/screens/home_drawer/mantra_top_title.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'add_mantra_screen.dart';
-import 'empty_or_error_mantra.dart';
+import 'mantra_empty_or_error.dart';
 
 class MyMantras extends StatefulWidget {
   final Database database;
@@ -67,11 +67,12 @@ class _MyMantrasState extends State<MyMantras> {
                             .data; //print('x: $entries'); //x: [Instance of 'TodoDuration', Instance of 'TodoDuration']
                         if (mantras.isNotEmpty) {
                           return Expanded(
-                            child: Column(
-                              children: <Widget>[
-                                SizedBox(
-                                  width: 320,
-                                  child: SettingSwitchNoIcon(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20.0),
+                              child: Column(
+                                children: <Widget>[
+                                  SettingSwitchNoIcon(
                                     title: 'Apply Your Own Mantras',
                                     value:
                                         mantras.length > 0 ? _mantraOn : false,
@@ -80,17 +81,18 @@ class _MyMantrasState extends State<MyMantras> {
                                       onMantraChanged(val, mantraNotifier);
                                     },
                                   ),
-                                ),
-                                Visibility(
-                                  visible: _hideMantras,
-                                  child: Expanded(
-                                    child: buildListView(
-                                      widget.database,
-                                      mantras,
+                                  SizedBox(height: 15),
+                                  Visibility(
+                                    visible: _hideMantras,
+                                    child: Expanded(
+                                      child: buildListView(
+                                        widget.database,
+                                        mantras,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           );
                         } else {
@@ -104,7 +106,7 @@ class _MyMantrasState extends State<MyMantras> {
                         return EmptyOrErrorMantra(
                           hideEmptyMessage: _hideEmptyMessage,
                           text1: Strings.textMantra1,
-                          text2: Strings.textError,
+                          text2: Strings.streamErrorMessage,
                         );
                       }
                       return Center(child: CircularProgressIndicator());
@@ -144,9 +146,7 @@ class _MyMantrasState extends State<MyMantras> {
     return ListView.separated(
         itemCount: mantras.length + 2,
         separatorBuilder: (context, index) => Divider(
-              indent: 15,
-              endIndent: 15,
-              height: 0.5,
+              height: 1,
               color: _darkTheme ? Colors.white70 : Colors.black38,
             ),
         itemBuilder: (context, index) {
@@ -157,15 +157,9 @@ class _MyMantrasState extends State<MyMantras> {
             key: UniqueKey(),
             closeOnScroll: true,
             actionPane: SlidableDrawerActionPane(),
-            // dismissal: SlidableDismissal(
-            //   child: SlidableDrawerDismissal(),
-            //   onDismissed: (actionType) {
-            //     _delete(mantras[index - 1]);
-            //   },
-            // ),
             actionExtentRatio: 0.25,
-            child: MantraListTile(
-              mantra: mantras[index - 1],
+            child: MantraList(
+              text: mantras[index - 1].title,
               onTap: () => _update(database, mantras[index - 1]),
             ),
             actions: <Widget>[
@@ -232,18 +226,30 @@ class _MyMantrasState extends State<MyMantras> {
           )),
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(8),
-      borderRadius: 10,
+      borderRadius: 15,
       flushbarPosition: FlushbarPosition.BOTTOM,
       flushbarStyle: FlushbarStyle.FLOATING,
       backgroundGradient: KFlushBarGradient,
-      duration: Duration(seconds: 5),
-      titleText: Text(
-        'Deleted',
-        style: KFlushBarTitle,
+      duration: Duration(seconds: 4),
+      icon: Icon(
+        EvaIcons.trash2Outline,
+        color: Colors.white,
       ),
-      messageText: Text(
-        mantra.title,
-        style: KFlushBarMessage,
+      titleText: Padding(
+        padding: const EdgeInsets.all(3.0),
+        child: Text(
+          'Deleted: ',
+          style: KFlushBarTitle,
+        ),
+      ),
+      messageText: Padding(
+        padding: const EdgeInsets.only(left: 3.0),
+        child: Text(
+          mantra.title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: KFlushBarMessage,
+        ),
       ),
     )..show(context).then((value) => setState(() => _fabVisible = true));
   }

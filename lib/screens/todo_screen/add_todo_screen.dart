@@ -142,7 +142,6 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
           );
         });
     if (date != null && date != dateNew) {
-//    if (date != null) {
       setState(() {
         dateNew = date; //give task date a new value and also update the screen
       }); //DateFormat('MMM dd, yyyy');
@@ -155,7 +154,6 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
               : _dateFormatter.format(date);
 //      print('_dateController.text: ${_dateController.text}');
     }
-
     _dateFocusNode.unfocus();
     FocusScope.of(context).requestFocus(_textFocusNode);
   }
@@ -172,13 +170,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    // double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
-    // print('height: $height'); //
-    // Android: height: 683.4285714285714;
-    // iPhone large: height: 896,
-    // iPhone small: height: 667.0
-    // print('width: $width'); //width: 411.42857142857144; width: 414, width: 375.0
     return SingleChildScrollView(
       child: CustomizedBottomSheet(
         color: _darkTheme ? darkThemeAdd : lightThemeNoPhotoColor,
@@ -226,7 +218,7 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
                 fontSize: 17,
                 fontStyle: FontStyle.italic,
                 color: _darkTheme ? darkThemeWords : lightThemeWords,
-                // fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
               ),
               decoration: KTransparentInputDecoration,
               onTap: _handleDatePicker,
@@ -356,13 +348,13 @@ class _AddTodoScreenState extends State<AddTodoScreen> {
         style: buildTextStyleTitle(_darkTheme),
         autofocus: true,
         cursorColor: _darkTheme ? darkThemeButton : lightThemeButton,
-        // can not remove this
-        // keyboardType: TextInputType.multiline,
-        // maxLines: null,
+        // do not remove this
+        keyboardType: TextInputType.multiline,
+        maxLines: null,
         maxLength: 100,
         decoration: InputDecoration(
           ///https://stackoverflow.com/questions/51893926/how-can-i-hide-letter-counter-from-bottom-of-textfield-in-flutter#:~:text=To%20hide%20counter%20value%20from,InputDecoration%20property%20with%20empty%20value.
-          counterText: "",
+          // counterText: "",
           hintText: 'Title',
           hintStyle: buildTextStyleTitleHint(_darkTheme),
           focusedBorder: buildUnderlineInputBorder(_darkTheme),

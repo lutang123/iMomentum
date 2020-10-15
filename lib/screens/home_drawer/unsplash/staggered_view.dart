@@ -137,10 +137,7 @@ class _StaggeredViewState extends State<StaggeredView> {
             .length, //NoSuchMethodError: The getter 'length' was called on null.
         // set itemBuilder
         itemBuilder: (BuildContext context, int index) =>
-//            ImageTile(
-//          image: snapshot.data[index],
-//          database: widget.database,
-//        ),
+
             ///Notes on openContainer, no difference on navigation, slightly better animation
             OpenContainer(
           useRootNavigator: true,
@@ -210,7 +207,7 @@ class _StaggeredViewState extends State<StaggeredView> {
 
             ///TODO contact us
             return EmptyOrError(
-              tips: Strings.textError,
+              error: Strings.streamErrorMessage,
               textTap: Strings.textErrorOnTap,
               onTap: null,
             );

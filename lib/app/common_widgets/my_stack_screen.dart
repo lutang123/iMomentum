@@ -20,7 +20,6 @@ class MyStackScreen extends StatefulWidget {
 
 class _MyStackScreenState extends State<MyStackScreen> {
   int counter = 0;
-
   void _onDoubleTap() {
     setState(() {
       ImagePath.randomImageUrl = '${ImagePath.randomImageUrlFirstPart}$counter';
