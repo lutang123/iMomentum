@@ -1,6 +1,6 @@
 # iMomentum
 
-iMomentum is a beautiful mobile App that brings you inspiration and keeps you focus on what's most important. Uniquely designed with dynimatic photos as background, it aims to provide inspiration and positivity and to help boost productivity and eliminate distraction with multi-functions like Pomodoro Timer, Todos and Notes, daily focus report, daily quote, mantra, weather, plus customizable features to personalize user experience. 
+iMomentum is a beautiful mobile App that brings you inspiration and keeps you focus on what's most important. Uniquely designed with dynamic photos as background, it aims to provide inspiration and positivity and to help boost productivity and eliminate distraction with multi-functions like Pomodoro Timer, Todos and Notes, daily focus report, daily quote, mantra, weather, plus customizable features to personalize user experience. 
 
 Designed with both light theme and dark theme, available on both Android and iOS.
 
