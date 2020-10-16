@@ -219,7 +219,7 @@ class SmallContainerFolderName extends StatelessWidget {
         child: Text(text,
             style: TextStyle(
                 color: _darkTheme ? darkThemeHint : lightThemeHint,
-                fontSize: 10)),
+                fontSize: 13)),
       ),
     );
   }

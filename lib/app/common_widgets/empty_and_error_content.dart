@@ -10,7 +10,7 @@ class EmptyOrError extends StatelessWidget {
   final String error;
   final String textTap;
   final Function onTap;
-  final Color color;
+  // final Color color;
 
   const EmptyOrError({
     Key key,
@@ -18,7 +18,7 @@ class EmptyOrError extends StatelessWidget {
     this.error = '', //textError,
     this.textTap = '', //textErrorOnTap 'Or contact us'
     this.onTap,
-    this.color = Colors.transparent,
+    // this.color = Colors.transparent,
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,8 @@ class EmptyOrError extends StatelessWidget {
         child: Container(
       margin: const EdgeInsets.all(15.0),
       decoration: BoxDecoration(
-          color: color, borderRadius: BorderRadius.all(Radius.circular(20.0))),
+          color: _darkTheme ? darkThemeSurface : lightThemeSurface,
+          borderRadius: BorderRadius.all(Radius.circular(20.0))),
       child: Padding(
         padding: const EdgeInsets.all(15.0),
         child: Column(

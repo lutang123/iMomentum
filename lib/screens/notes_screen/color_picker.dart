@@ -3,6 +3,7 @@ import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:provider/provider.dart';
 
+///not looking better
 // List<Color> colorsDark2 = [
 //   darkThemeNoPhotoBkgdColor,
 //   TinyColor(Color(0xFFFd54062)).darken(20).color,
@@ -44,14 +45,14 @@ List<Color> colorsDark = [
   darkThemeNoPhotoColor,
   Color(0xFFbb596b),
   Color(0xFF87556f),
-  Color(0xffcdb30c),
-  Color(0xffe79c2a),
+  // Color(0xffee6f57),
+  // Color(0xffe79c2a),
   Color(0xff158467),
   Color(0xFF799351),
   Colors.deepPurple,
   Color(0xFF6f4a8e),
   Color(0xff6a2c70),
-  Color(0xff24a19c),
+  // Color(0xff24a19c),
   Color(0xFF086972),
   Color(0xFF0f4c75),
   Colors.brown,

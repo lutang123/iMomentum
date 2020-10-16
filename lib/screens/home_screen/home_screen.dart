@@ -474,7 +474,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          Spacer(),
+          Spacer(flex: 2),
           _focusModeOn ? _questionAndTextField() : _buildMantraStream(),
           Spacer(),
         ],
@@ -508,11 +508,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ],
     );
   }
-
-  // // todo: make user schedule
-  // int startFocus = 9;
-  // int endFocus = 17;
-  // int startSleep = 23;
 
   int startHour;
   int endHour;

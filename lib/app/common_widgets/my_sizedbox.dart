@@ -20,7 +20,7 @@ class MyHomeMiddleSpaceSizedBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
-    return SizedBox(height: height > 700 ? 60 : 30);
+    return SizedBox(height: height > 700 ? 70 : 50);
   }
 }
 

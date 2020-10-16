@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
+import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:iMomentum/app/constants/my_strings.dart';
@@ -119,18 +120,24 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    return Scaffold(
-      backgroundColor:
-          _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
-      appBar: buildAppBar(_darkTheme),
-      body: SafeArea(
-        // when remove SafeArea the _botttomRow not show?
-        child: Stack(
-          alignment: Alignment.bottomRight,
-          children: [
-            _buildStreamBuilderNotes(_darkTheme), //Expanded CustomScrollView
-            _bottomRow(),
-          ],
+    return MyStackScreen(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        // _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
+        appBar: buildAppBar(_darkTheme),
+        body: SafeArea(
+          // when remove SafeArea the _botttomRow not show?
+          child: Stack(
+            alignment: Alignment.bottomRight,
+            children: [
+              Column(
+                children: [
+                  _buildStreamBuilderNotes(_darkTheme),
+                ],
+              ), //Expanded CustomScrollView
+              _bottomRow(),
+            ],
+          ),
         ),
       ),
     );
@@ -138,8 +145,8 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
 
   AppBar buildAppBar(bool _darkTheme) {
     return AppBar(
-      backgroundColor:
-          _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
+      backgroundColor: _darkTheme ? darkThemeAppBar : lightThemeAppBar,
+      elevation: 0.0,
       leading: IconButton(
           icon: Icon(Icons.arrow_back_ios,
               size: 30, color: _darkTheme ? darkThemeButton : lightThemeButton),
@@ -243,13 +250,10 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
       child: notes.length == 0
           ? Container()
           : Padding(
-              padding: const EdgeInsets.only(left: 10.0, top: 10),
+              padding: const EdgeInsets.only(left: 15.0, top: 10),
               child: Row(
                 children: [
-                  Text('PINNED',
-                      style: TextStyle(
-                        color: _darkTheme ? darkThemeWords : lightThemeWords,
-                      ))
+                  SmallContainerFolderName(text: 'PINNED'),
                 ],
               ),
             ),
@@ -261,14 +265,9 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
       child: notes.length == 0
           ? Container()
           : Padding(
-              padding: const EdgeInsets.only(left: 10.0),
+              padding: const EdgeInsets.only(left: 15.0),
               child: Row(
-                children: [
-                  Text('OTHERS',
-                      style: TextStyle(
-                        color: _darkTheme ? darkThemeWords : lightThemeWords,
-                      ))
-                ],
+                children: [SmallContainerFolderName(text: 'OTHERS')],
               )),
     );
   }

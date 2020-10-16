@@ -38,7 +38,8 @@ class Strings {
   /// Part 4
   static const title3 = 'Customization';
   static const subtitle3 = 'Personalize your experience.';
-  static const customizationFeature1 = 'Add your own photo.';
+  static const customizationFeature1 =
+      'Add your own photo or choose a favorite photo.';
   static const customizationFeature2 = 'Add your own mantras.';
   static const customizationFeature3 = 'Add your own quotes.';
 

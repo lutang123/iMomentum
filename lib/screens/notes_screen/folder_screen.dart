@@ -159,8 +159,7 @@ class FolderScreenState extends State<FolderScreen> {
           ),
         ),
         child: Padding(
-          padding:
-              const EdgeInsets.only(top: 10.0, left: 15, right: 15, bottom: 15),
+          padding: const EdgeInsets.only(left: 15, right: 15),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
@@ -226,7 +225,7 @@ class FolderScreenState extends State<FolderScreen> {
           EmptyOrError(
             text: '',
             error: Strings.streamErrorMessage,
-            color: _darkTheme ? darkThemeSurface : lightThemeSurface,
+            // color: _darkTheme ? darkThemeSurface : lightThemeSurface,
           ),
           Spacer(),
         ],
@@ -240,7 +239,6 @@ class FolderScreenState extends State<FolderScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: EmptyOrError(
         text: text,
-        color: _darkTheme ? darkThemeSurface : lightThemeSurface,
       ),
     );
   }
