@@ -28,36 +28,36 @@ https://app.wideo.co/view/31065101602712330979?utm_source=CopyPaste&utm_medium=s
 ### Home screen
 
 <p float="left">
-  <img src="/screenshots/home/1.png" width="100" />
-  <img src="/screenshots/home/2.png" width="100" />
-  <img src="/screenshots/home/3.png" width="100" />
-  <img src="/screenshots/home/4.png" width="100" />
-  <img src="/screenshots/home/6.png" width="100" />
-  <img src="/screenshots/home/9.png" width="100" />
-  <img src="/screenshots/home/12.png" width="100" />
-  <img src="/screenshots/home/weather_light.png" width="100" />
+  <img src="/screenshots/Home/1.png" width="100" />
+  <img src="/screenshots/Home/2.png" width="100" />
+  <img src="/screenshots/Home/3.png" width="100" />
+  <img src="/screenshots/Home/4.png" width="100" />
+  <img src="/screenshots/Home/6.png" width="100" />
+  <img src="/screenshots/Home/9.png" width="100" />
+  <img src="/screenshots/Home/12.png" width="100" />
+  <img src="/screenshots/Home/weather_light.png" width="100" />
 </p>
 
 ### Todo screen
 
 <p float="left">
-  <img src="/screenshots/todo/1.png" width="100" />
-  <img src="/screenshots/todo/2.png" width="100" />
-  <img src="/screenshots/todo/3.png" width="100" />
-  <img src="/screenshots/todo/6.png" width="100" />
-  <img src="/screenshots/todo/7.png" width="100" />
-  <img src="/screenshots/todo/8.png" width="100" />
+  <img src="/screenshots/Todo/1.png" width="100" />
+  <img src="/screenshots/Todo/2.png" width="100" />
+  <img src="/screenshots/Todo/3.png" width="100" />
+  <img src="/screenshots/Todo/6.png" width="100" />
+  <img src="/screenshots/Todo/7.png" width="100" />
+  <img src="/screenshots/Todo/8.png" width="100" />
 </p>
 
 ### Notes screen
 
 <p float="left">
-  <img src="/screenshots/notes/light1.png" width="100" />
-  <img src="/screenshots/notes/light2.png" width="100" />
-  <img src="/screenshots/notes/light3.png" width="100" />
-  <img src="/screenshots/notes/light4.png" width="100" />
-  <img src="/screenshots/notes/light5.png" width="100" />
-  <img src="/screenshots/notes/light6.png" width="100" />  
+  <img src="/screenshots/Notes/light1.png" width="100" />
+  <img src="/screenshots/Notes/light2.png" width="100" />
+  <img src="/screenshots/Notes/light3.png" width="100" />
+  <img src="/screenshots/Notes/light4.png" width="100" />
+  <img src="/screenshots/Notes/light5.png" width="100" />
+  <img src="/screenshots/Notes/light6.png" width="100" />  
 </p>
 
 ### Settings and Customization
