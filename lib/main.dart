@@ -70,7 +70,7 @@ void main() async {
 
   //Todo
   /// Restrict device orientation to portraitUp
-  // await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   /// for local notification code:
   notificationAppLaunchDetails =
@@ -212,7 +212,7 @@ void main() async {
       bool useMyQuote = prefs.getBool('useMyQuote') ?? true;
 
       bool isBalanceOn = prefs.getBool('isBalance') ?? true;
-      bool isWeekDay = prefs.getBool('isWeekDay') ?? false;
+      // bool isWeekDay = prefs.getBool('isWeekDay') ?? false;
       int startHour = prefs.getInt('startHour') ?? 6;
       int endHour = prefs.getInt('endHour') ?? 6;
 
@@ -251,8 +251,8 @@ void main() async {
             ///for Balance
             ChangeNotifierProvider<BalanceNotifier>(
                 create: (_) => BalanceNotifier(isBalanceOn)),
-            ChangeNotifierProvider<WeekDayNotifier>(
-                create: (_) => WeekDayNotifier(isWeekDay)),
+            // ChangeNotifierProvider<WeekDayNotifier>(
+            //     create: (_) => WeekDayNotifier(isWeekDay)),
             ChangeNotifierProvider<StartHourNotifier>(
                 create: (_) => StartHourNotifier(startHour)),
             ChangeNotifierProvider<EndHourNotifier>(
@@ -368,7 +368,7 @@ class _MyAppState extends State<MyApp> {
     /// MultiProvider for top-level services that can be created right away
     return MultiProvider(
       providers: [
-        //      final appleSignInAvailable = await AppleSignInAvailable.check();
+        // final appleSignInAvailable = await AppleSignInAvailable.check();
         Provider<AppleSignInAvailable>.value(
             value: widget.appleSignInAvailable),
         Provider<FirebaseAuthService>(

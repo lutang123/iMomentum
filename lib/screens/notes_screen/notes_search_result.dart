@@ -92,21 +92,19 @@ class NotesSearchResultState extends State<NotesSearchResult> {
             final List<Note> notPinnedNotes = _getNotPinnedNote(filteredNotes);
 
             if (pinnedNotes.isNotEmpty || notPinnedNotes.isNotEmpty) {
-              return Expanded(
-                child: CustomScrollView(
-                  slivers: <Widget>[
-                    //this is just for the word 'PINNED'
-                    _buildBoxAdaptorForPinned(pinnedNotes, _darkTheme),
-                    //this is for pinned notes
-                    _buildNotesGrid(pinnedNotes),
-                    //this is just for the word 'OTHERS'
-                    pinnedNotes.length > 0
-                        ? _buildBoxAdaptorForOthers(notPinnedNotes, _darkTheme)
-                        : SliverToBoxAdapter(child: Container()),
-                    //this is for not pinned notes
-                    _buildNotesGrid(notPinnedNotes),
-                  ],
-                ),
+              return CustomScrollView(
+                slivers: <Widget>[
+                  //this is just for the word 'PINNED'
+                  _buildBoxAdaptorForPinned(pinnedNotes, _darkTheme),
+                  //this is for pinned notes
+                  _buildNotesGrid(pinnedNotes),
+                  //this is just for the word 'OTHERS'
+                  pinnedNotes.length > 0
+                      ? _buildBoxAdaptorForOthers(notPinnedNotes, _darkTheme)
+                      : SliverToBoxAdapter(child: Container()),
+                  //this is for not pinned notes
+                  _buildNotesGrid(notPinnedNotes),
+                ],
               );
             } else {
               return EmptyOrError(text: 'No result found.');

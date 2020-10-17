@@ -16,11 +16,19 @@ class MyTopSizedBox extends StatelessWidget {
   }
 }
 
+class MyHomeSecondSpaceSizedBox extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    double height = MediaQuery.of(context).size.height;
+    return SizedBox(height: height > 700 ? 120 : 60);
+  }
+}
+
 class MyHomeMiddleSpaceSizedBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
-    return SizedBox(height: height > 700 ? 70 : 50);
+    return SizedBox(height: height > 700 ? 70 : 40);
   }
 }
 

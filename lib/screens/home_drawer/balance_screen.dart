@@ -37,9 +37,9 @@ class _ScheduleFocusTimeState extends State<ScheduleFocusTime> {
     final endHourNotifier =
         Provider.of<EndHourNotifier>(context, listen: false);
     endHour = endHourNotifier.getEndHour();
-    final balanceNotifier =
-        Provider.of<BalanceNotifier>(context, listen: false);
-    isBalance = balanceNotifier.getBalance();
+    // final balanceNotifier =
+    //     Provider.of<BalanceNotifier>(context, listen: false);
+    // isBalance = balanceNotifier.getBalance();
     // final weekdayNotifier =
     //     Provider.of<WeekDayNotifier>(context, listen: false);
     // isWeekDay = weekdayNotifier.getWeekDay();
@@ -85,6 +85,13 @@ class _ScheduleFocusTimeState extends State<ScheduleFocusTime> {
   }
 
   Widget buildContent(bool _darkTheme) {
+    // final startHourNotifier = Provider.of<StartHourNotifier>(context);
+    // startHour = startHourNotifier.getStartHour();
+    // final endHourNotifier = Provider.of<EndHourNotifier>(context);
+    // endHour = endHourNotifier.getEndHour();
+
+    final balanceNotifier = Provider.of<BalanceNotifier>(context);
+    bool _balanceOn = balanceNotifier.getBalance();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(
@@ -95,10 +102,10 @@ class _ScheduleFocusTimeState extends State<ScheduleFocusTime> {
               thickness: 1),
           SettingSwitchNoIcon(
             title: 'Enable Balance Mode',
-            value: isBalance ? true : false,
+            value: _balanceOn ? true : false,
             onChanged: (val) {
-              isBalance = val;
-              _onBalanceChanged(val);
+              _balanceOn = val;
+              _onBalanceChanged(val, balanceNotifier);
             },
           ),
           Text('Hide productivity features during downtime'),
@@ -194,7 +201,7 @@ class _ScheduleFocusTimeState extends State<ScheduleFocusTime> {
   Future<void> _showTipDialog() async {
     await PlatformAlertDialog(
       title: 'Tips',
-      content: Strings.tipsOnQuoteScreen,
+      content: Strings.tipsOnBalanceScreen,
       defaultActionText: 'OK.',
     ).show(context);
   }
@@ -300,14 +307,7 @@ class _ScheduleFocusTimeState extends State<ScheduleFocusTime> {
                           ? null
                           : 'Error';
                     },
-                    // onChanged: (value) {
-                    //   setState(() {
-                    //     startHour != int.tryParse(value)
-                    //         ? _isDifferentLength = true
-                    //         : _isDifferentLength = false;
-                    //   });
-                    // },
-                    onChanged: (value) => newStartHour = int.tryParse(value),
+                    // onChanged: (value) => newStartHour = int.tryParse(value),
                     onSaved: (value) => newStartHour = int.tryParse(value),
                     keyboardType: TextInputType.number,
                     style: _darkTheme ? KDialogContent : KDialogContentLight,
@@ -346,9 +346,9 @@ class _ScheduleFocusTimeState extends State<ScheduleFocusTime> {
                         (value.isNotEmpty) && (int.parse(value) > 0)
                             ? null
                             : 'error',
-                    onChanged: (value) {
-                      newEndHour = int.parse(value);
-                    },
+                    // onChanged: (value) {
+                    //   newEndHour = int.parse(value);
+                    // },
                     onSaved: (value) async {
                       newEndHour = int.parse(value);
                       // print('endHour in onSaved: $newEndHour');
@@ -389,8 +389,9 @@ class _ScheduleFocusTimeState extends State<ScheduleFocusTime> {
                   RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(68.0),
                       side: BorderSide(
-                          // color: _darkTheme ? darkThemeHint : lightThemeHint,
-                          color: Colors.red,
+                          color: _darkTheme ? darkThemeHint : lightThemeHint,
+                          // color:
+                          //     _darkTheme ? darkThemeButton : lightThemeButton,
                           width: 1.0)),
               onPressed: () {
                 // setState(() {
@@ -409,9 +410,9 @@ class _ScheduleFocusTimeState extends State<ScheduleFocusTime> {
                   RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(68.0),
                       side: BorderSide(
-                          // color: _darkTheme ? darkThemeHint : lightThemeHint,
-                          color:
-                              _darkTheme ? darkThemeButton : lightThemeButton,
+                          color: _darkTheme ? darkThemeHint : lightThemeHint,
+                          // color:
+                          //     _darkTheme ? darkThemeButton : lightThemeButton,
                           width: 1.0)),
               // : null,
 
@@ -434,8 +435,8 @@ class _ScheduleFocusTimeState extends State<ScheduleFocusTime> {
 
   ///when we don't have BuildContext context, we used a wrong context and it popped to home screen
   Future<void> _done(BuildContext context) async {
-    print('newStartHour: $newStartHour'); //
-    print('newEndHour: $newEndHour'); //
+    print('newStartHour: $newStartHour'); //null ??
+    print('newEndHour: $newEndHour'); //null ??
     if (_validateAndSaveForm()) {
       var prefs = await SharedPreferences.getInstance(); //save settings
       prefs.setInt('startHour', newStartHour);
@@ -448,8 +449,8 @@ class _ScheduleFocusTimeState extends State<ScheduleFocusTime> {
     }
   }
 
-  Future<void> _onBalanceChanged(bool value) async {
-    final balanceNotifier = Provider.of<BalanceNotifier>(context);
+  Future<void> _onBalanceChanged(
+      bool value, BalanceNotifier balanceNotifier) async {
     balanceNotifier.setBalance(value); //change the value
     var prefs = await SharedPreferences.getInstance(); //save settings
     prefs.setBool('isBalance', value);

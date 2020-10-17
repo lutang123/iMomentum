@@ -148,7 +148,7 @@ class Strings {
       'Center yourself with friendly reminders, reinforce new thought patterns, and bring attention to the values or principles that are most important to you. '
       '\n';
   static const textMantra2 = '\n'
-      'By default, every time when you enter or complete a task, a new Mantra from our curated feed will appear on Home screen.'
+      'By default, every time when you enter a focused task, a new Mantra from our curated feed will appear on Home screen.'
       '\n'
       '\n'
       'Personalize your experience by adding your own mantras.';
@@ -175,12 +175,14 @@ class Strings {
       'Your most recently added/edited one will show as the first one, and you can swipe right or left to view different ones from Home screen, and tap on the quote to edit.';
 
   static const tipsOnBalanceScreen =
-      'Default uptime schedule is 6am to 6pm, this means when you open your App during this time, the Home screen will show you what is your main focus question, and in the '
-      'next 3 hours after uptime, the Home screen will show what is your plan tomorrow question, and in other time it will only show mantra. If you have a task that you '
-      'have not completed on that day, Home screen will show your task and the mantra.'
+      "During uptime, the Home screen will display what is your main focus question, and in the "
+      'next 3 hours after uptime, it will display what is your plan tomorrow question, in other time it will only display mantra. '
       '\n'
       '\n'
-      'Restart the app after changing schedule if you want to see an immediate change.';
+      'If you have a task that you have not completed on that day, Home screen will display your task and mantra.'
+      '\n'
+      '\n'
+      "Default uptime schedule is 6am to 6pm. You can change this schedule that best fits you (Restart the app if you want to see immediate changes), or you can turn off balance mode. ";
 
   // For all error:
   ///Todo: add contact us

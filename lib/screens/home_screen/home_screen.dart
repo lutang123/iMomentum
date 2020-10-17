@@ -57,7 +57,8 @@ class _HomeScreenState extends State<HomeScreen> {
   double _wholeBodyOpacity =
       1.0; //used when edit or show top sheet, used with _visibleWhenEdit
   bool _nameVisible = true; //used when edit name
-  bool _questionVisible = true; //used when changing question
+  bool _questionVisible =
+      true; //used when changing question from main to tomorro
   bool _visibleWhenEdit =
       true; ////to prevent not enough space when keyboard is up when edit
 
@@ -170,9 +171,9 @@ class _HomeScreenState extends State<HomeScreen> {
     final balanceNotifier =
         Provider.of<BalanceNotifier>(context, listen: false);
     isBalance = balanceNotifier.getBalance();
-    final weekdayNotifier =
-        Provider.of<WeekDayNotifier>(context, listen: false);
-    isWeekDay = weekdayNotifier.getWeekDay();
+    // final weekdayNotifier =
+    //     Provider.of<WeekDayNotifier>(context, listen: false);
+    // isWeekDay = weekdayNotifier.getWeekDay();
     super.initState();
   }
 
@@ -365,28 +366,29 @@ class _HomeScreenState extends State<HomeScreen> {
     final focusNotifier = Provider.of<FocusNotifier>(context);
     bool _focusModeOn = focusNotifier.getFocus();
     return Expanded(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Spacer(flex: _focusModeOn ? 2 : 1),
-          Column(
-            children: <Widget>[
-              _buildMantraStream(),
-              Visibility(
-                visible: _focusModeOn ? true : false,
-                child: Visibility(
-                  visible: _visibleWhenEdit,
-                  child: Column(
-                    children: <Widget>[
-                      MyHomeMiddleSpaceSizedBox(), //space between mantra and Today's Todos
-                      _buildTaskCarouselSlider(database, todayTodosNotDone),
-                    ],
+      child: CustomScrollView(
+        shrinkWrap: true,
+        slivers: <Widget>[
+          SliverToBoxAdapter(
+            child: Visibility(
+              visible:
+                  _visibleWhenEdit, //add this to prevent keyboard pop up and no space
+              child: Column(
+                children: <Widget>[
+                  MyHomeSecondSpaceSizedBox(),
+                  // Spacer(flex: _focusModeOn ? 2 : 1), //can not have this
+                  _buildMantraStream(),
+                  MyHomeMiddleSpaceSizedBox(), //space between mantra and Today's Todos
+                  Visibility(
+                    visible: _focusModeOn ? true : false,
+                    child:
+                        _buildTaskCarouselSlider(database, todayTodosNotDone),
                   ),
-                ),
+                  // Spacer()
+                ],
               ),
-            ],
+            ),
           ),
-          Spacer()
         ],
       ),
     );
@@ -471,13 +473,15 @@ class _HomeScreenState extends State<HomeScreen> {
     final focusNotifier = Provider.of<FocusNotifier>(context);
     bool _focusModeOn = (focusNotifier.getFocus() == true);
     return Expanded(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          Spacer(flex: 2),
-          _focusModeOn ? _questionAndTextField() : _buildMantraStream(),
-          Spacer(),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Column(
+          children: <Widget>[
+            Spacer(),
+            _focusModeOn ? _questionAndTextField() : _buildMantraStream(),
+            Spacer(),
+          ],
+        ),
       ),
     );
   }
@@ -490,12 +494,11 @@ class _HomeScreenState extends State<HomeScreen> {
         Showcase(
           key: _fourth,
           description: Strings.fourth,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: isBalance
-                ? _buildScheduledQuestion(isKeyboardVisible)
-                : mainContentWhenTaskEmpty(isKeyboardVisible),
-          ),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+          child: isBalance
+              ? _buildScheduledQuestion(isKeyboardVisible)
+              : mainQuestionWhenTaskEmpty(isKeyboardVisible),
         ), //33
         Showcase(
             key: _fifth,
@@ -513,7 +516,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int endHour;
   int finalEndHour;
   bool isBalance;
-  bool isWeekDay;
+  // bool isWeekDay; //not in use
 
   Widget _buildScheduledQuestion(bool isKeyboardVisible) {
     final int hour = int.parse(DateFormat('kk').format(DateTime.now()));
@@ -521,24 +524,15 @@ class _HomeScreenState extends State<HomeScreen> {
     // isWeekDay //if this is true
     // ? if ((dayOfWeek <= 5) & (dayOfWeek >= 0)) {
     if ((hour >= startHour) & (hour < finalEndHour)) {
-      return mainContentWhenTaskEmpty(isKeyboardVisible);
+      return mainQuestionWhenTaskEmpty(isKeyboardVisible);
     } //8pm
     else if ((hour >= finalEndHour) & (hour < finalEndHour + 3)) {
-      return Visibility(
-        //after submitTomorrow,  _questionVisible is false;
-        visible: _questionVisible,
-        child: Column(
-          children: [
-            greetingsAndSpace(isKeyboardVisible), //first greetings
-            nameVisibilityTomorrowQuestion(),
-          ],
-        ),
-      );
+      return tomorrowQuestionWhenTaskEmpty(isKeyboardVisible);
     } else
       return _buildMantraStream();
   }
 
-  Column mainContentWhenTaskEmpty(bool isKeyboardVisible) {
+  Column mainQuestionWhenTaskEmpty(bool isKeyboardVisible) {
     return Column(
       children: [
         // when keyboard is up, we can not hide greeting otherwise we can't edit name
@@ -548,17 +542,16 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Column greetingsAndSpace(bool isKeyboardVisible) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: getFirstGreetings,
-        ),
-        !isKeyboardVisible //this is to prevent no space when adding task
-            ? MyHomeMiddleSpaceSizedBox()
-            : SizedBox(height: 10),
-      ],
+  Visibility tomorrowQuestionWhenTaskEmpty(bool isKeyboardVisible) {
+    return Visibility(
+      //after submitTomorrow,  _questionVisible is false;
+      visible: _questionVisible,
+      child: Column(
+        children: [
+          greetingsAndSpace(isKeyboardVisible), //first greetings
+          nameVisibilityTomorrowQuestion(),
+        ],
+      ),
     );
   }
 
@@ -577,6 +570,20 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Column greetingsAndSpace(bool isKeyboardVisible) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: getFirstGreetings,
+        ),
+        !isKeyboardVisible //this is to prevent no space when adding task
+            ? MyHomeMiddleSpaceSizedBox()
+            : SizedBox(height: 10),
+      ],
     );
   }
 
@@ -981,21 +988,21 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   int nameLengthLimit;
-  void getNameLengthLimit(double height) {
-    if (height >= 850) {
-      nameLengthLimit = 7;
-    } else if ((height < 850) && (height > 700)) {
+  void getNameLengthLimit(double width) {
+    if (width >= 410) {
+      nameLengthLimit = 12;
+    } else if ((width >= 390) && (width < 410)) {
+      nameLengthLimit = 9;
+    } else if (width < 390) {
       nameLengthLimit = 6;
-    } else if (height < 700) {
-      nameLengthLimit = 4;
     }
   }
 
   /// first Greetings
   get getFirstGreetings {
     final User user = FirebaseAuth.instance.currentUser;
-    double height = MediaQuery.of(context).size.height;
-    getNameLengthLimit(height);
+    double width = MediaQuery.of(context).size.width;
+    getNameLengthLimit(width);
 
     // user.reload();
     // String userName;

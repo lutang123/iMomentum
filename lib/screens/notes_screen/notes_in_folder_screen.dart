@@ -130,11 +130,7 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
           child: Stack(
             alignment: Alignment.bottomRight,
             children: [
-              Column(
-                children: [
-                  _buildStreamBuilderNotes(_darkTheme),
-                ],
-              ), //Expanded CustomScrollView
+              _buildStreamBuilderNotes(_darkTheme), //Expanded CustomScrollView
               _bottomRow(),
             ],
           ),
@@ -208,12 +204,24 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
                 _pinnedNotesInThisFolder, _notPinnedNotesInThisFolder);
           } else {
             //if notes are empty
-            return EmptyOrError(text: Strings.emptyNote);
+            return Column(
+              children: [
+                Spacer(), //add this to make it center in screen
+                EmptyOrError(text: Strings.emptyNote),
+                Spacer(),
+              ],
+            );
           }
         } else if (snapshot.hasError) {
           print(
               'snapshot.hasError in notes stream: ${snapshot.error.toString()}');
-          return EmptyOrError(error: Strings.streamErrorMessage);
+          return Column(
+            children: [
+              Spacer(),
+              EmptyOrError(error: Strings.streamErrorMessage),
+              Spacer(),
+            ],
+          );
         }
         return Center(child: CircularProgressIndicator());
       },
@@ -221,27 +229,24 @@ class NotesInFolderScreenState extends State<NotesInFolderScreen> {
   }
 
   ///Main content
-  Expanded buildExpandedCustomScrollView(
+  CustomScrollView buildExpandedCustomScrollView(
       bool _darkTheme,
       List<Note> _pinnedNotesInThisFolder,
       List<Note> _notPinnedNotesInThisFolder) {
-    return Expanded(
-      child: CustomScrollView(
-        controller: _hideButtonController,
-        slivers: <Widget>[
-          //this is just for the word 'PINNED'
-          _buildBoxAdaptorForPinned(_pinnedNotesInThisFolder, _darkTheme),
-          //this is for pinned notes
-          _buildNotesGrid(_pinnedNotesInThisFolder),
-          //this is just for the word 'OTHERS'
-          _pinnedNotesInThisFolder.length > 0
-              ? _buildBoxAdaptorForOthers(
-                  _notPinnedNotesInThisFolder, _darkTheme)
-              : SliverToBoxAdapter(child: Container()),
-          //this is for no pinned notes.
-          _buildNotesGrid(_notPinnedNotesInThisFolder),
-        ],
-      ),
+    return CustomScrollView(
+      controller: _hideButtonController,
+      slivers: <Widget>[
+        //this is just for the word 'PINNED'
+        _buildBoxAdaptorForPinned(_pinnedNotesInThisFolder, _darkTheme),
+        //this is for pinned notes
+        _buildNotesGrid(_pinnedNotesInThisFolder),
+        //this is just for the word 'OTHERS'
+        _pinnedNotesInThisFolder.length > 0
+            ? _buildBoxAdaptorForOthers(_notPinnedNotesInThisFolder, _darkTheme)
+            : SliverToBoxAdapter(child: Container()),
+        //this is for no pinned notes.
+        _buildNotesGrid(_notPinnedNotesInThisFolder),
+      ],
     );
   }
 

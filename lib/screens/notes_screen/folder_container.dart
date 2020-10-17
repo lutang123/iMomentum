@@ -52,12 +52,13 @@ class FolderContainer extends StatelessWidget {
                               _darkTheme ? darkThemeWords : lightThemeButton),
                       Padding(
                         padding:
-                            const EdgeInsets.only(top: 6.0, left: 3, right: 3),
+                            const EdgeInsets.only(top: 3.0, left: 3, right: 3),
                         child: AutoSizeText(
                           folder.title ?? '',
                           textAlign: TextAlign.center,
                           maxLines: 2,
-                          minFontSize: 15,
+                          minFontSize: 14,
+                          maxFontSize: 18,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                               fontSize: 18,
