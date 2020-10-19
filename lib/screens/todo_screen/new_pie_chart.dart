@@ -38,13 +38,9 @@ class NewPieChart extends StatelessWidget {
           showChartValueLabel: true,
           initialAngle: 0,
           chartValueStyle: defaultChartValueStyle.copyWith(
-              color: _darkTheme
-                  ? Colors.white.withOpacity(0.9)
-                  : lightThemeButton),
+              color: _darkTheme ? darkThemeWords : lightThemeWords),
           legendStyle: defaultLegendStyle.copyWith(
-              color: _darkTheme
-                  ? Colors.white.withOpacity(0.9)
-                  : lightThemeButton),
+              color: _darkTheme ? darkThemeWords : lightThemeWords),
           chartType: ChartType.ring,
         ),
       );

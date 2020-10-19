@@ -361,37 +361,38 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Expanded _todoItemContent(Database database, List<Todo> todayTodosNotDone) {
+  Widget _todoItemContent(Database database, List<Todo> todayTodosNotDone) {
     //we can not set this to listen: false, otherwise the screen will not update immediately
     final focusNotifier = Provider.of<FocusNotifier>(context);
     bool _focusModeOn = focusNotifier.getFocus();
-    return Expanded(
-      child: CustomScrollView(
-        shrinkWrap: true,
-        slivers: <Widget>[
-          SliverToBoxAdapter(
-            child: Visibility(
-              visible:
-                  _visibleWhenEdit, //add this to prevent keyboard pop up and no space
-              child: Column(
-                children: <Widget>[
-                  MyHomeSecondSpaceSizedBox(),
-                  // Spacer(flex: _focusModeOn ? 2 : 1), //can not have this
-                  _buildMantraStream(),
-                  MyHomeMiddleSpaceSizedBox(), //space between mantra and Today's Todos
-                  Visibility(
-                    visible: _focusModeOn ? true : false,
-                    child:
-                        _buildTaskCarouselSlider(database, todayTodosNotDone),
-                  ),
-                  // Spacer()
-                ],
-              ),
+    return Visibility(
+      visible:
+          _visibleWhenEdit, //add this to prevent keyboard pop up and no space
+      child: Expanded(
+        child: Column(
+          children: <Widget>[
+            // MyHomeSecondSpaceSizedBox(),
+            Spacer(flex: _focusModeOn ? 2 : 1), //can not have this
+            _buildMantraStream(),
+            MyHomeMantraSpaceSizedBox(), //space between mantra and Today's Todos
+            Visibility(
+              visible: _focusModeOn ? true : false,
+              child: _buildTaskCarouselSlider(database, todayTodosNotDone),
             ),
-          ),
-        ],
+            Spacer()
+          ],
+        ),
       ),
     );
+
+    //   CustomScrollView(
+    //   shrinkWrap: true,
+    //   slivers: <Widget>[
+    //     SliverToBoxAdapter(
+    //       child: ,
+    //     ),
+    //   ],
+    // );
   }
 
   Column _buildTaskCarouselSlider(
@@ -581,7 +582,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: getFirstGreetings,
         ),
         !isKeyboardVisible //this is to prevent no space when adding task
-            ? MyHomeMiddleSpaceSizedBox()
+            ? MyHomeGreetingSpaceSizedBox()
             : SizedBox(height: 10),
       ],
     );

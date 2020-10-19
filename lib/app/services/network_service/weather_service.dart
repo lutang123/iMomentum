@@ -11,8 +11,8 @@ class WeatherService {
   //for current, which has location.
   //https://api.openweathermap.org/data/2.5/weather?lat=49.28&lon=-123.12&units=metric&appid=856822fd8e22db5e1ba48c0e7d69844a
   static Future<dynamic> getCurrentWeather(String units) async {
-    var position = await Geolocator()
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.low);
+    var position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.low);
     // print("position: $position");
     String url =
         '$urlFirstPart?lat=${position.latitude}&lon=${position.longitude}&units=$units&appid=$apiKey';
@@ -22,8 +22,8 @@ class WeatherService {
 
   // 'https://api.openweathermap.org/data/2.5/onecall?lat=49.28&lon=-123.12&exclude=minutely&units=metric&appid=856822fd8e22db5e1ba48c0e7d69844a');
   static Future<dynamic> getForecastWeather(String units) async {
-    var position = await Geolocator()
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.low);
+    var position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.low);
     String url =
         '$urlOneCall?lat=${position.latitude}&lon=${position.longitude}&exclude=minutely&units=$units&appid=$apiKey';
     var weatherData = await NetworkHelper(url: url).getData();
@@ -71,8 +71,8 @@ class Location {
 
   Future<void> getCurrentLocation() async {
     try {
-      var position = await Geolocator()
-          .getCurrentPosition(desiredAccuracy: LocationAccuracy.low);
+      var position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.low);
       lat = position.latitude;
       lon = position.longitude;
     } catch (e) {

@@ -21,8 +21,9 @@ class MyCalendar extends StatelessWidget {
   final Map<DateTime, List<dynamic>> events;
   final Map<DateTime, List<dynamic>> holidays;
   final AnimationController animationController;
-  final Function(DateTime, List<dynamic>) onDaySelected;
-  final Function(DateTime, List<dynamic>) onDayLongPressed;
+  // new version has two List<dynamic>
+  final Function(DateTime, List<dynamic>, List<dynamic>) onDaySelected;
+  final Function(DateTime, List<dynamic>, List<dynamic>) onDayLongPressed;
   final Widget buildEventsMarker;
   final Widget buildHolidayMarker;
 

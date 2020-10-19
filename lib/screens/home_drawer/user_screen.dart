@@ -68,20 +68,30 @@ class _UserScreenState extends State<UserScreen> {
     );
   }
 
-  Row confirmVerifiedFlatButton(bool _darkTheme) {
-    return Row(
-      children: [
-        Visibility(
-          visible: _confirmVerifiedVisible,
-          child: FlatButton(
-            onPressed: _confirmVerified,
-            child: Text('I have verified my email address.',
-                style: TextStyle(
-                    color: _darkTheme ? darkThemeButton : lightThemeButton,
-                    fontSize: 18)),
+  Visibility confirmVerifiedFlatButton(bool _darkTheme) {
+    return Visibility(
+      visible: _confirmVerifiedVisible,
+      child: Column(
+        children: [
+          SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: InkWell(
+                  onTap: _confirmVerified,
+                  child: Text('I have verified my email address.',
+                      style: TextStyle(
+                          color:
+                              _darkTheme ? darkThemeButton : lightThemeButton,
+                          fontStyle: FontStyle.italic,
+                          decoration: TextDecoration.underline,
+                          fontSize: 16)),
+                ),
+              ),
+            ],
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -208,11 +218,7 @@ class _UserScreenState extends State<UserScreen> {
                   Row(
                     children: [
                       Text('Email not verified',
-                          style: TextStyle(
-                              color:
-                                  _darkTheme ? darkThemeWords : lightThemeWords,
-                              fontSize: 16,
-                              fontStyle: FontStyle.italic)),
+                          style: TextStyle(color: Colors.red, fontSize: 16)),
                     ],
                   ),
                   SizedBox(height: 10),
@@ -222,11 +228,13 @@ class _UserScreenState extends State<UserScreen> {
                         onTap: _verifyEmail,
                         child: Text('Verify email address',
                             style: TextStyle(
-                                color: _darkTheme
-                                    ? darkThemeButton
-                                    : lightThemeButton,
-                                fontSize: 18,
-                                fontStyle: FontStyle.italic)),
+                              color: _darkTheme
+                                  ? darkThemeButton
+                                  : lightThemeButton,
+                              fontSize: 16,
+                              fontStyle: FontStyle.italic,
+                              decoration: TextDecoration.underline,
+                            )),
                       )
                     ],
                   )

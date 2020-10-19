@@ -377,8 +377,8 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
         events: calendarEvent,
         holidays: _notDoneEvents,
         calendarController: _firstCalendarController,
-        onDaySelected: (date, _) => _onDaySelected1(date, todos),
-        onDayLongPressed: (date, _) {
+        onDaySelected: (date, _, __) => _onDaySelected1(date, todos),
+        onDayLongPressed: (date, _, __) {
           setState(() {
             _taskDate = date;
           });
@@ -660,7 +660,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
       child: MyCalendar(
         events: calendarEvent, //this is empty
         calendarController: _firstCalendarController,
-        onDaySelected: (date, _) => _getTodoDateTitle(date),
+        onDaySelected: (date, _, __) => _getTodoDateTitle(date),
         animationController: _animationController,
       ),
     );
@@ -699,7 +699,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
         MyCalendar(
           events: calendarEvent,
           calendarController: _secondCalendarController,
-          onDaySelected: (date, _) => _onDaySelected2(date, entries),
+          onDaySelected: (date, _, __) => _onDaySelected2(date, entries),
           animationController: _animationController,
         ),
         pieChartCustomScrollView(),
@@ -754,7 +754,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
             MyCalendar(
               events: calendarEvent, //also empty
               calendarController: _secondCalendarController,
-              onDaySelected: (date, _) => _getPieChartTitle(date),
+              onDaySelected: (date, _, __) => _getPieChartTitle(date),
               animationController: _animationController,
             ), //calendar
             //this already included the content if it's empty
