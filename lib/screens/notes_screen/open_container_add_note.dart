@@ -30,10 +30,10 @@ class OpenContainerAddNotes extends StatelessWidget {
       },
       closedElevation: 6.0,
       // closedColor: Colors.transparent,
-      closedColor: _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
+      closedColor: _darkTheme ? darkThemeButton : lightThemeNoPhotoColor,
       closedShape: RoundedRectangleBorder(
         side: BorderSide(
-            color: _darkTheme ? darkThemeButton : lightThemeButton, width: 2.0),
+            color: _darkTheme ? Colors.white : lightThemeButton, width: 2.0),
         borderRadius: BorderRadius.all(
           Radius.circular(_fabDimension / 2),
         ),
@@ -45,7 +45,7 @@ class OpenContainerAddNotes extends StatelessWidget {
             child: Center(
               child: Icon(Icons.add,
                   size: 30,
-                  color: _darkTheme ? darkThemeButton : lightThemeButton),
+                  color: _darkTheme ? Colors.white : lightThemeButton),
             ));
       },
     );

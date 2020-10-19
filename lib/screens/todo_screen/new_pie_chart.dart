@@ -7,7 +7,6 @@ import 'package:iMomentum/screens/todo_screen/todo_empty_or_error.dart';
 import 'package:pie_chart/pie_chart.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class NewPieChart extends StatelessWidget {
   NewPieChart({@required this.dataMap});

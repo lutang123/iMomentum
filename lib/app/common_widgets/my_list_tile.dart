@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iMomentum/app/models/folder.dart';
 import 'package:iMomentum/app/models/mantra_model.dart';
-import 'package:iMomentum/app/models/quote_model.dart';
 import 'package:iMomentum/app/models/todo.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';

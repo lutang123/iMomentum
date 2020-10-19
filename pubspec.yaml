@@ -57,7 +57,7 @@ dependencies:
   flutter_spinkit: ^4.1.2
   google_fonts: ^1.0.0
   tinycolor: ^1.0.2 # for count-down-circle
-  assets_audio_player: 2.0.6+4
+  assets_audio_player: ^2.0.10
   liquid_swipe: ^1.4.3 # for landing
 
   # all Sign in and firebase package
@@ -66,7 +66,7 @@ dependencies:
   cloud_firestore: ^0.14.0+2 # updated
   firebase_auth: ^0.18.0+1 # updated
   google_sign_in: ^4.0.7
-  apple_sign_in: ^0.1.0
+#  apple_sign_in: ^0.1.0
   alert_dialogs:  # only on sign in
     git:
       url: https://github.com/bizz84/codewithandrea_flutter_packages

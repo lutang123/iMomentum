@@ -2,19 +2,14 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:iMomentum/app/common_widgets/my_round_button.dart';
-import 'package:iMomentum/app/models/data/rest_quote.dart';
 import 'package:iMomentum/app/models/todo.dart';
 import 'package:iMomentum/app/utils/extension_clockFmt.dart';
 import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/utils/pages_routes.dart';
-import 'package:iMomentum/screens/home_screen/daily_quote.dart';
 import 'package:iMomentum/screens/iPomodoro/pomodoro_base_screen.dart';
-import 'package:iMomentum/screens/iPomodoro/rest_screen_bottom_quote.dart';
 import 'clock_begin_screen.dart';
 import 'clock_timer.dart';
 import 'clock_mantra_quote_title.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class RestScreen extends StatefulWidget {
   const RestScreen(
@@ -51,7 +46,7 @@ class _RestScreenState extends State<RestScreen>
     _playSound();
     _stopwatch = Stopwatch();
     _start();
-    _fetchQuote();
+    // _fetchQuote();
     super.initState();
   }
 
@@ -204,43 +199,43 @@ class _RestScreenState extends State<RestScreen>
         milliseconds: 450));
   }
 
-  QuoteLoadingState _state = QuoteLoadingState.NOT_DOWNLOADED;
-  String dailyQuote;
-  String author;
+  // QuoteLoadingState _state = QuoteLoadingState.NOT_DOWNLOADED;
+  // String dailyQuote;
+  // String author;
 
 //http://quotes.rest/qod/categories.json
-  Future<void> _fetchQuote() async {
-    setState(() {
-      _state = QuoteLoadingState.DOWNLOADING;
-    });
-    try {
-      final response = await http
-
-          ///this link can only use 10 times/hours
-//          .get('http://quotes.rest/qod.json?maxlength=100&category=life&love');
-          .get('https://favqs.com/api/qotd');
-      if (response.statusCode == 200) {
-        var quoteData = json.decode(response.body)['quote'];
-        setState(() {
-          dailyQuote = quoteData['body'];
-          author = quoteData['author'];
-        });
-      } else {
-        setState(() {
-          dailyQuote = RestQuoteList().getRestQuote().body;
-          author = RestQuoteList().getRestQuote().author;
-        });
-        //        throw Exception('Failed to load quote');
-      }
-    } catch (e) {
-      setState(() {
-        dailyQuote = RestQuoteList().getRestQuote().body;
-        author = RestQuoteList().getRestQuote().author;
-      });
-      print('error in fetching rest quote: $e');
-    }
-    setState(() {
-      _state = QuoteLoadingState.FINISHED_DOWNLOADING;
-    });
-  }
+//   Future<void> _fetchQuote() async {
+//     setState(() {
+//       _state = QuoteLoadingState.DOWNLOADING;
+//     });
+//     try {
+//       final response = await http
+//
+//           ///this link can only use 10 times/hours
+// //          .get('http://quotes.rest/qod.json?maxlength=100&category=life&love');
+//           .get('https://favqs.com/api/qotd');
+//       if (response.statusCode == 200) {
+//         var quoteData = json.decode(response.body)['quote'];
+//         setState(() {
+//           dailyQuote = quoteData['body'];
+//           author = quoteData['author'];
+//         });
+//       } else {
+//         setState(() {
+//           dailyQuote = RestQuoteList().getRestQuote().body;
+//           author = RestQuoteList().getRestQuote().author;
+//         });
+//         //        throw Exception('Failed to load quote');
+//       }
+//     } catch (e) {
+//       setState(() {
+//         dailyQuote = RestQuoteList().getRestQuote().body;
+//         author = RestQuoteList().getRestQuote().author;
+//       });
+//       print('error in fetching rest quote: $e');
+//     }
+//     setState(() {
+//       _state = QuoteLoadingState.FINISHED_DOWNLOADING;
+//     });
+//   }
 }

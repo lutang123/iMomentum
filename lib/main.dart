@@ -13,7 +13,6 @@ import 'app/constants/image_path.dart';
 import 'app/services/firestore_service/database.dart';
 import 'app/sign_in/firebase_auth_service_new.dart';
 import 'screens/landing_and_signIn/auth_widget_builder.dart';
-import 'app/sign_in/apple_sign_in_available.dart';
 import 'app/constants/theme.dart';
 import 'app/services/multi_notifier.dart';
 import 'package:rxdart/subjects.dart';
@@ -216,7 +215,7 @@ void main() async {
       int startHour = prefs.getInt('startHour') ?? 6;
       int endHour = prefs.getInt('endHour') ?? 6;
 
-      final appleSignInAvailable = await AppleSignInAvailable.check();
+      // final appleSignInAvailable = await AppleSignInAvailable.check();
 
       ///then runApp
       runApp(MultiProvider(
@@ -263,7 +262,8 @@ void main() async {
               //     FirebaseAuthService(), //change back to this
               // // authServiceBuilder: (_) => FirebaseAuth.instance,
               // databaseBuilder: (_, uid) => FirestoreDatabase(uid: uid),
-              appleSignInAvailable: appleSignInAvailable)));
+              // appleSignInAvailable: appleSignInAvailable,
+              )));
     });
   });
 }
@@ -274,13 +274,13 @@ class MyApp extends StatefulWidget {
     Key key,
     // this.authServiceBuilder,
     // this.databaseBuilder,
-    this.appleSignInAvailable,
+    // this.appleSignInAvailable,
   }) : super(key: key);
 
   // final FirebaseAuthService Function(BuildContext context) authServiceBuilder;
   // final FirestoreDatabase Function(BuildContext context, String uid)
   //     databaseBuilder;
-  final AppleSignInAvailable appleSignInAvailable;
+  // final AppleSignInAvailable appleSignInAvailable;
 
   @override
   _MyAppState createState() => _MyAppState();
@@ -369,8 +369,8 @@ class _MyAppState extends State<MyApp> {
     return MultiProvider(
       providers: [
         // final appleSignInAvailable = await AppleSignInAvailable.check();
-        Provider<AppleSignInAvailable>.value(
-            value: widget.appleSignInAvailable),
+        // Provider<AppleSignInAvailable>.value(
+        //     value: widget.appleSignInAvailable),
         Provider<FirebaseAuthService>(
           // create: widget.authServiceBuilder,
           create: (_) => FirebaseAuthService(),

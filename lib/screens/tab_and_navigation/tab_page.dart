@@ -4,7 +4,6 @@ import 'package:iMomentum/screens/home_screen/home_screen.dart';
 import 'package:iMomentum/screens/notes_screen/folder_screen.dart';
 import 'package:iMomentum/screens/todo_screen/todo_screen.dart';
 import 'package:iMomentum/screens/tab_and_navigation/tab_item.dart';
-import 'package:showcaseview/showcase_widget.dart';
 import '../home_drawer/drawer_screen.dart';
 import 'cupertino_home_scaffold.dart';
 

@@ -3,7 +3,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
 import 'package:iMomentum/app/common_widgets/setting_switch.dart';
-import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:iMomentum/app/models/mantra_model.dart';
 import 'package:iMomentum/app/models/quote_model.dart';
@@ -142,30 +141,30 @@ class _MoreSettingScreenState extends State<MoreSettingScreen> {
     );
   }
 
-  Widget _topRow() {
-    final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-    return Column(
-      children: [
-        SizedBox(height: 5),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: Icon(Icons.arrow_back_ios, size: 30),
-              color: Colors.white,
-            )
-          ],
-        ),
-        MantraTopTitle(
-          title: 'Settings',
-          subtitle: 'More options to customize your experience.',
-          darkTheme: _darkTheme,
-        ),
-      ],
-    );
-  }
+  // Widget _topRow() {
+  //   final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
+  //   bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
+  //   return Column(
+  //     children: [
+  //       SizedBox(height: 5),
+  //       Row(
+  //         mainAxisAlignment: MainAxisAlignment.start,
+  //         children: <Widget>[
+  //           IconButton(
+  //             onPressed: () => Navigator.pop(context),
+  //             icon: Icon(Icons.arrow_back_ios, size: 30),
+  //             color: Colors.white,
+  //           )
+  //         ],
+  //       ),
+  //       MantraTopTitle(
+  //         title: 'Settings',
+  //         subtitle: 'More options to customize your experience.',
+  //         darkTheme: _darkTheme,
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Future<void> _onThemeChanged(bool value, ThemeNotifier themeNotifier) async {
     (value)

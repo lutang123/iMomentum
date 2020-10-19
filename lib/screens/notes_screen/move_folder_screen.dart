@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:iMomentum/app/common_widgets/add_screen_top_row.dart';
 import 'package:iMomentum/app/common_widgets/empty_and_error_content.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_list_tile.dart';
 import 'package:iMomentum/app/common_widgets/my_stateful_dialog.dart';
-import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
 import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/models/folder.dart';
 import 'package:iMomentum/app/models/note.dart';
@@ -15,7 +13,6 @@ import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dar
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/constants/theme.dart';
 import 'package:provider/provider.dart';
-import 'package:iMomentum/app/utils/extension_firstCaps.dart';
 
 class MoveFolderScreen extends StatefulWidget {
   const MoveFolderScreen({

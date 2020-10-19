@@ -12,7 +12,6 @@ import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/utils/pages_routes.dart';
 import 'package:iMomentum/screens/iPomodoro/pomodoro_base_screen.dart';
 import 'package:provider/provider.dart';
-import 'clock_bottom.dart';
 import 'clock_completion_screen.dart';
 import 'clock_timer.dart';
 import 'clock_mantra_quote_title.dart';

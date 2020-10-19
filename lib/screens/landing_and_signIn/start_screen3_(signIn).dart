@@ -12,7 +12,6 @@ import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/constants/strings_sign_in.dart';
-import 'package:iMomentum/app/sign_in/apple_sign_in_available.dart';
 import 'package:iMomentum/app/sign_in/firebase_auth_service_new.dart';
 import 'package:iMomentum/app/sign_in/sign_in_teddy/teddy_controller.dart';
 import 'package:iMomentum/app/sign_in/sign_in_teddy/tracking_text_input.dart';
@@ -321,17 +320,17 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
   }
 
   Widget _secondPart() {
-    final appleSignInAvailable = Provider.of<AppleSignInAvailable>(context);
+    // final appleSignInAvailable = Provider.of<AppleSignInAvailable>(context);
     double height = MediaQuery.of(context).size.height;
     return Column(
       children: [
         sizedBox(height),
         mySignInContainerSocial(
             'Sign up with Google', _signInWithGoogle, height),
-        if (appleSignInAvailable.isAvailable) ...[
-          mySignInContainerSocial(
-              'Sign up with Apple', _signInWithApple, height)
-        ],
+        // if (appleSignInAvailable.isAvailable) ...[
+        //   mySignInContainerSocial(
+        //       'Sign up with Apple', _signInWithApple, height)
+        // ],
         mySignInContainerJustExplore(),
       ],
     );
@@ -589,28 +588,28 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
     }
   }
 
-  Future<void> _signInWithApple() async {
-    final FirebaseAuthService firebaseAuthService =
-        Provider.of<FirebaseAuthService>(context, listen: false);
-    try {
-      _teddyController.play('success');
-      final ProgressDialog pr = ProgressDialog(
-        context,
-        type: ProgressDialogType.Normal,
-        isDismissible: true,
-      );
-      progressDialogStyle(pr);
-      await pr.show();
-      await firebaseAuthService.signInWithApple();
-      await pr.hide();
-    } on PlatformException catch (e) {
-      _teddyController.play('fail'); // added
-      if (e.code != 'ERROR_ABORTED_BY_USER') {
-        _showSignInError(context, e);
-      }
-      _showSignInError(context, e); // added
-    }
-  }
+  // Future<void> _signInWithApple() async {
+  //   final FirebaseAuthService firebaseAuthService =
+  //       Provider.of<FirebaseAuthService>(context, listen: false);
+  //   try {
+  //     _teddyController.play('success');
+  //     final ProgressDialog pr = ProgressDialog(
+  //       context,
+  //       type: ProgressDialogType.Normal,
+  //       isDismissible: true,
+  //     );
+  //     progressDialogStyle(pr);
+  //     await pr.show();
+  //     // await firebaseAuthService.signInWithApple();
+  //     await pr.hide();
+  //   } on PlatformException catch (e) {
+  //     _teddyController.play('fail'); // added
+  //     if (e.code != 'ERROR_ABORTED_BY_USER') {
+  //       _showSignInError(context, e);
+  //     }
+  //     _showSignInError(context, e); // added
+  //   }
+  // }
 
   Future<void> _showAlert() async {
     final didRequestSignOut = await PlatformAlertDialog(
