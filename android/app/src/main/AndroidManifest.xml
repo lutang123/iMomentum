@@ -28,7 +28,7 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:label="iMomentum"
-        android:icon="@mipmap/launcher_icon">
+        android:icon="@mipmap/ic_launcher">
 
         <!-- for image cropper -->
         <activity
