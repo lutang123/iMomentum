@@ -79,13 +79,14 @@ class Strings {
   static const teddy = 'I am Teddy. I am here to sign up with you.';
 
   // Home screen tip on showcase
-  static const first =
-      'Tap on weather information to show detailed weather forecast for your current location.';
+  static const first = 'Tap to show detailed weather forecast.';
   static const second =
-      'Double tap anywhere on the screen to change the background photo. You can also change to your favourite photo from settings.';
+      'Double tap anywhere to change the background photo.'; //
+  static const six = 'You can also set your favourite photo from settings.';
   static const third = 'Tap on your name to edit.';
   static const fourth =
-      "Question will show on a default 9am - 5pm schedule. You can change the schedule in settings.";
+      "Focus Question will show on a default 6am - 6pm schedule. ";
+  static const seven = "You can change when to show the question in settings.";
   static const fifth = "Add your focused task here.";
 
   static const focusButtonTip =

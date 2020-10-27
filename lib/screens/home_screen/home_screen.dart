@@ -181,8 +181,10 @@ class _HomeScreenState extends State<HomeScreen> {
   BuildContext myContext;
   GlobalKey _first = GlobalKey();
   GlobalKey _second = GlobalKey();
+  GlobalKey _six = GlobalKey();
   GlobalKey _third = GlobalKey();
   GlobalKey _fourth = GlobalKey();
+  GlobalKey _seven = GlobalKey();
   GlobalKey _fifth = GlobalKey();
 
   Future<bool> _isFirstLaunch() async {
@@ -204,9 +206,9 @@ class _HomeScreenState extends State<HomeScreen> {
         // // print('first');
         // if (!mounted) return; //not making any difference
         // // print('second');
-        if (result)
-          ShowCaseWidget.of(myContext)
-              .startShowCase([_first, _second, _third, _fourth, _fifth]);
+        if (!result)
+          ShowCaseWidget.of(myContext).startShowCase(
+              [_first, _second, _six, _third, _fourth, _seven, _fifth]);
       });
     });
     final bool isKeyboardVisible =
@@ -234,8 +236,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     Showcase(
                         key: _second,
                         description: Strings.second,
+                        descTextStyle:
+                            TextStyle(fontSize: 14, color: Colors.black),
                         contentPadding: const EdgeInsets.symmetric(
-                            vertical: 5, horizontal: 15),
+                            vertical: 5, horizontal: 5),
+                        child: Container()),
+                    Showcase(
+                        key: _six,
+                        description: Strings.six,
+                        descTextStyle:
+                            TextStyle(fontSize: 14, color: Colors.black),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 5, horizontal: 5),
                         child: Container()), //for weather
                     _middleContent(), //Expanded
                     !isKeyboardVisible
@@ -296,8 +308,9 @@ class _HomeScreenState extends State<HomeScreen> {
     bool _metricUnitOn = metricNotifier.getMetric();
     return Showcase(
       key: _first,
+      descTextStyle: TextStyle(fontSize: 14, color: Colors.black),
       description: Strings.first,
-      contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+      contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.end,
@@ -492,18 +505,13 @@ class _HomeScreenState extends State<HomeScreen> {
         KeyboardVisibilityProvider.isKeyboardVisible(context);
     return Column(
       children: [
-        Showcase(
-          key: _fourth,
-          description: Strings.fourth,
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-          child: isBalance
-              ? _buildScheduledQuestion(isKeyboardVisible)
-              : mainQuestionWhenTaskEmpty(isKeyboardVisible),
-        ), //33
+        isBalance
+            ? _buildScheduledQuestion(isKeyboardVisible)
+            : mainQuestionWhenTaskEmpty(isKeyboardVisible), //33
         Showcase(
             key: _fifth,
             description: Strings.fifth,
+            descTextStyle: TextStyle(fontSize: 14, color: Colors.black),
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
             child: isBalance
@@ -563,12 +571,26 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Text('$dayOfWeek, $formattedDate ', style: KHomeDate),
           SizedBox(height: 15),
-          TypewriterAnimatedTextKit(
-            isRepeatingAnimation: false,
-            text: ['What is your plan tomorrow?'],
-            textAlign: TextAlign.center,
-            textStyle: KHomeQuestion,
+          Showcase(
+            key: _fourth,
+            description: Strings.fourth,
+            descTextStyle: TextStyle(fontSize: 14, color: Colors.black),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+            child: TypewriterAnimatedTextKit(
+              isRepeatingAnimation: false,
+              text: ['What is your plan tomorrow?'],
+              textAlign: TextAlign.center,
+              textStyle: KHomeQuestion,
+            ),
           ),
+          Showcase(
+              key: _seven,
+              description: Strings.seven,
+              descTextStyle: TextStyle(fontSize: 14, color: Colors.black),
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+              child: Container()),
         ],
       ),
     );
@@ -595,12 +617,26 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Text('$dayOfWeek, $formattedDate ', style: KHomeDate),
           SizedBox(height: 15),
-          TypewriterAnimatedTextKit(
-            isRepeatingAnimation: false,
-            text: ['What is your main focus today?'],
-            textAlign: TextAlign.center,
-            textStyle: KHomeQuestion,
+          Showcase(
+            key: _fourth,
+            description: Strings.fourth,
+            descTextStyle: TextStyle(fontSize: 14, color: Colors.black),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+            child: TypewriterAnimatedTextKit(
+              isRepeatingAnimation: false,
+              text: ['What is your main focus today?'],
+              textAlign: TextAlign.center,
+              textStyle: KHomeQuestion,
+            ),
           ),
+          Showcase(
+              key: _seven,
+              description: Strings.seven,
+              descTextStyle: TextStyle(fontSize: 14, color: Colors.black),
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+              child: Container()),
         ],
       ),
     );
@@ -1053,6 +1089,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Showcase(
       key: _third,
       description: Strings.third,
+      descTextStyle: TextStyle(fontSize: 14, color: Colors.black),
       contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
       child: Visibility(
         visible: _nameVisible,
