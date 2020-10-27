@@ -206,7 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
         // // print('first');
         // if (!mounted) return; //not making any difference
         // // print('second');
-        if (!result)
+        if (result)
           ShowCaseWidget.of(myContext).startShowCase(
               [_first, _second, _six, _third, _fourth, _seven, _fifth]);
       });
