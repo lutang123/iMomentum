@@ -57,7 +57,7 @@ dependencies:
   flutter_spinkit: ^4.1.2
   google_fonts: ^1.0.0
   tinycolor: ^1.0.2 # for count-down-circle
-  assets_audio_player: ^2.0.10
+  assets_audio_player: ^2.0.8
   liquid_swipe: ^1.4.3 # for landing
 
   # all Sign in and firebase package
@@ -137,7 +137,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  mockito: ^4.1.1
+#  mockito: ^4.1.1
 #  random_string: ^2.0.0
   flutter_driver:
     sdk: flutter
@@ -159,7 +159,7 @@ flutter:
     - assets/icon/
     - assets/images/
     - assets/Teddy.flr
-    - assets/logo.png
+#    - assets/logo.png
     - lang/en.json
     - lang/zh.json
 

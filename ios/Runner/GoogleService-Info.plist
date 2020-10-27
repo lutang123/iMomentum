@@ -3,9 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>459840489878-emisna5jr6u2bsfurrqjekp29hubhgrf.apps.googleusercontent.com</string>
+	<string>459840489878-8171lfsabv0ke4moun1dr6b4mnf71fev.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.459840489878-emisna5jr6u2bsfurrqjekp29hubhgrf</string>
+	<string>com.googleusercontent.apps.459840489878-8171lfsabv0ke4moun1dr6b4mnf71fev</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>459840489878-tn2oct6pc4e2cnr01iq7bv24a59aiqdq.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyAPDr8z1SRXKZ7Tr_YbuC521s89a7q3eRQ</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.iMomentum</string>
+	<string>com.lu.iMomentum</string>
 	<key>PROJECT_ID</key>
 	<string>imomentum-5969c</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,7 +31,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:459840489878:ios:0a593c4408fe4b4f4835b7</string>
+	<string>1:459840489878:ios:5afa674e74359b974835b7</string>
 	<key>DATABASE_URL</key>
 	<string>https://imomentum-5969c.firebaseio.com</string>
 </dict>

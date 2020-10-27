@@ -26,6 +26,7 @@ import 'package:provider/provider.dart';
 import '../../app/sign_in/email_password_sign_in_model.dart';
 import 'package:iMomentum/app/utils/extension_firstCaps.dart';
 import 'package:iMomentum/app/constants/theme.dart';
+import 'dart:io';
 
 typedef void CaretMoved(Offset globalCaretPosition);
 typedef void TextChanged(String text);
@@ -325,8 +326,10 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
     return Column(
       children: [
         sizedBox(height),
-        mySignInContainerSocial(
-            'Sign up with Google', _signInWithGoogle, height),
+        Platform.isIOS
+            ? Container()
+            : mySignInContainerSocial(
+                'Sign up with Google', _signInWithGoogle, height),
         // if (appleSignInAvailable.isAvailable) ...[
         //   mySignInContainerSocial(
         //       'Sign up with Apple', _signInWithApple, height)

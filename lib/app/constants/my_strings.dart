@@ -9,7 +9,7 @@ class Strings {
 
   /// Part 1
   static const intro =
-      "iMomentum is a one-stop productivity application that brings you inspiration "
+      "iMomentum is a one-stop multi-function productivity application that brings you inspiration "
       "and keeps you focus on what's most important. ";
   static const intro1 =
       "iMomentum is a one-stop productivity application that brings you ";
@@ -22,26 +22,26 @@ class Strings {
 
   /// Part 2
   static const title1 = 'Inspiration';
-  static const subtitle1 = 'Breathe life into your device.';
+  static const subtitle1 = 'Breathe life into your device';
   static const inspirationFeature1 =
-      'Inspiring photography with dynamic display.';
-  static const inspirationFeature2 = 'Positive concept with mantras.';
-  static const inspirationFeature3 = 'Timeless wisdom with daily quote.';
+      'Inspiring photography with dynamic display';
+  static const inspirationFeature2 = 'Positive concept with mantras';
+  static const inspirationFeature3 = 'Timeless wisdom with daily quote';
 
   /// Part 3
   static const title2 = 'Focus';
-  static const subtitle2 = 'Approach each day with intent.';
-  static const focusFeature1 = 'Pomodoro Timer with daily focus report.';
-  static const focusFeature2 = 'Calendar with Task list and Reminder.';
-  static const focusFeature3 = 'Notes with different colors and font styles.';
+  static const subtitle2 = 'Approach each day with intent';
+  static const focusFeature1 = 'Pomodoro Timer with daily focus report';
+  static const focusFeature2 = 'Calendar with Todo list and Reminder';
+  static const focusFeature3 = 'Notes with different colors and font styles';
 
   /// Part 4
   static const title3 = 'Customization';
-  static const subtitle3 = 'Personalize your experience.';
+  static const subtitle3 = 'Personalize your experience';
   static const customizationFeature1 =
-      'Add your own photo or choose a favorite photo.';
-  static const customizationFeature2 = 'Add your own mantras.';
-  static const customizationFeature3 = 'Add your own quotes.';
+      'Add your own photo or choose a favorite photo';
+  static const customizationFeature2 = 'Add your own mantras';
+  static const customizationFeature3 = 'Add your own quotes';
 
   // StartScreen3 (sign in)
   // todo: I will need to change this to why join iMomentum Plus (or other words like upgrade or membership)

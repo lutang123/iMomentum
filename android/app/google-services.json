@@ -49,6 +49,42 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:459840489878:android:f61688e38e66c8b64835b7",
+        "android_client_info": {
+          "package_name": "com.lu.iMomentum"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "459840489878-q9i1dljhcmr1u7qls4nalv511o6v4blp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAOzU2P0DYisTa0P3iasgwGnOpuew7cMc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "459840489878-q9i1dljhcmr1u7qls4nalv511o6v4blp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "459840489878-emisna5jr6u2bsfurrqjekp29hubhgrf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.iMomentum"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"
