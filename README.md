@@ -72,4 +72,7 @@ https://app.wideo.co/view/31065101602712330979?utm_source=CopyPaste&utm_medium=s
   <img src="/screenshots/settings/9.png" width="100" />
 </p>
 
+### GIF
+![Finished App](https://github.com/lutang123/Flutter-MobileApp-Projects/blob/master/iMomentum.gif)
+
 
