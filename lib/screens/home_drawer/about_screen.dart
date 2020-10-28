@@ -1,7 +1,8 @@
-import 'package:contactus/contactus.dart';
 import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
 import 'package:flutter/cupertino.dart';
+
+import 'contact_us.dart';
 
 class AboutScreen extends StatelessWidget {
   // final Uri _emailLaunchUri = Uri(
@@ -41,19 +42,19 @@ class AboutScreen extends StatelessWidget {
           child: ContactUs(
             cardColor: Colors.white60,
             companyColor: Colors.white,
-            taglineColor: Colors.black87,
+            // tagLine: "The One-stop Productivity App",
+            taglineColor: Colors.white,
             textColor: Colors.black87,
-            logo: AssetImage('assets/logo.png'),
-            email: 'lutang908@gmail.com',
+            logo: AssetImage('assets/icon/icon.png'),
+            // email: 'lutang908@gmail.com',
             companyName: 'iMomentum',
             // phoneNumber: '+01 604 500 8822',
             website: 'https://iMomentum.ca',
-            facebookHandle: 'https://www.facebook.com/lu.tang.1422',
+            twitterHandle: 'iMomentumApp',
+            facebookHandle: 'IMomentumApp-110094130895280/',
+            instagram: 'imomentum_app/',
             githubUserName: 'lutang123',
             linkedinURL: 'https://www.linkedin.com/in/lutang123/',
-            // tagLine: 'Flutter Developer',
-            twitterHandle: 'FlutterLulu',
-            instagram: 'travelling_girl_lulu',
           ),
         ),
         // bottomNavigationBar: ContactUsBottomAppBar(

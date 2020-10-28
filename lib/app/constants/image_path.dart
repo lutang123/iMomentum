@@ -11,8 +11,8 @@ class ImagePath {
 
   // the two are the same
   static String fixedImageUrl =
-      'https://images.unsplash.com/photo-1582108529822-5258e7be743f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2775&q=80';
-  static String fixedImagePath = 'assets/images/main5.jpg';
+      'https://images.unsplash.com/photo-1449034446853-66c86144b0ad?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2850&q=80';
+  static String fixedImagePath = 'assets/images/default.jpg';
 
   static String startImage = 'assets/images/main5.jpg';
   static String introImage = 'assets/images/main5.jpg';

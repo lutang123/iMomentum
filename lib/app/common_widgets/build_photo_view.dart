@@ -20,8 +20,6 @@ class BuildPhotoView extends StatelessWidget {
       initialScale: PhotoViewComputedScale.covered,
       minScale: PhotoViewComputedScale.covered,
       maxScale: PhotoViewComputedScale.covered,
-
-      ///todo: choose some default photo as random photo
       loadFailedChild: Container(
         decoration: BoxDecoration(
           image: DecorationImage(

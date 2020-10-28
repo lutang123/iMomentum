@@ -186,6 +186,7 @@ class _HomeScreenState extends State<HomeScreen> {
   GlobalKey _fourth = GlobalKey();
   GlobalKey _seven = GlobalKey();
   GlobalKey _fifth = GlobalKey();
+  GlobalKey _eighth = GlobalKey();
 
   Future<bool> _isFirstLaunch() async {
     final sharedPreferences = await SharedPreferences.getInstance();
@@ -207,8 +208,16 @@ class _HomeScreenState extends State<HomeScreen> {
         // if (!mounted) return; //not making any difference
         // // print('second');
         if (result)
-          ShowCaseWidget.of(myContext).startShowCase(
-              [_first, _second, _six, _third, _fourth, _seven, _fifth]);
+          ShowCaseWidget.of(myContext).startShowCase([
+            _first,
+            _second,
+            _six,
+            _third,
+            _fourth,
+            _seven,
+            _fifth,
+            _eighth
+          ]);
       });
     });
     final bool isKeyboardVisible =
@@ -237,7 +246,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         key: _second,
                         description: Strings.second,
                         descTextStyle:
-                            TextStyle(fontSize: 14, color: Colors.black),
+                            TextStyle(fontSize: 13, color: Colors.black),
                         contentPadding: const EdgeInsets.symmetric(
                             vertical: 5, horizontal: 5),
                         child: Container()),
@@ -245,7 +254,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         key: _six,
                         description: Strings.six,
                         descTextStyle:
-                            TextStyle(fontSize: 14, color: Colors.black),
+                            TextStyle(fontSize: 13, color: Colors.black),
                         contentPadding: const EdgeInsets.symmetric(
                             vertical: 5, horizontal: 5),
                         child: Container()), //for weather
@@ -308,7 +317,7 @@ class _HomeScreenState extends State<HomeScreen> {
     bool _metricUnitOn = metricNotifier.getMetric();
     return Showcase(
       key: _first,
-      descTextStyle: TextStyle(fontSize: 14, color: Colors.black),
+      descTextStyle: TextStyle(fontSize: 13, color: Colors.black),
       description: Strings.first,
       contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
       child: Column(
@@ -511,12 +520,19 @@ class _HomeScreenState extends State<HomeScreen> {
         Showcase(
             key: _fifth,
             description: Strings.fifth,
-            descTextStyle: TextStyle(fontSize: 14, color: Colors.black),
+            descTextStyle: TextStyle(fontSize: 13, color: Colors.black),
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
             child: isBalance
                 ? _buildScheduledHomeTextField()
                 : nameVisibilityHomeTextField(_onSubmitted)),
+        Showcase(
+            key: _eighth,
+            description: Strings.eighth,
+            descTextStyle: TextStyle(fontSize: 13, color: Colors.black),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+            child: Container()),
       ],
     );
   }
@@ -574,7 +590,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Showcase(
             key: _fourth,
             description: Strings.fourth,
-            descTextStyle: TextStyle(fontSize: 14, color: Colors.black),
+            descTextStyle: TextStyle(fontSize: 13, color: Colors.black),
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
             child: TypewriterAnimatedTextKit(
@@ -587,7 +603,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Showcase(
               key: _seven,
               description: Strings.seven,
-              descTextStyle: TextStyle(fontSize: 14, color: Colors.black),
+              descTextStyle: TextStyle(fontSize: 13, color: Colors.black),
               contentPadding:
                   const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
               child: Container()),
@@ -620,7 +636,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Showcase(
             key: _fourth,
             description: Strings.fourth,
-            descTextStyle: TextStyle(fontSize: 14, color: Colors.black),
+            descTextStyle: TextStyle(fontSize: 13, color: Colors.black),
             contentPadding:
                 const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
             child: TypewriterAnimatedTextKit(
@@ -633,7 +649,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Showcase(
               key: _seven,
               description: Strings.seven,
-              descTextStyle: TextStyle(fontSize: 14, color: Colors.black),
+              descTextStyle: TextStyle(fontSize: 13, color: Colors.black),
               contentPadding:
                   const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
               child: Container()),
@@ -1089,7 +1105,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Showcase(
       key: _third,
       description: Strings.third,
-      descTextStyle: TextStyle(fontSize: 14, color: Colors.black),
+      descTextStyle: TextStyle(fontSize: 13, color: Colors.black),
       contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
       child: Visibility(
         visible: _nameVisible,

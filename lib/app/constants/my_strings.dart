@@ -80,14 +80,14 @@ class Strings {
 
   // Home screen tip on showcase
   static const first = 'Tap to show detailed weather forecast.';
-  static const second =
-      'Double tap anywhere to change the background photo.'; //
+  static const second = 'Double tap anywhere to change the photo.'; //
   static const six = 'You can also set your favourite photo from settings.';
   static const third = 'Tap on your name to edit.';
-  static const fourth =
-      "Focus Question will show on a default 6am - 6pm schedule. ";
+  static const fourth = "Focus Question will show from 6am - 6pm as default. ";
   static const seven = "You can change when to show the question in settings.";
   static const fifth = "Add your focused task here.";
+  static const eighth =
+      "After adding a task, mantra and task will show on this screen.";
 
   static const focusButtonTip =
       'Press here to start working on your task with our customizable Pomodoro Timer.';
@@ -183,7 +183,7 @@ class Strings {
       'If you have a task that you have not completed on that day, Home screen will display your task and mantra.'
       '\n'
       '\n'
-      "Default uptime schedule is 6am to 6pm. You can change this schedule that best fits you (Restart the app if you want to see immediate changes), or you can turn off balance mode. ";
+      "Default uptime schedule is 6am to 6pm. You can change this schedule that best fits you. (Restart the app if you want to see immediate changes.) ";
 
   // For all error:
   ///Todo: add contact us
