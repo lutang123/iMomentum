@@ -423,7 +423,7 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         CarouselSlider(
           options: CarouselOptions(
-            //height: 250.0, //default height is good enough
+            height: 250.0, //default height is good enough
             viewportFraction: 1.0,
             initialPage: 0, //default
             onPageChanged: (index, reason) {

@@ -144,10 +144,12 @@ dev_dependencies:
     sdk: flutter
   test: any
   flutter_launcher_icons: "^0.8.0"
+
 flutter_icons:
   android: "launcher_icon"
   ios: true
   image_path: "assets/icon/icon.png"
+  # icon image must remove alpha
 
 flutter:
   # The following line ensures that the Material Icons font is
@@ -160,7 +162,6 @@ flutter:
     - assets/icon/
     - assets/images/
     - assets/Teddy.flr
-#    - assets/logo.png
     - lang/en.json
     - lang/zh.json
 

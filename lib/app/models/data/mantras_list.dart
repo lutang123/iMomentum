@@ -8,7 +8,7 @@ class FirstGreetings {
   final int hour = int.parse(DateFormat('kk').format(DateTime.now()));
   String greeting;
   String showGreetings() {
-    if ((hour > 6) & (hour <= 12)) {
+    if ((hour > 4) & (hour <= 12)) {
       greeting = 'Good Morning';
     } else if ((hour > 12) & (hour <= 18)) {
       greeting = 'Good afternoon';
