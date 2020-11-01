@@ -85,8 +85,7 @@ class Strings {
   static const third = 'Tap on your name to edit.';
   // static const fourth = "This is a small reminder for focus, you . ";
   // static const ninth = "Focus Question will show from 6am - 9pm as default. ";
-  static const seven =
-      "You can change when to show focus mode in settings with scheduled uptime and downtime.";
+  static const seven = "You can change when to show this question in settings.";
   static const fifth = "Add your today's focused task here.";
   static const eighth =
       "After adding a task, mantra and task will show on this screen.";
