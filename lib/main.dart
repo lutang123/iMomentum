@@ -210,7 +210,7 @@ void main() async {
       int index = prefs.getInt('indexMantra') ?? 0;
       bool useMyQuote = prefs.getBool('useMyQuote') ?? true;
 
-      bool isBalanceOn = prefs.getBool('isBalance') ?? true;
+      bool isBalanceOn = prefs.getBool('isBalance') ?? false;
       // bool isWeekDay = prefs.getBool('isWeekDay') ?? false;
       int startHour = prefs.getInt('startHour') ?? 6;
       int endHour = prefs.getInt('endHour') ?? 6;

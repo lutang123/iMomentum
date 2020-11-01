@@ -183,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
   GlobalKey _second = GlobalKey();
   GlobalKey _six = GlobalKey();
   GlobalKey _third = GlobalKey();
-  GlobalKey _fourth = GlobalKey();
+  // GlobalKey _fourth = GlobalKey();
   GlobalKey _seven = GlobalKey();
   GlobalKey _fifth = GlobalKey();
   GlobalKey _eighth = GlobalKey();
@@ -213,7 +213,7 @@ class _HomeScreenState extends State<HomeScreen> {
             _second,
             _six,
             _third,
-            _fourth,
+            // _fourth,
             _seven,
             _fifth,
             _eighth
@@ -587,18 +587,11 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Text('$dayOfWeek, $formattedDate ', style: KHomeDate),
           SizedBox(height: 15),
-          Showcase(
-            key: _fourth,
-            description: Strings.fourth,
-            descTextStyle: TextStyle(fontSize: 13, color: Colors.black),
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-            child: TypewriterAnimatedTextKit(
-              isRepeatingAnimation: false,
-              text: ['What is your plan tomorrow?'],
-              textAlign: TextAlign.center,
-              textStyle: KHomeQuestion,
-            ),
+          TypewriterAnimatedTextKit(
+            isRepeatingAnimation: false,
+            text: ['What is your plan tomorrow?'],
+            textAlign: TextAlign.center,
+            textStyle: KHomeQuestion,
           ),
           Showcase(
               key: _seven,
@@ -633,18 +626,11 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Text('$dayOfWeek, $formattedDate ', style: KHomeDate),
           SizedBox(height: 15),
-          Showcase(
-            key: _fourth,
-            description: Strings.fourth,
-            descTextStyle: TextStyle(fontSize: 13, color: Colors.black),
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-            child: TypewriterAnimatedTextKit(
-              isRepeatingAnimation: false,
-              text: ['What is your main focus today?'],
-              textAlign: TextAlign.center,
-              textStyle: KHomeQuestion,
-            ),
+          TypewriterAnimatedTextKit(
+            isRepeatingAnimation: false,
+            text: ['What is your main focus today?'],
+            textAlign: TextAlign.center,
+            textStyle: KHomeQuestion,
           ),
           Showcase(
               key: _seven,

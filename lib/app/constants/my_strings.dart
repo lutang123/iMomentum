@@ -83,9 +83,11 @@ class Strings {
   static const second = 'Double tap anywhere to change the photo.'; //
   static const six = 'You can also set your favourite photo from settings.';
   static const third = 'Tap on your name to edit.';
-  static const fourth = "Focus Question will show from 6am - 6pm as default. ";
-  static const seven = "You can change when to show the question in settings.";
-  static const fifth = "Add your focused task here.";
+  // static const fourth = "This is a small reminder for focus, you . ";
+  // static const ninth = "Focus Question will show from 6am - 9pm as default. ";
+  static const seven =
+      "You can change when to show focus mode in settings with scheduled uptime and downtime.";
+  static const fifth = "Add your today's focused task here.";
   static const eighth =
       "After adding a task, mantra and task will show on this screen.";
 
@@ -176,14 +178,17 @@ class Strings {
       'Your most recently added/edited one will show as the first one, and you can swipe right or left to view different ones from Home screen, and tap on the quote to edit.';
 
   static const tipsOnBalanceScreen =
+      "When Enable Balance Mode is on, home screen will display different content based on a uptime schedule. "
+      '\n'
+      '\n'
+      "Default uptime schedule is 6am to 6pm. You can change this schedule that best fits you. "
+      '\n'
+      '\n'
       "During uptime, the Home screen will display what is your main focus question, and in the "
       'next 2 hours after uptime, it will display what is your plan tomorrow question, in other time it will only display mantra. '
       '\n'
       '\n'
       'If you have a task that you have not completed on that day, Home screen will display your task and mantra.'
-      '\n'
-      '\n'
-      "Default uptime schedule is 6am to 6pm. You can change this schedule that best fits you. "
       '\n'
       '\n'
       "Restart the app after changing schedule if you want to see immediate changes on Home screen display. ";

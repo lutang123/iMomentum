@@ -26,7 +26,6 @@ import 'package:provider/provider.dart';
 import '../../app/sign_in/email_password_sign_in_model.dart';
 import 'package:iMomentum/app/utils/extension_firstCaps.dart';
 import 'package:iMomentum/app/constants/theme.dart';
-import 'dart:io';
 
 typedef void CaretMoved(Offset globalCaretPosition);
 typedef void TextChanged(String text);
