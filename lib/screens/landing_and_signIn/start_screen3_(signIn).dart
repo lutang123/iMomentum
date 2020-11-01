@@ -322,14 +322,14 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
 
   Widget _secondPart() {
     // final appleSignInAvailable = Provider.of<AppleSignInAvailable>(context);
-    double height = MediaQuery.of(context).size.height;
+    // double height = MediaQuery.of(context).size.height;
     return Column(
       children: [
-        sizedBox(height),
-        Platform.isIOS
-            ? Container()
-            : mySignInContainerSocial(
-                'Sign up with Google', _signInWithGoogle, height),
+        // sizedBox(height),
+        // Platform.isIOS
+        //     ? Container()
+        //     : mySignInContainerSocial(
+        //         'Sign up with Google', _signInWithGoogle, height),
         // if (appleSignInAvailable.isAvailable) ...[
         //   mySignInContainerSocial(
         //       'Sign up with Apple', _signInWithApple, height)
