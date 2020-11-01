@@ -177,13 +177,16 @@ class Strings {
 
   static const tipsOnBalanceScreen =
       "During uptime, the Home screen will display what is your main focus question, and in the "
-      'next 3 hours after uptime, it will display what is your plan tomorrow question, in other time it will only display mantra. '
+      'next 2 hours after uptime, it will display what is your plan tomorrow question, in other time it will only display mantra. '
       '\n'
       '\n'
       'If you have a task that you have not completed on that day, Home screen will display your task and mantra.'
       '\n'
       '\n'
-      "Default uptime schedule is 6am to 6pm. You can change this schedule that best fits you. (Restart the app if you want to see immediate changes.) ";
+      "Default uptime schedule is 6am to 6pm. You can change this schedule that best fits you. "
+      '\n'
+      '\n'
+      "Restart the app after changing schedule if you want to see immediate changes on Home screen display. ";
 
   // For all error:
   ///Todo: add contact us

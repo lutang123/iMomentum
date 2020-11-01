@@ -268,6 +268,9 @@ class _ScheduleFocusTimeState extends State<ScheduleFocusTime> {
                     rowRestLength(_darkTheme, setState),
                     SizedBox(height: 5),
                     rowButton(_darkTheme, context),
+                    SizedBox(height: 5),
+                    // Text(
+                    //     'Changes will not immediately reflect on the Home screen, if you want to see immediate change, you can restart the App.')
                   ],
                 ),
               ),
@@ -435,8 +438,8 @@ class _ScheduleFocusTimeState extends State<ScheduleFocusTime> {
 
   ///when we don't have BuildContext context, we used a wrong context and it popped to home screen
   Future<void> _done(BuildContext context) async {
-    print('newStartHour: $newStartHour'); //null ??
-    print('newEndHour: $newEndHour'); //null ??
+    // print('newStartHour: $newStartHour'); //null ??
+    // print('newEndHour: $newEndHour'); //null ??
     if (_validateAndSaveForm()) {
       var prefs = await SharedPreferences.getInstance(); //save settings
       prefs.setInt('startHour', newStartHour);
