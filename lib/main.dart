@@ -405,8 +405,8 @@ class _MyAppState extends State<MyApp> {
                 theme: themeNotifier.getTheme(),
 
                 ///it seems does not matter here
-                darkTheme:
-                    darkTheme, //add this so that the app will follow phone setting
+                darkTheme: darkTheme,
+                //add this so that the app will follow phone setting
                 themeMode: ThemeMode.system,
 
                 /// from plugin: flutter_localizations

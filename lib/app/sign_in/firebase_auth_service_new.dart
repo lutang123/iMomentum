@@ -101,7 +101,7 @@ class FirebaseAuthService {
         password: password,
       );
 
-      print('sign in again');
+      // print('sign in again');
       final User firebaseUser = userCredential.user; //this is current user
       // print('firebaseUser: $firebaseUser');
 

@@ -327,8 +327,9 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
         sizedBox(height),
         // Platform.isIOS
         //     ? Container()
-        //     : mySignInContainerSocial(
-        //         'Sign up with Google', _signInWithGoogle, height),
+        //     :
+        // mySignInContainerSocial(
+        //     'Sign up with Google', _signInWithGoogle, height),
         // if (appleSignInAvailable.isAvailable) ...[
         //   mySignInContainerSocial(
         //       'Sign up with Apple', _signInWithApple, height)
