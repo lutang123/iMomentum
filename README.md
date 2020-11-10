@@ -12,7 +12,7 @@ This app uses firebase cloudstore and firebase authentication.
 
 ### For Android phone, download from google plae: 
 
-### https://play.google.com/store/apps/details?id=com.lu.momentum
+### https://play.google.com/store/apps/details?id=com.lu.iMomentum
 
 ### Here is video introduction: 
 
