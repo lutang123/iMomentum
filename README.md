@@ -79,6 +79,7 @@ https://app.wideo.co/view/31065101602712330979?utm_source=CopyPaste&utm_medium=s
   <img src="/screenshots/settings/4.png" width="100" />
   <img src="/screenshots/settings/6.png" width="100" />
   <img src="/screenshots/settings/8.png" width="100" />
+  <img src="/screenshots/settings/9.png" width="100" />
 </p>
 
 ### 5. GIF
