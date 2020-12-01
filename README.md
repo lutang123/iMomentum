@@ -6,11 +6,11 @@ Designed with both light theme and dark theme, available on both Android and iOS
 
 This app uses firebase cloudstore and firebase authentication. 
 
-### 1. For iPhone, download from the App Store: 
+### 1. For iPhone, download link from the App Store: 
 
 ### https://apps.apple.com/app/id1537692519
 
-### 2. For Android phone, download from google play: 
+### 2. For Android phone, download link from google play: 
 
 ### https://play.google.com/store/apps/details?id=com.lu.iMomentum
 
@@ -30,7 +30,7 @@ https://app.wideo.co/view/31065101602712330979?utm_source=CopyPaste&utm_medium=s
   <img src="/screenshots/landing_and_signin/landing5.png" width="100" />
   <img src="/screenshots/landing_and_signin/signup1.png" width="100" />
   <img src="/screenshots/landing_and_signin/signup2.png" width="100" />
-  <img src="/screenshots/landing_and_signin/signup3.png" width="100" />
+  <img src="/screenshots/landing_and_signin/signup3png.png" width="100" />
 </p>
 
 ### Home screen
