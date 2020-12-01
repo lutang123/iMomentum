@@ -44,6 +44,8 @@ https://app.wideo.co/view/31065101602712330979?utm_source=CopyPaste&utm_medium=s
   <img src="/screenshots/Home/9.png" width="100" />
   <img src="/screenshots/Home/12.png" width="100" />
   <img src="/screenshots/Home/weather_light.png" width="100" />
+  <img src="/screenshots/home_screen/home1.png" width="100" />
+  <img src="/screenshots/home_screen/home2.png" width="100" />
 </p>
 
 ### Todo screen
