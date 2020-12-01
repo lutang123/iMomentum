@@ -23,14 +23,14 @@ https://app.wideo.co/view/31065101602712330979?utm_source=CopyPaste&utm_medium=s
 ### Sign In
 
 <p float="left">
-  <img src="/screenshots/landing_and_signin/landing1.png" width="100" />
-  <img src="/screenshots/landing_and_signin/landing2.png" width="100" />
-  <img src="/screenshots/landing_and_signin/landing3.png" width="100" />
-  <img src="/screenshots/landing_and_signin/landing4.png" width="100" />
-  <img src="/screenshots/landing_and_signin/landing5.png" width="100" />
-  <img src="/screenshots/landing_and_signin/signup1.png" width="100" />
-  <img src="/screenshots/landing_and_signin/signup2.png" width="100" />
-  <img src="/screenshots/landing_and_signin/signup3png.png" width="100" />
+  <img src="/screenshots/landing_and_signin/landing1.png" width="150" />
+  <img src="/screenshots/landing_and_signin/landing2.png" width="150" />
+  <img src="/screenshots/landing_and_signin/landing3.png" width="150" />
+  <img src="/screenshots/landing_and_signin/landing4.png" width="150" />
+  <img src="/screenshots/landing_and_signin/landing5.png" width="150" />
+  <img src="/screenshots/landing_and_signin/signup1.png" width="150" />
+  <img src="/screenshots/landing_and_signin/signup2.png" width="150" />
+  <img src="/screenshots/landing_and_signin/signup3png.png" width="150" />
 </p>
 
 ### Home screen
