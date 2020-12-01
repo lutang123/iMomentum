@@ -36,50 +36,50 @@ https://app.wideo.co/view/31065101602712330979?utm_source=CopyPaste&utm_medium=s
 ### Home screen
 
 <p float="left">
-  <img src="/screenshots/Home/1.png" width="100" />
-  <img src="/screenshots/Home/2.png" width="100" />
-  <img src="/screenshots/Home/3.png" width="100" />
-  <img src="/screenshots/Home/4.png" width="100" />
-  <img src="/screenshots/Home/6.png" width="100" />
-  <img src="/screenshots/Home/9.png" width="100" />
-  <img src="/screenshots/Home/12.png" width="100" />
-  <img src="/screenshots/Home/weather_light.png" width="100" />
-  <img src="/screenshots/home_screen/home1.png" width="100" />
-  <img src="/screenshots/home_screen/home2.png" width="100" />
+  <img src="/screenshots/Home/1.png" width="150" />
+  <img src="/screenshots/Home/2.png" width="150" />
+  <img src="/screenshots/Home/3.png" width="150" />
+  <img src="/screenshots/Home/4.png" width="150" />
+  <img src="/screenshots/Home/6.png" width="150" />
+  <img src="/screenshots/Home/9.png" width="150" />
+  <img src="/screenshots/Home/12.png" width="150" />
+  <img src="/screenshots/Home/weather_light.png" width="150" />
+  <img src="/screenshots/home_screen/home1.png" width="150" />
+  <img src="/screenshots/home_screen/home2.png" width="150" />
 </p>
 
 ### Todo screen
 
 <p float="left">
-  <img src="/screenshots/Todo/1.png" width="100" />
-  <img src="/screenshots/Todo/2.png" width="100" />
-  <img src="/screenshots/Todo/3.png" width="100" />
-  <img src="/screenshots/Todo/6.png" width="100" />
-  <img src="/screenshots/Todo/7.png" width="100" />
-  <img src="/screenshots/Todo/8.png" width="100" />
+  <img src="/screenshots/Todo/1.png" width="150" />
+  <img src="/screenshots/Todo/2.png" width="150" />
+  <img src="/screenshots/Todo/3.png" width="150" />
+  <img src="/screenshots/Todo/6.png" width="150" />
+  <img src="/screenshots/Todo/7.png" width="150" />
+  <img src="/screenshots/Todo/8.png" width="150" />
 </p>
 
 ### Notes screen
 
 <p float="left">
-  <img src="/screenshots/Notes/light1.png" width="100" />
-  <img src="/screenshots/Notes/light2.png" width="100" />
-  <img src="/screenshots/Notes/light3.png" width="100" />
-  <img src="/screenshots/Notes/light4.png" width="100" />
-  <img src="/screenshots/Notes/light5.png" width="100" />
-  <img src="/screenshots/Notes/light6.png" width="100" />  
+  <img src="/screenshots/Notes/light1.png" width="150" />
+  <img src="/screenshots/Notes/light2.png" width="150" />
+  <img src="/screenshots/Notes/light3.png" width="150" />
+  <img src="/screenshots/Notes/light4.png" width="150" />
+  <img src="/screenshots/Notes/light5.png" width="150" />
+  <img src="/screenshots/Notes/light6.png" width="150" />  
 </p>
 
 ### Settings and Customization
 
 <p float="left">
-  <img src="/screenshots/settings/1.png" width="100" />
-  <img src="/screenshots/settings/2.png" width="100" />
-  <img src="/screenshots/settings/3.png" width="100" />
-  <img src="/screenshots/settings/4.png" width="100" />
-  <img src="/screenshots/settings/6.png" width="100" />
-  <img src="/screenshots/settings/8.png" width="100" />
-  <img src="/screenshots/settings/9.png" width="100" />
+  <img src="/screenshots/settings/1.png" width="150" />
+  <img src="/screenshots/settings/2.png" width="150" />
+  <img src="/screenshots/settings/3.png" width="150" />
+  <img src="/screenshots/settings/4.png" width="150" />
+  <img src="/screenshots/settings/6.png" width="150" />
+  <img src="/screenshots/settings/8.png" width="150" />
+  <img src="/screenshots/settings/9.png" width="150" />
 </p>
 
 ### 5. GIF
