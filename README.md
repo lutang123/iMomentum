@@ -6,19 +6,19 @@ Designed with both light theme and dark theme, available on both Android and iOS
 
 This app uses firebase cloudstore and firebase authentication. 
 
-### For iPhone, download from the App Store: 
+### 1. For iPhone, download from the App Store: 
 
 ### https://apps.apple.com/app/id1537692519
 
-### For Android phone, download from google plae: 
+### 2. For Android phone, download from google play: 
 
 ### https://play.google.com/store/apps/details?id=com.lu.iMomentum
 
-### Here is video introduction: 
+### 3. Video introduction: 
 
 https://app.wideo.co/view/31065101602712330979?utm_source=CopyPaste&utm_medium=share&utm_campaign=sharebox
 
-#### Here is some screenshots for light theme. 
+### 4. Some screenshots for light theme. 
 
 ### Sign In
 
@@ -80,7 +80,7 @@ https://app.wideo.co/view/31065101602712330979?utm_source=CopyPaste&utm_medium=s
   <img src="/screenshots/settings/9.png" width="100" />
 </p>
 
-### GIF
+### 5. GIF
 ![Finished App](https://github.com/lutang123/Flutter-MobileApp-Projects/blob/master/iMomentum.gif)
 
 
