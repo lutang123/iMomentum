@@ -8,11 +8,11 @@ This app uses firebase cloudstore and firebase authentication.
 
 ### 1. For iPhone, download link from the App Store: 
 
-### https://apps.apple.com/app/id1537692519
+[<img src="screenshots/app-store-logo.png" width="400" >](https://apps.apple.com/app/id1537692519)
 
 ### 2. For Android phone, download link from google play: 
 
-### https://play.google.com/store/apps/details?id=com.lu.iMomentum
+[<img src="screenshots/play-store-logo.png" width="450" >](https://play.google.com/store/apps/details?id=com.lu.momentum)
 
 ### 3. Video introduction: 
 
