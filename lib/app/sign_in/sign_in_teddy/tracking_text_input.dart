@@ -69,22 +69,12 @@ class _TrackingTextInputState extends State<TrackingTextInput> {
 
   @override
   Widget build(BuildContext context) {
-    // final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
-    // bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return TextFormField(
       key: _fieldKey,
-      keyboardAppearance:
-          // _darkTheme ? Brightness.dark :
-          Brightness.light,
+      keyboardAppearance: Brightness.light,
       controller: textController,
-      // focusNode: widget.focusNode,
       onEditingComplete: widget.onEditingComplete,
-      // onChanged: widget.onChanged,
-      style: TextStyle(
-          fontSize: 16.0,
-          color:
-              // _darkTheme ? darkThemeWords :
-              lightThemeWords),
+      style: TextStyle(fontSize: 16.0, color: lightThemeWords),
       enabled: true,
       keyboardType:
           widget.isObscured ? TextInputType.text : TextInputType.emailAddress,

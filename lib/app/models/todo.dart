@@ -74,7 +74,6 @@ class Todo {
     if (runtimeType != other.runtimeType) return false;
     final Todo otherJob = other;
     return id == otherJob.id && title == otherJob.title;
-//        ratePerHour == otherJob.ratePerHour;
   }
 
   @override

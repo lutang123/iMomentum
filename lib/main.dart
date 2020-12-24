@@ -67,7 +67,6 @@ void main() async {
   ///added on Sep.16 with new firebase:
   await Firebase.initializeApp();
 
-  //Todo
   /// Restrict device orientation to portraitUp
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
@@ -183,6 +182,7 @@ void main() async {
   // delivered at the specified time when the device in a low-power idle mode.
   // This behaviour can be changed by setting the optional parameter named
   // androidAllowWhileIdle to true when calling the schedule method.
+
   ///Show Statusbar
   ///https://stackoverflow.com/questions/52489458/how-to-change-status-bar-color-in-flutter
 //import 'package:flutter/services.dart';
@@ -270,12 +270,12 @@ void main() async {
 
 /// https://github.com/bizz84/firebase_auth_demo_flutter
 class MyApp extends StatefulWidget {
-  const MyApp({
-    Key key,
-    // this.authServiceBuilder,
-    // this.databaseBuilder,
-    // this.appleSignInAvailable,
-  }) : super(key: key);
+  // const MyApp({
+  //   Key key,
+  //   // this.authServiceBuilder,
+  //   // this.databaseBuilder,
+  //   // this.appleSignInAvailable,
+  // }) : super(key: key);
 
   // final FirebaseAuthService Function(BuildContext context) authServiceBuilder;
   // final FirestoreDatabase Function(BuildContext context, String uid)
@@ -310,7 +310,7 @@ class _MyAppState extends State<MyApp> {
         );
   }
 
-  ///not sure what are these for
+  ///
   // void _configureDidReceiveLocalNotificationSubject() {
   //   didReceiveLocalNotificationSubject.stream
   //       .listen((ReceivedNotification receivedNotification) async {
@@ -406,8 +406,8 @@ class _MyAppState extends State<MyApp> {
 
                 ///it seems does not matter here
                 darkTheme: darkTheme,
-                //add this so that the app will follow phone setting
-                themeMode: ThemeMode.system,
+                // //add this so that the app will follow phone setting
+                // themeMode: ThemeMode.system,
 
                 /// from plugin: flutter_localizations
                 // List all of the app's supported locales here
@@ -449,6 +449,7 @@ class _MyAppState extends State<MyApp> {
                   GlobalMaterialLocalizations.delegate,
                   // Built-in localization for text direction LTR/RTL
                   GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
                 ],
                 // Returns a locale which will be used by the app
                 localeResolutionCallback: (locale, supportedLocales) {

@@ -171,9 +171,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final balanceNotifier =
         Provider.of<BalanceNotifier>(context, listen: false);
     isBalance = balanceNotifier.getBalance();
-    // final weekdayNotifier =
-    //     Provider.of<WeekDayNotifier>(context, listen: false);
-    // isWeekDay = weekdayNotifier.getWeekDay();
     super.initState();
   }
 
@@ -183,7 +180,6 @@ class _HomeScreenState extends State<HomeScreen> {
   GlobalKey _second = GlobalKey();
   GlobalKey _six = GlobalKey();
   GlobalKey _third = GlobalKey();
-  // GlobalKey _fourth = GlobalKey();
   GlobalKey _seven = GlobalKey();
   GlobalKey _fifth = GlobalKey();
   GlobalKey _eighth = GlobalKey();
@@ -204,20 +200,9 @@ class _HomeScreenState extends State<HomeScreen> {
     /// add showcase only if first launch
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _isFirstLaunch().then((result) {
-        // // print('first');
-        // if (!mounted) return; //not making any difference
-        // // print('second');
         if (result)
-          ShowCaseWidget.of(myContext).startShowCase([
-            _first,
-            _second,
-            _six,
-            _third,
-            // _fourth,
-            _seven,
-            _fifth,
-            _eighth
-          ]);
+          ShowCaseWidget.of(myContext).startShowCase(
+              [_first, _second, _six, _third, _seven, _fifth, _eighth]);
       });
     });
     final bool isKeyboardVisible =

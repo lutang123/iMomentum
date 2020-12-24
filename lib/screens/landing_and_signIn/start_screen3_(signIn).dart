@@ -153,10 +153,6 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
               elevation: 0.0,
               actions: [
                 IconButton(
-                    // label: Text(
-                    //   Strings.whySignIn,
-                    //   style: KTopFlatButtonText,
-                    // ),
                     icon: Icon(Icons.info_outline, color: topFlatButton),
                     onPressed: _showTopSheet),
               ],

@@ -496,3 +496,209 @@ class MyHomeDrawer extends StatelessWidget {
     );
   }
 }
+
+//TDG 3D drawer
+
+// import 'dart:math' as math;
+// import 'package:flutter/cupertino.dart';
+// import 'package:flutter/material.dart';
+// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+// import 'package:tdg_mobile/app/constants/image_path.dart';
+// import 'package:tdg_mobile/app/constants/style_signIn.dart';
+//
+// class MyDrawer extends StatefulWidget {
+//   final Widget child;
+//
+//   const MyDrawer({Key key, this.child}) : super(key: key);
+//
+//   static MyDrawerState of(BuildContext context) =>
+//       context.findAncestorStateOfType<MyDrawerState>();
+//
+//   @override
+//   MyDrawerState createState() => MyDrawerState();
+// }
+//
+// class MyDrawerState extends State<MyDrawer>
+//     with SingleTickerProviderStateMixin {
+//   AnimationController animationController;
+//   bool _canBeDragged = false;
+//   final double maxSlide = 300.0;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     animationController = AnimationController(
+//       vsync: this,
+//       duration: Duration(milliseconds: 250),
+//     );
+//   }
+//
+//   void open() => animationController.forward();
+//
+//   @override
+//   void dispose() {
+//     animationController.dispose();
+//     super.dispose();
+//   }
+//
+//   void toggle() => animationController.isDismissed
+//       ? animationController.forward()
+//       : animationController.reverse();
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     var height = MediaQuery.of(context).size.height;
+//     return GestureDetector(
+//       onHorizontalDragStart: _onDragStart,
+//       onHorizontalDragUpdate: _onDragUpdate,
+//       onHorizontalDragEnd: _onDragEnd,
+//       behavior: HitTestBehavior.translucent,
+//       onTap: toggle,
+//       child: AnimatedBuilder(
+//         animation: animationController,
+//         builder: (context, _) {
+//           return Material(
+//             color: Colors.black26,
+//             child: Stack(
+//               children: <Widget>[
+//                 Transform.translate(
+//                   offset: Offset(maxSlide * (animationController.value - 1), 0),
+//                   child: Transform(
+//                     transform: Matrix4.identity()
+//                       ..setEntry(3, 2, 0.001)
+//                       ..rotateY(math.pi / 2 * (1 - animationController.value)),
+//                     alignment: Alignment.centerRight,
+//                     child: DrawerScreen(),
+//                   ),
+//                 ),
+//                 Transform.translate(
+//                   offset: Offset(maxSlide * animationController.value, 0),
+//                   child: Transform(
+//                     transform: Matrix4.identity()
+//                       ..setEntry(3, 2, 0.001)
+//                       ..rotateY(-math.pi * animationController.value / 2),
+//                     alignment: Alignment.centerLeft,
+//                     child: widget.child,
+//                   ),
+//                 ),
+//                 Positioned(
+//                   top: height > 700
+//                       ? MediaQuery.of(context).padding.top - 10
+//                       : MediaQuery.of(context).padding.top,
+//                   left: 5 + animationController.value * maxSlide,
+//                   child: buildIconButtonDrawer(),
+//                 ),
+// //                    Positioned(
+// //                      top: 16.0 + MediaQuery.of(context).padding.top,
+// //                      left: animationController.value *
+// //                          MediaQuery.of(context).size.width,
+// //                      width: MediaQuery.of(context).size.width,
+// //                      child: Text(
+// //                        '',
+// //                        style: Theme.of(context).primaryTextTheme.bodyText2,
+// //                        textAlign: TextAlign.center,
+// //                      ),
+// //                    ),
+//               ],
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+//
+//   IconButton buildIconButtonDrawer() {
+//     return IconButton(
+//         iconSize: 28,
+//         icon: FaIcon(FontAwesomeIcons.bars),
+//         onPressed: toggle,
+//         color: Colors.white);
+//   }
+//
+//   void _onDragStart(DragStartDetails details) {
+//     var isDragOpenFromLeft = animationController.isDismissed;
+//     var isDragCloseFromRight = animationController.isCompleted;
+//     _canBeDragged = isDragOpenFromLeft || isDragCloseFromRight;
+//   }
+//
+//   void _onDragUpdate(DragUpdateDetails details) {
+//     if (_canBeDragged) {
+//       var delta = details.primaryDelta / maxSlide;
+//       animationController.value += delta;
+//     }
+//   }
+//
+//   void _onDragEnd(DragEndDetails details) {
+//     var _kMinFlingVelocity = 365.0;
+//
+//     if (animationController.isDismissed || animationController.isCompleted) {
+//       return;
+//     }
+//     if (details.velocity.pixelsPerSecond.dx.abs() >= _kMinFlingVelocity) {
+//       var visualVelocity = details.velocity.pixelsPerSecond.dx /
+//           MediaQuery.of(context).size.width;
+//
+//       animationController.fling(velocity: visualVelocity);
+//     } else if (animationController.value < 0.5) {
+//       animationController.reverse();
+//     } else {
+//       animationController.forward();
+//     }
+//   }
+// }
+//
+// class DrawerScreen extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     var width = MediaQuery.of(context).size.width;
+//     return SizedBox(
+//       width: width * 0.6,
+//       height: double.infinity,
+//       child: Material(
+//         color: backgroundColor,
+//         child: SingleChildScrollView(
+//           child: SafeArea(
+//             child: Column(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               mainAxisSize: MainAxisSize.min,
+//               children: [
+//                 Image.asset(ImagePath.whiteLogoOutLine),
+//                 Text('Nathan Baron'),
+//                 Text('Trucks R’ Us'),
+//                 Text('EQ: SA 88376'),
+//                 settingDivider(),
+//                 settingTitle('Support'),
+//                 settingTitle('Sign Out'),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+//
+//   /// this is StatelessWidget, all the method outside of build do not have context, so we need to add BuildContext context
+//   /// and it will still show flush bar
+//   ListTile settingTitle(String title) {
+//     return ListTile(
+//       leading: Text(
+//         title,
+//         style: TextStyle(
+//             fontSize: 16,
+//             fontWeight: FontWeight.w700,
+//             color: Color(0xff003F69),
+//             fontFamily: 'Poppins'),
+//       ),
+//     );
+//   }
+//
+//   Widget settingDivider() {
+//     return Divider(
+//       indent: 0,
+//       endIndent: 0,
+//       color: dividerColor,
+//       thickness: 1,
+//     );
+//   }
+// }
