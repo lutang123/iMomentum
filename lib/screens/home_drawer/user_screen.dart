@@ -1,4 +1,3 @@
-import 'package:alert_dialogs/alert_dialogs.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +6,7 @@ import 'package:iMomentum/app/common_widgets/avatar.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_go_back_icon.dart';
 import 'package:iMomentum/app/common_widgets/my_stack_screen.dart';
+import 'package:iMomentum/app/common_widgets/show_exception_alert_dialog.dart';
 import 'package:iMomentum/app/services/multi_notifier.dart';
 import 'package:iMomentum/app/sign_in/firebase_auth_service_new.dart';
 import 'package:progress_dialog/progress_dialog.dart';
@@ -403,7 +403,7 @@ class _UserScreenState extends State<UserScreen> {
 
   Future<void> _showSignInError(BuildContext context, dynamic exception) async {
     await showExceptionAlertDialog(
-      context: context,
+      context,
       title: 'Operation failed',
       exception: exception,
     );

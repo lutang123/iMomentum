@@ -74,6 +74,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
   List<Todo> _todayNotDoneList = [];
 
   // if not give an initial value, _selectedList.isEmpty will throw error
+  // List<Todo> _selectedList = [];
   List<Todo> _selectedList = [];
   List<Todo> _selectedNotDoneList = [];
 
@@ -232,8 +233,15 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
           if (todos.isNotEmpty) {
             _events = DailyTodosDetails.getEvents(
                 todos); //return a map to use on calender
+
+            ///not working
+            // final _selectedDay = DateTime.now();
+            // _selectedList = _events[_selectedDay] ?? [];
+            // print('selectedList: $_selectedList'); //[]
+
             _notDoneEvents = DailyTodosDetails.getNotDoneEvents(todos);
 
+            ///changed to give it a value of today's list
             ///get today's list, (unfortunately, it's designed to show _todayList on every other day if this day is empty.)
             _todayList =
                 DailyTodosDetails.getTodosGroupByData(DateTime.now(), todos);
@@ -582,7 +590,7 @@ class _TodoScreenState extends State<TodoScreen> with TickerProviderStateMixin {
       Database database, List<Todo> todos, List<Todo> anyList, int index) {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
-
+    // index = itemIndex + 1
     final Todo todo = anyList[index - 1];
     // this is to make sure only today or after today can add reminder
     // final difference = todo.date.difference(DateTime.now());

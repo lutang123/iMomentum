@@ -427,6 +427,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
     var weatherData = await WeatherService.getCurrentWeather(
         _metricUnitOn ? 'metric' : 'imperial');
+
     var weatherOneCall = await WeatherService.getForecastWeather(
         _metricUnitOn ? 'metric' : 'imperial');
 

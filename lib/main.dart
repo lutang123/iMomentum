@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:iMomentum/screens/tab_and_navigation/tab_page.dart';
 import 'package:iMomentum/screens/landing_and_signIn/auth_widget_(landing).dart';
 import 'package:iMomentum/screens/landing_and_signIn/start_screen1.dart';
@@ -440,30 +439,6 @@ class _MyAppState extends State<MyApp> {
                   //     countryCode: 'HK'), // 'zh_Hant_HK'
                   // // ... other locales the app supports
                 ],
-                // These delegates make sure that the localization data for the proper language is loaded
-                localizationsDelegates: [
-                  // THIS CLASS WILL BE ADDED LATER
-                  // A class which loads the translations from JSON files
-                  AppLocalizations.delegate,
-                  // Built-in localization of basic text for Material widgets
-                  GlobalMaterialLocalizations.delegate,
-                  // Built-in localization for text direction LTR/RTL
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                // Returns a locale which will be used by the app
-                localeResolutionCallback: (locale, supportedLocales) {
-                  // Check if the current device locale is supported
-                  for (var supportedLocale in supportedLocales) {
-                    if (supportedLocale.languageCode == locale.languageCode &&
-                        supportedLocale.countryCode == locale.countryCode) {
-                      return supportedLocale;
-                    }
-                  }
-                  // If the locale of the device is not supported, use the first one
-                  // from the list (English, in this case).
-                  return supportedLocales.first;
-                },
 
                 ///If a user’s preferred locale is not specified, then the closest match is used instead, which will likely contain differences to what the user expects. Flutter only resolves to locales defined in supportedLocales. Flutter provides scriptCode-differentiated localized content for commonly used languages.
 

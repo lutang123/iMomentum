@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:alert_dialogs/alert_dialogs.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iMomentum/app/common_widgets/my_container.dart';
 import 'package:iMomentum/app/common_widgets/my_flat_button.dart';
 import 'package:iMomentum/app/common_widgets/platform_alert_dialog.dart';
+import 'package:iMomentum/app/common_widgets/show_exception_alert_dialog.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:iMomentum/app/constants/image_path.dart';
 import 'package:iMomentum/app/constants/my_strings.dart';
@@ -669,7 +669,7 @@ class _EmailSignInScreenNewState extends State<EmailSignInScreenNew> {
   // }
   Future<void> _showSignInError(BuildContext context, dynamic exception) async {
     await showExceptionAlertDialog(
-      context: context,
+      context,
       title: StringsSignIn.signInFailed,
       exception: exception,
     );
