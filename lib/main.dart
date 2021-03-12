@@ -15,7 +15,6 @@ import 'screens/landing_and_signIn/auth_widget_builder.dart';
 import 'app/constants/theme.dart';
 import 'app/services/multi_notifier.dart';
 import 'package:rxdart/subjects.dart';
-import 'app/utils/app_localizations.dart';
 
 ///https://stackoverflow.com/questions/53532810/error-launching-application-on-android-sdk-built-for-x86
 
