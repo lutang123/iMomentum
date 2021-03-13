@@ -85,7 +85,6 @@ dependencies:
   # others
   modal_bottom_sheet: ^0.1.6+1
   showcaseview: ^0.1.6
-#  contactus: ^1.1.7
   typicons_flutter: ^0.4.2
 
 
@@ -97,9 +96,9 @@ dependencies:
   #  bubble: ^1.1.9+1
   #  popup_menu: ^1.0.5
 
-  #  flare_splash_screen: ^3.0.1 # not apply yet
-  #  flutter_blurhash: ^0.5.0 # not apply yet
-
+  ## these had a look but not apply yet
+  #  flare_splash_screen: ^3.0.1
+  #  flutter_blurhash: ^0.5.0
   #  modal_progress_hud: ^0.1.3
   #  flutter_linkify: ^3.1.3
   #  auto_animated: ^2.1.0
