@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:iMomentum/app/common_widgets/my_text_field.dart';
 import 'package:iMomentum/app/constants/constants_style.dart';
 import 'package:iMomentum/app/constants/image_path.dart';
+import 'package:iMomentum/app/constants/my_strings.dart';
 import 'package:iMomentum/app/utils/app_localizations.dart';
 import 'package:iMomentum/screens/landing_and_signIn/start_screen2.dart';
 import 'package:iMomentum/app/utils/pages_routes.dart';
@@ -17,7 +18,7 @@ class _StartScreenState extends State<StartScreen> {
     return TypewriterAnimatedTextKit(
       isRepeatingAnimation: false,
       //todo : localization not working
-      text: [AppLocalizations.of(context).translate('askName')],
+      text: [Strings.askName],
       textAlign: TextAlign.center,
       textStyle: KHomeQuestion,
     );

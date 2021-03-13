@@ -43,6 +43,7 @@ import 'package:flushbar/flushbar.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:iMomentum/app/utils/extension_firstCaps.dart';
 
+///Unhandled Exception: setState() called after dispose(): _HomeScreenState#c7012(lifecycle state: defunct, not mounted)
 class HomeScreen extends StatefulWidget {
   static const PREFERENCES_IS_FIRST_LAUNCH_STRING =
       "HOME_IS_FIRST_LAUNCH_STRING";
@@ -68,6 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String weatherIcon;
 
   void _showTopSheet() {
+    if (!mounted) return;
     setState(() {
       _wholeBodyOpacity = 0.0;
     });
@@ -75,10 +77,13 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       child: WeatherScreen(),
       direction: TopSheetDirection.TOP,
-    ).then((value) => setState(() {
-          _wholeBodyOpacity = 1.0;
-          _fetchWeather(); //call again to refresh the weather on home screen, this is useful when user changed metric
-        }));
+    ).then((value) {
+      if (!mounted) return;
+      setState(() {
+        _wholeBodyOpacity = 1.0;
+        _fetchWeather(); //call again to refresh the weather on home screen, this is useful when user changed metric
+      });
+    });
   }
 
   void _fetchWeather() async {
@@ -93,6 +98,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     var weatherData = await WeatherService.getCurrentWeather(
         _metricUnitOn ? 'metric' : 'imperial');
+
+    if (!mounted) return;
     setState(() {
       if (weatherData == null) {
         return;
@@ -103,6 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _getWeatherIconImage(weatherIcon);
     });
 
+    if (!mounted) return;
     setState(() {
       _state = CurrentWeatherState.FINISHED_DOWNLOADING;
     });
@@ -412,6 +420,8 @@ class _HomeScreenState extends State<HomeScreen> {
             viewportFraction: 1.0,
             initialPage: 0, //default
             onPageChanged: (index, reason) {
+              ///HomeScreenState#48d65(lifecycle state: defunct, not mounted)
+              if (!mounted) return;
               setState(() {
                 _current = index;
               });

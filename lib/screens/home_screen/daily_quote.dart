@@ -73,6 +73,7 @@ class _APIQuoteState extends State<APIQuote> {
               );
   }
 
+  ///Unhandled Exception: setState() called after dispose(): _APIQuoteState#dd27c(lifecycle state: defunct, not mounted)
 //http://quotes.rest/qod/categories.json
   Future<void> _fetchQuote() async {
     // If the widget was removed from the tree while the asynchronous platform
@@ -89,17 +90,20 @@ class _APIQuoteState extends State<APIQuote> {
           'response.statusCode in quote: ${response.statusCode}'); //429, meaning too many request
       if (response.statusCode == 200) {
         var quoteData = json.decode(response.body)['contents']['quotes'][0];
+        if (!mounted) return;
         setState(() {
           dailyQuote = quoteData['quote'];
           author = quoteData['author'];
         });
       } else {
+        if (!mounted) return;
         setState(() {
           dailyQuote = DefaultQuoteList().getQuote().body;
           author = DefaultQuoteList().getQuote().author;
         });
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         dailyQuote = DefaultQuoteList().getQuote().body;
         author = DefaultQuoteList().getQuote().author;
@@ -107,6 +111,7 @@ class _APIQuoteState extends State<APIQuote> {
       print('error in fetching quote: $e');
     }
 
+    if (!mounted) return;
     setState(() {
       _state = QuoteLoadingState.FINISHED_DOWNLOADING;
     });
