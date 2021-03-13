@@ -1,6 +1,6 @@
 # https://dash-overflow.net/articles/getting_started/
 
-include: package:pedantic/analysis_options.yaml
+#include: package:pedantic/analysis_options.yaml
 
 #analyzer:
 #  exclude:
