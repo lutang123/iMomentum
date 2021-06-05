@@ -11,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../app/models/unsplash_image.dart';
 
-/// Screen for showing an individual [UnsplashImage].
+/// Screen for showing an individual [SD./|].
 class ImagePage extends StatefulWidget {
   final String imageId, imageUrl;
   final Database database;

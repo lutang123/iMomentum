@@ -53,7 +53,6 @@ class RoundSmallIconButton extends StatelessWidget {
         height: 32.0,
       ),
       shape: CircleBorder(side: BorderSide(color: color, width: 1.0)),
-//      fillColor: Color(0xFF4C4F5E),
     );
   }
 }

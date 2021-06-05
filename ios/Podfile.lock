@@ -474,7 +474,7 @@ SPEC CHECKSUMS:
   FirebaseCoreDiagnostics: 770ac5958e1372ce67959ae4b4f31d8e127c3ac1
   FirebaseFirestore: adff4877869ca91a11250cc0989a6cd56bad163f
   FirebaseStorage: 15e0f15ef3c7fec3d1899d68623e47d4447066b4
-  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
   flutter_keyboard_visibility: 0339d06371254c3eb25eeb90ba8d17dca8f9c069
   flutter_local_notifications: 9e4738ce2471c5af910d961a6b7eadcf57c50186
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
