@@ -133,9 +133,10 @@ dev_dependencies:
   pedantic: ^1.4.0
 #  mockito: ^4.1.1
 #  random_string: ^2.0.0
-  flutter_driver:
-    sdk: flutter
-  test: any
+
+#  flutter_driver:
+#    sdk: flutter
+#  test: any
   flutter_launcher_icons: "^0.8.0"
 
 flutter_icons:
