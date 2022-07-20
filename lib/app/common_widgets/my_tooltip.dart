@@ -14,21 +14,18 @@ class MyToolTip extends StatelessWidget {
     final themeNotifier = Provider.of<ThemeNotifier>(context, listen: false);
     bool _darkTheme = (themeNotifier.getTheme() == darkTheme);
     return Tooltip(
-        message: message,
-        textStyle:
-            TextStyle(color: _darkTheme ? darkThemeWords : lightThemeWords),
-        preferBelow: false,
-        verticalOffset: 0,
-        decoration: ShapeDecoration(
-          color: _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
-          shape: TooltipShapeBorder(arrowArc: 0.5),
-          shadows: [
-            BoxShadow(
-                color: Colors.black26, blurRadius: 4.0, offset: Offset(2, 2))
-          ],
-        ),
-        margin: const EdgeInsets.all(30.0),
-        padding: const EdgeInsets.all(8.0),
-        child: child);
+      message: message,
+      textStyle: TextStyle(color: _darkTheme ? darkThemeWords : lightThemeWords),
+      preferBelow: false,
+      verticalOffset: 0,
+      decoration: ShapeDecoration(
+        color: _darkTheme ? darkThemeNoPhotoColor : lightThemeNoPhotoColor,
+        shape: TooltipShapeBorder(arrowArc: 0.5),
+        shadows: [BoxShadow(color: Colors.black26, blurRadius: 4.0, offset: Offset(2, 2))],
+      ),
+      margin: const EdgeInsets.all(30.0),
+      padding: const EdgeInsets.all(8.0),
+      child: child,
+    );
   }
 }

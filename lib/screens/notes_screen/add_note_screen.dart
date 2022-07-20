@@ -1,12 +1,11 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iMomentum/app/utils/format.dart';
 import 'package:iMomentum/app/common_widgets/platform_exception_alert_dialog.dart';
 import 'package:iMomentum/app/models/folder.dart';
-import 'package:iMomentum/app/utils/package/popup_menu/popup_menu.dart';
+import 'package:iMomentum/app/utils/package/popup_menu/popup_menu.dart' as popupMenu;
 import 'package:iMomentum/app/services/firestore_service/database.dart';
 import 'package:iMomentum/app/models/note.dart';
 import 'package:iMomentum/app/constants/theme.dart';
@@ -16,7 +15,6 @@ import 'package:iMomentum/screens/notes_screen/color_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
-import 'package:flutter/widgets.dart';
 import 'font_picker.dart';
 import 'my_custom_icon.dart';
 import 'package:iMomentum/app/utils/extension_firstCaps.dart';
@@ -104,9 +102,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
     }
 
     ///we can't assign value here, need to give it an initial value otherwise screen crash
-    isPinned
-        ? pinIcon = Icon(MyCustomIcon.pin)
-        : Icon(MyCustomIcon.pin_outline);
+    isPinned ? pinIcon = Icon(MyCustomIcon.pin) : Icon(MyCustomIcon.pin_outline);
     super.initState();
   }
 
@@ -154,13 +150,11 @@ class AddNoteScreenState extends State<AddNoteScreen> {
       backgroundColor: _darkTheme ? colorsDark[color] : colorsLight[color],
       automaticallyImplyLeading: false,
       leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios,
-              color: _darkTheme ? darkThemeButton : lightThemeButton),
+          icon: Icon(Icons.arrow_back_ios, color: _darkTheme ? darkThemeButton : lightThemeButton),
           onPressed: () => _saveAndBack(database, note)),
       titleSpacing: 0.0,
       title: note != null
-          ? Text(_getFolderTitle(folders),
-              style: Theme.of(context).textTheme.headline6)
+          ? Text(_getFolderTitle(folders), style: Theme.of(context).textTheme.headline6)
           : Text(folderTitle, style: Theme.of(context).textTheme.headline6),
       centerTitle: false,
       actions: [
@@ -168,10 +162,8 @@ class AddNoteScreenState extends State<AddNoteScreen> {
           padding: EdgeInsets.only(right: _isEdited ? 0.0 : 8.0),
           child: IconButton(
             icon: isPinned
-                ? Icon(MyCustomIcon.pin,
-                    color: _darkTheme ? darkThemeButton : lightThemeButton)
-                : Icon(MyCustomIcon.pin_outline,
-                    color: _darkTheme ? darkThemeButton : lightThemeButton),
+                ? Icon(MyCustomIcon.pin, color: _darkTheme ? darkThemeButton : lightThemeButton)
+                : Icon(MyCustomIcon.pin_outline, color: _darkTheme ? darkThemeButton : lightThemeButton),
             onPressed: _togglePinned,
           ),
         ),
@@ -239,8 +231,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
       },
       // onSaved: (value) => title = value.firstCaps,
       cursorColor: _darkTheme ? darkThemeButton : lightThemeButton,
-      decoration: InputDecoration.collapsed(
-          hintText: 'Title', hintStyle: titleHintStyle(_darkTheme)),
+      decoration: InputDecoration.collapsed(hintText: 'Title', hintStyle: titleHintStyle(_darkTheme)),
     );
   }
 
@@ -283,9 +274,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
 
   TextStyle titleHintStyle(bool _darkTheme) {
     return GoogleFonts.getFont(fontFamily,
-        color: _darkTheme ? darkThemeHint : lightThemeHint,
-        fontSize: 20,
-        fontWeight: FontWeight.w600);
+        color: _darkTheme ? darkThemeHint : lightThemeHint, fontSize: 20, fontWeight: FontWeight.w600);
   }
 
   TextStyle titleStyle(bool _darkTheme) {
@@ -334,11 +323,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
       child: Padding(
         padding: const EdgeInsets.only(left: 10.0, right: 10, top: 10),
         child: Column(
-          children: [
-            visibilityPick(_darkTheme),
-            rowBottom(_darkTheme),
-            SizedBox(height: 20)
-          ],
+          children: [visibilityPick(_darkTheme), rowBottom(_darkTheme), SizedBox(height: 20)],
         ),
       ),
     );
@@ -351,20 +336,15 @@ class AddNoteScreenState extends State<AddNoteScreen> {
         IconButton(
           iconSize: 30,
           color: _darkTheme ? darkThemeButton : lightThemeButton,
-          icon: _pickerVisible == true
-              ? Icon(EvaIcons.closeSquareOutline)
-              : Icon(EvaIcons.plusSquareOutline),
+          icon: _pickerVisible == true ? Icon(EvaIcons.closeSquareOutline) : Icon(EvaIcons.plusSquareOutline),
           onPressed: _showPicker,
           tooltip: 'Add more',
         ),
         widget.note == null
-            ? Text('Edited ${Format.time(DateTime.now())}',
-                style: textStyleEditTime(_darkTheme))
+            ? Text('Edited ${Format.time(DateTime.now())}', style: textStyleEditTime(_darkTheme))
             : formattedToday == formattedDate
-                ? Text('Edited ${Format.time(note.date)}',
-                    style: textStyleEditTime(_darkTheme))
-                : Text('Edited ${Format.date(note.date)}',
-                    style: textStyleEditTime(_darkTheme)),
+                ? Text('Edited ${Format.time(note.date)}', style: textStyleEditTime(_darkTheme))
+                : Text('Edited ${Format.date(note.date)}', style: textStyleEditTime(_darkTheme)),
         IconButton(
           key: MyGlobalKeys.addNoteKey,
           iconSize: 28,
@@ -388,8 +368,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
             FontPicker(
                 selectedFont: note == null ? fontList[0] : note.fontFamily,
                 onTap: _pickFont,
-                backgroundColor:
-                    _darkTheme ? colorsDark[color] : colorsLight[color]),
+                backgroundColor: _darkTheme ? colorsDark[color] : colorsLight[color]),
             rowPickTitle(_darkTheme, 'Pick a color for your Note.'),
             ColorPicker(
               selectedIndex: note == null ? 0 : note.colorIndex,
@@ -459,8 +438,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
           ///first we find this specific Todo item that we want to update
           final newNote = Note(
             id: id,
-            folderId:
-                folderId, //folderId is 1 if added to the default Notes folder
+            folderId: folderId, //folderId is 1 if added to the default Notes folder
             title: title,
             description: description,
             date: DateTime.now(),
@@ -487,19 +465,19 @@ class AddNoteScreenState extends State<AddNoteScreen> {
   }
 
   void _showPopUp() {
-    PopupMenu menu = PopupMenu(
+    popupMenu.PopupMenu menu = popupMenu.PopupMenu(
       context: context,
       backgroundColor: Colors.teal,
       lineColor: Colors.white54,
       maxColumn: 2,
       items: [
-        MenuItem(
+        popupMenu.MenuItem(
             title: 'Delete',
             image: Icon(
               EvaIcons.trash2Outline,
               color: Colors.white,
             )),
-        MenuItem(
+        popupMenu.MenuItem(
             title: 'Share',
             image: Icon(
               EvaIcons.shareOutline,
@@ -513,7 +491,7 @@ class AddNoteScreenState extends State<AddNoteScreen> {
     );
   }
 
-  void onClickMenu(MenuItemProvider item) {
+  void onClickMenu(popupMenu.MenuItemProvider item) {
     if (item.menuTitle == 'Delete') {
       _deleteAndNav(database, note);
     } else if (item.menuTitle == 'Share') {
@@ -525,19 +503,14 @@ class AddNoteScreenState extends State<AddNoteScreen> {
     final RenderBox box = context.findRenderObject();
     if (note == null) {
       if (title.length == 0) {
-        Share.share('To title',
-            subject: description,
-            sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+        Share.share('To title', subject: description, sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
       }
 
       if (description.length == 0) {
         Share.share(description,
-            subject: 'No description',
-            sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+            subject: 'No description', sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
       } else {
-        Share.share(title,
-            subject: description,
-            sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+        Share.share(title, subject: description, sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
       }
 
       ///this is the case note is not null
@@ -547,18 +520,15 @@ class AddNoteScreenState extends State<AddNoteScreen> {
       } else {
         if (note.title.isEmpty) {
           Share.share('No Title',
-              subject: note.description,
-              sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+              subject: note.description, sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
         }
         if (note.description.isEmpty) {
           Share.share(note.title,
-              subject: 'No description',
-              sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+              subject: 'No description', sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
         }
         if (note.title.isNotEmpty && note.description.isNotEmpty) {
           Share.share(note.title,
-              subject: note.description,
-              sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
+              subject: note.description, sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
         }
       }
     }

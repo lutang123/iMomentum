@@ -76,15 +76,7 @@ class CupertinoHomeScaffold extends StatelessWidget {
           color: color,
         ),
       ),
-      // label: itemData.title,
-      title: Padding(
-        padding: const EdgeInsets.only(top: 3.0),
-        child: Text(
-          itemData.title,
-          style: TextStyle(
-              color: color, fontSize: 12, fontWeight: FontWeight.w600),
-        ),
-      ),
+      label: itemData.title,
     );
   }
 }

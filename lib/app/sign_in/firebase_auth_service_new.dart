@@ -10,8 +10,7 @@ class FirebaseAuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   Future<UserCredential> signInAnonymously({String name}) async {
-    final UserCredential userCredential =
-        await _firebaseAuth.signInAnonymously();
+    final UserCredential userCredential = await _firebaseAuth.signInAnonymously();
 
     final User user = userCredential.user; //this is current user
 
@@ -22,11 +21,9 @@ class FirebaseAuthService {
     return userCredential;
   }
 
-  Future<void> createUserWithEmailAndPassword(
-      String email, String password, String name, BuildContext context) async {
+  Future<void> createUserWithEmailAndPassword(String email, String password, String name, BuildContext context) async {
     try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -92,11 +89,9 @@ class FirebaseAuthService {
     }
   }
 
-  Future<void> signInWithEmailAndPassword(
-      String email, String password, String name, BuildContext context) async {
+  Future<void> signInWithEmailAndPassword(String email, String password, String name, BuildContext context) async {
     try {
-      final UserCredential userCredential =
-          await _firebaseAuth.signInWithEmailAndPassword(
+      final UserCredential userCredential = await _firebaseAuth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -164,23 +159,18 @@ class FirebaseAuthService {
     final GoogleSignInAccount googleUser = await googleSignIn.signIn();
 
     if (googleUser != null) {
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
       if (googleAuth.accessToken != null && googleAuth.idToken != null) {
-        final UserCredential userCredential = await _firebaseAuth
-            .signInWithCredential(GoogleAuthProvider.credential(
+        final UserCredential userCredential = await _firebaseAuth.signInWithCredential(GoogleAuthProvider.credential(
           idToken: googleAuth.idToken,
           accessToken: googleAuth.accessToken,
         ));
         return userCredential;
       } else {
-        throw PlatformException(
-            code: 'ERROR_MISSING_GOOGLE_AUTH_TOKEN',
-            message: 'Missing Google Auth Token');
+        throw PlatformException(code: 'ERROR_MISSING_GOOGLE_AUTH_TOKEN', message: 'Missing Google Auth Token');
       }
     } else {
-      throw PlatformException(
-          code: 'ERROR_ABORTED_BY_USER', message: 'Sign in aborted by user');
+      throw PlatformException(code: 'ERROR_ABORTED_BY_USER', message: 'Sign in aborted by user');
     }
   }
 

@@ -16,7 +16,7 @@ abstract class Database {
 //  readData();
 //  readDataStreamListen();
 
-  //todo
+  //todos
   Future<void> setTodo(Todo todo); //create/update a job
   Future<void> deleteTodo(Todo todo); //delete a job
   Stream<Todo> todoStream({@required String todoId}); //read one jobs
@@ -64,8 +64,7 @@ abstract class Database {
 String documentIdFromCurrentDate() => DateTime.now().toIso8601String();
 
 class FirestoreDatabase implements Database {
-  FirestoreDatabase({@required this.uid})
-      : assert(uid != null, 'Cannot create FirestoreDatabase with null uid');
+  FirestoreDatabase({@required this.uid}) : assert(uid != null, 'Cannot create FirestoreDatabase with null uid');
   final String uid;
 
   //ensure only one object of FirestoreService is create
@@ -95,6 +94,7 @@ class FirestoreDatabase implements Database {
         path: FireStorePath.todo(uid, todoId),
         builder: (data, documentId) => Todo.fromMap(data, documentId),
       );
+
   @override //read jobs
   Stream<List<Todo>> todosStream() => _service.collectionStream(
         path: FireStorePath.todos(uid),
@@ -106,14 +106,17 @@ class FirestoreDatabase implements Database {
         //e.g. messageList.sort((m, m2) => int.parse(m.id).compareTo(int.parse(m2.id)));
         //this will not work well because when we update, we use the same id, but if use date, it's not good either because dates is in different format
         sort: (lhs, rhs) => rhs.id.compareTo(lhs.id),
+
+        //this will sort from false to true
         sortIsDone: (lhs, rhs) => (rhs.isDone.toString().length) //false 5
             .compareTo(lhs.isDone.toString().length), //true 4
+
+        //this will sort from small to big
         sortCategory: (lhs, rhs) {
           //add this because previous task item does not have category
           if ((lhs.category != null) && (rhs.category != null)) {
             /// category is int
-            return lhs.category
-                .compareTo(rhs.category); //this way is from 0 to 4
+            return lhs.category.compareTo(rhs.category); //this way is from 0 to 4
           } else
             return null;
         },
@@ -121,8 +124,7 @@ class FirestoreDatabase implements Database {
 
   /// duration
   @override
-  Future<void> setDuration(DurationModel duration) async =>
-      await _service.setData(
+  Future<void> setDuration(DurationModel duration) async => await _service.setData(
         path: FireStorePath.duration(uid, duration.id),
         data: duration.toMap(),
       );
@@ -132,19 +134,15 @@ class FirestoreDatabase implements Database {
       await _service.deleteData(path: FireStorePath.duration(uid, duration.id));
 
   @override //read one
-  Stream<DurationModel> durationStream({@required String durationId}) =>
-      _service.documentStream(
+  Stream<DurationModel> durationStream({@required String durationId}) => _service.documentStream(
         path: FireStorePath.duration(uid, durationId),
         builder: (data, documentId) => DurationModel.fromMap(data, documentId),
       );
 
   @override //read all
-  Stream<List<DurationModel>> durationsStream({Todo todo}) =>
-      _service.collectionStream<DurationModel>(
+  Stream<List<DurationModel>> durationsStream({Todo todo}) => _service.collectionStream<DurationModel>(
         path: FireStorePath.durations(uid),
-        queryBuilder: todo != null
-            ? (query) => query.where('todoId', isEqualTo: todo.id)
-            : null,
+        queryBuilder: todo != null ? (query) => query.where('todoId', isEqualTo: todo.id) : null,
         builder: (data, documentID) => DurationModel.fromMap(data, documentID),
 //        sort: (lhs, rhs) => rhs.start.compareTo(lhs.start),
       );
@@ -169,8 +167,7 @@ class FirestoreDatabase implements Database {
   }
 
   @override //read one
-  Stream<Folder> folderStream({@required String folderId}) =>
-      _service.documentStream(
+  Stream<Folder> folderStream({@required String folderId}) => _service.documentStream(
         path: FireStorePath.folder(uid, folderId),
         builder: (data, documentId) => Folder.fromMap(data, documentId),
       );
@@ -203,12 +200,9 @@ class FirestoreDatabase implements Database {
         builder: (data, documentId) => Note.fromMap(data, documentId),
       );
   @override //read all
-  Stream<List<Note>> notesStream({Folder folder}) =>
-      _service.collectionStream<Note>(
+  Stream<List<Note>> notesStream({Folder folder}) => _service.collectionStream<Note>(
         path: FireStorePath.notes(uid),
-        queryBuilder: folder != null
-            ? (query) => query.where('folderId', isEqualTo: folder.id)
-            : null,
+        queryBuilder: folder != null ? (query) => query.where('folderId', isEqualTo: folder.id) : null,
         builder: (data, documentId) => Note.fromMap(data, documentId),
         //to make the most recently edited one show first
         sort: (lhs, rhs) => rhs.date.compareTo(lhs.date),
@@ -255,8 +249,7 @@ class FirestoreDatabase implements Database {
   }
 
   @override //read one
-  Stream<MantraModel> mantraStream({@required String mantraId}) =>
-      _service.documentStream(
+  Stream<MantraModel> mantraStream({@required String mantraId}) => _service.documentStream(
         path: FireStorePath.mantra(uid, mantraId),
         builder: (data, documentId) => MantraModel.fromMap(data, documentId),
       );
@@ -283,8 +276,7 @@ class FirestoreDatabase implements Database {
   }
 
   @override //read one
-  Stream<QuoteModel> quoteStream({@required String quoteId}) =>
-      _service.documentStream(
+  Stream<QuoteModel> quoteStream({@required String quoteId}) => _service.documentStream(
         path: FireStorePath.quote(uid, quoteId),
         builder: (data, documentId) => QuoteModel.fromMap(data, documentId),
       );
